@@ -4,7 +4,7 @@ import {
   ApiDataSource,
   IApiSubscriptionPlanAppFeatures,
 } from '@area-butler-types/subscription-plan';
-import { CsvFileFormatsEnum } from '@area-butler-types/types';
+import { CsvFileFormatEnum } from '@area-butler-types/types';
 
 class ApiSubscriptionPlanAppFeaturesDto
   implements IApiSubscriptionPlanAppFeatures
@@ -35,8 +35,8 @@ class ApiSubscriptionPlanAppFeaturesDto
   openAi: boolean;
 
   @IsNotEmpty()
-  @IsEnum(CsvFileFormatsEnum)
-  csvFileFormat: CsvFileFormatsEnum;
+  @IsEnum(CsvFileFormatEnum)
+  csvFileFormat: CsvFileFormatEnum;
 }
 
 export default ApiSubscriptionPlanAppFeaturesDto;

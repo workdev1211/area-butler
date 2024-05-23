@@ -426,10 +426,8 @@ export interface IApiCapturePaypalPayment {
   metadata?: ILimitIncreaseMetadata;
 }
 
-export enum CsvFileFormatsEnum {
-  AREA_BUTLER = "AREA_BUTLER",
+export enum CsvFileFormatEnum {
   ON_OFFICE = "ON_OFFICE",
-  PADERBORN = "PADERBORN", // temporary for OnOffice object data format
 }
 
 export interface IApiUserPoiIcon {

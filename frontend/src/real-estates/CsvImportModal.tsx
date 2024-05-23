@@ -7,16 +7,16 @@ import { AxiosResponse } from "axios";
 import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
-import { CsvFileFormatsEnum } from "../../../shared/types/types";
+import { CsvFileFormatEnum } from "../../../shared/types/types";
 
 interface ICsvImportModalProps {
   closeModal: () => void;
-  fileFormat?: CsvFileFormatsEnum;
+  fileFormat?: CsvFileFormatEnum;
 }
 
 const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
   closeModal,
-  fileFormat = CsvFileFormatsEnum.AREA_BUTLER,
+  fileFormat = CsvFileFormatEnum.ON_OFFICE,
 }) => {
   const { get, post } = useHttp();
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
@@ -115,11 +115,16 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
             />
           </div>
           <div className="px-6 py-3">
-            <div className="text-justify">
-              Bitte bereiten Sie die CSV-Dateistruktur gemäß den
-              bereitgestellten Beispielen vor. Alle Spalten sollten sich an den
-              angegebenen Stellen befinden. Die erste Zeile entfällt. Adresse
-              ist ein Pflichtfeld.
+            <div className="flex flex-col gap-3">
+              <div className="text-justify">
+                Bitte bereiten Sie die Struktur der CSV-Datei entsprechend den
+                mitgelieferten Beispielen vor. In der XLS-Datei werden die
+                Farben zur Erläuterung der Datenstruktur verwendet.
+              </div>
+              <div className="text-justify italic">
+                Grüne Spalten sind obligatorisch, gelbe optional und die rote
+                Spalte zeigt einen falschen Datensatz an.
+              </div>
             </div>
             <div className="modal-action">
               <button

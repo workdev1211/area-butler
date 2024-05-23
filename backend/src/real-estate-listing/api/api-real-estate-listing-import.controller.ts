@@ -1,7 +1,6 @@
 import {
   Controller,
   HttpStatus,
-  ParseIntPipe,
   Post,
   Query,
   UploadedFile,
@@ -18,7 +17,7 @@ import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { UserDocument } from '../../user/schema/user.schema';
 import { RealEstateListingImportService } from '../real-estate-listing-import.service';
 import FileUploadDto from '../../dto/file-upload.dto';
-import { CsvFileFormatsEnum } from '@area-butler-types/types';
+import { CsvFileFormatEnum } from '@area-butler-types/types';
 import { Role, Roles } from '../../auth/roles.decorator';
 import { RolesGuard } from '../../auth/roles.guard';
 
@@ -62,14 +61,12 @@ export class ApiRealEstateListingImportController {
   async importCsvFile(
     @InjectUser() user: UserDocument,
     @UploadedFile() file: Express.Multer.File,
-    @Query('format') fileFormat: CsvFileFormatsEnum,
-    @Query('from-line', ParseIntPipe) fromLine?: number,
+    @Query('format') fileFormat: CsvFileFormatEnum,
   ): Promise<number[]> {
     return this.realEstateListingImportService.importCsvFile(
       user,
       fileFormat,
       file.buffer,
-      fromLine,
     );
   }
 }

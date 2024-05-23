@@ -1,22 +1,31 @@
-import {HttpException, Injectable, Logger} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {FilterQuery, Model} from 'mongoose';
-import {plainToInstance} from 'class-transformer';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model } from 'mongoose';
+import { plainToInstance } from 'class-transformer';
 import * as dayjs from 'dayjs';
 
-import {RealEstateListing, RealEstateListingDocument,} from './schema/real-estate-listing.schema';
-import {SubscriptionService} from '../user/subscription.service';
-import {UserDocument} from '../user/schema/user.schema';
-import {ApiRealEstateExtSourcesEnum, IApiRealEstateListingSchema,} from '@area-butler-types/real-estate';
-import {IApiUserApiConnectSettingsReq} from '@area-butler-types/types';
-import {createChunks} from '../../../shared/functions/shared.functions';
-import {GeoJsonPoint} from '../shared/types/geo-json';
+import {
+  RealEstateListing,
+  RealEstateListingDocument,
+} from './schema/real-estate-listing.schema';
+import { SubscriptionService } from '../user/subscription.service';
+import { UserDocument } from '../user/schema/user.schema';
+import {
+  ApiRealEstateExtSourcesEnum,
+  IApiRealEstateListingSchema,
+} from '@area-butler-types/real-estate';
+import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
+import { createChunks } from '../../../shared/functions/shared.functions';
+import { GeoJsonPoint } from '../shared/types/geo-json';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
-import {umlautMap} from '../../../shared/constants/constants';
-import {PROPSTACK_PROPERTIES_PER_PAGE, PropstackApiService,} from '../client/propstack/propstack-api.service';
+import { umlautMap } from '../../../shared/constants/constants';
+import {
+  PROPSTACK_PROPERTIES_PER_PAGE,
+  PropstackApiService,
+} from '../client/propstack/propstack-api.service';
 import ApiPropstackFetchToAreaButlerDto from './dto/api-propstack-fetch-to-area-butler.dto';
-import {apiConnectTypeNames} from '../../../shared/constants/real-estate';
-import {UserService} from '../user/user.service';
+import { apiConnectTypeNames } from '../../../shared/constants/real-estate';
+import { UserService } from '../user/user.service';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
@@ -25,19 +34,20 @@ import {
   IApiOnOfficeRequest,
   IApiOnOfficeSyncEstatesFilterParams,
 } from '@area-butler-types/on-office';
-import {ON_OFFICE_ESTATES_PER_PAGE, OnOfficeApiService,} from '../client/on-office/on-office-api.service';
-// TODO should be removed in the future after some testing
-// import {
-//   ApiOnOfficeRealEstStatusByUserEmailsEnum,
-//   setRealEstateStatusByUserEmail,
-// } from './mapper/real-estate-on-office-import.mapper';
-import {IApiPropstackFetchPropQueryParams} from '../shared/types/propstack';
-import {TIntegrationUserDocument} from '../user/schema/integration-user.schema';
-import {IApiIntUserOnOfficeParams, IApiIntUserPropstackParams,} from '@area-butler-types/integration-user';
-import {RealEstateListingService} from './real-estate-listing.service';
-import {IApiSyncEstatesIntFilterParams} from '@area-butler-types/integration';
-import {getProcUpdateQuery} from '../shared/functions/shared';
-import {PlaceService} from '../place/place.service';
+import {
+  ON_OFFICE_ESTATES_PER_PAGE,
+  OnOfficeApiService,
+} from '../client/on-office/on-office-api.service';
+import { IApiPropstackFetchPropQueryParams } from '../shared/types/propstack';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import {
+  IApiIntUserOnOfficeParams,
+  IApiIntUserPropstackParams,
+} from '@area-butler-types/integration-user';
+import { RealEstateListingService } from './real-estate-listing.service';
+import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
+import { getProcUpdateQuery } from '../shared/functions/shared';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -196,11 +206,6 @@ export class RealEstateCrmImportService {
   ): Promise<string[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     const errorIds: string[] = [];
-    // TODO should be removed in the future after some testing because now the status fields are completely custom
-    // const processedUserEmail = (
-    //   isIntegrationUser ? user.parameters.email : user.email
-    // )?.toLowerCase();
-    // const customStatuses = propstackCustomSyncStatuses[processedUserEmail];
 
     const apiKey = isIntegrationUser
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
@@ -209,16 +214,6 @@ export class RealEstateCrmImportService {
     if (!apiKey) {
       throw new HttpException('Propstack authentication failed!', 401);
     }
-
-    // TODO should be removed in the future after some testing because now the status fields are completely custom
-    // if (customStatuses) {
-    //   queryParams.status = customStatuses.reduce((result, { id }) => {
-    //     result += `${id},`;
-    //     return result;
-    //   }, '');
-    //
-    //   queryParams.status = queryParams.status.slice(0, -1);
-    // }
 
     const {
       data,
@@ -276,11 +271,6 @@ export class RealEstateCrmImportService {
           errorIds.push(`${property.id}`);
           continue;
         }
-
-        // TODO should be removed in the future after some testing because now the status fields are completely custom
-        // if (customStatuses) {
-        //   processCustomPropstackStatus(processedUserEmail, realEstate);
-        // }
 
         const locationData: Partial<IApiRealEstateListingSchema> = {
           location: {
@@ -530,20 +520,6 @@ export class RealEstateCrmImportService {
           errorIds.push(realEstate.Id);
           continue;
         }
-
-        // TODO should be removed in the future after some testing
-        // const processedUserEmail = (
-        //   isIntegrationUser ? intUserParams.email : user.email
-        // )?.toLowerCase();
-        //
-        // if (
-        //   !isIntegrationUser &&
-        //   Object.values<string>(
-        //     ApiOnOfficeRealEstStatusByUserEmailsEnum,
-        //   ).includes(processedUserEmail)
-        // ) {
-        //   setRealEstateStatusByUserEmail(processedUserEmail, realEstate);
-        // }
 
         // LEFT FOR DEBUGGING PURPOSES
         // testData.push(

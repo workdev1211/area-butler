@@ -101,7 +101,7 @@ export const randomizeCoordinates = ({
   };
 };
 
-export const replaceUmlautWithEnglish = (text: string): string => {
+export const replaceUmlaut = (text: string): string => {
   let processedText = text;
   const umlautMapEntries = Object.entries(umlautMap);
 

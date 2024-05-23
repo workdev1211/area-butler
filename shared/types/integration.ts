@@ -17,9 +17,9 @@ export enum IntegrationTypesEnum {
 }
 
 export interface IApiIntegrationParams {
-  integrationId?: string;
-  integrationUserId: string;
   integrationType: IntegrationTypesEnum;
+  integrationUserId: string;
+  integrationId?: string;
 }
 
 export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {

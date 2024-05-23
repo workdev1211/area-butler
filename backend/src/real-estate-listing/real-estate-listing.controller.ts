@@ -31,7 +31,7 @@ import {
   ApiRealEstateListing,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
-import { CsvFileFormatsEnum } from '@area-butler-types/types';
+import { CsvFileFormatEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
@@ -131,7 +131,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @Post('upload/:format')
   @UseInterceptors(FileInterceptor('file'))
   async importCsvFile(
-    @Param('format') fileFormat: CsvFileFormatsEnum,
+    @Param('format') fileFormat: CsvFileFormatEnum,
     @InjectUser() user: UserDocument,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<number[]> {
@@ -145,7 +145,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiOperation({ description: 'Download an example csv or xls file' })
   @Get('examples')
   downloadExampleFile(
-    @Query('format') fileFormat: CsvFileFormatsEnum,
+    @Query('format') fileFormat: CsvFileFormatEnum,
     @Query('type') fileType: ApiExampleFileTypeEnum,
   ): StreamableFile {
     let contentType: string;

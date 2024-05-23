@@ -10,56 +10,26 @@ import {
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
 import { UserDocument } from '../user/schema/user.schema';
-import {
-  checkAnyStringIsEmpty,
-  convertStringToNumber,
-} from '../shared/functions/shared';
-import {
-  ApiEnergyEfficiency,
-  ApiRealEstateCostType,
-  ApiRealEstateStatusEnum,
-  IApiRealEstateListingSchema,
-} from '@area-butler-types/real-estate';
-import {
-  ApiCoordinates,
-  ApiGeometry,
-  CsvFileFormatsEnum,
-} from '@area-butler-types/types';
+import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
+import { ApiGeometry, CsvFileFormatEnum } from '@area-butler-types/types';
 import { IOpenImmoXmlData } from '../shared/types/open-immo';
 import { RealEstateListingService } from './real-estate-listing.service';
-import { replaceUmlautWithEnglish } from '../../../shared/functions/shared.functions';
+import { replaceUmlaut } from '../../../shared/functions/shared.functions';
 import ApiOpenImmoToAreaButlerDto from './dto/api-open-immo-to-area-butler.dto';
 import { GeoJsonPoint } from '../shared/types/geo-json';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
-import { ApiOnOfficeEstateMarketTypesEnum } from '@area-butler-types/on-office';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { PlaceService } from '../place/place.service';
 
 interface IListingData {
   chunkSize: number;
   errorLineNumbers: number[];
-  fileFormat: CsvFileFormatsEnum;
-  fromLine: number;
-  realEstateChunkIndex: number;
-  realEstateData: unknown;
+  estateDataChunkIndex: number;
+  fileFormat: CsvFileFormatEnum;
+  realEstateData: object;
   realEstateIndex: number;
-  user: UserDocument;
 }
-
-type TListingDocumentData = [
-  name: string,
-  address: string,
-  minPriceRaw: string,
-  maxPriceRaw: string,
-  realEstateSizeInSquareMeters: string,
-  propertySizeInSquareMeters: string,
-  energyEfficiency: ApiEnergyEfficiency,
-  externalUrl: string,
-  status: string,
-  externalId: string,
-  coordinates: ApiCoordinates,
-];
 
 @Injectable()
 export class RealEstateListingImportService {
@@ -68,52 +38,34 @@ export class RealEstateListingImportService {
   constructor(
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
-    private readonly realEstateListingService: RealEstateListingService,
-    private readonly placeService: PlaceService,
     private readonly locationIndexService: LocationIndexService,
+    private readonly placeService: PlaceService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
-  // TODO should be refactored and simplified
   async importCsvFile(
     user: UserDocument,
-    fileFormat: CsvFileFormatsEnum,
+    fileFormat: CsvFileFormatEnum,
     file: Buffer,
-    fromLine?: number, // 2 to skip the column names
   ): Promise<number[]> {
-    // TODO implement automatic delimiter identification - there is a package for that
-    const delimiter = fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? ',' : ';';
     const chunkSize = 1000;
-    const resultFromLine =
-      fromLine || fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? 2 : 1;
-
-    const realEstateChunks = await this.processCsv(
-      file,
-      delimiter,
-      resultFromLine,
-      chunkSize,
-    );
-
-    const errorLineNumbers = [];
+    const estateDataChunks = await this.parseCsv(file, fileFormat, chunkSize);
+    const errorLineNumbers: number[] = [];
 
     const processedChunks = await Promise.allSettled(
-      realEstateChunks.map(async (realEstateChunk, realEstateChunkIndex) => {
+      estateDataChunks.map(async (estateDataChunk, estateDataChunkIndex) => {
         const result = await Promise.allSettled(
-          realEstateChunk.map((realEstateData, realEstateIndex) => {
+          estateDataChunk.map((realEstateData, realEstateIndex) => {
             const processData: IListingData = {
               chunkSize,
               errorLineNumbers,
+              estateDataChunkIndex,
               fileFormat,
-              realEstateChunkIndex,
               realEstateData,
               realEstateIndex,
-              user,
-              fromLine: resultFromLine,
             };
 
-            return resultFromLine === 1 &&
-              fileFormat === CsvFileFormatsEnum.PADERBORN
-              ? this.processObjectListingData(processData)
-              : this.processArrayListingData(processData);
+            return this.convertToRealEstate(processData);
           }),
         );
 
@@ -141,77 +93,16 @@ export class RealEstateListingImportService {
         let bulkWriteRecords;
 
         switch (fileFormat) {
-          case CsvFileFormatsEnum.AREA_BUTLER:
-          case CsvFileFormatsEnum.ON_OFFICE: {
+          case CsvFileFormatEnum.ON_OFFICE:
+          default: {
             bulkWriteRecords = processedChunk.value.map(
-              ([
-                name,
-                address,
-                minPriceRaw,
-                maxPriceRaw,
-                realEstateSizeInSquareMeters,
-                propertySizeInSquareMeters,
-                energyEfficiency,
-                externalUrl,
-                status,
-                externalId,
-                coordinates,
-              ]: TListingDocumentData) => {
-                const minPriceAmount = convertStringToNumber(minPriceRaw);
-                const maxPriceAmount = convertStringToNumber(maxPriceRaw);
+              ({ externalId, ...listingDocument }) => {
+                listingDocument.userId = user.id;
 
-                let minPrice = minPriceAmount
-                  ? { amount: minPriceAmount, currency: '€' }
-                  : undefined;
-                let maxPrice = maxPriceAmount
-                  ? { amount: maxPriceAmount, currency: '€' }
-                  : undefined;
-
-                if (minPriceAmount && !maxPriceAmount) {
-                  minPrice = undefined;
-                  maxPrice = { amount: minPriceAmount, currency: '€' };
-                }
-
-                // TODO change to plainToClass via the class-transformer
-                const listingDocument = {
-                  address,
-                  externalId,
-                  externalUrl,
-                  status,
-                  userId: user.id,
-                  name: name || address,
-                  characteristics: {
-                    realEstateSizeInSquareMeters: convertStringToNumber(
-                      realEstateSizeInSquareMeters,
-                    ),
-                    propertySizeInSquareMeters: convertStringToNumber(
-                      propertySizeInSquareMeters,
-                    ),
-                    energyEfficiency: Object.values(
-                      ApiEnergyEfficiency,
-                    ).includes(energyEfficiency)
-                      ? energyEfficiency
-                      : undefined,
-                    furnishing: [],
-                  },
-                  costStructure:
-                    minPrice || maxPrice
-                      ? {
-                          minPrice,
-                          price: maxPrice,
-                          type: ApiRealEstateCostType.SELL,
-                        }
-                      : undefined,
-                  location: {
-                    type: 'Point',
-                    coordinates: [coordinates.lat, coordinates.lng],
-                  },
-                } as IApiRealEstateListingSchema;
-
-                return listingDocument.externalId
+                return externalId
                   ? {
                       updateOne: {
-                        filter: { externalId: listingDocument.externalId },
+                        filter: { externalId },
                         update: listingDocument,
                         upsert: true,
                       },
@@ -223,27 +114,6 @@ export class RealEstateListingImportService {
                     };
               },
             );
-
-            break;
-          }
-
-          case CsvFileFormatsEnum.PADERBORN:
-          default: {
-            bulkWriteRecords = processedChunk.value.map((listingDocument) => {
-              return listingDocument.externalId
-                ? {
-                    updateOne: {
-                      filter: { externalId: listingDocument.externalId },
-                      update: listingDocument,
-                      upsert: true,
-                    },
-                  }
-                : {
-                    insertOne: {
-                      document: listingDocument,
-                    },
-                  };
-            });
           }
         }
 
@@ -299,31 +169,34 @@ export class RealEstateListingImportService {
     );
   }
 
-  private async processCsv(
+  private async parseCsv(
     csvFile: Buffer,
-    delimiter = ',',
-    fromLine = 2, // to skip the column names
+    fileFormat: CsvFileFormatEnum,
     chunkSize = 1000,
-  ): Promise<Array<unknown[]>> {
-    const records: Array<unknown[]> = [[]];
+  ): Promise<Array<object[]>> {
+    let delimiter: string;
+
+    switch (fileFormat) {
+      case CsvFileFormatEnum.ON_OFFICE:
+      default: {
+        delimiter = ';';
+      }
+    }
+
+    const records: Array<object[]> = [[]];
 
     const parser = parseCsv(csvFile, {
       delimiter,
-      fromLine,
-      columns:
-        fromLine === 1 &&
-        ((columnNames) =>
-          columnNames.map((columnName) =>
-            replaceUmlautWithEnglish(
-              columnName.toLowerCase().replace(/ /g, '_'),
-            ),
-          )),
+      columns: (columnNames) =>
+        columnNames.map((columnName) =>
+          replaceUmlaut(columnName.toLowerCase().replace(/ /g, '_')),
+        ),
     });
 
     let i = 0;
 
     for await (const record of parser) {
-      if (chunkSize > 0 && records[i].length === chunkSize) {
+      if (records[i].length === chunkSize) {
         i += 1;
         records[i] = [];
       }
@@ -334,234 +207,107 @@ export class RealEstateListingImportService {
     return records;
   }
 
-  // TODO completely remove after refactoring
-  private async processArrayListingData({
+  private async convertToRealEstate({
     chunkSize,
     errorLineNumbers,
+    estateDataChunkIndex,
     fileFormat,
-    fromLine,
-    realEstateChunkIndex,
     realEstateData,
     realEstateIndex,
-    user,
-  }: IListingData): Promise<TListingDocumentData | []> {
-    switch (fileFormat) {
-      // TODO refactor to the usage of 'ApiOnOfficeToAreaButlerDto'
-      case CsvFileFormatsEnum.ON_OFFICE: {
-        const [
-          country,
-          externalId,
-          houseNumber = '',
-          locality,
-          name,
-          price,
-          propertySizeInSquareMeters,
-          realEstateSizeInSquareMeters,
-          status,
-          street,
-          zipCode,
-        ] = realEstateData as string[];
+  }: IListingData): Promise<ApiOnOfficeToAreaButlerDto> {
+    const resultEstateData: { [key: string]: any } = {
+      ...realEstateData,
+    };
 
-        const processedHouseNumber = houseNumber.match(
+    let externalId: string;
+    let address: string;
+
+    switch (fileFormat) {
+      case CsvFileFormatEnum.ON_OFFICE:
+      default: {
+        externalId = resultEstateData.datensatznr;
+
+        if (externalId) {
+          resultEstateData.externalId = externalId;
+        }
+
+        const {
+          strasse: street,
+          hausnummer: houseNumber,
+          plz: zipCode,
+          ort: city,
+          land: country,
+        } = resultEstateData;
+
+        if (!street || !city) {
+          errorLineNumbers.push(
+            (estateDataChunkIndex > 0 ? estateDataChunkIndex * chunkSize : 0) +
+              realEstateIndex +
+              2,
+          );
+
+          return;
+        }
+
+        const resultHouseNumber = houseNumber?.match(
           new RegExp(
             `^\\d+\\s?[a-zA-Z0-9${Object.keys(umlautMap).join('')}]?$`,
             'g',
           ),
         );
 
-        if (
-          checkAnyStringIsEmpty(street, zipCode, locality) ||
-          !processedHouseNumber
-        ) {
-          errorLineNumbers.push(
-            (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
-              realEstateIndex +
-              1 +
-              (fromLine - 1),
-          );
+        address = resultHouseNumber
+          ? `${street} ${resultHouseNumber[0]}`
+          : `${street}`;
 
-          return [];
+        address += ', ';
+
+        if (zipCode) {
+          address += `${zipCode} `;
         }
 
-        const address = `${street} ${processedHouseNumber[0]}, ${zipCode} ${locality}, ${country}`;
+        address += city;
 
-        const place = await this.placeService.fetchPlace({
-          isNotLimitCountries: true,
-          location: address,
-        });
-
-        const coordinates = place?.geometry?.location;
-
-        if (coordinates) {
-          return [
-            name,
-            address,
-            undefined,
-            price,
-            realEstateSizeInSquareMeters,
-            propertySizeInSquareMeters,
-            undefined,
-            undefined,
-            this.convertRealEstateStatus(status),
-            externalId,
-            coordinates,
-          ];
+        if (country) {
+          address += `, ${country}`;
         }
-
-        errorLineNumbers.push(
-          (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
-            realEstateIndex +
-            1 +
-            (fromLine - 1),
-        );
-
-        return [];
       }
-
-      default: {
-        const [name, address, ...otherParams] = realEstateData as string[];
-
-        if (checkAnyStringIsEmpty(address)) {
-          errorLineNumbers.push(
-            (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
-              realEstateIndex +
-              1 +
-              (fromLine - 1),
-          );
-
-          return [];
-        }
-
-        const place = await this.placeService.fetchPlace({
-          isNotLimitCountries: true,
-          location: address,
-        });
-
-        const coordinates = place?.geometry?.location;
-
-        if (coordinates) {
-          return [
-            name,
-            address,
-            ...otherParams,
-            undefined,
-            undefined,
-            coordinates,
-          ] as TListingDocumentData;
-        }
-
-        errorLineNumbers.push(
-          (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
-            realEstateIndex +
-            1 +
-            (fromLine - 1),
-        );
-
-        return [];
-      }
-    }
-  }
-
-  private async processObjectListingData({
-    chunkSize,
-    errorLineNumbers,
-    fileFormat,
-    fromLine,
-    realEstateChunkIndex,
-    realEstateData,
-    realEstateIndex,
-    user,
-  }: IListingData): Promise<ApiOnOfficeToAreaButlerDto> {
-    // TODO change to 'switch' in the future and change PADERBORN to ON_OFFICE
-    if (fileFormat !== CsvFileFormatsEnum.PADERBORN) {
-      return;
-    }
-
-    const {
-      strasse: street,
-      hausnummer: houseNumber,
-      plz: zipCode,
-      ort: city,
-      land: country,
-    } = realEstateData as { [key: string]: string };
-
-    if (!street || !city) {
-      return;
-    }
-
-    const resultHouseNumber = houseNumber?.match(
-      new RegExp(
-        `^\\d+\\s?[a-zA-Z0-9${Object.keys(umlautMap).join('')}]?$`,
-        'g',
-      ),
-    );
-
-    let locationAddress = resultHouseNumber
-      ? `${street} ${resultHouseNumber[0]}`
-      : `${street}`;
-
-    locationAddress += ', ';
-
-    if (zipCode) {
-      locationAddress += `${zipCode} `;
-    }
-
-    locationAddress += city;
-
-    if (country) {
-      locationAddress += `, ${country}`;
     }
 
     const place = await this.placeService.fetchPlace({
       isNotLimitCountries: true,
-      location: locationAddress,
+      location: address,
     });
 
     if (!place) {
       this.logger.debug(
-        this.processObjectListingData.name,
-        realEstateData,
-        JSON.stringify(realEstateData),
+        this.convertToRealEstate.name,
+        resultEstateData,
+        JSON.stringify(resultEstateData),
       );
 
       errorLineNumbers.push(
-        (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
+        (estateDataChunkIndex > 0 ? estateDataChunkIndex * chunkSize : 0) +
           realEstateIndex +
-          1 +
-          (fromLine - 1),
+          2,
       );
 
-      this.logger.error(this.processObjectListingData.name, locationAddress);
+      this.logger.error(this.convertToRealEstate.name, address);
       return;
     }
 
-    // TODO refactor, 'realEstateData' should be a new object to avoid side effects
-    Object.assign(realEstateData, {
-      address: locationAddress,
+    Object.assign(resultEstateData, {
+      address,
       location: {
         type: 'Point',
         coordinates: [place.geometry.location.lat, place.geometry.location.lng],
       } as GeoJsonPoint,
-      userId: user.id,
     });
 
-    return plainToInstance(ApiOnOfficeToAreaButlerDto, realEstateData, {
+    return plainToInstance(ApiOnOfficeToAreaButlerDto, resultEstateData, {
       excludeExtraneousValues: true,
       exposeUnsetFields: false,
     });
-  }
-
-  // TODO remove after refactoring
-  private convertRealEstateStatus(status: string): string {
-    switch (status.toUpperCase()) {
-      case ApiOnOfficeEstateMarketTypesEnum.MIETE: {
-        return ApiRealEstateStatusEnum.FOR_RENT;
-      }
-
-      case ApiOnOfficeEstateMarketTypesEnum.KAUF: {
-        return ApiRealEstateStatusEnum.FOR_SALE;
-      }
-    }
   }
 
   private async setAddressAndCoordinates(
