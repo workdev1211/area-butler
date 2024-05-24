@@ -8,6 +8,9 @@ import {
 import { NavLink } from "react-router-dom";
 import { useAuth0, User } from "@auth0/auth0-react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./Nav.scss";
 import Logo from "assets/img/logo.svg";
 import useOnClickOutside from "../hooks/onclickoutside";
@@ -16,6 +19,7 @@ import LoginButton from "../components/LoginButton";
 import { UserContext } from "../context/UserContext";
 
 const Nav: FunctionComponent = () => {
+  const { t } = useTranslation()
   const showNavBar = !RegExp(/questionnaire.+/).test(window.location.pathname);
 
   const [currentUser, setCurrentUser] = useState<User>();
@@ -62,7 +66,7 @@ const Nav: FunctionComponent = () => {
               setMobileMenuOpen(!mobileMenuOpen);
             }}
           >
-            <span className="sr-only">Menü</span>
+            <span className="sr-only">{t(IntlKeys.nav.menu)}</span>
             <svg
               className="block h-6 w-6"
               xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +125,7 @@ const Nav: FunctionComponent = () => {
                   exact={true}
                   aria-current="page"
                 >
-                  Umgebungsanalyse
+                  {t(IntlKeys.nav.environmentalAnalysis)}
                 </NavLink>
                 <Authenticated>
                   <NavLink
@@ -129,21 +133,21 @@ const Nav: FunctionComponent = () => {
                     className="nav-link"
                     aria-current="page"
                   >
-                    Meine Immobilien
+                    {t(IntlKeys.nav.realEstates)}
                   </NavLink>
                   <NavLink
                     to="/potential-customers"
                     className="nav-link"
                     aria-current="page"
                   >
-                    Meine Zielgruppen
+                    {t(IntlKeys.nav.potentialCustomers)}
                   </NavLink>
                   <NavLink
                     to="/map-snapshots"
                     className="nav-link"
                     aria-current="page"
                   >
-                    Meine Karten
+                    {t(IntlKeys.nav.cards)}
                   </NavLink>
                 </Authenticated>
               </div>
@@ -195,7 +199,7 @@ const Nav: FunctionComponent = () => {
                 }}
                 id="user-menu-item-1"
               >
-                Profil
+                {t(IntlKeys.nav.profile)}
               </NavLink>
               <button
                 onClick={() => {
@@ -209,7 +213,7 @@ const Nav: FunctionComponent = () => {
                 role="menuitem"
                 id="user-menu-item-2"
               >
-                Abmelden
+                {t(IntlKeys.nav.logout)}
               </button>
             </div>
           </div>
@@ -225,7 +229,7 @@ const Nav: FunctionComponent = () => {
             exact={true}
             aria-current="page"
           >
-            Umgebungsanalyse
+            {t(IntlKeys.nav.environmentalAnalysis)}
           </NavLink>
           <Authenticated>
             <NavLink
@@ -233,21 +237,21 @@ const Nav: FunctionComponent = () => {
               className="nav-mobile-menu-link"
               aria-current="page"
             >
-              Meine Immobilien
+              {t(IntlKeys.nav.realEstates)}
             </NavLink>
             <NavLink
               to="/potential-customers"
               className="nav-mobile-menu-link"
               aria-current="page"
             >
-              Meine Zielgruppen
+              {t(IntlKeys.nav.potentialCustomers)}
             </NavLink>
             <NavLink
               to="/map-snapshots"
               className="nav-mobile-menu-link"
               aria-current="page"
             >
-              Meine Karten
+              {t(IntlKeys.nav.cards)}
             </NavLink>
           </Authenticated>
           {!isAuthenticated && <LoginButton />}

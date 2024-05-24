@@ -20,6 +20,8 @@ import EmbedContainer from "./embed/EmbedContainer";
 import { SearchContextProvider } from "./context/SearchContext";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 
+import 'i18n/config';
+
 render(
   <StrictMode>
     <RealEstateContextProvider>

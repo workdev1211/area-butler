@@ -2,6 +2,9 @@ import { FunctionComponent, ReactNode, useState } from "react";
 
 import "./MapMenu.scss";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   EntityGroup,
   IEditorTabProps,
@@ -88,6 +91,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   editorTabProps,
   exportTabProps,
 }) => {
+  const { t } = useTranslation();
   const { unlockProduct } = useIntegrationTools();
 
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
@@ -157,7 +161,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               data-tour="icon-karte"
             >
               <img src={mapIcon} alt="map-icon" />
-              <div>Karte</div>
+              <div>{t(IntlKeys.snapshotEditor.map)}</div>
             </div>
             <div
               className={`tab-item${isEditorTab ? " tab-item-active" : ""}`}
@@ -167,7 +171,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               data-tour="icon-editor"
             >
               <img src={editorIcon} alt="editor-icon" />
-              <div>Editor</div>
+              <div>{t(IntlKeys.snapshotEditor.editor)}</div>
             </div>
             <div
               className={`tab-item${isExportTab ? " tab-item-active" : ""}`}
@@ -177,7 +181,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               data-tour="icon-exporte"
             >
               <img src={downloadIcon} alt="export-icon" />
-              <div>Exporte</div>
+              <div>{t(IntlKeys.snapshotEditor.export)}</div>
             </div>
           </div>
         </div>
@@ -201,7 +205,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
           <div className="map-menu-header-text">
             {isShownAddress
               ? searchAddress
-              : "Genaue Adresse nicht veröffentlicht"}
+              : t(IntlKeys.snapshotEditor.addressNotPublished)}
           </div>
         </button>
       </div>

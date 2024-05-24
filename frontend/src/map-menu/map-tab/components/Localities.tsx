@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   EntityGroup,
   ResultEntity,
@@ -52,6 +55,7 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
   backgroundColor,
   userMenuPoiIcons,
 }) => {
+  const { t } = useTranslation();
   const {
     userState: { user },
   } = useContext(UserContext);
@@ -83,8 +87,8 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
         <div className="collapse-title-container">
           <img src={localitiesIcon} alt="localities-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">Points-of-Interest</div>
-            <div className="collapse-title-text-2">Was ist in der Nähe?</div>
+            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.pointsOfInterest)}</div>
+            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.whatsNearby)}</div>
           </div>
         </div>
         <label className="cursor-pointer label justify-start pl-0">

@@ -28,6 +28,8 @@ import { IntegrationTypesEnum } from "../../shared/types/integration";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { CachingContextProvider } from "./context/CachingContext";
 
+import 'i18n/config';
+
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 fetch(`${baseUrl}/api/config`).then(async (result) => {

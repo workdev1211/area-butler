@@ -28,6 +28,8 @@ import { PotentialCustomerContextProvider } from "./context/PotentialCustomerCon
 import { CachingContextProvider } from "./context/CachingContext";
 import PropstackContainer from "./propstack/PropstackContainer";
 
+import 'i18n/config';
+
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 fetch(`${baseUrl}/api/config`).then(async (result): Promise<void> => {

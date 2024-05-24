@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "environmentalAnalysis": "Umgebungsanalyse",
+    "realEstates": "Meine Immobilien",
+    "potentialCustomers": "Meine Zielgruppen",
+    "cards": "Meine Karten",
+    "profile": "Profil",
+    "logout": "Abmelden",
+    "menu": "Menü"
+  },
+  "snapshotEditor": {
+    "map": "Karte",
+    "editor": "Editor",
+    "export": "Exporte",
+    "addressNotPublished": "Genaue Adresse nicht veröffentlicht",
+    "pointsOfInterest": "Points-of-Interest",
+    "whatsNearby": "Was ist in der Nähe?"
+  }
+}
