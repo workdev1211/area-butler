@@ -117,6 +117,7 @@ export class PropstackService {
       accessToken,
       integrationUserId,
       integrationType: this.integrationType,
+      isContingentProvided: true,
       parameters: { apiKey, shopId, ...connectData },
       isParent: true,
     });
