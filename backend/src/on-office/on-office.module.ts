@@ -12,6 +12,7 @@ import {
 } from './schema/on-office-transaction.schema';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 import { PlaceModule } from '../place/place.module';
+import { OnOfficeWebhookController } from './on-office-webhook.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { PlaceModule } from '../place/place.module';
       { name: OnOfficeTransaction.name, schema: OnOfficeTransactionSchema },
     ]),
   ],
-  controllers: [OnOfficeController],
+  controllers: [OnOfficeController, OnOfficeWebhookController],
   providers: [OnOfficeService],
 })
 export class OnOfficeModule {}
