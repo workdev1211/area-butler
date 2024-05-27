@@ -1,30 +1,34 @@
-import { FunctionComponent, ReactNode } from "react";
+import { FC, ReactNode } from "react";
 
 import "./defaultLayout.scss";
+
 import caretDown from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import Timeline from "./Timeline";
+import { Loading } from "../components/Loading";
 
-interface DefaultLayoutProps {
-  withHorizontalPadding: boolean;
+interface IDefaultLayoutProps {
   children: ReactNode;
-  title?: string;
-  actionsTop?: ReactNode;
-  isOverriddenActionsTop?: boolean;
+  withHorizontalPadding: boolean;
   actionsBottom?: ReactNode[];
+  actionsTop?: ReactNode;
+  isContentLoaded?: boolean;
+  isOverriddenActionsTop?: boolean;
   timelineStep?: number;
+  title?: string;
 }
 
-const DefaultLayout: FunctionComponent<DefaultLayoutProps> = ({
+const DefaultLayout: FC<IDefaultLayoutProps> = ({
+  actionsBottom = [],
+  actionsTop,
+  children,
+  isContentLoaded = true,
+  isOverriddenActionsTop,
+  timelineStep,
   title,
   withHorizontalPadding,
-  children,
-  actionsTop,
-  isOverriddenActionsTop,
-  actionsBottom = [],
-  timelineStep,
 }) => {
   return (
-    <div className="default-layout">
+    <div className={`default-layout ${isContentLoaded ? "" : "flex-1"}`}>
       {(title || timelineStep || actionsTop) && (
         <div className="default-layout-header">
           {title && !timelineStep && <h1>{title}</h1>}
@@ -63,11 +67,11 @@ const DefaultLayout: FunctionComponent<DefaultLayoutProps> = ({
       <div
         className={`default-layout-content ${
           withHorizontalPadding ? "padding" : ""
-        }`}
+        } ${isContentLoaded ? "" : "flex flex-1 justify-center"}`}
       >
-        {children}
+        {isContentLoaded ? children : <Loading />}
       </div>
-      {actionsBottom.length > 0 && (
+      {actionsBottom.length > 0 && isContentLoaded && (
         <div className="action-bottom">{...actionsBottom}</div>
       )}
     </div>
