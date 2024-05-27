@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import { FormModalData } from "components/FormModal";
@@ -8,7 +8,7 @@ import {
   IApiRealEstateListingSchema,
 } from "../../../shared/types/real-estate";
 import {
-  RealEstateActionTypes,
+  RealEstateActionTypeEnum,
   RealEstateContext,
 } from "../context/RealEstateContext";
 import { useRealEstateData } from "../hooks/realestatedata";
@@ -18,9 +18,7 @@ interface IRealEstateIntFormHandlerProps extends FormModalData {
   realEstate: ApiRealEstateListing;
 }
 
-export const RealEstateIntFormHandler: FunctionComponent<
-  IRealEstateIntFormHandlerProps
-> = ({
+export const RealEstateIntFormHandler: FC<IRealEstateIntFormHandlerProps> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
@@ -43,7 +41,7 @@ export const RealEstateIntFormHandler: FunctionComponent<
       );
 
       realEstateDispatch({
-        type: RealEstateActionTypes.PUT_REAL_ESTATE,
+        type: RealEstateActionTypeEnum.PUT_REAL_ESTATE,
         payload: updatedRealEstate,
       });
 

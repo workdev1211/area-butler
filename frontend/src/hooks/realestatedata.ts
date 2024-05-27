@@ -8,7 +8,7 @@ import {
   IApiRealEstStatusByUser,
 } from "../../../shared/types/real-estate";
 import {
-  RealEstateActionTypes,
+  RealEstateActionTypeEnum,
   RealEstateContext,
 } from "../context/RealEstateContext";
 import { ConfigContext } from "../context/ConfigContext";
@@ -19,7 +19,10 @@ import {
 
 export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
-  const { realEstateDispatch } = useContext(RealEstateContext);
+  const {
+    realEstateState: { isListingsFetched, listings },
+    realEstateDispatch,
+  } = useContext(RealEstateContext);
   const { post, get, put } = useHttp();
 
   const isIntegration = !!integrationType;
@@ -38,6 +41,10 @@ export const useRealEstateData = () => {
   const fetchRealEstates = async (
     statuses?: IApiRealEstateStatuses
   ): Promise<ApiRealEstateListing[]> => {
+    if (isListingsFetched) {
+      return listings;
+    }
+
     let url = isIntegration
       ? "/api/real-estate-listing-int/listings"
       : "/api/real-estate-listing/listings";
@@ -51,7 +58,7 @@ export const useRealEstateData = () => {
     const realEstates = (await get<ApiRealEstateListing[]>(url)).data;
 
     realEstateDispatch({
-      type: RealEstateActionTypes.SET_REAL_ESTATES,
+      type: RealEstateActionTypeEnum.SET_REAL_ESTATES,
       payload: realEstates,
     });
 

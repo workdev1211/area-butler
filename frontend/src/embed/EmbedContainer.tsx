@@ -14,7 +14,7 @@ import {
 import SearchResultContainer from "../components/search-result-container/SearchResultContainer";
 import { ICurrentMapRef } from "../shared/search-result.types";
 import {
-  RealEstateActionTypes,
+  RealEstateActionTypeEnum,
   RealEstateContext,
 } from "../context/RealEstateContext";
 import {
@@ -186,7 +186,7 @@ const EmbedContainer: FC = () => {
 
     if (realEstates?.length) {
       realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
+        type: RealEstateActionTypeEnum.SET_REAL_ESTATES,
         payload: realEstates,
       });
     }

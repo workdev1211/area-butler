@@ -1,25 +1,26 @@
+import { FC, useContext } from "react";
+
 import { FormModalData } from "components/FormModal";
 import { useHttp } from "hooks/http";
-import React from "react";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
-  RealEstateActionTypes,
-  RealEstateContext
+  RealEstateActionTypeEnum,
+  RealEstateContext,
 } from "../context/RealEstateContext";
 import { toastSuccess } from "../shared/shared.functions";
 
-export interface RealEstateDeleteHandlerProps extends FormModalData {
+interface IRealEstateDeleteHandlerProps extends FormModalData {
   realEstate: Partial<ApiRealEstateListing>;
 }
 
-export const RealEstateDeleteHandler: React.FunctionComponent<RealEstateDeleteHandlerProps> = ({
+export const RealEstateDeleteHandler: FC<IRealEstateDeleteHandlerProps> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
-  realEstate
+  realEstate,
 }) => {
   const { deleteRequest } = useHttp();
-  const { realEstateDispatch } = React.useContext(RealEstateContext);
+  const { realEstateDispatch } = useContext(RealEstateContext);
 
   const onSubmit = async (event: any) => {
     event.preventDefault();
@@ -29,8 +30,8 @@ export const RealEstateDeleteHandler: React.FunctionComponent<RealEstateDeleteHa
       if (!!realEstate.id) {
         await deleteRequest(`/api/real-estate-listing/${realEstate.id}`);
         realEstateDispatch({
-          type: RealEstateActionTypes.DELETE_REAL_ESTATE,
-          payload: realEstate
+          type: RealEstateActionTypeEnum.DELETE_REAL_ESTATE,
+          payload: realEstate,
         });
       }
       toastSuccess("Objekt erfolgreich gelöscht!");

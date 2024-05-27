@@ -1,41 +1,43 @@
-import { FunctionComponent, useReducer, Dispatch, createContext } from "react";
+import { FC, useReducer, Dispatch, createContext } from "react";
 
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
-// TODO ADD A FLAG WHETHER OR NOT REAL ESTATES HAVE BEEN RETRIEVED
-
-export interface RealEstateState {
+export interface IRealEstateState {
+  isListingsFetched: boolean;
   listings: ApiRealEstateListing[];
 }
 
-export const initialState: RealEstateState = {
+export const initialState: IRealEstateState = {
+  isListingsFetched: false,
   listings: [],
 };
 
-export enum RealEstateActionTypes {
+export enum RealEstateActionTypeEnum {
   SET_REAL_ESTATES = "SET_REAL_ESTATES",
   PUT_REAL_ESTATE = "PUT_REAL_ESTATE",
-  DELETE_REAL_ESTATE = "DELETE_REAL",
+  DELETE_REAL_ESTATE = "DELETE_REAL_ESTATE",
+  SET_ESTATES_FETCHED = "SET_ESTATES_FETCHED",
 }
 
-type RealEstateActionsPayload = {
-  [RealEstateActionTypes.SET_REAL_ESTATES]: ApiRealEstateListing[];
-  [RealEstateActionTypes.PUT_REAL_ESTATE]: ApiRealEstateListing;
-  [RealEstateActionTypes.DELETE_REAL_ESTATE]: Partial<ApiRealEstateListing>;
+type TRealEstateActionsPayload = {
+  [RealEstateActionTypeEnum.SET_REAL_ESTATES]: ApiRealEstateListing[];
+  [RealEstateActionTypeEnum.PUT_REAL_ESTATE]: ApiRealEstateListing;
+  [RealEstateActionTypeEnum.DELETE_REAL_ESTATE]: Partial<ApiRealEstateListing>;
+  [RealEstateActionTypeEnum.SET_ESTATES_FETCHED]: boolean;
 };
 
 export type RealEstateActions =
-  ActionMap<RealEstateActionsPayload>[keyof ActionMap<RealEstateActionsPayload>];
+  ActionMap<TRealEstateActionsPayload>[keyof ActionMap<TRealEstateActionsPayload>];
 
 const realEstateReducer = (
-  state: RealEstateState,
+  state: IRealEstateState,
   action: RealEstateActions
-): RealEstateState => {
+): IRealEstateState => {
   switch (action.type) {
-    case RealEstateActionTypes.SET_REAL_ESTATES: {
-      return { ...state, listings: action.payload };
+    case RealEstateActionTypeEnum.SET_REAL_ESTATES: {
+      return { ...state, isListingsFetched: true, listings: action.payload };
     }
-    case RealEstateActionTypes.PUT_REAL_ESTATE: {
+    case RealEstateActionTypeEnum.PUT_REAL_ESTATE: {
       const listing = action.payload as ApiRealEstateListing;
       const listings = [...state.listings];
       const listingIndex = listings.map((l) => l.id).indexOf(listing.id);
@@ -48,11 +50,14 @@ const realEstateReducer = (
 
       return { ...state, listings };
     }
-    case RealEstateActionTypes.DELETE_REAL_ESTATE: {
+    case RealEstateActionTypeEnum.DELETE_REAL_ESTATE: {
       const listing = action.payload as ApiRealEstateListing;
       const listings = [...state.listings].filter((l) => l.id !== listing.id);
 
       return { ...state, listings };
+    }
+    case RealEstateActionTypeEnum.SET_ESTATES_FETCHED: {
+      return { ...state, isListingsFetched: action.payload };
     }
     default:
       return state;
@@ -60,14 +65,14 @@ const realEstateReducer = (
 };
 
 export const RealEstateContext = createContext<{
-  realEstateState: RealEstateState;
+  realEstateState: IRealEstateState;
   realEstateDispatch: Dispatch<RealEstateActions>;
 }>({
   realEstateState: initialState,
   realEstateDispatch: () => undefined,
 });
 
-export const RealEstateContextProvider: FunctionComponent = ({ children }) => {
+export const RealEstateContextProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(realEstateReducer, initialState);
 
   return (

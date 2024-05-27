@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
@@ -10,6 +10,7 @@ import { RealEstateFormHandler } from "../real-estates/RealEstateFormHandler";
 import { SearchContext } from "context/SearchContext";
 import RealEstateIntFormHandler from "../real-estates/RealEstateIntFormHandler";
 import { useTools } from "../hooks/tools";
+import { useRealEstateData } from "../hooks/realestatedata";
 
 interface IRealEstatePageRouterProps {
   realEstateId: string;
@@ -19,14 +20,17 @@ const defaultRealEstate: Partial<ApiRealEstateListing> = {
   name: "Neues Objekt",
 };
 
-const RealEstatePage: FunctionComponent = () => {
+const RealEstatePage: FC = () => {
   const {
     searchContextState: { storedContextState },
   } = useContext(SearchContext);
-  const { realEstateState } = useContext(RealEstateContext);
+  const {
+    realEstateState: { isListingsFetched, listings },
+  } = useContext(RealEstateContext);
 
   const { realEstateId } = useParams<IRealEstatePageRouterProps>();
   const { getActualUser } = useTools();
+  const { fetchRealEstates } = useRealEstateData();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -35,6 +39,14 @@ const RealEstatePage: FunctionComponent = () => {
 
   const isNewRealEstate =
     realEstateId === "new" || realEstateId === "from-result";
+
+  useEffect(() => {
+    if (!isListingsFetched) {
+      void fetchRealEstates();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isListingsFetched]);
 
   let initialRealEstate = { ...defaultRealEstate };
 
@@ -47,9 +59,8 @@ const RealEstatePage: FunctionComponent = () => {
 
   const realEstate = isNewRealEstate
     ? initialRealEstate
-    : realEstateState.listings.find(
-        (e: ApiRealEstateListing) => e.id === realEstateId
-      ) ?? initialRealEstate;
+    : listings.find((e: ApiRealEstateListing) => e.id === realEstateId) ??
+      initialRealEstate;
 
   const formId = `form-${uuid()}`;
 
@@ -63,7 +74,7 @@ const RealEstatePage: FunctionComponent = () => {
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
-  const SubmitButton: FunctionComponent = () => {
+  const SubmitButton: FC = () => {
     const classes = `${baseClasses} ml-auto`;
 
     return (

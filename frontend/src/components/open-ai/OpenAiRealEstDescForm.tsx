@@ -9,7 +9,7 @@ import {
   OpenAiRealEstTypesEnum,
 } from "../../../../shared/types/open-ai";
 import {
-  RealEstateActionTypes,
+  RealEstateActionTypeEnum,
   RealEstateContext,
 } from "../../context/RealEstateContext";
 import { TFormikInnerRef } from "../../shared/shared.types";
@@ -73,7 +73,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
   useEffect(() => {
     if (isIntegration) {
       realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
+        type: RealEstateActionTypeEnum.SET_REAL_ESTATES,
         payload: [realEstateListing!],
       });
 

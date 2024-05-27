@@ -1,4 +1,4 @@
-import { ChangeEvent, FunctionComponent, useEffect, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -20,13 +20,13 @@ import LocationAutocomplete from "../components/LocationAutocomplete";
 import CustomTextSelect from "../components/inputs/formik/CustomTextSelect";
 import { ISelectTextValue } from "../../../shared/types/types";
 
-export interface RealEstateFormProps {
+interface IRealEstateFormProps {
   formId: string;
   onSubmit: (values: any) => any;
   realEstate: Partial<ApiRealEstateListing>;
 }
 
-export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
+export const RealEstateForm: FC<IRealEstateFormProps> = ({
   realEstate,
   onSubmit,
   formId,
