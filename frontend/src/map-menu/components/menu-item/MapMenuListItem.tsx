@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   EntityGroup,
   ResultEntity,
@@ -41,6 +44,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
   transitRoutes,
   toggleTransitRoute,
 }) => {
+  const { t } = useTranslation();
   const [isListOpen, setIsListOpen] = useState(false);
   const {
     searchContextState: { responseConfig: config },
@@ -85,7 +89,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
             </div>
             {entityGroup.title === realEstateListingsTitle
               ? realEstateListingsTitleEmbed
-              : entityGroup.title}{" "}
+              : t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entityGroup.title])}{" "}
             [{entityGroup.items.length}]
           </div>
           <label className="cursor-pointer label justify-start pl-0">

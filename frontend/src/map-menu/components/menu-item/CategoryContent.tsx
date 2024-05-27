@@ -1,11 +1,14 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./CategoryContent.scss";
 
-import distanceIcon from "../../../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
-import walkIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import bicycleIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
-import carIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import distanceIcon from "assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
+import walkIcon from "assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bicycleIcon from "assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import {
   EntityGroup,
   ResultEntity,
@@ -38,6 +41,7 @@ const CategoryContent: FunctionComponent<ICategoryContentProps> = ({
   toggleTransitRoute,
   isListOpen = false,
 }) => {
+  const { t } = useTranslation();
   const [localityPagination, setLocalityPagination] = useState<number>(5);
   const { searchContextDispatch } = useContext(SearchContext);
 
@@ -63,19 +67,19 @@ const CategoryContent: FunctionComponent<ICategoryContentProps> = ({
       <div className="mean-items">
         <div>
           <img src={distanceIcon} alt="icon-distance" />
-          Luftlinie
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.distance)}
         </div>
         <div>
           <img src={walkIcon} alt="icon-walk" />
-          Fußweg
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.footpath)}
         </div>
         <div>
           <img src={bicycleIcon} alt="icon-bicycle" />
-          Fahrrad
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.bicycle)}
         </div>
         <div>
           <img src={carIcon} alt="icon-car" />
-          Auto
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.auto)}
         </div>
       </div>
       {isListOpen &&
@@ -111,7 +115,7 @@ const CategoryContent: FunctionComponent<ICategoryContentProps> = ({
             setLocalityPagination(localityPagination + 5);
           }}
         >
-          Mehr anzeigen
+          {t(IntlKeys.common.showMore)}
         </button>
       )}
     </div>

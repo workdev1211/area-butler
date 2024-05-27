@@ -1,5 +1,8 @@
 import { FunctionComponent, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import locationIndicesIcon from "../../../assets/icons/map-menu/11-lageindizes.svg";
 import LocationIndexTable from "./data/LocationIndexTable";
@@ -20,6 +23,7 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
   backgroundColor,
   locationIndexData,
 }) => {
+  const { t } = useTranslation();
   const [isLocationIndicesOpen, setIsLocationIndicesOpen] = useState(false);
 
   return (
@@ -41,17 +45,17 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
           <img src={locationIndicesIcon} alt="location-indices-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1 flex gap-2">
-              <span>Lageindizes</span>{" "}
+              <span>{t(IntlKeys.snapshotEditor.positionIndices.label)}</span>{" "}
               <span
                 className={`badge ${
                   isLocationIndicesOpen ? "badge-accent" : "badge-primary"
                 }`}
               >
-                NEU
+                {t(IntlKeys.common.new).toUpperCase()}
               </span>
             </div>
             <div className="collapse-title-text-2">
-              Die Nachbarschaft im Vergleich?
+              {t(IntlKeys.snapshotEditor.positionIndices.description)}
             </div>
           </div>
         </div>
@@ -66,7 +70,7 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
                   "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
               }}
             >
-              Lageindizes sind nicht verfügbar.
+              {t(IntlKeys.snapshotEditor.positionIndices.notAvailable)}
             </div>
           ) : (
             <LocationIndexTable locationIndexData={locationIndexData} />

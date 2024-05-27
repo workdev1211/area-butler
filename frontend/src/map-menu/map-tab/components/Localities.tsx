@@ -87,8 +87,8 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
         <div className="collapse-title-container">
           <img src={localitiesIcon} alt="localities-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.pointsOfInterest)}</div>
-            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.whatsNearby)}</div>
+            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.pointsOfInterest.label)}</div>
+            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.pointsOfInterest.description)}</div>
           </div>
         </div>
         <label className="cursor-pointer label justify-start pl-0">
@@ -156,11 +156,11 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                     ge.items.length &&
                     getCombinedOsmEntityTypes().some(
                       (oet) =>
-                        oet.label === ge.title && oet.category === category
+                        oet.name === ge.title && oet.category === category
                     )
                 ) && (
                   <li className="locality-option-heading" key={category}>
-                    <h4>{category}</h4>
+                    <h4>{t(IntlKeys.snapshotEditor.pointsOfInterest[category])}</h4>
                   </li>
                 )}
                 {groupedEntries
@@ -169,7 +169,7 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                       ge.items.length &&
                       getCombinedOsmEntityTypes().some(
                         (oet) =>
-                          oet.label === ge.title && oet.category === category
+                          oet.name === ge.title && oet.category === category
                       )
                   )
                   .map((ge, geIndex) => {

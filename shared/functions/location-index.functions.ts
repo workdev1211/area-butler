@@ -12,8 +12,7 @@ export const processLocationIndices = (
 ): TLocationIndexData => {
   return Object.keys(locationIndices).reduce<TLocationIndexData>(
     (result, propertyName) => {
-      const locationIndexName =
-        locationIndexNames[propertyName as LocIndexPropsEnum];
+      const locationIndexName = propertyName;
 
       const locationIndexValue = Math.round(
         locationIndices[propertyName as LocIndexPropsEnum] * 100

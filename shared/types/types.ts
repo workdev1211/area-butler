@@ -166,14 +166,14 @@ export interface ApiOsmLocation {
 }
 
 export enum ApiOsmEntityCategory {
-  TRAFFIC = "Verkehr",
-  SUPPLIES = "Nahversorgung",
-  EDUCATION = "Bildung",
-  LEISURE = "Freizeit",
-  SPORT = "Sport",
-  HEALTH = "Gesundheit",
-  INFRASTRUCTURE = "Infrastruktur",
-  TOURISM = "Tourismus",
+  TRAFFIC = "traffic",
+  SUPPLIES = "supplies",
+  EDUCATION = "education",
+  LEISURE = "leisure",
+  SPORT = "sport",
+  HEALTH = "health",
+  INFRASTRUCTURE = "infrastructure",
+  TOURISM = "tourism",
 }
 
 export interface ApiOsmEntity {

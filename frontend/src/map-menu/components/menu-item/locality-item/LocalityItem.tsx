@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./LocalityItem.scss";
 
 import {
@@ -202,14 +205,15 @@ export const PreferredLocationItemContent: FunctionComponent<{
 export const LocalityItemContent: FunctionComponent<{
   item: ResultEntity;
 }> = ({ item }) => {
+  const { t } = useTranslation();
   return (
     <div className="locality-item-content">
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">Luftlinie</span>
+        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.distance)}</span>
         <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
       </div>
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">Fußweg</span>
+        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.footpath)}</span>
         <span>
           {timeToHumanReadable(
             convertMetersToMinutes(
@@ -220,7 +224,7 @@ export const LocalityItemContent: FunctionComponent<{
         </span>
       </div>
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">Fahrrad</span>
+        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.bicycle)}</span>
         <span>
           {timeToHumanReadable(
             convertMetersToMinutes(
@@ -231,7 +235,7 @@ export const LocalityItemContent: FunctionComponent<{
         </span>
       </div>
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">Auto</span>
+        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.auto)}</span>
         <span>
           {timeToHumanReadable(
             convertMetersToMinutes(

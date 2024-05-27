@@ -1,6 +1,9 @@
 import { FunctionComponent } from "react";
 import { useHistory } from "react-router-dom";
 
+import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from 'react-i18next';
+
 import backIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 
 interface IBackButtonProps {
@@ -14,6 +17,7 @@ const BackButton: FunctionComponent<IBackButtonProps> = ({
   to,
   backgroundColor = "var(--primary-gradient)",
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
 
   return (
@@ -26,7 +30,7 @@ const BackButton: FunctionComponent<IBackButtonProps> = ({
         to ? history.push(to) : history.goBack();
       }}
     >
-      <img className="mr-1 -mt-0.5" src={backIcon} alt="icon-back" /> Zurück
+      <img className="mr-1 -mt-0.5" src={backIcon} alt="icon-back" /> {t(IntlKeys.common.back)}
     </button>
   );
 };

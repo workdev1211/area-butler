@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { Loading } from "../../../../components/Loading";
 import {
   LocIndexPropsEnum,
@@ -13,6 +16,7 @@ interface ILocationIndexTableProps {
 const LocationIndexTable: FunctionComponent<ILocationIndexTableProps> = ({
   locationIndexData,
 }) => {
+  const { t } = useTranslation();
   if (!locationIndexData) {
     return <Loading />;
   }
@@ -34,7 +38,7 @@ const LocationIndexTable: FunctionComponent<ILocationIndexTableProps> = ({
             key={indexKey}
           >
             <div className="pl-[10px] text-lg font-bold">
-              {locationIndexData[indexKey as LocIndexPropsEnum].name}
+              {t((IntlKeys.snapshotEditor.positionIndices as Record<string, string>)[locationIndexData[indexKey as LocIndexPropsEnum].name])}
             </div>
             <div
               className="text-lg text-white font-bold px-2"

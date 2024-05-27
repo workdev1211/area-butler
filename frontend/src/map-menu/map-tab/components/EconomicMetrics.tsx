@@ -1,10 +1,14 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from 'react-i18next';
+
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import economicMetricsIcon from "../../../assets/icons/map-menu/12-wirtschaftliche-kennzahlen.svg";
 import { SearchContext } from "../../../context/SearchContext";
 
 const EconomicMetrics: FunctionComponent = () => {
+  const { t } = useTranslation();
   const {
     searchContextState: { responseConfig: config },
   } = useContext(SearchContext);
@@ -33,10 +37,10 @@ const EconomicMetrics: FunctionComponent = () => {
           <img src={economicMetricsIcon} alt="economic-metrics-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
-              Wirtschaftliche Kennzahlen
+              {t(IntlKeys.snapshotEditor.economicMetric.label)}
             </div>
             <div className="collapse-title-text-2">
-              Wie stehen die Strukturdaten?
+              {t(IntlKeys.snapshotEditor.economicMetric.description)}
             </div>
           </div>
         </div>
@@ -49,10 +53,7 @@ const EconomicMetrics: FunctionComponent = () => {
               "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
           }}
         >
-          Gerne liefern wir tiefergehende Daten zu den Themen Arbeitskräfte,
-          Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro Kopf,
-          Gewerbesteuereinnahmen, Logistik-Attraktivität u.v.m. Sprechen Sie uns
-          hierzu einfach direkt an.
+          {t(IntlKeys.snapshotEditor.economicMetric.contactUs)}
         </div>
       </div>
     </div>

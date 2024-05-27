@@ -72,7 +72,7 @@ export const convertLocationToResEntity = (
   return {
     id: locationEntity.id,
     name: locationEntity.title,
-    label: locationEntity.label,
+    label: locationEntity.name,
     osmName: Object.values(OsmName).includes(
       locationEntity.type as unknown as OsmName
     )

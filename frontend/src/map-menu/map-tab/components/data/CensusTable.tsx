@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { ApiDataProvisionEnum } from "../../../../../../shared/types/types";
 import { Loading } from "../../../../components/Loading";
 import { TCensusData } from "../../../../../../shared/types/data-provision";
@@ -10,6 +13,7 @@ interface ICensusTableProps {
 }
 
 const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
+  const { t } = useTranslation();
   if (
     !censusData ||
     !Object.keys(censusData).some(
@@ -31,7 +35,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
           >
             <th>{censusValue.label}</th>
             <td>
-              <span className="font-bold italic">Adresse</span>
+              <span className="font-bold italic">{t(IntlKeys.snapshotEditor.socialDemographics.address)}</span>
               <br />
               <span className="font-bold italic">PLZ</span>
               <br />

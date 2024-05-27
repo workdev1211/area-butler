@@ -1,5 +1,8 @@
 import { FunctionComponent, ReactNode, useState } from "react";
 
+import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from 'react-i18next';
+
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import { ApiDataSource } from "../../../../../shared/types/subscription-plan";
 import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
@@ -62,6 +65,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
   censusData,
   federalElectionData,
 }) => {
+  const { t } = useTranslation();
   const { getActualUser } = useTools();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -101,9 +105,9 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
           <img src={socialDemographicsIcon} alt="social-demographics-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
-              Soziales und Demographie
+              {t(IntlKeys.snapshotEditor.socialDemographics.label)}
             </div>
-            <div className="collapse-title-text-2">Wer lebt hier?</div>
+            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.socialDemographics.description)}</div>
           </div>
         </div>
       </div>
@@ -112,7 +116,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
           <ul>
             <li className="locality-option-li" key="list-item-zensus">
               <MapMenuCollapsable
-                title="Zensus Daten"
+                title={t(IntlKeys.snapshotEditor.socialDemographics.censusData)}
                 icon={censusDataIcon}
                 subscriptionCheck={() => hasCensusData}
                 openUpgradeSubscriptionModal={() => {
@@ -127,7 +131,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
             </li>
             <li className="locality-option-li" key="list-item-btw">
               <MapMenuCollapsable
-                title="Bundestagswahlen"
+                title={t(IntlKeys.snapshotEditor.socialDemographics.federalElections)}
                 icon={federalElectionIcon}
                 subscriptionCheck={() => hasElectionData}
                 openUpgradeSubscriptionModal={() => {

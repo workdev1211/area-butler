@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   FederalElectionDistrict,
   FederalElectionResult,
@@ -13,6 +16,7 @@ interface IFederalElectionTableProps {
 const FederalElectionTable: FunctionComponent<IFederalElectionTableProps> = ({
   federalElectionData,
 }) => {
+  const { t } = useTranslation();
   if (!federalElectionData || !Object.keys(federalElectionData).length) {
     return <Loading />;
   }
@@ -21,7 +25,7 @@ const FederalElectionTable: FunctionComponent<IFederalElectionTableProps> = ({
     <table className="table w-full">
       <thead>
         <tr>
-          <th>Partei</th>
+          <th>{t(IntlKeys.snapshotEditor.socialDemographics.politicalParty)}</th>
           <th>
             <span>2021</span>
             <br />
