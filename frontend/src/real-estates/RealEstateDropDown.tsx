@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { RealEstateContext } from "context/RealEstateContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
@@ -17,6 +20,7 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
   user,
   buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
+  const { t } = useTranslation()
   const { realEstateState } = useContext(RealEstateContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
@@ -61,7 +65,7 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
         onClick={() => setShowMenu(!showMenu)}
         data-tour="my-real-estates"
       >
-        Meine Immobilien
+        {t(IntlKeys.nav.realEstates)}
       </div>
       {showMenu && (
         <ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">

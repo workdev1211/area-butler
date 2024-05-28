@@ -84,7 +84,6 @@
       "description": "Who lives here?",
       "censusData": "Census data",
       "federalElections": "Federal elections",
-      "address": "Address",
       "politicalParty": "Party"
     },
     "environmentInfo": {
@@ -107,6 +106,39 @@
     "new": "New",
     "name": "Name",
     "value": "Value",
-    "back": "Back"
+    "back": "Back",
+    "address": "Address",
+    "noResults": "No results",
+    "searching": "Search..."
+  },
+  "environmentalAnalysis": {
+    "createBtn": "Create analysis & map",
+    "updateBtn": "Update analysis & map",
+    "error": "Error during search execution. Please repeat at a later time.",
+    "queryLimitReached": "Query limit reached",
+    "modalBtn": "Buy new contingent",
+    "addressOfTheRealState": "Address of the property",
+    "currentLocation": "Current location",
+    "lastEntries": "Last entries",
+    "analysisRadius": "Mobility & analysis radius",
+    "walking": "On foot",
+    "cycling": "Bicycle",
+    "driving": "Car",
+    "availableIn": "Available in",
+    "unit": "Unit",
+    "km": "Kilometers",
+    "min": "Minutes",
+    "targetGroups": "My target groups",
+    "importantAddresses": "Important addresses: for door-to-door routes on the map",
+    "addAddress": "Add address",
+    "shuttleRoute": "Shuttle route",
+    "designation": "Designation",
+    "airport": "Airport",
+    "station": "Station",
+    "highlightOfRegion": "Highlight of the region",
+    "ownDesignation": "Own designation"
+  },
+  "googleAutocomplete": {
+    "enterAddress": "Enter address"
   }
 }

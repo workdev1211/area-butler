@@ -6,7 +6,40 @@
     "new": "Neu",
     "name": "Name",
     "value": "Wert",
-    "back": "Zurück"
+    "back": "Zurück",
+    "address": "Adresse",
+    "noResults": "Keine Ergebnisse",
+    "searching": "Suche..."
+  },
+  "environmentalAnalysis": {
+    "createBtn": "Analyse & Karte erstellen",
+    "updateBtn": "Analyse & Karte aktualisieren",
+    "error": "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen.",
+    "queryLimitReached": "Abfragelimit erreicht",
+    "modalBtn": "Neues Kontingent kaufen",
+    "addressOfTheRealState": "Adresse der Immobilie",
+    "currentLocation": "Aktueller Standort",
+    "lastEntries": "Letzte Eingaben",
+    "analysisRadius": "Mobilität & Analyseradius",
+    "walking": "Zu Fuß",
+    "cycling": "Fahrrad",
+    "driving": "Auto",
+    "availableIn": "Erreichbar in",
+    "unit": "Einheit",
+    "km": "Kilometer",
+    "min": "Minuten",
+    "targetGroups": "Meine Zielgruppen",
+    "importantAddresses": "Wichtige Adressen: für Tür-zu-Tür Routen in der Karte",
+    "addAddress": "Adresse hinzufügen",
+    "shuttleRoute": "Pendelstrecke",
+    "designation": "Bezeichung",
+    "airport": "Flughafen",
+    "station": "Bahnhof",
+    "highlightOfRegion": "Highlight der Region",
+    "ownDesignation": "Eigene Bezeichnung"
+  },
+  "googleAutocomplete": {
+    "enterAddress": "Adresse eingeben"
   },
   "nav": {
     "environmentalAnalysis": "Umgebungsanalyse",
@@ -69,10 +102,10 @@
       "museum": "Museum",
       "attraction": "Sehenswürdigkeiten",
       "multi-storey": "Parkhaus",
-      "distance": "distance",
-      "footpath": "footpath",
-      "bicycle": "bicycle",
-      "auto": "auto"
+      "distance": "Luftlinie",
+      "footpath": "Fußweg",
+      "bicycle": "Fahrrad",
+      "auto": "Auto"
     },
     "positionIndices": {
       "label": "Lageindizes",
@@ -93,7 +126,6 @@
       "description": "Wer lebt hier?",
       "censusData": "Zensus Daten",
       "federalElections": "Bundestagswahlen",
-      "address": "Adresse",
       "politicalParty": "Partei"
     },
     "environmentInfo": {

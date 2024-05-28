@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./TransportationParams.scss";
 
 import {
@@ -39,6 +42,7 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
   values = [...defaultTransportParams],
   onChange = () => {},
 }) => {
+  const { t } = useTranslation();
   const handleOnChange = (newValue: TransportationParam[]) => {
     onChange(newValue);
   };
@@ -117,7 +121,9 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
                   }
                   alt="mean-icon"
                 />
-                <span className="mean-label">{mean.label}</span>
+                <span className="mean-label">
+                  {t((IntlKeys.environmentalAnalysis as Record<string, string>)[mean.mode])}
+                </span>
               </div>
               <label className="flex items-center cursor-pointer">
                 <input
@@ -148,7 +154,7 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
                 <Input
                   name="distance"
                   icon={distanceIcon}
-                  label="Erreichbar in"
+                  label={t(IntlKeys.environmentalAnalysis.availableIn)}
                   type="number"
                   step={
                     currentValue?.unit === UnitsOfTransportation.MINUTES
@@ -182,7 +188,7 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
                 />
                 <div className="form-control min-flex">
                   <label className="label">
-                    <span>Einheit</span>
+                    <span>{t(IntlKeys.environmentalAnalysis.unit)}</span>
                   </label>
                   <select
                     className="select select-bordered flex"
@@ -192,10 +198,10 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
                     }
                   >
                     <option value={UnitsOfTransportation.KILOMETERS}>
-                      Kilometer
+                      {t(IntlKeys.environmentalAnalysis.km)}
                     </option>
                     <option value={UnitsOfTransportation.MINUTES}>
-                      Minuten
+                      {t(IntlKeys.environmentalAnalysis.min)}
                     </option>
                   </select>
                 </div>

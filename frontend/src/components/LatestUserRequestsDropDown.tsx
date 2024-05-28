@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { RealEstateContext } from "context/RealEstateContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
@@ -9,6 +12,7 @@ import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 const LatestUserRequestsDropDown: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { userState } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
@@ -83,7 +87,7 @@ const LatestUserRequestsDropDown: FunctionComponent = () => {
         onClick={() => setShowMenu(!showMenu)}
         data-tour="last-requests"
       >
-        Letzte Eingaben
+        {t(IntlKeys.environmentalAnalysis.lastEntries)}
       </div>
       {showMenu && (
         <ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">

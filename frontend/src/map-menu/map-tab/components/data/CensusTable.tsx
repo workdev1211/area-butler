@@ -35,7 +35,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
           >
             <th>{censusValue.label}</th>
             <td>
-              <span className="font-bold italic">{t(IntlKeys.snapshotEditor.socialDemographics.address)}</span>
+              <span className="font-bold italic">{t(IntlKeys.common.address)}</span>
               <br />
               <span className="font-bold italic">PLZ</span>
               <br />

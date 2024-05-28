@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import Input from "./inputs/formik/Input";
 import typeIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
@@ -15,6 +18,7 @@ const ImportantAddresses: FunctionComponent<IImportantAddressesProps> = ({
   inputValues = [],
   onChange = () => {},
 }) => {
+  const { t } = useTranslation();
   const addAddress = () => {
     const newEntry: ApiPreferredLocation = {
       title: "",
@@ -63,7 +67,7 @@ const ImportantAddresses: FunctionComponent<IImportantAddressesProps> = ({
           key={`important-address-${index}`}
         >
           <Input
-            label="Bezeichung"
+            label={t(IntlKeys.environmentalAnalysis.designation)}
             icon={typeIcon}
             className="input input-bordered flex"
             name={`description-${index}`}
@@ -102,15 +106,15 @@ const ImportantAddresses: FunctionComponent<IImportantAddressesProps> = ({
           }}
           className="btn btn-link text-primary"
         >
-          + Adresse hinzufügen
+          + {t(IntlKeys.environmentalAnalysis.addAddress)}
         </button>
       )}
       <datalist id="suggestedTitles">
-        <option value="Flughafen" />
-        <option value="Bahnhof" />
-        <option value="Pendelstrecke" />
-        <option value="Highlight der Region" />
-        <option value="Eigene Bezeichnung" />
+        <option value={t(IntlKeys.environmentalAnalysis.airport)} />
+        <option value={t(IntlKeys.environmentalAnalysis.station)} />
+        <option value={t(IntlKeys.environmentalAnalysis.shuttleRoute)} />
+        <option value={t(IntlKeys.environmentalAnalysis.highlightOfRegion)} />
+        <option value={t(IntlKeys.environmentalAnalysis.ownDesignation)} />
       </datalist>
     </div>
   );

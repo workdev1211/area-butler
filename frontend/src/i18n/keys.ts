@@ -7,6 +7,13 @@ export const IntlKeys = {
     name: "common.name",
     value: "common.value",
     back: "common.back",
+    address: 'common.address',
+    noResults: 'common.noResults',
+    searching: 'common.searching',
+  },
+
+  googleAutocomplete: {
+    enterAddress: 'googleAutocomplete.enterAddress',
   },
 
   nav: {
@@ -17,6 +24,34 @@ export const IntlKeys = {
     profile: 'nav.profile',
     logout: 'nav.logout',
     menu: 'nav.menu',
+  },
+
+  environmentalAnalysis: {
+    createBtn: 'environmentalAnalysis.createBtn',
+    updateBtn: 'environmentalAnalysis.updateBtn',
+    error: 'environmentalAnalysis.error',
+    queryLimitReached: 'environmentalAnalysis.queryLimitReached',
+    modalBtn: 'environmentalAnalysis.modalBtn',
+    addressOfTheRealState: 'environmentalAnalysis.addressOfTheRealState',
+    currentLocation: 'environmentalAnalysis.currentLocation',
+    lastEntries: 'environmentalAnalysis.lastEntries',
+    analysisRadius: 'environmentalAnalysis.analysisRadius',
+    walking: 'environmentalAnalysis.walking',
+    driving: 'environmentalAnalysis.driving',
+    cycling: 'environmentalAnalysis.cycling',
+    availableIn: 'environmentalAnalysis.availableIn',
+    unit: 'environmentalAnalysis.unit',
+    km: 'environmentalAnalysis.km',
+    min: 'environmentalAnalysis.min',
+    targetGroups: 'environmentalAnalysis.targetGroups',
+    importantAddresses: 'environmentalAnalysis.importantAddresses',
+    addAddress: 'environmentalAnalysis.addAddress',
+    designation: 'environmentalAnalysis.designation',
+    airport: 'environmentalAnalysis.airport',
+    station: 'environmentalAnalysis.station',
+    shuttleRoute: 'environmentalAnalysis.shuttleRoute',
+    highlightOfRegion: 'environmentalAnalysis.highlightOfRegion',
+    ownDesignation: 'environmentalAnalysis.ownDesignation',
   },
 
   snapshotEditor: {
@@ -95,7 +130,6 @@ export const IntlKeys = {
       description: 'snapshotEditor.socialDemographics.description',
       censusData: 'snapshotEditor.socialDemographics.censusData',
       federalElections: 'snapshotEditor.socialDemographics.federalElections',
-      address: 'snapshotEditor.socialDemographics.address',
       politicalParty: 'snapshotEditor.socialDemographics.politicalParty',
     },
     environmentInfo: {

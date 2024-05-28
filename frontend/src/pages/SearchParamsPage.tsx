@@ -9,6 +9,9 @@ import {
 import { Form, Formik } from "formik";
 import dayjs from "dayjs";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./SearchParamsPage.scss";
 
 import FormModal, { ModalConfig } from "components/FormModal";
@@ -79,6 +82,7 @@ import { deriveInitialEntityGroups } from "../shared/pois.functions";
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FC = () => {
+  const { t } = useTranslation();
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -414,9 +418,7 @@ const SearchParamsPage: FC = () => {
 
       isFinishedAnalysis = true;
     } catch (error) {
-      toastError(
-        "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen."
-      );
+      toastError(t(IntlKeys.environmentalAnalysis.error));
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_BUSY,
@@ -488,8 +490,8 @@ const SearchParamsPage: FC = () => {
       : searchButtonClasses || defaultClasses;
 
     const searchButtonTitle = isNewRequest
-      ? "Analyse & Karte erstellen "
-      : "Analyse & Karte aktualisieren ";
+      ? t(IntlKeys.environmentalAnalysis.createBtn)
+      : t(IntlKeys.environmentalAnalysis.updateBtn);
 
     if (!limitType) {
       return (
@@ -546,8 +548,8 @@ const SearchParamsPage: FC = () => {
     );
 
     const increaseRequestLimitSearchModalConfig: ModalConfig = {
-      modalTitle: "Abfragelimit erreicht",
-      submitButtonTitle: "Neues Kontingent kaufen",
+      modalTitle: t(IntlKeys.environmentalAnalysis.queryLimitReached),
+      submitButtonTitle: t(IntlKeys.environmentalAnalysis.modalBtn),
       modalButton: increaseLimitSearchButton,
     };
 
@@ -564,8 +566,8 @@ const SearchParamsPage: FC = () => {
     <DefaultLayout
       title={
         isIntegrationUser
-          ? `Adresse: ${searchContextState.placesLocation?.label}`
-          : "Umfeldanalyse"
+          ? `${t(IntlKeys.common.address)}: ${searchContextState.placesLocation?.label}`
+          : t(IntlKeys.nav.environmentalAnalysis)
       }
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
@@ -604,7 +606,7 @@ const SearchParamsPage: FC = () => {
           {!isIntegrationUser && (
             <>
               <h2 className="search-params-first-title">
-                Adresse der Immobilie
+                {t(IntlKeys.environmentalAnalysis.addressOfTheRealState)}
               </h2>
               <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <LocationAutocomplete
@@ -630,7 +632,7 @@ const SearchParamsPage: FC = () => {
               isIntegrationUser ? "search-params-first-title" : undefined
             }
           >
-            Mobilität & Analyseradius
+            {t(IntlKeys.environmentalAnalysis.analysisRadius)}
           </h2>
           <div className="sub-content">
             <TransportationParams
@@ -644,7 +646,7 @@ const SearchParamsPage: FC = () => {
             />
             <PotentialCustomerDropDown />
           </div>
-          <h2>Points-of-Interest</h2>
+          <h2>{t(IntlKeys.snapshotEditor.pointsOfInterest.label)}</h2>
           <LocalityParams
             values={searchContextState.localityParams}
             onChange={(newValues) => {
@@ -654,7 +656,7 @@ const SearchParamsPage: FC = () => {
               });
             }}
           />
-          <h2>Wichtige Adressen: für Tür-zu-Tür Routen in der Karte</h2>
+          <h2>{t(IntlKeys.environmentalAnalysis.importantAddresses)}</h2>
           <div className="sub-content">
             <ImportantAddresses
               inputValues={searchContextState.preferredLocations}

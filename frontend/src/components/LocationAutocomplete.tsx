@@ -2,6 +2,9 @@ import { FC, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { components } from "react-select";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./LocationAutocomplete.scss";
 
 import {
@@ -43,6 +46,7 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
   value = null,
   menuZIndex = 99,
 }) => {
+  const { t } = useTranslation();
   const isLoadedGoogleMapsApi = useGoogleMapsApi();
   const { getActualUser } = useTools();
   const user = getActualUser();
@@ -104,7 +108,7 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
       className={focus ? "form-control w-full focus" : "form-control w-full"}
     >
       <label className="label">
-        <span>Adresse</span>
+        <span>{t(IntlKeys.common.address)}</span>
       </label>
       <div
         className="google-input"
@@ -126,9 +130,9 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
             onChange: deriveLangLat,
             className: "google-autocomplete",
             classNamePrefix: "google-autocomplete",
-            placeholder: "Adresse eingeben",
-            noOptionsMessage: () => "Keine Ergebnisse",
-            loadingMessage: () => "Suche...",
+            placeholder: t(IntlKeys.googleAutocomplete.enterAddress),
+            noOptionsMessage: () => t(IntlKeys.common.noResults),
+            loadingMessage: () => t(IntlKeys.common.searching),
             onFocus: () => setFocus(true),
             onBlur: () => setFocus(false),
             menuPortalTarget: document.body,

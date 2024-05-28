@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useRef, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
@@ -15,6 +18,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
 > = ({
   buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
+  const { t } = useTranslation();
   const { potentialCustomerState } = useContext(PotentialCustomerContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
@@ -60,7 +64,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
         onClick={() => setMenuOpen(!menuOpen)}
         data-tour="my-customers"
       >
-        Meine Zielgruppen
+        {t(IntlKeys.environmentalAnalysis.targetGroups)}
       </div>
       {menuOpen && (
         <ul tabIndex={0} className={dropDownListStyle}>

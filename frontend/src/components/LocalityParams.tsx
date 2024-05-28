@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
@@ -15,6 +18,7 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
   values,
   onChange,
 }) => {
+  const { t } = useTranslation();
   const handleEntityChange = (entity: ApiOsmEntity) => {
     const updatedEntities: ApiOsmEntity[] = values.some(
       (value) => value.name === entity.name
@@ -64,7 +68,7 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
                 className="label-text ml-2"
                 style={{ padding: "16px 0 16px 0" }}
               >
-                {category}
+                {t(IntlKeys.snapshotEditor.pointsOfInterest[category])}
               </h3>
             </label>
           </div>
@@ -83,7 +87,9 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
                     handleEntityChange(entity);
                   }}
                 />
-                <span className="label-text ml-2">{entity.label}</span>
+                <span className="label-text ml-2">
+                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entity.name])}
+                </span>
               </label>
             ))}
         </div>
