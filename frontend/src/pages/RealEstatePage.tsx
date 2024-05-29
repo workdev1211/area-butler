@@ -16,7 +16,10 @@ interface IRealEstatePageRouterProps {
   realEstateId: string;
 }
 
-const defaultRealEstate: Partial<ApiRealEstateListing> = {
+export type TInitRealEstate = Partial<ApiRealEstateListing> &
+  Pick<ApiRealEstateListing, "name">;
+
+const defaultRealEstate: TInitRealEstate = {
   name: "Neues Objekt",
 };
 
@@ -48,7 +51,7 @@ const RealEstatePage: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isListingsFetched]);
 
-  let initialRealEstate = { ...defaultRealEstate };
+  let initialRealEstate: TInitRealEstate = { ...defaultRealEstate };
 
   if (realEstateId === "from-result" && storedContextState) {
     initialRealEstate = {

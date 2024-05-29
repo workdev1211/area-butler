@@ -159,3 +159,22 @@ export const filterQueryParams = (
 
   return queryParams;
 };
+
+export const replaceValInObj = (
+  obj: object,
+  origVal: unknown,
+  newVal: unknown
+): object => {
+  Object.entries(obj).forEach(([key, value]) => {
+    if (!!value && typeof value === "object") {
+      replaceValInObj(value, origVal, newVal);
+      return;
+    }
+
+    if (value === origVal) {
+      Object.assign(obj, { [key]: newVal });
+    }
+  });
+
+  return obj;
+};

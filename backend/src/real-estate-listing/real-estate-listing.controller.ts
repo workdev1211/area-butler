@@ -37,6 +37,7 @@ import { RealEstateListingImportService } from './real-estate-listing-import.ser
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 import { Role, Roles } from '../auth/roles.decorator';
 import ApiUserApiConnectSettingsReqDto from '../dto/api-user-api-connect-settings-req.dto';
+import { replaceValInObj } from '../../../shared/functions/shared.functions';
 
 @ApiTags('real-estate-listing')
 @Controller('api/real-estate-listing')
@@ -102,14 +103,14 @@ export class RealEstateListingController extends AuthenticatedController {
   async updateRealEstateListing(
     @Param('id') realEstateId: string,
     @InjectUser() user: UserDocument,
-    @Body() realEstateListing: Partial<ApiUpsertRealEstateListingDto>,
+    @Body() realEstate: ApiUpsertRealEstateListingDto,
   ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
       user,
       await this.realEstateListingService.updateRealEstateListing(
         user,
         realEstateId,
-        realEstateListing,
+        replaceValInObj(realEstate, null, undefined),
       ),
     );
   }

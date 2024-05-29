@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import * as Yup from "yup";
-import { SchemaOf } from "yup";
 
 import { getQueryParamsAndUrl } from "../../shared/shared.functions";
 import { useHttp } from "../../hooks/http";
@@ -18,19 +17,19 @@ import {
 } from "../../../../shared/types/propstack";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
-const loginQueryParamsSchema: SchemaOf<IApiPropstackLoginQueryParams> =
+const loginQueryParamsSchema: Yup.ObjectSchema<IApiPropstackLoginQueryParams> =
   Yup.object({
     apiKey: Yup.string().required(),
     propertyId: Yup.string().matches(/^\d+$/).required(),
     shopId: Yup.string().matches(/^\d+$/).required(),
     brokerId: Yup.string().matches(/^\d+$/).required(),
-    teamId: Yup.string().matches(/^\d+$/).optional(),
-    target: Yup.mixed()
-      .oneOf(Object.values(PropstackActionTypeEnum))
-      .optional(),
-    fieldName: Yup.mixed()
-      .oneOf(Object.values(PropstackFieldNameEnum))
-      .optional(),
+    teamId: Yup.string().matches(/^\d+$/),
+    target: Yup.mixed<PropstackActionTypeEnum>().oneOf(
+      Object.values(PropstackActionTypeEnum)
+    ),
+    fieldName: Yup.mixed<PropstackFieldNameEnum>().oneOf(
+      Object.values(PropstackFieldNameEnum)
+    ),
   });
 
 export const usePropstackLogin = () => {

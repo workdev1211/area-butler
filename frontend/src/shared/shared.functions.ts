@@ -601,3 +601,15 @@ export const copyTextToClipboard = (text?: string): void => {
     toastSuccess("Erfolgreich in Zwischenablage kopiert!");
   }
 };
+
+export const processInputValue = <
+  T extends boolean | number | string | undefined = string
+>(
+  value: T,
+  valueType: "boolean" | "number" | "string" = "string"
+): T | undefined => {
+  const isIncorrectType = typeof value !== valueType;
+  const isIncorrectString = typeof value === "string" && !value;
+
+  return isIncorrectType || isIncorrectString ? undefined : value;
+};

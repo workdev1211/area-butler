@@ -93,7 +93,7 @@
     "ua-parser-js": "^1.0.37",
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1",
-    "yup": "^0.32.9"
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",

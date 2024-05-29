@@ -25,7 +25,7 @@ class ApiUpsertRealEstateListingDto implements IApiRealEstateListingSchema {
 
   @Expose()
   @Type(() => ApiGeoJsonPointDto)
-  @IsOptional()
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   location: GeoJsonPoint;
@@ -34,16 +34,6 @@ class ApiUpsertRealEstateListingDto implements IApiRealEstateListingSchema {
   @IsNotEmpty()
   @IsString()
   name: string;
-
-  @Expose()
-  @IsOptional()
-  @IsBoolean()
-  showInSnippet?: boolean;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  externalUrl?: string;
 
   @Expose()
   @Type(() => ApiRealEstateCharacteristicsDto)
@@ -58,6 +48,16 @@ class ApiUpsertRealEstateListingDto implements IApiRealEstateListingSchema {
   @IsObject()
   @ValidateNested()
   costStructure?: ApiRealEstateCostDto;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  externalUrl?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  showInSnippet?: boolean;
 
   @Expose()
   @IsOptional()

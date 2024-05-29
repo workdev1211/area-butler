@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -8,8 +8,8 @@ import {
 } from "../../../shared/constants/real-estate";
 import {
   ApiEnergyEfficiency,
+  ApiFurnishing,
   ApiRealEstateCostType,
-  ApiRealEstateListing,
   ApiRealEstateStatus2Enum,
   ApiRealEstateStatusEnum,
 } from "../../../shared/types/real-estate";
@@ -18,46 +18,63 @@ import Select from "../components/inputs/formik/Select";
 import Checkbox from "../components/inputs/formik/Checkbox";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import CustomTextSelect from "../components/inputs/formik/CustomTextSelect";
-import { ISelectTextValue } from "../../../shared/types/types";
+import { ApiCoordinates, ISelectTextValue } from "../../../shared/types/types";
+import { TInitRealEstate } from "../pages/RealEstatePage";
+import { toastError } from "../shared/shared.functions";
+
+interface IRealEstMainFormData {
+  showInSnippet: boolean;
+  status?: string;
+  status2?: string;
+  name: string;
+
+  externalUrl?: string;
+  priceStartingAt: boolean;
+  minPrice?: number;
+  price?: number;
+  type: ApiRealEstateCostType;
+  propertyStartingAt: boolean;
+  realEstateSizeInSquareMeters?: number;
+  propertySizeInSquareMeters?: number;
+  energyEfficiency: ApiEnergyEfficiency;
+}
+
+export type TRealEstateFormData = IRealEstMainFormData &
+  Partial<Record<ApiFurnishing, boolean>>;
+
+export type TRealEstResultValues = TRealEstateFormData & {
+  address: string;
+  coordinates: ApiCoordinates;
+};
 
 interface IRealEstateFormProps {
   formId: string;
-  onSubmit: (values: any) => any;
-  realEstate: Partial<ApiRealEstateListing>;
+  onSubmit: (values: TRealEstResultValues) => void;
+  realEstate: TInitRealEstate;
 }
 
 export const RealEstateForm: FC<IRealEstateFormProps> = ({
-  realEstate,
-  onSubmit,
   formId,
+  onSubmit,
+  realEstate,
 }) => {
-  const [localRealEstate, setLocalRealEstate] =
-    useState<Partial<ApiRealEstateListing>>(realEstate);
+  const [resultRealEstate, setResultRealEstate] = useState<TInitRealEstate>(
+    JSON.parse(JSON.stringify(realEstate))
+  );
+  const [isMinPriceNeeded, setIsMinPriceNeeded] = useState(
+    Number.isFinite(resultRealEstate?.costStructure?.minPrice?.amount)
+  );
 
-  const [isNeededMinPrice, setIsNeededMinPrice] = useState(false);
-  const realEstateString = JSON.stringify(realEstate);
-
-  useEffect(() => {
-    const parsedEstate = JSON.parse(realEstateString);
-    setLocalRealEstate(parsedEstate);
-
-    setIsNeededMinPrice(
-      Number.isFinite(parsedEstate?.costStructure?.minPrice?.amount)
-    );
-  }, [realEstateString, setLocalRealEstate, setIsNeededMinPrice]);
-
-  const onLocationAutocompleteChange = (payload: any) => {
-    const updatedRealEstate = {
-      ...realEstate,
+  const onLocationAutocompleteChange = (payload: any): void => {
+    setResultRealEstate({
+      ...JSON.parse(JSON.stringify(resultRealEstate)), // possible overshot
       address: payload.value.label,
       coordinates: payload.coordinates,
-    };
-
-    setLocalRealEstate(updatedRealEstate);
+    });
   };
 
-  const minPrice = localRealEstate?.costStructure?.minPrice?.amount;
-  const maxPrice = localRealEstate?.costStructure?.price?.amount;
+  const minPrice = resultRealEstate?.costStructure?.minPrice?.amount;
+  const maxPrice = resultRealEstate?.costStructure?.price?.amount;
 
   const status1SelectOptions = Object.values(
     ApiRealEstateStatusEnum
@@ -77,54 +94,74 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
 
   status2SelectOptions.push(statusCustOption);
 
+  const initialValues: TRealEstateFormData = {
+    showInSnippet: resultRealEstate.showInSnippet ?? true,
+    status: resultRealEstate.status ?? ApiRealEstateStatusEnum.IN_PREPARATION,
+    status2: resultRealEstate.status2 ?? ApiRealEstateStatus2Enum.ACTIVE,
+    name: resultRealEstate.name,
+    externalUrl: resultRealEstate?.externalUrl,
+    priceStartingAt: Number.isFinite(
+      resultRealEstate?.costStructure?.minPrice?.amount
+    ), // keep in mind that Number.isFinite is used instead of the global isFinite
+    minPrice: minPrice,
+    price: maxPrice,
+    type:
+      resultRealEstate?.costStructure?.type ??
+      ApiRealEstateCostType.RENT_MONTHLY_COLD,
+    propertyStartingAt: !!resultRealEstate?.characteristics?.startingAt,
+    realEstateSizeInSquareMeters:
+      resultRealEstate.characteristics?.realEstateSizeInSquareMeters,
+    propertySizeInSquareMeters:
+      resultRealEstate.characteristics?.propertySizeInSquareMeters,
+    energyEfficiency:
+      resultRealEstate.characteristics?.energyEfficiency ??
+      ApiEnergyEfficiency.A,
+  };
+
+  Object.values<ApiFurnishing>(ApiFurnishing).forEach((value) => {
+    initialValues[value] =
+      resultRealEstate.characteristics?.furnishing?.includes(value) ?? false;
+  });
+
+  const validationSchema: Yup.ObjectSchema<IRealEstMainFormData> = Yup.object({
+    showInSnippet: Yup.boolean().required(),
+    status: Yup.string(),
+    status2: Yup.string(),
+    name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
+    externalUrl: Yup.string().url("Bitte geben Sie eine gültige URL an"),
+    priceStartingAt: Yup.boolean().required(),
+    minPrice: Yup.number().min(0),
+    price: Yup.number().min(0),
+    type: Yup.mixed<ApiRealEstateCostType>()
+      .oneOf(Object.values(ApiRealEstateCostType))
+      .required(),
+    propertyStartingAt: Yup.boolean().required(),
+    realEstateSizeInSquareMeters: Yup.number().min(0),
+    propertySizeInSquareMeters: Yup.number().min(0),
+    energyEfficiency: Yup.mixed<ApiEnergyEfficiency>()
+      .oneOf(Object.values(ApiEnergyEfficiency))
+      .required(),
+  });
+
+  Object.values<ApiFurnishing>(ApiFurnishing).forEach((value) => {
+    validationSchema.shape({ [value]: Yup.boolean().required() });
+  });
+
   return (
     <Formik
-      initialValues={{
-        name: localRealEstate?.name ?? "",
-        externalUrl: localRealEstate?.externalUrl ?? "",
-        minPrice: minPrice || "",
-        price: !minPrice && !maxPrice ? 0 : maxPrice || "",
-        priceStartingAt: Number.isFinite(
-          localRealEstate?.costStructure?.minPrice?.amount
-        ), // keep in mind that Number.isFinite is used instead of the global isFinite
-        type:
-          localRealEstate?.costStructure?.type ||
-          ApiRealEstateCostType.RENT_MONTHLY_COLD,
-        propertyStartingAt: localRealEstate?.characteristics?.startingAt,
-        showInSnippet:
-          localRealEstate === undefined ||
-          localRealEstate.showInSnippet === undefined
-            ? true
-            : localRealEstate.showInSnippet,
-        realEstateSizeInSquareMeters:
-          localRealEstate.characteristics?.realEstateSizeInSquareMeters ?? 0,
-        propertySizeInSquareMeters:
-          localRealEstate.characteristics?.propertySizeInSquareMeters ?? 0,
-        energyEfficiency:
-          localRealEstate.characteristics?.energyEfficiency ?? "A",
-        status:
-          localRealEstate.status ?? ApiRealEstateStatusEnum.IN_PREPARATION,
-      }}
-      validationSchema={Yup.object({
-        name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
-        externalUrl: Yup.string().url("Bitte geben Sie eine gültige URL an"),
-        minPrice: Yup.number(),
-        price: Yup.number(),
-        priceStartingAt: Yup.boolean(),
-        propertyStartingAt: Yup.boolean(),
-        showInSnippet: Yup.boolean(),
-        type: Yup.string(),
-        realEstateSizeInSquareMeters: Yup.number(),
-        propertySizeInSquareMeters: Yup.number(),
-        energyEfficiency: Yup.string(),
-        status: Yup.string(),
-      })}
+      initialValues={initialValues}
+      validationSchema={validationSchema}
       enableReinitialize={true}
       onSubmit={(values) => {
+        if (!resultRealEstate.address || !resultRealEstate.coordinates) {
+          toastError("Bitte geben Sie die Immobilien-Adresse an");
+          return;
+        }
+
         onSubmit({
           ...values,
-          address: localRealEstate.address,
-          coordinates: localRealEstate.coordinates,
+          address: resultRealEstate.address,
+          coordinates: resultRealEstate.coordinates,
         });
       }}
     >
@@ -144,7 +181,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
                 name="status"
                 selectOptions={status1SelectOptions}
                 customTextValue={statusCustTextValue}
-                isInput={true}
+                initialText={resultRealEstate.status}
               />
             </div>
             <div className="form-control mt-3">
@@ -153,7 +190,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
                 name="status2"
                 selectOptions={status2SelectOptions}
                 customTextValue={statusCustTextValue}
-                isInput={true}
+                initialText={resultRealEstate.status2}
               />
             </div>
             <div className="form-control">
@@ -175,7 +212,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
               />
             </div>
             <LocationAutocomplete
-              value={localRealEstate.address}
+              value={resultRealEstate.address}
               afterChange={onLocationAutocompleteChange}
             />
             <div className="flex flex-wrap items-end justify-start gap-6">
@@ -187,7 +224,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
                     target: { checked },
                   }: ChangeEvent<HTMLInputElement>) => {
                     setFieldValue("startingAt", checked);
-                    setIsNeededMinPrice(checked);
+                    setIsMinPriceNeeded(checked);
 
                     if (!checked) {
                       setFieldValue("minPrice", "");
@@ -197,7 +234,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
                   Ab
                 </Checkbox>
               </div>
-              {isNeededMinPrice && (
+              {isMinPriceNeeded && (
                 <div className="form-control flex-1">
                   <Input
                     label="Mindestpreis (€)"
@@ -210,7 +247,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
               )}
               <div className="form-control flex-1">
                 <Input
-                  label={`${isNeededMinPrice ? "Höchstpreis" : "Preis"} (€)`}
+                  label={`${isMinPriceNeeded ? "Höchstpreis" : "Preis"} (€)`}
                   name="price"
                   type="number"
                   placeholder="Preis eingeben"

@@ -16,6 +16,7 @@ import {
   realEstAllTextStatus,
   realEstateAllStatus,
 } from "../../../shared/constants/real-estate";
+import { replaceValInObj } from "../../../shared/functions/shared.functions";
 
 export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -86,7 +87,7 @@ export const useRealEstateData = () => {
         isIntegration
           ? `/api/real-estate-listing-int/${realEstateId}`
           : `/api/real-estate-listing/${realEstateId}`,
-        updatedData
+        replaceValInObj(updatedData, undefined, null)
       )
     ).data;
   };
