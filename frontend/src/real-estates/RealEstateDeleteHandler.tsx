@@ -1,5 +1,8 @@
 import { FC, useContext } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { FormModalData } from "components/FormModal";
 import { useHttp } from "hooks/http";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -19,6 +22,7 @@ export const RealEstateDeleteHandler: FC<IRealEstateDeleteHandlerProps> = ({
   postSubmit = () => {},
   realEstate,
 }) => {
+  const { t } = useTranslation();
   const { deleteRequest } = useHttp();
   const { realEstateDispatch } = useContext(RealEstateContext);
 
@@ -34,7 +38,7 @@ export const RealEstateDeleteHandler: FC<IRealEstateDeleteHandlerProps> = ({
           payload: realEstate,
         });
       }
-      toastSuccess("Objekt erfolgreich gelöscht!");
+      toastSuccess(t(IntlKeys.common.objectSuccessfullyDeleted));
       postSubmit(true);
     } catch (err) {
       console.error(err);
@@ -44,7 +48,7 @@ export const RealEstateDeleteHandler: FC<IRealEstateDeleteHandlerProps> = ({
 
   return (
     <form id={formId} onSubmit={onSubmit}>
-      Möchten Sie wirklich das Objekt löschen?
+      {t(IntlKeys.common.objectDeleteConfirmation)}
     </form>
   );
 };

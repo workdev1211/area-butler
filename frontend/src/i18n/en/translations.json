@@ -97,7 +97,8 @@
       "label": "Key economic figures",
       "description": "What are the structural data?",
       "contactUs": "We are happy to provide more in-depth data on the labor force,\n          unemployment rate, employees by skill level, GDP per capita,\n          business tax revenues, logistics attractiveness and much more. Simply contact us\n          us directly."
-    }
+    },
+    "needsFilter": "Needs filter"
   },
   "common": {
     "showMore": "Show more",
@@ -109,7 +110,22 @@
     "back": "Back",
     "address": "Address",
     "noResults": "No results",
-    "searching": "Search..."
+    "searching": "Search...",
+    "close": "Close",
+    "import": "Import",
+    "actions": "Actions",
+    "dataImported": "The data was imported.",
+    "errorOccurred": "The error has occurred!",
+    "status": "Status",
+    "price": "Price",
+    "objectSuccessfullyDeleted": "Object successfully deleted!",
+    "objectDeleteConfirmation": "Do you really want to delete the object?",
+    "objectDeleteTitle": "Delete object",
+    "page": "Page",
+    "delete": "Delete",
+    "goToPage": "Go to page",
+    "show": "Show",
+    "searchFor": "Search..."
   },
   "environmentalAnalysis": {
     "createBtn": "Create analysis & map",
@@ -127,7 +143,7 @@
     "availableIn": "Available in",
     "unit": "Unit",
     "km": "Kilometers",
-    "min": "Minutes",
+    "min": "minutes",
     "targetGroups": "My target groups",
     "importantAddresses": "Important addresses: for door-to-door routes on the map",
     "addAddress": "Add address",
@@ -140,5 +156,35 @@
   },
   "googleAutocomplete": {
     "enterAddress": "Enter address"
+  },
+  "realEstate": {
+    "sync": "Sync Real Estate",
+    "syncCRM": "Synchronize CRM",
+    "importCSV": "Import from CSV file",
+    "createObject": "Create object",
+    "linkedCardSnippet": "Linked card snippets",
+    "csvImportError": "Errors occurred when importing data from the following lines",
+    "csvImportErrorStructure": "The CSV import has failed. Please check the file structure.",
+    "csvImportSuccess": "Data import was successful!",
+    "csvImported": "CSV file is imported",
+    "paymentMethods": "Payment methods",
+    "csvImportPrepareText": "Please prepare the structure of the CSV file according to the examples\n                examples provided. In the XLS file, the\n                colors are used to explain the data structure.",
+    "csvImportPrepareDescription": "Green columns are mandatory, yellow columns are optional and the red column\n                column indicates an incorrect data record.",
+    "csvImportExampleCsv": "CSV example",
+    "csvImportExampleXls": "XLS example",
+    "crmImported": "CRM file is imported",
+    "crmImportSuccess": "The data was imported, with the exception of the following",
+    "syncErrorOnImporting": "Errors occurred when importing properties with the following IDs",
+    "syncCompleted": "Real estate synchronization successfully completed!",
+    "syncPropertyFailed": "Property synchronization failed!",
+    "synchronized": "Real estate is synchronized",
+    "setFilter": "Set filter",
+    "marketingType": "Marketing type",
+    "equipment": "Equipment",
+    "note": "Note",
+    "createdOn": "Created on",
+    "lastCall": "Last call",
+    "numberOfVisits": "Number of visits",
+    "addressDisplayed": "Address displayed"
   }
 }

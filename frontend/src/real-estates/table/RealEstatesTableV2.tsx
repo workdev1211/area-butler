@@ -20,6 +20,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./RealEstatesTableV2.scss";
 
 import {
@@ -66,14 +69,10 @@ interface IRealEstatesTableV2Props {
   openSnapshotsModal: (realEstate: ApiRealEstateListing) => void;
 }
 
-const deleteRealEstateModalConfig = {
-  modalTitle: "Objekt löschen",
-  submitButtonTitle: "Löschen",
-};
-
 const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
   openSnapshotsModal,
 }) => {
+  const { t } = useTranslation();
   const {
     realEstateState: { listings },
   } = useContext(RealEstateContext);
@@ -166,7 +165,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
   const columns = useMemo<ColumnDef<IRealEstateTableItem, any>[]>(
     () => [
       columnHelper.accessor("status", {
-        header: "Vermarktungsart",
+        header: t(IntlKeys.realEstate.marketingType),
         cell: (props) => props.getValue() || null,
         size: 150,
         meta: {
@@ -174,7 +173,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
         },
       }),
       columnHelper.accessor("status2", {
-        header: "Status",
+        header: t(IntlKeys.common.status),
         cell: (props) => props.getValue() || null,
         size: 200,
         meta: {
@@ -183,6 +182,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       }),
       columnHelper.accessor((row) => row.listing.name, {
         id: "name",
+        header: t(IntlKeys.common.name),
         cell: (props) => props.getValue(),
         size: 300,
         meta: {
@@ -191,7 +191,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       }),
       columnHelper.accessor((row) => row.listing.address, {
         id: "address",
-        header: "adresse",
+        header: t(IntlKeys.common.address),
         cell: (props) => props.getValue(),
         size: 300,
         meta: {
@@ -199,7 +199,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
         },
       }),
       columnHelper.accessor("cost", {
-        header: "preis",
+        header: t(IntlKeys.common.price),
         cell: (props) => (props.getValue() ? props.getValue() : null),
         size: 200,
         meta: {
@@ -207,15 +207,15 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
           cellStyles: { whiteSpace: "normal" },
         },
       }),
-      ...Object.values(locationIndexNames).reduce<
+      ...Object.keys(locationIndexNames).reduce<
         Array<ColumnDef<IRealEstateTableItem, any>>
       >((result, indexName) => {
         const column = columnHelper.accessor(
           (row) =>
-            row.locationIndices ? row.locationIndices[indexName] : undefined,
+            row.locationIndices ? row.locationIndices[(locationIndexNames as Record<string, string>)[indexName]] : undefined,
           {
-            id: indexName,
-            header: indexName,
+            id: (locationIndexNames as Record<string, string>)[indexName],
+            header: t((IntlKeys.snapshotEditor.positionIndices as Record<string, string>)[indexName]),
             cell: (props) => (props.getValue() ? `${props.getValue()}%` : null),
             size: 65,
             meta: {
@@ -242,7 +242,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       }, []),
       columnHelper.display({
         id: "furnishing",
-        header: "ausstattung",
+        header: t(IntlKeys.realEstate.equipment),
         cell: (props) => props.row.original.furnishing?.join(", ") || null,
         size: 300,
         meta: {
@@ -288,7 +288,8 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
               {!realEstate.isFromParent && !isIntegrationUser && (
                 <FormModal
                   modalConfig={{
-                    ...deleteRealEstateModalConfig,
+                    modalTitle: t(IntlKeys.common.objectDeleteTitle),
+                    submitButtonTitle: t(IntlKeys.common.delete),
                     modalButton: (
                       <img
                         src={deleteIcon}

@@ -1,6 +1,9 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import { saveAs } from "file-saver";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { useHttp } from "../hooks/http";
 import { ApiExampleFileTypeEnum } from "../../../shared/types/real-estate";
 import { AxiosResponse } from "axios";
@@ -18,6 +21,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
   closeModal,
   fileFormat = CsvFileFormatEnum.ON_OFFICE,
 }) => {
+  const { t } = useTranslation();
   const { get, post } = useHttp();
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
 
@@ -57,19 +61,17 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
 
       if (errorLineNumbers.length > 0) {
         toastError(
-          `Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten: ${errorLineNumbers
+          `${t(IntlKeys.realEstate.csvImportError)}: ${errorLineNumbers
             .sort((a, b) => a - b)
             .join(", ")}`,
           () => {},
           false
         );
       } else {
-        toastSuccess("Datenimport war erfolgreich!");
+        toastSuccess(t(IntlKeys.realEstate.csvImportSuccess));
       }
     } catch (e) {
-      toastError(
-        "Der CSV-Import ist fehlgeschlagen. Bitte überprüfen Sie die Dateistruktur."
-      );
+      toastError(t(IntlKeys.realEstate.csvImportErrorStructure));
     } finally {
       closeModal();
       setIsShownBusyModal(false);
@@ -93,7 +95,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
     <>
       {isShownBusyModal && (
         <BusyModal
-          items={[{ key: "csv-import", text: "CSV-Datei wird importiert" }]}
+          items={[{ key: "csv-import", text: t(IntlKeys.realEstate.csvImported) }]}
         />
       )}
       <div
@@ -106,7 +108,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
             className="flex justify-between px-6 py-3 rounded-t-2xl text-white"
             style={{ background: "var(--primary)" }}
           >
-            <span className="text-lg font-medium">Zahlungsarten</span>
+            <span className="text-lg font-medium">{t(IntlKeys.realEstate.paymentMethods)}</span>
             <img
               className="cursor-pointer invert"
               src={closeIcon}
@@ -117,13 +119,10 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
           <div className="px-6 py-3">
             <div className="flex flex-col gap-3">
               <div className="text-justify">
-                Bitte bereiten Sie die Struktur der CSV-Datei entsprechend den
-                mitgelieferten Beispielen vor. In der XLS-Datei werden die
-                Farben zur Erläuterung der Datenstruktur verwendet.
+                {t(IntlKeys.realEstate.csvImportPrepareText)}
               </div>
               <div className="text-justify italic">
-                Grüne Spalten sind obligatorisch, gelbe optional und die rote
-                Spalte zeigt einen falschen Datensatz an.
+                {t(IntlKeys.realEstate.csvImportPrepareDescription)}
               </div>
             </div>
             <div className="modal-action">
@@ -133,7 +132,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
                   await downloadFile(ApiExampleFileTypeEnum.XLS);
                 }}
               >
-                XLS-Beispiel
+                {t(IntlKeys.realEstate.csvImportExampleXls)}
               </button>
               <button
                 className="btn btn-sm btn-default"
@@ -141,14 +140,14 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
                   await downloadFile(ApiExampleFileTypeEnum.CSV);
                 }}
               >
-                CSV-Beispiel
+                {t(IntlKeys.realEstate.csvImportExampleCsv)}
               </button>
               <div>
                 <label
                   className="btn btn-primary cursor-pointer"
                   htmlFor="file"
                 >
-                  Importieren
+                  {t(IntlKeys.common.import)}
                 </label>
                 <input
                   className="hidden"

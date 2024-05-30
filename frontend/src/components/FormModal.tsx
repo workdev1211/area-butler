@@ -10,6 +10,9 @@ import {
 } from "react";
 import { v4 as uuid } from "uuid";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 export interface ModalConfig {
   buttonTitle?: string;
   buttonClass?: string;
@@ -31,6 +34,7 @@ export interface FormModalData {
 export const FormModal: FunctionComponent<{
   modalConfig: ModalConfig;
 }> = (props) => {
+  const { t } = useTranslation();
   const { modalConfig } = props;
 
   const [modalOpen, setModalOpen] = useState(modalConfig.modalOpen);
@@ -113,7 +117,7 @@ export const FormModal: FunctionComponent<{
                 }}
                 className="btn btn-sm"
               >
-                Schließen
+                {t(IntlKeys.common.close)}
               </button>
               <button
                 form={formId}

@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import { useTools } from "../hooks/tools";
@@ -13,6 +16,7 @@ interface IEmbeddableMapsTableProps {
 const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   embeddableMaps,
 }) => {
+  const { t } = useTranslation();
   const {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
@@ -71,12 +75,12 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
       <table className="table w-full">
         <thead>
           <tr>
-            <th>Adresse</th>
-            <th>Notiz</th>
-            <th>Erstellt am</th>
-            <th>Letzter Aufruf</th>
-            <th>Anzahl der Besuche</th>
-            <th>Adresse angezeigt</th>
+            <th>{t(IntlKeys.common.address)}</th>
+            <th>{t(IntlKeys.realEstate.note)}</th>
+            <th>{t(IntlKeys.realEstate.createdOn)}</th>
+            <th>{t(IntlKeys.realEstate.lastCall)}</th>
+            <th>{t(IntlKeys.realEstate.numberOfVisits)}</th>
+            <th>{t(IntlKeys.realEstate.addressDisplayed)}</th>
             <th />
           </tr>
         </thead>

@@ -1,6 +1,9 @@
 import { FunctionComponent } from "react";
 import { Table } from "@tanstack/react-table";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { IRealEstateTableItem } from "./RealEstatesTableV2";
 
 interface ITableV2PaginationProps {
@@ -10,6 +13,7 @@ interface ITableV2PaginationProps {
 const TableV2Pagination: FunctionComponent<ITableV2PaginationProps> = ({
   table,
 }) => {
+  const { t } = useTranslation();
   const pageSizes = [10, 20, 30, 40, 50];
 
   return (
@@ -43,13 +47,13 @@ const TableV2Pagination: FunctionComponent<ITableV2PaginationProps> = ({
         {">>"}
       </button>
       <span className="flex items-center gap-1">
-        <div>Seite</div>
+        <div>{t(IntlKeys.common.page)}</div>
         <strong>
           {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </strong>
       </span>
       <span className="flex items-center gap-1">
-        | Gehe zu Seite:
+        | {t(IntlKeys.common.goToPage)}:
         <input
           type="number"
           defaultValue={table.getState().pagination.pageIndex + 1}
@@ -68,7 +72,7 @@ const TableV2Pagination: FunctionComponent<ITableV2PaginationProps> = ({
       >
         {pageSizes.map((pageSize) => (
           <option key={pageSize} value={pageSize}>
-            Zeigen {pageSize}
+            {t(IntlKeys.common.show)} {pageSize}
           </option>
         ))}
       </select>

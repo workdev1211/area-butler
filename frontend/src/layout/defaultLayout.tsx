@@ -1,5 +1,8 @@
 import { FC, ReactNode } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./defaultLayout.scss";
 
 import caretDown from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
@@ -27,6 +30,7 @@ const DefaultLayout: FC<IDefaultLayoutProps> = ({
   title,
   withHorizontalPadding,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className={`default-layout ${isContentLoaded ? "" : "flex-1"}`}>
       {(title || timelineStep || actionsTop) && (
@@ -44,7 +48,7 @@ const DefaultLayout: FC<IDefaultLayoutProps> = ({
                 <>
                   <div tabIndex={0} className="dropdown-btn">
                     <div className="dropdown-btn-content">
-                      Aktionen <span className="divider" />
+                      {t(IntlKeys.common.actions)} <span className="divider" />
                       <img
                         src={caretDown}
                         alt="icon-dropdown"

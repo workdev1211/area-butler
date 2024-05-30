@@ -1,6 +1,9 @@
 import { FunctionComponent } from "react";
 import { Column, Table } from "@tanstack/react-table";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { IRealEstateTableItem } from "./RealEstatesTableV2";
 import { locationIndexNames } from "../../../../shared/constants/location-index";
 
@@ -13,6 +16,7 @@ const TableV2Filter: FunctionComponent<ITableV2FilterProps> = ({
   table,
   column,
 }) => {
+  const { t } = useTranslation();
   const firstValue = table
     .getPreFilteredRowModel()
     .flatRows[0]?.getValue(column.id);
@@ -54,7 +58,7 @@ const TableV2Filter: FunctionComponent<ITableV2FilterProps> = ({
       type="text"
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder="Suchen..."
+      placeholder={t(IntlKeys.common.searchFor)}
     />
   );
 };

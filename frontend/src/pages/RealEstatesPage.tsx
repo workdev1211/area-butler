@@ -1,6 +1,9 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import DefaultLayout from "../layout/defaultLayout";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import uploadIcon from "../assets/icons/upload_file.svg";
@@ -25,6 +28,7 @@ import { useGoogleMapsApi } from "../hooks/google";
 import { LoadingMessage } from "../components/Loading";
 
 const RealEstatesPage: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
   const { integrationType } = useContext(ConfigContext);
   const {
@@ -96,7 +100,7 @@ const RealEstatesPage: FunctionComponent = () => {
       <>
         <li>
           <Link to="/real-estates/new" className="btn btn-link">
-            <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
+            <img src={plusIcon} alt="pdf-icon" /> {t(IntlKeys.realEstate.createObject)}
           </Link>
         </li>
 
@@ -108,7 +112,7 @@ const RealEstatesPage: FunctionComponent = () => {
             }}
           >
             <img className="invert" src={uploadIcon} alt="upload-icon" />
-            <div className="cursor-pointer">Import aus CSV-Datei</div>
+            <div className="cursor-pointer">{t(IntlKeys.realEstate.importCSV)}</div>
           </button>
         </li>
 
@@ -121,7 +125,7 @@ const RealEstatesPage: FunctionComponent = () => {
               }}
             >
               <img className="invert" src={uploadIcon} alt="import-icon" />
-              <div className="cursor-pointer">CRM synchronisieren</div>
+              <div className="cursor-pointer">{t(IntlKeys.realEstate.syncCRM)}</div>
             </button>
           </li>
         )}
@@ -139,7 +143,7 @@ const RealEstatesPage: FunctionComponent = () => {
           }}
         >
           <img className="invert h-[16px]" src={syncIcon} alt="sync-icon" />
-          <div className="cursor-pointer">Sync-Immobilien</div>
+          <div className="cursor-pointer">{t(IntlKeys.realEstate.sync)}</div>
         </button>
       </li>
     );
@@ -147,7 +151,7 @@ const RealEstatesPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="Meine Immobilien"
+      title={t(IntlKeys.nav.realEstates)}
       withHorizontalPadding={false}
       actionsTop={isIntegration ? <ActionsTopInt /> : <ActionsTop />}
     >

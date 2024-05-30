@@ -9,7 +9,22 @@
     "back": "Zurück",
     "address": "Adresse",
     "noResults": "Keine Ergebnisse",
-    "searching": "Suche..."
+    "searching": "Suche...",
+    "close": "Schließen",
+    "import": "Importieren",
+    "actions": "Aktionen",
+    "dataImported": "Die Daten wurden importiert.",
+    "errorOccurred": "Der Fehler ist aufgetreten!",
+    "status": "Status",
+    "price": "Preis",
+    "objectSuccessfullyDeleted": "Objekt erfolgreich gelöscht!",
+    "objectDeleteConfirmation": "Möchten Sie wirklich das Objekt löschen?",
+    "objectDeleteTitle": "Objekt löschen",
+    "page": "Seite",
+    "delete": "Löschen",
+    "goToPage": "Gehe zu Seite",
+    "show": "Zeigen",
+    "searchFor": "Suchen..."
   },
   "environmentalAnalysis": {
     "createBtn": "Analyse & Karte erstellen",
@@ -52,6 +67,7 @@
   },
   "snapshotEditor": {
     "map": "Karte",
+    "needsFilter": "Bedürfnisfilter",
     "editor": "Editor",
     "export": "Exporte",
     "addressNotPublished": "Genaue Adresse nicht veröffentlicht",
@@ -140,5 +156,35 @@
       "description": "Wie stehen die Strukturdaten?",
       "contactUs": "Gerne liefern wir tiefergehende Daten zu den Themen Arbeitskräfte,\n          Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro Kopf,\n          Gewerbesteuereinnahmen, Logistik-Attraktivität u.v.m. Sprechen Sie uns\n          hierzu einfach direkt an."
     }
+  },
+  "realEstate": {
+    "sync": "Sync-Immobilien",
+    "syncCRM": "CRM synchronisieren",
+    "importCSV": "Import aus CSV-Datei",
+    "createObject": "Objekt anlegen",
+    "linkedCardSnippet": "Verknüpfte Kartensnippets",
+    "csvImportError": "Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten",
+    "csvImportErrorStructure": "Der CSV-Import ist fehlgeschlagen. Bitte überprüfen Sie die Dateistruktur.",
+    "csvImportSuccess": "Datenimport war erfolgreich!",
+    "csvImported": "CSV-Datei wird importiert",
+    "paymentMethods": "Zahlungsarten",
+    "csvImportPrepareText": "Bitte bereiten Sie die Struktur der CSV-Datei entsprechend den\n                mitgelieferten Beispielen vor. In der XLS-Datei werden die\n                Farben zur Erläuterung der Datenstruktur verwendet.",
+    "csvImportPrepareDescription": "Grüne Spalten sind obligatorisch, gelbe optional und die rote\n                Spalte zeigt einen falschen Datensatz an.",
+    "csvImportExampleCsv": "CSV-Beispiel",
+    "csvImportExampleXls": "XLS-Beispiel",
+    "crmImported": "CRM-Datei wird importiert",
+    "crmImportSuccess": "Die Daten wurden importiert, mit Ausnahme der folgenden",
+    "syncErrorOnImporting": "Beim Importieren von Eigenschaften mit den folgenden IDs sind Fehler aufgetreten",
+    "syncCompleted": "Immobiliensynchronisierung erfolgreich abgeschlossen!",
+    "syncPropertyFailed": "Immobiliensynchronisation fehlgeschlagen!",
+    "synchronized": "Immobilien werden synchronisiert",
+    "setFilter": "Filter setzen",
+    "marketingType": "Vermarktungsart",
+    "equipment": "Ausstattung",
+    "note": "Notiz",
+    "createdOn": "Erstellt am",
+    "lastCall": "Letzter Aufruf",
+    "numberOfVisits": "Anzahl der Besuche",
+    "addressDisplayed": "Adresse angezeigt"
   }
 }

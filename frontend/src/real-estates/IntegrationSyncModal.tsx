@@ -1,5 +1,8 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
@@ -16,6 +19,7 @@ const allValue: ISelectTextValue = { text: "Alle", value: "all" };
 const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
   closeModal,
 }) => {
+  const { t } = useTranslation();
   useEscape(closeModal);
   const { handleIntSync, fetchAvailIntStatuses } = useIntegrationSync();
 
@@ -68,7 +72,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
         console.error(errorLineNumbers);
 
         toastError(
-          `Beim Importieren von Eigenschaften mit den folgenden IDs sind Fehler aufgetreten: ${errorLineNumbers
+          `${t(IntlKeys.realEstate.syncErrorOnImporting)}: ${errorLineNumbers
             .sort((a, b) => a.localeCompare(b))
             .join(", ")}`,
           () => {},
@@ -77,13 +81,13 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
       }
 
       if (!errorLineNumbers.length) {
-        toastSuccess("Immobiliensynchronisierung erfolgreich abgeschlossen!");
+        toastSuccess(t(IntlKeys.realEstate.syncCompleted));
       }
 
       isCompletedSync = true;
     } catch (e) {
       console.error(e);
-      toastError("Immobiliensynchronisation fehlgeschlagen!");
+      toastError(t(IntlKeys.realEstate.syncPropertyFailed));
     } finally {
       closeModal(isCompletedSync);
       setIsShownBusyModal(false);
@@ -95,7 +99,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
       {isShownBusyModal && (
         <BusyModal
           items={[
-            { key: "sync-estates", text: "Immobilien werden synchronisiert" },
+            { key: "sync-estates", text: t(IntlKeys.realEstate.synchronized) },
           ]}
         />
       )}
@@ -107,7 +111,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
       >
         <div className="modal-box p-0 sm:rounded-2xl">
           <div className="flex justify-between px-6 py-3 rounded-t-2xl text-white bg-primary">
-            <span className="text-lg font-medium">Filter setzen</span>
+            <span className="text-lg font-medium">{t(IntlKeys.realEstate.setFilter)}</span>
 
             <img
               className="cursor-pointer invert"
@@ -123,7 +127,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div className="form-control">
                 <label htmlFor="marketTypes" className="label">
-                  <span>Vermarktungsart</span>
+                  <span>{t(IntlKeys.realEstate.marketingType)}</span>
                 </label>
 
                 <select
@@ -174,7 +178,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
                 onClick={syncRealEstates}
                 disabled={!isAllowedSync}
               >
-                Sync-Immobilien
+                {t(IntlKeys.realEstate.sync)}
               </button>
             </div>
           </div>

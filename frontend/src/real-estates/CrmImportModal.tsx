@@ -1,5 +1,8 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { useHttp } from "../hooks/http";
 import { ApiRealEstateExtSourcesEnum } from "../../../shared/types/real-estate";
 import BusyModal from "../components/BusyModal";
@@ -18,6 +21,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
   apiConnections,
   closeModal,
 }) => {
+  const { t } = useTranslation();
   const { get } = useHttp();
   const { fetchRealEstates } = useRealEstateData();
 
@@ -40,7 +44,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
     <>
       {isShownBusyModal && (
         <BusyModal
-          items={[{ key: "crm-import", text: "CRM-Datei wird importiert" }]}
+          items={[{ key: "crm-import", text: t(IntlKeys.realEstate.crmImported) }]}
         />
       )}
       <div
@@ -75,7 +79,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                   await fetchRealEstates({ isForceFetch: true });
 
                   if (errorIds.length) {
-                    const errorIdsText = `Die Daten wurden importiert, mit Ausnahme der folgenden ${
+                    const errorIdsText = `${t(IntlKeys.realEstate.crmImportSuccess)} ${
                       apiConnectTypeNames[
                         connectType as ApiRealEstateExtSourcesEnum
                       ]
@@ -84,11 +88,11 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                     toastSuccess(errorIdsText);
                     console.error(errorIdsText);
                   } else {
-                    toastSuccess("Die Daten wurden importiert.");
+                    toastSuccess(t(IntlKeys.common.dataImported));
                   }
                 } catch (e) {
                   console.error(e);
-                  toastError("Der Fehler ist aufgetreten!");
+                  toastError(t(IntlKeys.common.errorOccurred));
                 }
 
                 setIsShownBusyModal(false);

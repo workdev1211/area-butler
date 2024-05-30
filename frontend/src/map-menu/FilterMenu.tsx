@@ -1,12 +1,14 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./FilterMenu.scss";
 
 import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
-import { locationIndexNames } from "../../../shared/constants/location-index";
 import { EntityGroup } from "../shared/search-result.types";
 import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
@@ -33,6 +35,7 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
   groupEntities,
   setGroupEntities,
 }) => {
+  const { t } = useTranslation();
   const [locIndexValues, setLocIndexValues] = useState(initLocIndexValues);
 
   useEffect(() => {
@@ -82,7 +85,7 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
             height: `${isEditorMode ? "calc(67px + 0.5rem + 1rem)" : "auto"}`,
           }}
         >
-          Bedürfnisfilter
+          {t(IntlKeys.snapshotEditor.needsFilter)}
         </div>
       </div>
       <div
@@ -96,7 +99,7 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
             style={{ borderBottom: "0.125rem solid darkgray" }}
           >
             <label className="text-lg font-bold">
-              {locationIndexNames[locIndex]}
+              {t((IntlKeys.snapshotEditor.positionIndices as Record<string, string>)[locIndex])}
             </label>
             <div className="flex gap-3">
               <input
