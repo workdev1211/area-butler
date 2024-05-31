@@ -37,7 +37,7 @@ interface IFetchSnapshotsParams extends Partial<IFetchSnapshotMainParams> {
 interface IGetSnapshotResParams {
   snapshotDoc: SearchResultSnapshotDocument;
   isEmbedded?: boolean;
-  isRealEstateFetched?: boolean;
+  isFetchRealEstate?: boolean;
   isTrial?: boolean;
 }
 
@@ -87,7 +87,7 @@ export class FetchSnapshotService {
       isEmbedded,
       isTrial,
       snapshotDoc,
-      isRealEstateFetched = true,
+      isFetchRealEstate = true,
     }: IGetSnapshotResParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotResDtoData: TSnapshotResDtoData = {
@@ -96,16 +96,22 @@ export class FetchSnapshotService {
       isTrial,
     };
 
-    if (isRealEstateFetched) {
+    if (isFetchRealEstate) {
       if (!snapshotResDtoData.snapshot?.location) {
         throw new HttpException("Location hasn't been exposed!", 500);
       }
 
       const realEstateDoc =
-        await this.realEstateListingService.fetchRealEstateByCoords(
-          user,
-          snapshotResDtoData.snapshot.location,
-        );
+        'integrationUserId' in user
+          ? await this.realEstateListingIntService.findOneByIntParams({
+              integrationId: snapshotDoc.integrationParams.integrationId,
+              integrationType: user.integrationType,
+              integrationUserId: user.integrationUserId,
+            })
+          : await this.realEstateListingService.fetchRealEstateByCoords(
+              user,
+              snapshotResDtoData.snapshot.location,
+            );
 
       if (realEstateDoc) {
         snapshotResDtoData.realEstateListing =
@@ -131,7 +137,7 @@ export class FetchSnapshotService {
       projectQuery,
       sortQuery,
       isEmbedded,
-      isRealEstateFetched,
+      isFetchRealEstate,
       isTrial,
     }: IFetchSnapshotAllParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
@@ -147,7 +153,7 @@ export class FetchSnapshotService {
 
     return this.getSnapshotRes(user, {
       isEmbedded,
-      isRealEstateFetched,
+      isFetchRealEstate,
       isTrial,
       snapshotDoc,
     });
@@ -156,7 +162,7 @@ export class FetchSnapshotService {
   async fetchSnapshotByIdOrFail(
     user: UserDocument | TIntegrationUserDocument,
     snapshotId: string,
-    isRealEstateFetched = true,
+    isFetchRealEstate = true,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotDoc = await this.fetchSnapshotDoc(user, {
       filterQuery: {
@@ -175,7 +181,7 @@ export class FetchSnapshotService {
     snapshotDoc.updatedAt = new Date();
 
     return this.getSnapshotRes(user, {
-      isRealEstateFetched,
+      isFetchRealEstate,
       snapshotDoc: await snapshotDoc.save(),
     });
   }
@@ -208,7 +214,7 @@ export class FetchSnapshotService {
 
     return Promise.all(
       snapshotDocs.map((snapshotDoc) =>
-        this.getSnapshotRes(user, { snapshotDoc, isRealEstateFetched: false }),
+        this.getSnapshotRes(user, { snapshotDoc, isFetchRealEstate: false }),
       ),
     );
   }

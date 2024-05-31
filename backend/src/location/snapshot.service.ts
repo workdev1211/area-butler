@@ -315,7 +315,7 @@ export class SnapshotService {
         {
           filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
           projectQuery: { config: 1 },
-          isRealEstateFetched: false,
+          isFetchRealEstate: false,
         },
       );
     }
@@ -324,7 +324,7 @@ export class SnapshotService {
       templateSnapshot = await this.fetchSnapshotService.fetchSnapshot(user, {
         projectQuery: { config: 1 },
         sortQuery: { updatedAt: -1 },
-        isRealEstateFetched: false,
+        isFetchRealEstate: false,
       });
     }
 

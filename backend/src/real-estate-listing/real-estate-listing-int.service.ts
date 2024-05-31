@@ -48,24 +48,34 @@ export class RealEstateListingIntService {
     private readonly locationIndexService: LocationIndexService,
   ) {}
 
+  async findOneByIntParams({
+    integrationId,
+    integrationUserId,
+    integrationType,
+  }: IApiIntegrationParams): Promise<RealEstateListingDocument> {
+    return this.realEstateListingModel.findOne({
+      'integrationParams.integrationId': integrationId,
+      'integrationParams.integrationUserId': integrationUserId,
+      'integrationParams.integrationType': integrationType,
+    });
+  }
+
   async findOneOrFailByIntParams({
     integrationId,
     integrationUserId,
     integrationType,
   }: IApiIntegrationParams): Promise<RealEstateListingDocument> {
-    const existingRealEstateListing = await this.realEstateListingModel.findOne(
-      {
-        'integrationParams.integrationId': integrationId,
-        'integrationParams.integrationUserId': integrationUserId,
-        'integrationParams.integrationType': integrationType,
-      },
-    );
+    const existRealEstate = await this.findOneByIntParams({
+      integrationId,
+      integrationUserId,
+      integrationType,
+    });
 
-    if (!existingRealEstateListing) {
+    if (!existRealEstate) {
       throw new HttpException('Real estate listing not found!', 400);
     }
 
-    return existingRealEstateListing;
+    return existRealEstate;
   }
 
   async bulkUpdateOneByIntParams(
