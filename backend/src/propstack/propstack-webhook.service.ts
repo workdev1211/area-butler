@@ -113,7 +113,7 @@ export class PropstackWebhookService {
         user,
       });
 
-    this.logger.log(
+    this.logger.verbose(
       `Event ${eventId} continues to be processed for ${dayjs
         .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
         .humanize()}. Snapshot creation is complete.`,
