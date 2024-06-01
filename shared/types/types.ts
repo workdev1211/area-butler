@@ -395,6 +395,7 @@ export interface ApiSearchResultSnapshotResponse {
   config?: ApiSearchResultSnapshotConfig;
   description?: string;
   endsAt?: Date;
+  externalId?: string;
   iframeEndsAt?: Date;
   integrationId?: string;
   isTrial?: boolean;

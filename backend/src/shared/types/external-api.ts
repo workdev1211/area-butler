@@ -182,6 +182,8 @@ export interface IApiQueryOpenAiExtRes extends IExternalApiRes<string> {}
 export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
   responseType?: SnapshotDataTypesEnum;
   snapshotId?: string;
+  publicationId?: string;
+  markerColor?: string;
   templateSnapshotId?: string;
   poiTypes?: OsmName[];
 }

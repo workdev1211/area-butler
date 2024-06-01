@@ -73,7 +73,9 @@ export class LocationIntController {
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.snapshotService.createSnapshot(
       integrationUser,
-      createSnapshotReqDto,
+      {
+        snapshotReq: createSnapshotReqDto
+      }
     );
   }
 

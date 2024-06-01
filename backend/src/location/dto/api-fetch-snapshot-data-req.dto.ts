@@ -53,6 +53,14 @@ class ApiFetchSnapshotDataReqDto
   address?: string;
 
   @IsOptional()
+  @IsString()
+  publicationId?: string;
+
+  @IsOptional()
+  @IsString()
+  markerColor?: string;
+
+  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })

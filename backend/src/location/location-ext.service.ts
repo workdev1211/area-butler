@@ -123,6 +123,8 @@ export class LocationExtService {
       distance,
       unit,
       poiTypes,
+      markerColor,
+      publicationId
     } = fetchSnapshotData;
 
     let snapshotResponse:
@@ -158,6 +160,8 @@ export class LocationExtService {
           },
         ],
         poiTypes,
+        externalId: publicationId,
+        primaryColor: markerColor
       });
     }
 

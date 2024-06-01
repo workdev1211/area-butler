@@ -33,6 +33,14 @@ import { RoutingService } from '../routing/routing.service';
 import { FetchSnapshotService } from './fetch-snapshot.service';
 import { PlaceService } from '../place/place.service';
 
+interface ICreateSnapshot {
+  snapshotReq: ApiCreateSnapshotReq;
+  config?: Partial<ApiSearchResultSnapshotConfig>;
+  isCheckAllowedCountries?: boolean;
+  externalId?: string;
+  primaryColor?: string;
+}
+
 @Injectable()
 export class SnapshotService {
   constructor(
@@ -50,9 +58,7 @@ export class SnapshotService {
   // TODO decrease the number of arguments to 2
   async createSnapshot(
     user: UserDocument | TIntegrationUserDocument,
-    { integrationId, snapshot }: ApiCreateSnapshotReq,
-    config?: ApiSearchResultSnapshotConfig,
-    isCheckAllowedCountries = true,
+    { snapshotReq: { snapshot, integrationId }, config, isCheckAllowedCountries = true, externalId, primaryColor }: ICreateSnapshot
   ): Promise<ApiSearchResultSnapshotResponse> {
     // allowedCountries
     if (isCheckAllowedCountries) {
@@ -97,6 +103,10 @@ export class SnapshotService {
       snapshotConfig.mapIcon = userMapIcon;
     }
 
+    if (primaryColor) {
+      snapshotConfig.primaryColor = primaryColor;
+    }
+
     await this.assignRoutes(snapshot);
     const createdAt = dayjs();
 
@@ -104,6 +114,7 @@ export class SnapshotService {
       mapboxAccessToken,
       snapshot,
       token,
+      externalId,
       config: snapshotConfig,
       createdAt: createdAt.toDate(),
     };
@@ -149,6 +160,7 @@ export class SnapshotService {
       config: savedSnapshotDoc.config,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,
+      externalId: savedSnapshotDoc.externalId,
       mapboxAccessToken: savedSnapshotDoc.mapboxAccessToken,
       token: savedSnapshotDoc.token,
       snapshot: savedSnapshotDoc.snapshot,

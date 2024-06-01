@@ -67,7 +67,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() createSnapshotReqDto: ApiCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotService.createSnapshot(user, createSnapshotReqDto);
+    return this.snapshotService.createSnapshot(user, { snapshotReq: createSnapshotReqDto });
   }
 
   @ApiOperation({ description: 'Update an existing map snapshot' })

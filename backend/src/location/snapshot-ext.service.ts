@@ -29,9 +29,11 @@ interface ICreateSnapshot {
   user: UserDocument | TIntegrationUserDocument;
   location: string | ApiCoordinates;
   templateSnapshotId?: string;
+  externalId?: string;
   realEstateListing?: ApiRealEstateListing;
   transportParams?: TransportationParam[];
   poiTypes?: OsmName[];
+  primaryColor?: string;
 }
 
 interface ICreateSnapshotByPlace extends Omit<ICreateSnapshot, 'location'> {
@@ -52,6 +54,8 @@ export class SnapshotExtService {
     user,
     place,
     templateSnapshotId,
+    externalId,
+    primaryColor,
     realEstateListing,
     transportParams = [...defaultTransportParams],
     poiTypes = [...defaultPoiTypes],
@@ -105,8 +109,12 @@ export class SnapshotExtService {
 
     return this.snapshotService.createSnapshot(
       user,
-      { integrationId: realEstateListing?.integrationId, snapshot },
-      snapshotConfig,
+      {
+        snapshotReq: { integrationId: realEstateListing?.integrationId, snapshot },
+        config: snapshotConfig,
+        externalId,
+        primaryColor
+      }
     );
   }
 
@@ -117,6 +125,8 @@ export class SnapshotExtService {
     templateSnapshotId,
     transportParams,
     poiTypes,
+    primaryColor,
+    externalId
   }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
     const place = await this.placeService.fetchPlaceOrFail({ user, location });
 
@@ -127,6 +137,8 @@ export class SnapshotExtService {
       realEstateListing,
       transportParams,
       poiTypes,
+      externalId,
+      primaryColor
     });
   }
 
@@ -202,9 +214,11 @@ export class SnapshotExtService {
 
     return this.snapshotService.createSnapshot(
       user,
-      { snapshot },
-      config,
-      false,
+      {
+        snapshotReq: { snapshot },
+        config,
+        isCheckAllowedCountries: false
+      },
     );
   }
 }

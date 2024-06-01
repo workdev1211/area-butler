@@ -27,6 +27,9 @@ export class SearchResultSnapshot {
   @Prop({ type: Object })
   config: ApiSearchResultSnapshotConfig;
 
+  @Prop({ type: String })
+  externalId?: string;
+
   @Prop({ type: Object })
   snapshot: ApiSearchResultSnapshot;
 
