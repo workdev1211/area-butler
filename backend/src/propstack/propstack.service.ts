@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -308,15 +309,13 @@ export class PropstackService {
     };
   }
 
-  async getIntegrationUser({
-    apiKey,
-    shopId,
-    brokerId,
-    teamId,
-  }: Omit<
-    IApiPropstackLoginQueryParams,
-    'propertyId' | 'textFieldType'
-  >): Promise<TIntegrationUserDocument> {
+  async getIntegrationUser(
+    getIntUserParams: Omit<
+      IApiPropstackLoginQueryParams,
+      'propertyId' | 'textFieldType'
+    >,
+  ): Promise<TIntegrationUserDocument> {
+    const { apiKey, shopId, brokerId, teamId } = getIntUserParams;
     let integrationUser: TIntegrationUserDocument;
 
     if (teamId) {
@@ -408,6 +407,15 @@ export class PropstackService {
           'parameters.apiKey': apiKey,
         },
       );
+    }
+
+    if (!integrationUser) {
+      PropstackService.logger.error(
+        this.getIntegrationUser.name,
+        getIntUserParams,
+      );
+
+      throw new NotFoundException('Unable to find the integration user!');
     }
 
     const parsedBrokerId = parseInt(brokerId, 10);
