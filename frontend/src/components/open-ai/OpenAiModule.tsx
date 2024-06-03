@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 import { FormikProps } from "formik/dist/types";
-import copy from "copy-to-clipboard";
 
 import {
   IApiOpenAiQuery,
@@ -20,8 +19,7 @@ import { placeholderSelectOptionKey } from "../../../../shared/constants/constan
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocDescForm from "./OpenAiLocDescForm";
 import { TOpenAiQuery, useOpenAi } from "../../hooks/openai";
-import { toastError, toastSuccess } from "../../shared/shared.functions";
-import copyIcon from "../../assets/icons/copy.svg";
+import { toastError } from "../../shared/shared.functions";
 import OpenAiRealEstDescForm from "./OpenAiRealEstDescForm";
 import OpenAiQueryForm from "./OpenAiQueryForm";
 import {
@@ -33,7 +31,11 @@ import OpenAiGeneralForm from "./OpenAiGeneralForm";
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
-  onResponseFetched: (responseText: string, query?: TOpenAiQuery) => void;
+  onResponseFetched: (
+    responseText: string,
+    queryType: OpenAiQueryTypeEnum,
+    query?: TOpenAiQuery
+  ) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
   searchResultSnapshotId?: string;
@@ -67,7 +69,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
   >(initialQueryType);
-  const [fetchedResponse, setFetchedResponse] = useState<string>();
 
   const resultQueryTypes = searchResultSnapshotId
     ? openAiQueryTypes
@@ -146,9 +147,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
       }
 
       const response = await fetchOpenAiResponse(queryType, query);
-
-      onResponseFetched(response, query);
-      setFetchedResponse(response);
+      onResponseFetched(response, queryType, query);
     };
 
     void fetchResponse();
@@ -300,54 +299,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             formRef={formRef}
           />
         )}
-
-        {fetchedResponse && showResult && (
-          <>
-            <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
-            <div className="flex flex-col gap-2">
-              <textarea
-                className="textarea textarea-bordered w-full"
-                rows={7}
-                value={fetchedResponse}
-                onChange={({ target: { value } }) => {
-                  onResponseFetched(value);
-                  setFetchedResponse(value);
-                }}
-              />
-              <div
-                className="flex gap-2 cursor-pointer items-center"
-                onClick={(): void => {
-                  const success = copy(fetchedResponse);
-
-                  if (success) {
-                    toastSuccess("Erfolgreich in Zwischenablage kopiert!");
-                  }
-                }}
-              >
-                <img
-                  src={copyIcon}
-                  alt="copy-icon"
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    filter:
-                      "invert(14%) sepia(66%) saturate(4788%) hue-rotate(333deg) brightness(98%) contrast(96%)",
-                  }}
-                />
-                <span className="text-sm font-bold">
-                  In Zwischenablage kopieren
-                </span>
-              </div>
-              <div
-                className="text-sm font-bold pt-2"
-                style={{ border: 0, borderTop: "1px solid black" }}
-              >
-                Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text
-                für Sie erstellt!
-              </div>
-            </div>
-          </>
-        )}
       </div>
       <div>
         {![
@@ -361,7 +312,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               formId="open-ai-general-form"
               initialValues={cachedOpenAi.general}
               onValuesChange={(values) => {
-                console.log(values);
                 cachingDispatch({
                   type: CachingActionTypesEnum.SET_OPEN_AI,
                   payload: { general: { ...values } },

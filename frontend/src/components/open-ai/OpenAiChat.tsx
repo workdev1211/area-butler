@@ -84,11 +84,6 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
     const query = {
       originalText: prevResponse.queryResponse,
       customText: queryText,
-      text:
-        "Sei mein Experte für Immobilien. In einer vorherigen Iteration ist folgender Text entstanden ============" +
-        prevResponse.queryResponse +
-        "============ Der Kunde hat hierzu folgende Änderungswünsche: " +
-        queryText,
     };
 
     const response = await fetchOpenAiResponse(
@@ -109,7 +104,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
     promptInputRef.current!.value = "";
   };
 
-  const renderQueryResponse = (genText: IGeneratedTexts) => {
+  const renderQuery = (genText: IGeneratedTexts) => {
     if (
       [
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
@@ -118,7 +113,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
       ].includes(genText.queryType)
     ) {
       const queryTitle = openAiQueryTypes.find(
-        ({ type }) => type === queryType
+        ({ type }) => type === genText.queryType
       )!!.label;
       return (
         <>
@@ -172,7 +167,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                 <div className="grid grid-cols-12 gap-2 pb-3">
                   <div className="col-start-3 col-span-9 grid">
                     <div className="border border-gray-600 bg-gray-100 rounded p-3 w-fit justify-self-end">
-                      {renderQueryResponse(genText)}
+                      {renderQuery(genText)}
                     </div>
                   </div>
                   <div className="self-end">
@@ -329,8 +324,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                   setIsGenerateButtonDisabled(!isReady);
                 }}
                 isFetchResponse={isFetchResponse && !isImproveDialogEnabled}
-                onResponseFetched={(responseText, query): void => {
-                  console.log(responseText);
+                onResponseFetched={(responseText, queryType, query): void => {
                   if (responseText !== "") {
                     addQueryResponse({
                       query: query!,
