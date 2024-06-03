@@ -57,8 +57,8 @@ export class OverpassDataService {
           );
 
           const chunks = createChunks<OverpassData>(feats, chunkSize);
-          this.logger.log(
-            `Starting the bulkWrite of ${et.name} (${feats.length}) for ${country}.`,
+          this.logger.verbose(
+            `Starting ${et.name} (${feats.length}) import for ${country}.`,
           );
 
           if (feats.length) {
@@ -68,7 +68,7 @@ export class OverpassDataService {
           }
         }
 
-        this.logger.log(`The bulkWrite of ${et.name} finished.`);
+        this.logger.log(`${et.name} import completed.`);
       }
     } catch (e) {
       this.logger.error(e);

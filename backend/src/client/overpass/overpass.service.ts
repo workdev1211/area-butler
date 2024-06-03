@@ -275,7 +275,7 @@ export class OverpassService {
     const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entityType.type}"="${entityType.name}"];way["${entityType.type}"="${entityType.name}"];relation["${entityType.type}"="${entityType.name}"];);out center;`;
 
     try {
-      this.logger.log(`Fetching ${entityType.name} for ${countryCode}.`);
+      this.logger.verbose(`Fetching ${entityType.name} for ${countryCode}.`);
 
       const response = await firstValueFrom(
         this.http.get(this.baseUrl.replace('{country}', countryCode), {
