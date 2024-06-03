@@ -23,11 +23,11 @@ import {
   IApiAddressInRange,
   IApiFetchAddrInRangeReqStatus,
 } from '../shared/types/external-api';
-import { ApiGuard } from '../auth/api.guard';
+import { Auth0ApiGuard } from '../auth/auth0/auth0-api.guard';
 
 @ApiTags('api-address-range')
 @Controller('api/addresses-in-range')
-@UseGuards(AuthGuard('auth0-api'), ApiGuard)
+@UseGuards(AuthGuard('auth0-api'), Auth0ApiGuard)
 export class ApiAddressesInRangeController {
   constructor(
     private readonly addressesInRangeService: AddressesInRangeExtService,

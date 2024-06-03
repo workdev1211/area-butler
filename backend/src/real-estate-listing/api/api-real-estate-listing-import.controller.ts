@@ -18,8 +18,8 @@ import { UserDocument } from '../../user/schema/user.schema';
 import { RealEstateListingImportService } from '../real-estate-listing-import.service';
 import FileUploadDto from '../../dto/file-upload.dto';
 import { CsvFileFormatEnum } from '@area-butler-types/types';
-import { Role, Roles } from '../../auth/roles.decorator';
-import { RolesGuard } from '../../auth/roles.guard';
+import { Role, Roles } from '../../auth/role/roles.decorator';
+import { RolesGuard } from '../../auth/role/roles.guard';
 
 @ApiTags('api-real-estate-listing-import')
 @Controller('api/real-estate-listing/import')

@@ -2,11 +2,11 @@
 
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
-import { UserService } from '../user/user.service';
-import { clientIdToUserId } from '../shared/constants/api';
+import { UserService } from '../../user/user.service';
+import { clientIdToUserId } from '../../shared/constants/api';
 
 @Injectable()
-export class ApiGuard implements CanActivate {
+export class Auth0ApiGuard implements CanActivate {
   constructor(private readonly userService: UserService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

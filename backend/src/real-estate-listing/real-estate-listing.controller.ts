@@ -35,7 +35,7 @@ import { CsvFileFormatEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
-import { Role, Roles } from '../auth/roles.decorator';
+import { Role, Roles } from '../auth/role/roles.decorator';
 import ApiUserApiConnectSettingsReqDto from '../dto/api-user-api-connect-settings-req.dto';
 import { replaceValInObj } from '../../../shared/functions/shared.functions';
 

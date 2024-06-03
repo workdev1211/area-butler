@@ -12,7 +12,7 @@ import { ApiGeojsonFeature } from '@area-butler-types/types';
 import { ParticlePollutionService } from './particle-pollution.service';
 import FileUploadDto from '../../dto/file-upload.dto';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
-import { Roles, Role } from '../../auth/roles.decorator';
+import { Roles, Role } from '../../auth/role/roles.decorator';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';

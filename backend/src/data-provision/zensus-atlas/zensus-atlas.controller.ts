@@ -10,8 +10,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ZensusAtlasService } from './zensus-atlas.service';
-import { RolesGuard } from '../../auth/roles.guard';
-import { Role, Roles } from '../../auth/roles.decorator';
+import { RolesGuard } from '../../auth/role/roles.guard';
+import { Role, Roles } from '../../auth/role/roles.decorator';
 import FileUploadDto from '../../dto/file-upload.dto';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
