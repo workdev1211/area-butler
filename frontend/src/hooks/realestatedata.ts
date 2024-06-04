@@ -17,6 +17,7 @@ import {
   realEstateAllStatus,
 } from "../../../shared/constants/real-estate";
 import { replaceValInObj } from "../../../shared/functions/shared.functions";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 interface IFetchRealEstParams {
   isForceFetch?: boolean;
@@ -47,6 +48,10 @@ export const useRealEstateData = () => {
   const fetchRealEstates = async (
     params?: IFetchRealEstParams
   ): Promise<ApiRealEstateListing[]> => {
+    if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
+      return [];
+    }
+
     if (!params?.isForceFetch && isListingsFetched) {
       return listings;
     }
@@ -72,6 +77,10 @@ export const useRealEstateData = () => {
   };
 
   const fetchRealEstStatuses = async (): Promise<IApiRealEstStatusByUser> => {
+    if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
+      return { status: [], status2: [] };
+    }
+
     let url = isIntegration
       ? "/api/real-estate-listing-int/status"
       : "/api/real-estate-listing/status";

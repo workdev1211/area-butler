@@ -8,6 +8,7 @@ import {
 } from "../../../shared/types/location-index";
 import { processLocationIndices } from "../../../shared/functions/location-index.functions";
 import { ConfigContext } from "../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 export const useLocationIndexData = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -18,6 +19,10 @@ export const useLocationIndexData = () => {
   const fetchLocationIndexData = async (
     coordinates: ApiCoordinates
   ): Promise<TLocationIndexData | undefined> => {
+    if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
+      return;
+    }
+
     const { data } = await post<IApiLocIndexFeature[]>(
       isIntegration
         ? "/api/location-index-int/query"

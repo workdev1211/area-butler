@@ -19,7 +19,7 @@ const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 export const useHttp = () => {
   const {
-    userState: { integrationUser },
+    userState: { integrationUser, user },
   } = useContext(UserContext);
 
   const { isLoading, getIdTokenClaims } = useAuth0();
@@ -40,6 +40,11 @@ export const useHttp = () => {
 
     if (integrationUser) {
       requestHeaders.Authorization = `AccessToken ${integrationUser.accessToken}`;
+      return requestHeaders;
+    }
+
+    if (user?.accessToken) {
+      requestHeaders.Authorization = `Bearer ${user.accessToken}`;
       return requestHeaders;
     }
 

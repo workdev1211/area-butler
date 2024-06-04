@@ -11,6 +11,7 @@ import {
 import { cleanCensusProperties } from "../../../shared/functions/census.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { ConfigContext } from "../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 const calculateRelevantArea = (
   coords: ApiCoordinates,
@@ -29,6 +30,10 @@ export const useCensusData = () => {
   const fetchCensusData = async (
     coords: ApiCoordinates
   ): Promise<TCensusData | undefined> => {
+    if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
+      return;
+    }
+
     const relevantArea = calculateRelevantArea(coords);
     const geo: ApiGeometry = relevantArea.geometry;
 

@@ -12,6 +12,7 @@ import {
 } from "../../../shared/types/types";
 import { useHttp } from "./http";
 import { ConfigContext } from "../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 export interface FederalElectionDistrict {
   type: ApiGeojsonType;
@@ -35,6 +36,10 @@ export const useFederalElectionData = () => {
   const fetchFederalElectionData = async (
     point: ApiCoordinates
   ): Promise<FederalElectionDistrict | undefined> => {
+    if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
+      return;
+    }
+
     const geo: ApiGeometry = {
       type: "Point",
       coordinates: [point.lng, point.lat],

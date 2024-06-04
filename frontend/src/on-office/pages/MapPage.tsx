@@ -28,7 +28,7 @@ import { useCensusData } from "../../hooks/censusdata";
 import { useFederalElectionData } from "../../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../../hooks/particlepollutiondata";
 import { useLocationIndexData } from "../../hooks/locationindexdata";
-import { LoadingMessage } from "../../components/Loading";
+import { Loading } from "../../components/Loading";
 import { RealEstateContext } from "../../context/RealEstateContext";
 import { filterRealEstates } from "../../shared/real-estate.functions";
 import { useRealEstateData } from "../../hooks/realestatedata";
@@ -65,6 +65,7 @@ const MapPage: FC = () => {
     ApiRealEstateListing[]
   >([]);
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
+  const [isErrorOccurred, setIsErrorOccurred] = useState(false);
 
   // initialization
   useEffect(() => {
@@ -82,7 +83,15 @@ const MapPage: FC = () => {
     }
 
     const fetchSnapshotData = async () => {
-      const snapshotRes = await fetchSnapshot(snapshotId);
+      const snapshotRes = await fetchSnapshot(snapshotId).catch((e) => {
+        console.error(e);
+        setIsErrorOccurred(true);
+      });
+
+      if (!snapshotRes) {
+        return;
+      }
+
       const config = snapshotRes.config;
 
       if (!listings.length) {
@@ -369,7 +378,11 @@ const MapPage: FC = () => {
     !searchContextState.responseConfig ||
     !mapboxAccessToken
   ) {
-    return <LoadingMessage />;
+    return (
+      <div className="flex items-center justify-center h-screen text-lg">
+        {isErrorOccurred ? "Ein Fehler ist aufgetreten!" : <Loading />}
+      </div>
+    );
   }
 
   return (

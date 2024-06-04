@@ -23,6 +23,7 @@ import { ICurrentMapRef } from "../shared/search-result.types";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../shared/types/location";
 import { ConfigContext } from "../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 export const useLocationData = () => {
   const { t } = useTranslation();
@@ -48,13 +49,20 @@ export const useLocationData = () => {
   const fetchSnapshot = async (
     snapshotId: string
   ): Promise<ApiSearchResultSnapshotResponse> => {
-    return (
-      await get<ApiSearchResultSnapshotResponse>(
-        isIntegration
-          ? `/api/location-int/snapshot/${snapshotId}`
-          : `/api/location/snapshot/${snapshotId}`
-      )
-    ).data;
+    let url: string;
+    let additionalHeaders;
+
+    if (isIntegration) {
+      url =
+        integrationType === IntegrationTypesEnum.MY_VIVENDA
+          ? `/api/location-myv/snapshot/${snapshotId}`
+          : `/api/location-int/snapshot/${snapshotId}`;
+    } else {
+      url = `/api/location/snapshot/${snapshotId}`;
+    }
+
+    return (await get<ApiSearchResultSnapshotResponse>(url, additionalHeaders))
+      .data;
   };
 
   const fetchSnapshots = async (
@@ -74,6 +82,10 @@ export const useLocationData = () => {
   const fetchLateSnapConfigs = async (
     limitNumber: number
   ): Promise<IApiLateSnapConfigOption[]> => {
+    if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
+      return [];
+    }
+
     let url = isIntegration
       ? "/api/location-int/snapshots/configs"
       : "/api/location/snapshots/configs";

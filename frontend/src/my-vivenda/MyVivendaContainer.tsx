@@ -11,7 +11,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
-import { LoadingMessage } from "../components/Loading";
+import { Loading, LoadingMessage } from "../components/Loading";
 import { IIntegrationHandleLogin } from "../../../shared/types/integration";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useMyVivendaLogin } from "./hooks/myvivendalogin";
@@ -76,11 +76,11 @@ const MyVivendaContainer: FC = () => {
 
   if (!user || loginStatus?.requestStatus === ResultStatusEnum.FAILURE) {
     return (
-      <div className="flex items-center justify-center h-[100vh] text-lg">
+      <div className="flex items-center justify-center h-screen text-lg">
         {loginStatus?.requestStatus === ResultStatusEnum.FAILURE ? (
           loginStatus.message || "Ein Fehler ist aufgetreten!"
         ) : (
-          <LoadingMessage />
+          <Loading />
         )}
       </div>
     );

@@ -31,6 +31,7 @@ import { RealEstateListingModule } from '../real-estate-listing/real-estate-list
 import { SnapshotService } from './snapshot.service';
 import { PlaceModule } from '../place/place.module';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { LocationMyvController } from './location-myv.controller';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { FetchSnapshotService } from './fetch-snapshot.service';
     EmbeddedMapController,
     LocationExtController,
     LocationIntController,
+    LocationMyvController,
     LocationController,
     TilesController,
   ],

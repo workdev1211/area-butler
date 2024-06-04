@@ -1,7 +1,12 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import {
+  CSSProperties,
+  FC,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
-
-import "./SnapshotEditorPage.scss";
 
 import SearchResultContainer from "components/search-result-container/SearchResultContainer";
 import { ICurrentMapRef } from "shared/search-result.types";
@@ -33,7 +38,7 @@ import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
 import { useTools } from "../hooks/tools";
-import { LoadingMessage } from "../components/Loading";
+import { Loading } from "../components/Loading";
 import { RealEstateContext } from "../context/RealEstateContext";
 import { filterRealEstates } from "../shared/real-estate.functions";
 import { useRealEstateData } from "../hooks/realestatedata";
@@ -42,6 +47,7 @@ import {
   deriveInitialEntityGroups,
   setTransportParamForResEntity,
 } from "../shared/pois.functions";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -50,7 +56,8 @@ export interface SnapshotEditorRouterProps {
 const SnapshotEditorPage: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
-  const { mapBoxAccessToken: mapboxAccessToken } = useContext(ConfigContext);
+  const { integrationType, mapBoxAccessToken: mapboxAccessToken } =
+    useContext(ConfigContext);
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
   const {
@@ -71,6 +78,7 @@ const SnapshotEditorPage: FC = () => {
   const { fetchLocationIndexData } = useLocationIndexData();
 
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
+  const [isErrorOccurred, setIsErrorOccurred] = useState(false);
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -108,7 +116,15 @@ const SnapshotEditorPage: FC = () => {
         payload: undefined,
       });
 
-      const snapshotRes = await fetchSnapshot(snapshotId);
+      const snapshotRes = await fetchSnapshot(snapshotId).catch((e) => {
+        console.error(e);
+        setIsErrorOccurred(true);
+      });
+
+      if (!snapshotRes) {
+        return;
+      }
+
       const snapshotConfig = (snapshotRes.config ||
         {}) as any as ApiSearchResultSnapshotConfig;
       let realEstates = listings;
@@ -378,14 +394,29 @@ const SnapshotEditorPage: FC = () => {
     });
   };
 
+  const styles: CSSProperties =
+    integrationType === IntegrationTypesEnum.MY_VIVENDA
+      ? {
+          height: "100vh",
+          maxHeight: "100vh",
+        }
+      : {
+          height: "calc(100vh - var(--nav-height))",
+          maxHeight: "calc(100vh - var(--nav-height))",
+        };
+
   if (!snapshot) {
-    return <LoadingMessage />;
+    return (
+      <div className="flex items-center justify-center h-screen text-lg">
+        {isErrorOccurred ? "Ein Fehler ist aufgetreten!" : <Loading />}
+      </div>
+    );
   }
 
   return (
     <DefaultLayout withHorizontalPadding={false}>
       <TourStarter tour={ApiTourNamesEnum.EDITOR} />
-      <div className="editor-container">
+      <div className="editor-container flex relative w-full" style={styles}>
         <SearchResultContainer
           mapboxAccessToken={mapboxAccessToken}
           searchResponse={snapshot.searchResponse}
