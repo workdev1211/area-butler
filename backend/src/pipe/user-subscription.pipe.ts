@@ -13,6 +13,10 @@ export class UserSubscriptionPipe implements PipeTransform {
       throw new HttpException('Unknown User', 400);
     }
 
+    if (user.subscription) {
+      return user;
+    }
+
     const userSubscription = await this.subscriptionService.findActiveByUserId(
       user.parentId || user.id,
     );

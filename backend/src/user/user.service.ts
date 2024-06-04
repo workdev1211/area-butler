@@ -7,6 +7,7 @@ import { readdir, readFile } from 'fs/promises';
 import { join as joinPath } from 'path';
 import { ManipulateType } from 'dayjs';
 import { Dirent } from 'node:fs';
+import { plainToInstance } from 'class-transformer';
 
 import {
   cumulativeRequestSubscriptionTypes,
@@ -28,6 +29,7 @@ import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { getImageTypeFromFileType } from '../shared/functions/shared';
+import ApiUserDto from './dto/api-user.dto';
 
 @Injectable()
 export class UserService {
@@ -453,5 +455,31 @@ export class UserService {
       name: name.join('.'),
       file: `data:${getImageTypeFromFileType(type)};base64,${file}`,
     } as IApiUserPoiIcon;
+  }
+
+  async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
+    if (user.parentId && !user.parentUser) {
+      user.parentUser = await this.findById({
+        userId: user.parentId,
+        withAssets: true,
+        withSubscription: true,
+      });
+    }
+
+    if (
+      user.parentUser &&
+      (!user.subscription ||
+        user.subscription.id !== user.parentUser.subscription?.id)
+    ) {
+      user.subscription = user.parentUser.subscription;
+    }
+
+    if (!user.subscription && !user.parentUser) {
+      user.subscription = await this.subscriptionService.findActiveByUserId(
+        user.id,
+      );
+    }
+
+    return plainToInstance(ApiUserDto, user, { exposeUnsetFields: false });
   }
 }

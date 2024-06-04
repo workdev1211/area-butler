@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { plainToInstance } from 'class-transformer';
 
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
@@ -23,7 +22,6 @@ import ApiUserDto from './dto/api-user.dto';
 import ApiUserSubscriptionDto from './dto/api-user-subscription.dto';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
-import { UserDocument } from './schema/user.schema';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -46,7 +44,7 @@ export class UserController {
       true,
     );
 
-    return this.transformToApiUser(user);
+    return this.userService.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Get the current user subscriptions' })
@@ -81,7 +79,7 @@ export class UserController {
     // TODO think about creating a trial service
     await this.subscriptionService.removeTrialSubscription(user.id);
 
-    return this.transformToApiUser(user);
+    return this.userService.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Update the current user' })
@@ -97,7 +95,7 @@ export class UserController {
       upsertUser,
     );
 
-    return this.transformToApiUser(user);
+    return this.userService.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Update the current user settings' })
@@ -119,7 +117,7 @@ export class UserController {
       settings,
     );
 
-    return this.transformToApiUser(user);
+    return this.userService.transformToApiUser(user);
   }
 
   private checkMimeType(base64EncodedImage: string): void {
@@ -136,7 +134,7 @@ export class UserController {
     const requestUser = request?.user;
     const user = await this.userService.giveConsent(requestUser.email);
 
-    return this.transformToApiUser(user);
+    return this.userService.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Hide single tour for current user' })
@@ -148,7 +146,7 @@ export class UserController {
     const requestUser = request?.user;
     const user = await this.userService.hideTour(requestUser.email, tour);
 
-    return this.transformToApiUser(user);
+    return this.userService.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Hide tours for current user' })
@@ -157,34 +155,6 @@ export class UserController {
     const requestUser = request?.user;
     const user = await this.userService.hideTour(requestUser.email);
 
-    return this.transformToApiUser(user);
-  }
-
-  private async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
-    if (user.parentId && !user.parentUser) {
-      user.parentUser = await this.userService.findById({
-        userId: user.parentId,
-        withAssets: true,
-        withSubscription: true,
-      });
-    }
-
-    if (
-      user.parentUser &&
-      (!user.subscription ||
-        user.subscription.id !== user.parentUser.subscription?.id)
-    ) {
-      user.subscription = user.parentUser.subscription;
-    }
-
-    if (!user.subscription && !user.parentUser) {
-      user.subscription = await this.subscriptionService.findActiveByUserId(
-        user.id,
-      );
-    }
-
-    return plainToInstance(ApiUserDto, user.toObject(), {
-      exposeUnsetFields: false,
-    });
+    return this.userService.transformToApiUser(user);
   }
 }
