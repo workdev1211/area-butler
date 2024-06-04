@@ -75,6 +75,7 @@ export interface ApiUser {
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
   templateSnapshotId?: string;
   language: LanguageTypeEnum;
+  accessToken?: string; // only on the frontend and MyVivenda specific for the moment
 }
 
 export type TApiUserApiConnectSettings = Partial<

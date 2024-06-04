@@ -39,6 +39,9 @@ RUN yarn build-on-office
 RUN tmp=$(mktemp); jq '.homepage = "/propstack"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build-propstack
 
+RUN tmp=$(mktemp); jq '.homepage = "/my-vivenda"' ./package.json > "$tmp" && mv "$tmp" package.json
+RUN yarn build-my-vivenda
+
 RUN tmp=$(mktemp); jq '.homepage = "/"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build
 

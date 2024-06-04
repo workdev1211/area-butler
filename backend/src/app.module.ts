@@ -34,7 +34,7 @@ import { MyVivendaModule } from './my-vivenda/my-vivenda.module';
     ServeStaticModule.forRoot(
       {
         rootPath: join(__dirname, '..', '..', 'static/main'),
-        exclude: ['/embed/*', '/on-office/*', '/propstack/*'],
+        exclude: ['/embed/*', '/on-office/*', '/propstack/*', '/my-vivenda/*'],
       },
       {
         serveRoot: '/embed',
@@ -47,6 +47,10 @@ import { MyVivendaModule } from './my-vivenda/my-vivenda.module';
       {
         serveRoot: '/propstack',
         rootPath: join(__dirname, '..', '..', 'static/propstack'),
+      },
+      {
+        serveRoot: '/my-vivenda',
+        rootPath: join(__dirname, '..', '..', 'static/my-vivenda'),
       },
     ),
     ScheduleModule.forRoot(),

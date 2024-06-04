@@ -7,10 +7,12 @@
     "start-embed": "cross-env TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
     "start-on-office": "cross-env TAILWIND_MODE=watch PORT=3003 craco start --config craco-on-office.config.js",
     "start-propstack": "cross-env TAILWIND_MODE=watch PORT=3004 craco start --config craco-propstack.config.js",
+    "start-my-vivenda": "cross-env TAILWIND_MODE=watch PORT=3005 craco start --config craco-my-vivenda.config.js",
     "build": "craco build && mv build build-main",
     "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
     "build-on-office": "craco build --config craco-on-office.config.js && mv build build-on-office",
     "build-propstack": "craco build --config craco-propstack.config.js && mv build build-propstack",
+    "build-my-vivenda": "craco build --config craco-my-vivenda.config.js && mv build build-my-vivenda",
     "test": "craco test"
   },
   "eslintConfig": {
