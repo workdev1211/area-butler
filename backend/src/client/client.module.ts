@@ -12,6 +12,7 @@ import { GoogleApiService } from './google/google-api.service';
 import { HereGeocodeService } from './here/here-geocode.service';
 import { OnOfficeApiService } from './on-office/on-office-api.service';
 import { PropstackApiService } from './propstack/propstack-api.service';
+import { MyVivendaApiService } from './my-vivenda/my-vivenda-api.service';
 
 @Module({
   providers: [
@@ -26,6 +27,7 @@ import { PropstackApiService } from './propstack/propstack-api.service';
     HereGeocodeService,
     OnOfficeApiService,
     PropstackApiService,
+    MyVivendaApiService,
   ],
   imports: [HttpModule],
   exports: [
@@ -40,6 +42,7 @@ import { PropstackApiService } from './propstack/propstack-api.service';
     HereGeocodeService,
     OnOfficeApiService,
     PropstackApiService,
+    MyVivendaApiService,
   ],
 })
 export class ClientModule {}

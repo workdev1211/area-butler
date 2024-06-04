@@ -25,6 +25,7 @@ import { configService } from './config/config.service';
 import { OnOfficeModule } from './on-office/on-office.module';
 import { OpenAiModule } from './open-ai/open-ai.module';
 import { PropstackModule } from './propstack/propstack.module';
+import { MyVivendaModule } from './my-vivenda/my-vivenda.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { PropstackModule } from './propstack/propstack.module';
     PropstackModule,
     OpenAiModule,
     ThrottlerModule.forRoot(),
+    MyVivendaModule,
   ],
   providers: [
     {

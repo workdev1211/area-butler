@@ -13,6 +13,7 @@ import { OnOfficeProductTypesEnum } from "./on-office";
 import { PropstackProductTypeEnum } from "./propstack";
 
 export enum IntegrationTypesEnum {
+  MY_VIVENDA = "MY_VIVENDA",
   ON_OFFICE = "ON_OFFICE",
   PROPSTACK = "PROPSTACK",
 }
