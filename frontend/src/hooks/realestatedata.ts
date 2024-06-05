@@ -18,6 +18,11 @@ import {
 } from "../../../shared/constants/real-estate";
 import { replaceValInObj } from "../../../shared/functions/shared.functions";
 
+interface IFetchRealEstParams {
+  isForceFetch?: boolean;
+  statuses?: IApiRealEstateStatuses;
+}
+
 export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
   const {
@@ -40,9 +45,9 @@ export const useRealEstateData = () => {
   };
 
   const fetchRealEstates = async (
-    statuses?: IApiRealEstateStatuses
+    params?: IFetchRealEstParams
   ): Promise<ApiRealEstateListing[]> => {
-    if (isListingsFetched) {
+    if (!params?.isForceFetch && isListingsFetched) {
       return listings;
     }
 
@@ -50,10 +55,10 @@ export const useRealEstateData = () => {
       ? "/api/real-estate-listing-int/listings"
       : "/api/real-estate-listing/listings";
 
-    if (statuses) {
-      url += `?status=${statuses.status || realEstateAllStatus}&status2=${
-        statuses.status2 || realEstateAllStatus
-      }`;
+    if (params?.statuses) {
+      url += `?status=${
+        params.statuses.status || realEstateAllStatus
+      }&status2=${params.statuses.status2 || realEstateAllStatus}`;
     }
 
     const realEstates = (await get<ApiRealEstateListing[]>(url)).data;

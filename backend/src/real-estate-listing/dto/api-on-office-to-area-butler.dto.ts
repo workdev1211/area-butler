@@ -41,7 +41,7 @@ export interface IApiOnOfficeProcessedRealEstate
   status: string; // the label for 'status2' field
   grundstuecksgroesse: string; // the label for 'grundstuecksflaeche' field
   energieeffizienzklasse: string; // the label for 'energyClass' field
-  immonr: string; // the label for 'objektnr_extern' field
+  // immonr: string; // the label for 'objektnr_extern' field
   areaButlerStatus?: string; // this field comes from our side
   areaButlerStatus2?: string; // this field comes from our side
 }

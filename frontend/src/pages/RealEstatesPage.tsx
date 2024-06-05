@@ -185,7 +185,7 @@ const RealEstatesPage: FunctionComponent = () => {
             setIsShownIntSyncModal(false);
 
             if (isCompletedSync) {
-              void fetchRealEstates();
+              void fetchRealEstates({ isForceFetch: true });
             }
           }}
         />

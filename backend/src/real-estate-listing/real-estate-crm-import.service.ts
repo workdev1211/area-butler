@@ -23,7 +23,6 @@ import {
   PROPSTACK_PROPERTIES_PER_PAGE,
   PropstackApiService,
 } from '../client/propstack/propstack-api.service';
-import ApiPropstackFetchToAreaButlerDto from './dto/api-propstack-fetch-to-area-butler.dto';
 import { apiConnectTypeNames } from '../../../shared/constants/real-estate';
 import { UserService } from '../user/user.service';
 import {
@@ -48,6 +47,7 @@ import { RealEstateListingService } from './real-estate-listing.service';
 import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
 import { getProcUpdateQuery } from '../shared/functions/shared';
 import { PlaceService } from '../place/place.service';
+import ApiPropstackWebhookToAreaButlerDto from './dto/api-propstack-webhook-to-area-butler.dto';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -284,14 +284,12 @@ export class RealEstateCrmImportService {
 
         Object.assign(property, locationData);
 
-        const areaButlerRealEstate = plainToInstance(
-          ApiPropstackFetchToAreaButlerDto,
+        const abRealEstate = plainToInstance(
+          ApiPropstackWebhookToAreaButlerDto,
           property,
         ) as IApiRealEstateListingSchema;
 
-        await this.realEstateListingService.assignLocationIndices(
-          areaButlerRealEstate,
-        );
+        await this.realEstateListingService.assignLocationIndices(abRealEstate);
 
         // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
@@ -307,11 +305,17 @@ export class RealEstateCrmImportService {
                 userId: user.id,
               };
 
+        const resultRealEstate = { ...abRealEstate, ...filterQuery };
+
+        if (isIntegrationUser) {
+          delete resultRealEstate.integrationParams;
+        }
+
         // https://github.com/Automattic/mongoose/issues/9180#issuecomment-650270743
         bulkOperations.push({
           updateOne: {
             filter: filterQuery,
-            update: getProcUpdateQuery(areaButlerRealEstate),
+            update: getProcUpdateQuery(resultRealEstate),
             upsert: true,
           },
         });
@@ -379,7 +383,6 @@ export class RealEstateCrmImportService {
         'vermarktungsart',
         'status2',
         'objekttyp',
-        'objektnr_extern', // external id
       ],
     };
 
@@ -543,15 +546,13 @@ export class RealEstateCrmImportService {
 
         Object.assign(realEstate, locationData);
 
-        const areaButlerRealEstate = plainToInstance(
+        const abRealEstate = plainToInstance(
           ApiOnOfficeToAreaButlerDto,
           realEstate,
           { exposeUnsetFields: false },
         ) as IApiRealEstateListingSchema;
 
-        await this.realEstateListingService.assignLocationIndices(
-          areaButlerRealEstate,
-        );
+        await this.realEstateListingService.assignLocationIndices(abRealEstate);
 
         // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
@@ -567,11 +568,17 @@ export class RealEstateCrmImportService {
                 userId: user.id,
               };
 
+        const resultRealEstate = { ...abRealEstate, ...filterQuery };
+
+        if (isIntegrationUser) {
+          delete resultRealEstate.integrationParams;
+        }
+
         // https://github.com/Automattic/mongoose/issues/9180#issuecomment-650270743
         bulkOperations.push({
           updateOne: {
             filter: filterQuery,
-            update: areaButlerRealEstate,
+            update: getProcUpdateQuery(resultRealEstate),
             upsert: true,
           },
         });

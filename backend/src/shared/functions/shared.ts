@@ -74,6 +74,8 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
 export const createDirectLink = (token: string): string =>
   `${configService.getBaseAppUrl()}/embed?token=${token}`;
 
+// generates the 'updateOne' / 'updateMany' queries taking into account the undefined params
+// all the undefined params should be '$unset'
 export const getProcUpdateQuery = <T = object>(
   updateData: T,
 ): UpdateQuery<T> => {

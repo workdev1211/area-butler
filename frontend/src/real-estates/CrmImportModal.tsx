@@ -72,7 +72,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                     )
                   ).data;
 
-                  await fetchRealEstates();
+                  await fetchRealEstates({ isForceFetch: true });
 
                   if (errorIds.length) {
                     const errorIdsText = `Die Daten wurden importiert, mit Ausnahme der folgenden ${

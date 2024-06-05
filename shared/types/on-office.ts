@@ -184,8 +184,10 @@ export interface IApiOnOfficeRealEstate {
   anzahl_balkone: string; // number of balconies
   unterkellert: ApiOnOfficeEstateBasementEnum; // basement
   vermarktungsart: string; // ApiOnOfficeEstateMarketTypesEnum // marketing type - sell, rent, etc
+  /*
   // external id in onOffice, in our app we use "Id" / "Datensatznr" field
   objektnr_extern: string; // the label is "ImmoNr"
+   */
   lage: string; // description
 }
 
