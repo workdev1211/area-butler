@@ -12,22 +12,12 @@ import {
   toastSuccess,
 } from "../../../../shared/shared.functions";
 import mapIcon from "../../../../assets/icons/map.svg";
-import {
-  SearchContext,
-  SearchContextActionTypes,
-} from "../../../../context/SearchContext";
+import { SearchContext } from "../../../../context/SearchContext";
 import ConfirmationModal from "../../../../components/ConfirmationModal";
-import { UserActionTypes, UserContext } from "../../../../context/UserContext";
+import { UserContext } from "../../../../context/UserContext";
 import { ConfigContext } from "../../../../context/ConfigContext";
 import { useHttp } from "../../../../hooks/http";
-import { ApiOnOfficeArtTypesEnum } from "../../../../../../shared/types/on-office";
-import { useIntegrationTools } from "../../../../hooks/integration/integrationtools";
 import { useTools } from "../../../../hooks/tools";
-import copyIcon from "../../../../assets/icons/copy.svg";
-import sendToOnOfficeIcon from "../../../../assets/icons/entrance-alt1.svg";
-import { saveAs } from "file-saver";
-import { getQrCodeBase64 } from "../../../../export/QrCode";
-import downloadIcon from "../../../../assets/icons/download.svg";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -90,7 +80,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
       //   payload: iframeEndsAt,
       // });
 
-      toastSuccess("Das Produkt wurde erfolgreich gekauft!");
+      toastSuccess("Die Adresse wurde erfolgreich freigeschaltet!");
       setIsShownModal(false);
     } catch (e) {
       toastError("Der Fehler ist aufgetreten!");

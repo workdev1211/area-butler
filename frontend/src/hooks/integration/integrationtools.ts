@@ -185,7 +185,7 @@ export const useIntegrationTools = () => {
         payload: availProdContType,
       });
 
-      toastSuccess("Das Produkt wurde erfolgreich gekauft!");
+      toastSuccess("Die Adresse wurde erfolgreich freigeschaltet!");
     } catch (e) {
       toastError(errorMessage);
       console.error(e);
