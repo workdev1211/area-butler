@@ -110,9 +110,9 @@ export class EmbeddedMapController {
       status2: snapshotDoc.config.realEstateStatus2,
     };
 
-    if (snapshotRes.realEstateListing) {
+    if (snapshotRes.snapshot.realEstate) {
       filterQuery._id = {
-        $ne: new Types.ObjectId(snapshotRes.realEstateListing.id),
+        $ne: new Types.ObjectId(snapshotRes.snapshot.realEstate.id),
       };
     }
 

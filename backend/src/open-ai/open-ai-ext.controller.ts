@@ -107,8 +107,8 @@ export class OpenAiExtController extends ApiKeyAuthController {
           });
 
           const snapshotRes = {
-            realEstateListing: realEstate,
             snapshot: {
+              realEstate,
               location: coordinates,
               placesLocation: { label: resultingAddress },
               searchResponse: {

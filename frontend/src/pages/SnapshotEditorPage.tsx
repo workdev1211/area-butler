@@ -215,7 +215,7 @@ const SnapshotEditorPage: FC = () => {
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-        payload: snapshotRes.realEstateListing,
+        payload: snapshotRes.snapshot.realEstate,
       });
 
       setSnapshot(snapshotRes.snapshot);

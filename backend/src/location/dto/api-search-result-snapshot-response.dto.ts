@@ -13,7 +13,6 @@ import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.s
 import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import ApiSearchResultSnapshotDto from './snapshot/api-search-result-snapshot.dto';
-import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 import ApiSearchResultSnapshotConfigDto from './snapshot/api-search-result-snapshot-config.dto';
 
 export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
@@ -22,8 +21,6 @@ export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
   realEstateListing?: ApiRealEstateListing;
   userPoiIcons?: IApiUserPoiIcons;
 };
-
-let randomCoordinates: ApiCoordinates;
 
 @Exclude()
 class ApiSearchResultSnapshotResponseDto
@@ -97,65 +94,30 @@ class ApiSearchResultSnapshotResponseDto
   lastAccess?: Date;
 
   @Expose()
-  @Type(() => ApiRealEstateListingDto)
-  @Transform(
-    ({
-      value,
-      obj: {
-        isEmbedded = false,
-        config: { showAddress = false },
-      },
-    }: {
-      obj: TSnapshotResDtoData;
-      value: ApiRealEstateListing;
-    }): ApiRealEstateListing =>
-      processAddressVisibility(value, showAddress, isEmbedded),
-    {
-      toClassOnly: true,
-    },
-  )
-  realEstateListing?: ApiRealEstateListing;
-
-  @Expose()
   updatedAt?: Date;
 
   @Expose()
   visitAmount?: number;
-
-  constructor() {
-    randomCoordinates = undefined;
-  }
 }
 
 export default ApiSearchResultSnapshotResponseDto;
 
-const processAddressVisibility = <
-  T extends ApiSearchResultSnapshot | ApiRealEstateListing,
->(
-  entity: T,
+const processAddressVisibility = (
+  snapshot: ApiSearchResultSnapshot,
   isAddressShown: boolean,
   isEmbedded: boolean,
-): T => {
-  if (!entity || isAddressShown || !isEmbedded) {
-    return entity;
+): ApiSearchResultSnapshot => {
+  if (!snapshot || isAddressShown || !isEmbedded) {
+    return snapshot;
   }
 
-  const isSnapshot = 'searchResponse' in entity;
+  const { location, realEstate, searchResponse, ...otherSnapshotData } =
+    snapshot;
 
-  randomCoordinates =
-    randomCoordinates ||
-    randomizeCoordinates(isSnapshot ? entity.location : entity.coordinates);
+  const randomCoordinates = randomizeCoordinates(location);
 
-  if (!isSnapshot) {
-    return {
-      ...entity,
-      address: undefined,
-      coordinates: randomCoordinates,
-    };
-  }
-
-  const processSearchRes: ApiSearchResponse = {
-    ...entity.searchResponse,
+  const processedSearchRes: ApiSearchResponse = {
+    ...searchResponse,
     centerOfInterest: {
       coordinates: randomCoordinates,
       address: undefined,
@@ -164,10 +126,20 @@ const processAddressVisibility = <
     },
   };
 
+  const resultRealEstate: ApiRealEstateListing = realEstate
+    ? { ...realEstate }
+    : undefined;
+
+  if (resultRealEstate) {
+    resultRealEstate.address = undefined;
+    resultRealEstate.coordinates = undefined;
+  }
+
   return {
-    ...entity,
+    ...otherSnapshotData,
     location: randomCoordinates,
     placesLocation: undefined,
-    searchResponse: processSearchRes,
+    realEstate: resultRealEstate,
+    searchResponse: processedSearchRes,
   };
 };

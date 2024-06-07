@@ -102,6 +102,7 @@ export const useLocationData = () => {
         isIntegration ? "/api/location-int/snapshot" : "/api/location/snapshot",
         {
           integrationId: searchContextState.realEstateListing?.integrationId,
+          realEstateId: searchContextState.realEstateListing?.id, // to check if real estate belongs to the user
           snapshot: {
             searchResponse,
             location: searchContextState.location!,

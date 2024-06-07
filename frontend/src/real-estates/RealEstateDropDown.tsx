@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useRef, useState } from "react";
+import { FC, useContext, useRef, useState } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -16,7 +16,7 @@ interface IRealEstateDropDownProps {
   buttonStyles?: string;
 }
 
-const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
+const RealEstateDropDown: FC<IRealEstateDropDownProps> = ({
   user,
   buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
@@ -33,6 +33,7 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
 
     const result = await deriveGeocodeByAddress(user, listing.address);
     const { lat, lng } = result;
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: { label: listing.address, value: { place_id: "123" } },
@@ -58,7 +59,11 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
     ? "dropdown dropdown-open dropdown-top z-2000 relative mt-4 w-full sm:w-auto"
     : "dropdown mt-4 w-full sm:w-auto";
 
-  return realEstateState.listings?.length > 0 ? (
+  if (!realEstateState.listings?.length) {
+    return null;
+  }
+
+  return (
     <div className={dropdownClasses} ref={dropDownRef}>
       <div
         className={buttonStyles}
@@ -75,11 +80,11 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
                 <button
                   type="button"
                   key={`real-estate-listing-item-a-${realEstateListing.id}`}
+                  className="btn btn-link whitespace-nowrap w-full"
                   onClick={() => {
-                    fillAddressFromListing(realEstateListing);
+                    void fillAddressFromListing(realEstateListing);
                     setShowMenu(false);
                   }}
-                  className="btn btn-link whitespace-nowrap w-full"
                 >
                   <div className="flex flex-col items-start">
                     <span className="font-bold">{realEstateListing.name}</span>
@@ -94,7 +99,7 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
         </ul>
       )}
     </div>
-  ) : null;
+  );
 };
 
 export default RealEstateDropDown;

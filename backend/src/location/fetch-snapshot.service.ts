@@ -1,6 +1,12 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  PopulateOptions,
+  ProjectionFields,
+  Types,
+} from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import * as dayjs from 'dayjs';
 
@@ -8,22 +14,25 @@ import { SubscriptionService } from '../user/subscription.service';
 import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
+  SNAPSHOT_REAL_EST_PATH,
 } from './schema/search-result-snapshot.schema';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { TApiMongoSortQuery } from '../shared/types/shared';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import ApiSearchResultSnapshotResponseDto, {
   TSnapshotResDtoData,
 } from './dto/api-search-result-snapshot-response.dto';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LocationSearchDocument } from './schema/location-search.schema';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 
 interface IFetchSnapshotMainParams {
+  isFetchRealEstate?: boolean;
   filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
   projectQuery?: ProjectionFields<SearchResultSnapshotDocument>;
   sortQuery?: TApiMongoSortQuery;
@@ -37,7 +46,6 @@ interface IFetchSnapshotsParams extends Partial<IFetchSnapshotMainParams> {
 interface IGetSnapshotResParams {
   snapshotDoc: SearchResultSnapshotDocument;
   isEmbedded?: boolean;
-  isFetchRealEstate?: boolean;
   isTrial?: boolean;
 }
 
@@ -45,79 +53,62 @@ interface IFetchSnapshotAllParams
   extends IFetchSnapshotMainParams,
     Omit<IGetSnapshotResParams, 'snapshotDoc'> {}
 
-// TODO REFACTOR TO USE AGGREGATION PIPELINE TO EXTRACT SNAPSHOT AND REAL ESTATE SIMULTANEOUSLY
-
 @Injectable()
 export class FetchSnapshotService {
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async fetchSnapshotDoc(
     user: UserDocument | TIntegrationUserDocument,
-    { filterQuery, projectQuery, sortQuery }: IFetchSnapshotMainParams,
+    {
+      filterQuery,
+      projectQuery,
+      sortQuery,
+      isFetchRealEstate = true,
+    }: IFetchSnapshotMainParams,
   ): Promise<SearchResultSnapshotDocument> {
+    const populateOptions: PopulateOptions = isFetchRealEstate
+      ? {
+          path: SNAPSHOT_REAL_EST_PATH,
+          transform: (
+            realEstate: RealEstateListingDocument,
+          ): ApiRealEstateListing =>
+            mapRealEstateListingToApiRealEstateListing(user, realEstate),
+        }
+      : undefined;
+
     return this.searchResultSnapshotModel
       .findOne(
         await this.getFilterQueryWithUser(user, filterQuery),
         projectQuery,
       )
-      .sort(sortQuery);
+      .sort(sortQuery)
+      .populate(populateOptions);
   }
 
   async fetchSnapshotDocByToken(
     token: string,
-    fetchParams?: IFetchSnapshotMainParams,
+    fetchParams?: Omit<IFetchSnapshotMainParams, 'filterQuery'>,
   ): Promise<SearchResultSnapshotDocument> {
-    const resFilterQuery = { ...(fetchParams?.filterQuery || {}), token };
-
     return this.searchResultSnapshotModel
-      .findOne(resFilterQuery, fetchParams?.projectQuery)
+      .findOne({ token }, fetchParams?.projectQuery)
       .sort(fetchParams?.sortQuery);
   }
 
   async getSnapshotRes(
     user: UserDocument | TIntegrationUserDocument,
-    {
-      isEmbedded,
-      isTrial,
-      snapshotDoc,
-      isFetchRealEstate = true,
-    }: IGetSnapshotResParams,
+    { isEmbedded, isTrial, snapshotDoc }: IGetSnapshotResParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotResDtoData: TSnapshotResDtoData = {
       ...snapshotDoc.toObject(),
       isEmbedded,
       isTrial,
     };
-
-    if (isFetchRealEstate) {
-      if (!snapshotResDtoData.snapshot?.location) {
-        throw new HttpException("Location hasn't been exposed!", 500);
-      }
-
-      const realEstateDoc =
-        'integrationUserId' in user
-          ? await this.realEstateListingIntService.findOneByIntParams({
-              integrationId: snapshotDoc.integrationParams.integrationId,
-              integrationType: user.integrationType,
-              integrationUserId: user.integrationUserId,
-            })
-          : await this.realEstateListingService.fetchRealEstateByCoords(
-              user,
-              snapshotResDtoData.snapshot.location,
-            );
-
-      if (realEstateDoc) {
-        snapshotResDtoData.realEstateListing =
-          mapRealEstateListingToApiRealEstateListing(user, realEstateDoc);
-      }
-    }
 
     if (!snapshotResDtoData.config) {
       throw new HttpException("Config hasn't been exposed!", 500);
@@ -142,6 +133,7 @@ export class FetchSnapshotService {
     }: IFetchSnapshotAllParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotDoc = await this.fetchSnapshotDoc(user, {
+      isFetchRealEstate,
       filterQuery,
       sortQuery,
       projectQuery,
@@ -153,7 +145,6 @@ export class FetchSnapshotService {
 
     return this.getSnapshotRes(user, {
       isEmbedded,
-      isFetchRealEstate,
       isTrial,
       snapshotDoc,
     });
@@ -162,16 +153,17 @@ export class FetchSnapshotService {
   async fetchSnapshotByIdOrFail(
     user: UserDocument | TIntegrationUserDocument,
     snapshotId: string,
-    isFetchRealEstate = true,
+    isFetchRealEstate?: boolean,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotDoc = await this.fetchSnapshotDoc(user, {
+      isFetchRealEstate,
       filterQuery: {
         _id: new Types.ObjectId(snapshotId),
       },
     });
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown snapshot id!', 400);
+      throw new NotFoundException('Unknown snapshot id!');
     }
 
     if (!('integrationUserId' in user)) {
@@ -181,7 +173,6 @@ export class FetchSnapshotService {
     snapshotDoc.updatedAt = new Date();
 
     return this.getSnapshotRes(user, {
-      isFetchRealEstate,
       snapshotDoc: await snapshotDoc.save(),
     });
   }
@@ -214,7 +205,7 @@ export class FetchSnapshotService {
 
     return Promise.all(
       snapshotDocs.map((snapshotDoc) =>
-        this.getSnapshotRes(user, { snapshotDoc, isFetchRealEstate: false }),
+        this.getSnapshotRes(user, { snapshotDoc }),
       ),
     );
   }

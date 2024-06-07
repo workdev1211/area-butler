@@ -6,15 +6,15 @@ import {
 } from '@area-butler-types/integration';
 
 @Schema({ _id: false })
-export class IntegrationParams implements IApiIntegrationParams {
-  @Prop({ type: String })
-  integrationId: string;
+class IntegrationParams implements IApiIntegrationParams {
+  @Prop({ type: String, enum: IntegrationTypesEnum, required: true })
+  integrationType: IntegrationTypesEnum;
 
-  @Prop({ required: true, type: String })
+  @Prop({ type: String, required: true })
   integrationUserId: string;
 
-  @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
-  integrationType: IntegrationTypesEnum;
+  @Prop({ type: String })
+  integrationId?: string;
 }
 
 export const IntegrationParamsSchema =

@@ -26,6 +26,11 @@ class ApiCreateSnapshotReqDto implements ApiCreateSnapshotReq {
   @IsOptional()
   @IsString()
   integrationId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  realEstateId?: string;
 }
 
 export default ApiCreateSnapshotReqDto;

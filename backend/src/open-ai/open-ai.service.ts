@@ -271,7 +271,9 @@ export class OpenAiService {
     { realEstateType, ...locDescQueryData }: ILocRealEstDescQueryData,
   ): Promise<string> {
     const {
-      snapshotRes: { realEstateListing },
+      snapshotRes: {
+        snapshot: { realEstate },
+      },
     } = locDescQueryData;
 
     let queryText =
@@ -279,12 +281,12 @@ export class OpenAiService {
 
     queryText = await this.getLocDescQuery(user, locDescQueryData, queryText);
 
-    if (realEstateListing) {
+    if (realEstate) {
       queryText = this.getRealEstateDescription(
         queryText,
         realEstateType,
-        realEstateListing.costStructure,
-        realEstateListing.characteristics,
+        realEstate.costStructure,
+        realEstate.characteristics,
       );
     }
 

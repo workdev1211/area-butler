@@ -1,3 +1,5 @@
+import { NotFoundException } from '@nestjs/common';
+
 import { RealEstateListingDocument } from '../schema/real-estate-listing.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
@@ -10,6 +12,10 @@ export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,
   showAddress = true,
 ): ApiRealEstateListing => {
+  if (!realEstateListing) {
+    throw new NotFoundException('Real estate listing not found!');
+  }
+
   const isIntegrationUser = !!user && 'integrationUserId' in user;
 
   const isFromParent =

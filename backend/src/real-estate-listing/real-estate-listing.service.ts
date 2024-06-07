@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
 
 import {
   RealEstateListing,
@@ -24,6 +24,11 @@ import {
 } from '@area-butler-types/types';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { getProcUpdateQuery } from '../shared/functions/shared';
+
+interface IFetchByLocationParams {
+  address: string;
+  coordinates: ApiCoordinates;
+}
 
 type TUpdateByExtParams = Partial<IApiRealEstateListingSchema> &
   Pick<IApiRealEstateListingSchema, 'externalId' | 'externalSource'>;
@@ -65,15 +70,18 @@ export class RealEstateListingService {
     return new this.realEstateListingModel(realEstateListingDoc).save();
   }
 
-  async fetchRealEstateListingById(
+  async fetchById(
     user: UserDocument | TIntegrationUserDocument,
-    realEstateListingId: string,
+    realEstateId: string,
+    projectQuery?: ProjectionFields<IApiRealEstateListingSchema>,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
-    const filter = { _id: realEstateListingId };
+    const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
+      _id: realEstateId,
+    };
 
     Object.assign(
-      filter,
+      filterQuery,
       isIntegrationUser
         ? {
             'integrationParams.integrationUserId': user.integrationUserId,
@@ -82,21 +90,15 @@ export class RealEstateListingService {
         : { userId: user.id },
     );
 
-    const realEstateListing = await this.realEstateListingModel.findOne(filter);
-
-    if (!realEstateListing) {
-      throw new HttpException('Real estate listing not found!', 400);
-    }
-
-    return realEstateListing;
+    return this.realEstateListingModel.findOne(filterQuery, projectQuery);
   }
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
-    filterQuery?: FilterQuery<RealEstateListingDocument>,
+    filterQuery?: FilterQuery<IApiRealEstateListingSchema>,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
-    const resFilterQuery: FilterQuery<RealEstateListingDocument> = filterQuery
+    const resFilterQuery: FilterQuery<IApiRealEstateListingSchema> = filterQuery
       ? { ...filterQuery }
       : {};
 
@@ -289,7 +291,7 @@ export class RealEstateListingService {
 
     const resultRealEstate = mapRealEstateListingToApiRealEstateListing(
       user,
-      realEstate || (await this.fetchRealEstateListingById(user, realEstateId)),
+      realEstate || (await this.fetchById(user, realEstateId)),
     );
 
     const queryText = this.openAiService.getRealEstDescQuery({
@@ -330,13 +332,15 @@ export class RealEstateListingService {
     return false;
   }
 
-  async fetchRealEstateByCoords(
+  async fetchByLocation(
     user: UserDocument | TIntegrationUserDocument,
-    { lat, lng }: ApiCoordinates,
+    { address, coordinates: { lat, lng } }: IFetchByLocationParams,
+    projectQuery?: ProjectionFields<IApiRealEstateListingSchema>,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
+
     const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
-      'location.coordinates': [lat, lng],
+      $or: [{ address }, { 'location.coordinates': [lat, lng] }],
     };
 
     Object.assign(
@@ -349,6 +353,6 @@ export class RealEstateListingService {
         : { userId: user.id },
     );
 
-    return this.realEstateListingModel.findOne(filterQuery);
+    return this.realEstateListingModel.findOne(filterQuery, projectQuery);
   }
 }

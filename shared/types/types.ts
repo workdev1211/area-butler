@@ -300,6 +300,15 @@ export interface ApiUpdateSearchResultSnapshot {
   snapshot?: ApiSearchResultSnapshot;
 }
 
+/*
+  The coordinates of a map location:
+  1. 'location' - could be redundant
+  2. 'searchResponse.centerOfInterest.coordinates' - a map center in Map.tsx component
+
+  The address of a map location:
+  1. 'placesLocation.label' - a map address in Map.tsx component
+  2. 'searchResponse.centerOfInterest.address' - could be redundant / should be checked if it's used anywhere
+*/
 export interface ApiSearchResultSnapshot {
   localityParams: ApiOsmEntity[]; // selected POI types
   location: ApiCoordinates; // coordinates
@@ -308,6 +317,7 @@ export interface ApiSearchResultSnapshot {
   transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
 
   preferredLocations?: ApiPreferredLocation[]; // important places
+  realEstate?: ApiRealEstateListing;
   routes?: EntityRoute[]; // routes to important places by foot, bicycle or car
   transitRoutes?: EntityTransitRoute[]; // routes to important places by city transport
 }
@@ -315,6 +325,7 @@ export interface ApiSearchResultSnapshot {
 export interface ApiCreateSnapshotReq {
   snapshot: ApiSearchResultSnapshot;
   integrationId?: string;
+  realEstateId?: string;
 }
 
 export interface IApiCreateSnapshotFromTemplate {
@@ -400,7 +411,6 @@ export interface ApiSearchResultSnapshotResponse {
   integrationId?: string;
   isTrial?: boolean;
   lastAccess?: Date;
-  realEstateListing?: ApiRealEstateListing;
   updatedAt?: Date;
   visitAmount?: number;
 }

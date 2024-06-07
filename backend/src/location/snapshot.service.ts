@@ -32,12 +32,13 @@ import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
 import { RoutingService } from '../routing/routing.service';
 import { FetchSnapshotService } from './fetch-snapshot.service';
 import { PlaceService } from '../place/place.service';
+import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 
-interface ICreateSnapshot {
+interface ICreateSnapshotParams {
   snapshotReq: ApiCreateSnapshotReq;
   config?: Partial<ApiSearchResultSnapshotConfig>;
-  isCheckAllowedCountries?: boolean;
   externalId?: string;
+  isCheckAllowedCountries?: boolean;
   primaryColor?: string;
 }
 
@@ -48,6 +49,7 @@ export class SnapshotService {
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly integrationUserService: IntegrationUserService,
     private readonly placeService: PlaceService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly routingService: RoutingService,
     private readonly subscriptionService: SubscriptionService,
@@ -55,10 +57,15 @@ export class SnapshotService {
     private readonly fetchSnapshotService: FetchSnapshotService,
   ) {}
 
-  // TODO decrease the number of arguments to 2
   async createSnapshot(
     user: UserDocument | TIntegrationUserDocument,
-    { snapshotReq: { snapshot, integrationId }, config, isCheckAllowedCountries = true, externalId, primaryColor }: ICreateSnapshot
+    {
+      config,
+      externalId,
+      primaryColor,
+      isCheckAllowedCountries = true,
+      snapshotReq: { integrationId, realEstateId, snapshot },
+    }: ICreateSnapshotParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
     // allowedCountries
     if (isCheckAllowedCountries) {
@@ -119,12 +126,32 @@ export class SnapshotService {
       createdAt: createdAt.toDate(),
     };
 
+    let resRealEstateId: string = realEstateId
+      ? (
+          await this.realEstateListingService.fetchById(user, realEstateId, {
+            _id: 1,
+          })
+        )?.id
+      : undefined;
+
     if (isIntegrationUser) {
       snapshotDoc.integrationParams = {
-        integrationId,
         integrationUserId: user.integrationUserId,
         integrationType: user.integrationType,
       };
+
+      if (!resRealEstateId) {
+        resRealEstateId = (
+          await this.realEstateListingIntService.findOneByIntParams(
+            {
+              integrationId,
+              integrationType: user.integrationType,
+              integrationUserId: user.integrationUserId,
+            },
+            { _id: 1 },
+          )
+        )?.id;
+      }
     }
 
     if (!isIntegrationUser) {
@@ -149,6 +176,23 @@ export class SnapshotService {
 
         Object.assign(snapshotDoc, { createdAt, endsAt });
       }
+
+      if (!resRealEstateId) {
+        resRealEstateId = (
+          await this.realEstateListingService.fetchByLocation(
+            user,
+            {
+              address: snapshot.placesLocation.label,
+              coordinates: snapshot.location,
+            },
+            { _id: 1 },
+          )
+        )?.id;
+      }
+    }
+
+    if (resRealEstateId) {
+      snapshotDoc.snapshot.realEstate = resRealEstateId;
     }
 
     const savedSnapshotDoc = await new this.searchResultSnapshotModel(

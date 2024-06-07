@@ -1,65 +1,85 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as SchemaType } from 'mongoose';
 
-import {
-  ApiSearchResultSnapshot,
-  ApiSearchResultSnapshotConfig,
-} from '@area-butler-types/types';
+import { ApiSearchResultSnapshotConfig } from '@area-butler-types/types';
 import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
+import {
+  ISnapshotDataSchema,
+  SnapshotDataSchema,
+} from './snapshot-data.schema';
 
-export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
+interface ISearchResultSnapshotSchema {
+  config: ApiSearchResultSnapshotConfig;
+  mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
+  snapshot: ISnapshotDataSchema;
+  token: string;
+  createdAt?: Date;
+  description?: string;
+  endsAt?: Date; // end date of the Pay per Use map
+  externalId?: string;
+  // TODO move to the 'integrationParams'
+  iframeEndsAt?: Date; // expiration date for the integration iFrame
+  integrationParams?: IApiIntegrationParams;
+  isTrial?: boolean;
+  lastAccess?: Date;
+  updatedAt?: Date;
+  userId?: string;
+  visitAmount?: number;
+}
+
+export type SearchResultSnapshotDocument = ISearchResultSnapshotSchema &
+  Document;
+
+export const SNAPSHOT_REAL_EST_PATH = 'snapshot.realEstate';
 
 @Schema()
-export class SearchResultSnapshot {
-  @Prop({ type: String })
-  userId: string;
+export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
+  @Prop({ type: Object, required: true })
+  config: ApiSearchResultSnapshotConfig;
 
-  @Prop({ type: String })
+  @Prop({ type: String, required: true })
+  mapboxAccessToken: string;
+
+  @Prop({ type: SnapshotDataSchema, required: true })
+  snapshot: ISnapshotDataSchema;
+
+  @Prop({ type: String, required: true })
   token: string;
 
-  @Prop({ type: String })
-  description: string;
+  @Prop({ type: Date, default: Date.now })
+  createdAt?: Date;
 
   @Prop({ type: String })
-  mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
+  description?: string;
 
-  @Prop({ type: Object })
-  config: ApiSearchResultSnapshotConfig;
+  @Prop({ type: Date })
+  endsAt?: Date;
 
   @Prop({ type: String })
   externalId?: string;
 
-  @Prop({ type: Object })
-  snapshot: ApiSearchResultSnapshot;
-
-  @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
-
   @Prop({ type: Date })
-  lastAccess: Date;
-
-  @Prop({ type: Date })
-  updatedAt: Date;
-
-  // The end date of the Pay per Use map
-  @Prop({ type: Date })
-  endsAt: Date;
-
-  // Expiration date for the integration iFrame
-  // TODO move to the 'integrationParams'
-  @Prop({ type: Date })
-  iframeEndsAt: Date;
-
-  @Prop({ type: Number, default: 0 })
-  visitAmount: number;
+  iframeEndsAt?: Date;
 
   @Prop({ type: IntegrationParamsSchema })
-  integrationParams: IApiIntegrationParams;
+  integrationParams?: IApiIntegrationParams;
 
   @Prop({ type: Boolean })
-  isTrial: boolean;
+  isTrial?: boolean;
+
+  @Prop({ type: Date })
+  lastAccess?: Date;
+
+  @Prop({ type: Date })
+  updatedAt?: Date;
+
+  @Prop({ type: String })
+  userId?: string;
+
+  @Prop({ type: Number, default: 0 })
+  visitAmount?: number;
 }
 
-export const SearchResultSnapshotSchema =
+export const SearchResultSnapshotSchema: SchemaType<SearchResultSnapshotDocument> =
   SchemaFactory.createForClass(SearchResultSnapshot);

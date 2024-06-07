@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ProjectionFields } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import {
@@ -48,16 +48,22 @@ export class RealEstateListingIntService {
     private readonly locationIndexService: LocationIndexService,
   ) {}
 
-  async findOneByIntParams({
-    integrationId,
-    integrationUserId,
-    integrationType,
-  }: IApiIntegrationParams): Promise<RealEstateListingDocument> {
-    return this.realEstateListingModel.findOne({
-      'integrationParams.integrationId': integrationId,
-      'integrationParams.integrationUserId': integrationUserId,
-      'integrationParams.integrationType': integrationType,
-    });
+  async findOneByIntParams(
+    {
+      integrationId,
+      integrationUserId,
+      integrationType,
+    }: IApiIntegrationParams,
+    projectQuery?: ProjectionFields<RealEstateListingDocument>,
+  ): Promise<RealEstateListingDocument> {
+    return this.realEstateListingModel.findOne(
+      {
+        'integrationParams.integrationId': integrationId,
+        'integrationParams.integrationUserId': integrationUserId,
+        'integrationParams.integrationType': integrationType,
+      },
+      projectQuery,
+    );
   }
 
   async findOneOrFailByIntParams({
