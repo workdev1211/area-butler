@@ -20,7 +20,6 @@ import { getEnumValidMessage } from '../../shared/functions/validation';
 const DEFAULT_POI_NUMBER = 5;
 const DEFAULT_DISTANCE = 10;
 
-// @Exclude()
 class ApiFetchPoiDataReqDto
   extends ApiCoordinatesOrAddressDto
   implements IApiFetchPoiDataReq

@@ -10,6 +10,8 @@ import {
 } from "react";
 import center from "@turf/center";
 import { toPng } from "html-to-image";
+import { renderToStaticMarkup } from "react-dom/server";
+
 
 import * as L from "leaflet";
 // LEFT JUST IN CASE - the old touch screen solution
@@ -50,6 +52,7 @@ import {
 } from "../../../shared/types/types";
 import googleIcon from "../assets/icons/google.svg";
 import myLocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
+import { ReactComponent as DefaultMarker } from "../assets/icons/map-marker-default.svg";
 import intMyLocationIcon from "../assets/icons/kudiba.svg";
 import busStopIcon from "../assets/icons/pois/bus_stop.svg";
 import stationIcon from "../assets/icons/pois/station.svg";
@@ -719,6 +722,13 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         const resultingSize =
           config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
+        let html = `<img src="${resultMapIcon}" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`
+        if (config?.mapIcon) {
+          html = `<img src="${config.mapIcon}" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`
+        } else if(config.primaryColor) {
+          html = renderToStaticMarkup(<DefaultMarker style={{ width: '100%', height: resultingSize }} fill={config.primaryColor}/>)
+        }
+
         const myLocationLeafletIcon = L.divIcon({
           iconUrl: config?.mapIcon ?? resultMapIcon,
           shadowUrl: leafletShadow,
@@ -728,9 +738,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             resultingSize
           ),
           className: "map-icon-wrapper",
-          html: `<img src="${
-            config?.mapIcon ?? resultMapIcon
-          }" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`,
+          html,
         });
 
         const { lat, lng } = config.showAddress
