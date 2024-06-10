@@ -252,7 +252,7 @@ const EmbedContainer: FC = () => {
       }),
     });
 
-    setMapDisplayMode(MapDisplayModesEnum.EMBED);
+    setMapDisplayMode(MapDisplayModesEnum.EMBEDDED);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [embeddedData]);

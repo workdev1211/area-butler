@@ -1,4 +1,5 @@
 import {
+  FC,
   forwardRef,
   useContext,
   useEffect,
@@ -58,6 +59,11 @@ import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal"
 import { Loading } from "../Loading";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../../shared/types/location";
 import { useGoogleMapsApi } from "../../hooks/google";
+import { ConfigContext } from "../../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../../shared/types/integration";
+import MyVivendaMapMenu, {
+  TMyVivendaMapMenuProps,
+} from "../../my-vivenda/components/MyVivendaMapMenu";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -120,6 +126,7 @@ const SearchResultContainer = forwardRef<
       },
     }));
 
+    const { integrationType } = useContext(ConfigContext);
     const { userDispatch } = useContext(UserContext);
     const { searchContextState, searchContextDispatch } =
       useContext(SearchContext);
@@ -128,7 +135,7 @@ const SearchResultContainer = forwardRef<
     const { createDirectLink, getActualUser } = useTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
 
-    const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
+    const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBEDDED;
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";
 
     const isMapMenuPresent =
@@ -567,6 +574,54 @@ const SearchResultContainer = forwardRef<
     const isMeanTogglesShown =
       !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
 
+    const myVivendaMapMenuProps: TMyVivendaMapMenuProps = {
+      isMapMenuOpen,
+      searchAddress,
+      groupedEntries: resultGroupEntities ?? [],
+      resetPosition: () => {
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_MAP_CENTER,
+          payload: searchResponse?.centerOfInterest?.coordinates!,
+        });
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.GOTO_MAP_CENTER,
+          payload: { goto: true },
+        });
+      },
+      routes: searchContextState.responseRoutes,
+      transitRoutes: searchContextState.responseTransitRoutes,
+      toggleRoute: (item, mean) => toggleRoutesToEntity(location, item, mean),
+      toggleTransitRoute: (item) => toggleTransitRoutesToEntity(location, item),
+      toggleAllLocalities,
+      userMenuPoiIcons: resUserPoiIcons?.menuPoiIcons,
+      config: searchContextState.responseConfig,
+    };
+
+    const MapMenuComponent: FC = () =>
+      integrationType === IntegrationTypesEnum.MY_VIVENDA ? (
+        <MyVivendaMapMenu {...myVivendaMapMenuProps} />
+      ) : (
+        <MapMenu
+          editorTabProps={editorTabProps}
+          exportTabProps={exportTabProps}
+          mapDisplayMode={mapDisplayMode}
+          openUpgradeSubscriptionModal={(message) => {
+            userDispatch({
+              type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+              payload: { open: true, message },
+            });
+          }}
+          saveConfig={saveConfig}
+          showInsights={isEditorMode}
+          censusData={searchContextState.censusData}
+          federalElectionData={searchContextState.federalElectionData}
+          particlePollutionData={searchContextState.particlePollutionData}
+          locationIndexData={searchContextState.locationIndexData}
+          {...myVivendaMapMenuProps}
+        />
+      );
+
     return (
       <div
         id={searchResContainId}
@@ -744,50 +799,7 @@ const SearchResultContainer = forwardRef<
             userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
           />
         )}
-        {isMapMenuPresent && (
-          <MapMenu
-            isMapMenuOpen={isMapMenuOpen}
-            censusData={searchContextState.censusData}
-            federalElectionData={searchContextState.federalElectionData}
-            particlePollutionData={searchContextState.particlePollutionData}
-            locationIndexData={searchContextState.locationIndexData}
-            groupedEntries={resultGroupEntities ?? []}
-            toggleAllLocalities={toggleAllLocalities}
-            toggleRoute={(item, mean) =>
-              toggleRoutesToEntity(location, item, mean)
-            }
-            routes={searchContextState.responseRoutes}
-            toggleTransitRoute={(item) =>
-              toggleTransitRoutesToEntity(location, item)
-            }
-            transitRoutes={searchContextState.responseTransitRoutes}
-            searchAddress={searchAddress}
-            resetPosition={() => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_MAP_CENTER,
-                payload: searchResponse?.centerOfInterest?.coordinates!,
-              });
-
-              searchContextDispatch({
-                type: SearchContextActionTypes.GOTO_MAP_CENTER,
-                payload: { goto: true },
-              });
-            }}
-            saveConfig={saveConfig}
-            userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
-            openUpgradeSubscriptionModal={(message) => {
-              userDispatch({
-                type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                payload: { open: true, message },
-              });
-            }}
-            showInsights={isEditorMode}
-            config={searchContextState.responseConfig}
-            mapDisplayMode={mapDisplayMode}
-            editorTabProps={editorTabProps}
-            exportTabProps={exportTabProps}
-          />
-        )}
+        {isMapMenuPresent && <MapMenuComponent />}
         {searchContextState.responseConfig?.isFilterMenuAvail && (
           <FilterMenu
             isFilterMenuOpen={isFilterMenuOpen}

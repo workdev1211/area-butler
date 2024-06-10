@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 
 import "./MapMenu.scss";
 
@@ -44,31 +44,35 @@ enum TabsEnum {
   Export = "Export",
 }
 
-interface IMapMenuProps {
+export interface IMapMenuProps {
   groupedEntries: EntityGroup[];
-  toggleAllLocalities: () => void;
-  toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
-  routes: EntityRoute[];
-  toggleTransitRoute: (item: ResultEntity) => void;
-  transitRoutes: EntityTransitRoute[];
-  searchAddress: string;
   isMapMenuOpen: boolean;
-  resetPosition: () => void;
   mapDisplayMode: MapDisplayModesEnum;
+  resetPosition: () => void;
+  searchAddress: string;
+  toggleAllLocalities: () => void;
+  // Routes START
+  routes: EntityRoute[];
+  transitRoutes: EntityTransitRoute[];
+  toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
+  toggleTransitRoute: (item: ResultEntity) => void;
+  // Routes END
   config?: ApiSearchResultSnapshotConfig;
-  saveConfig?: () => Promise<void>;
-  openUpgradeSubscriptionModal?: (message: ReactNode) => void;
-  showInsights?: boolean;
-  censusData?: TCensusData;
-  federalElectionData?: FederalElectionDistrict;
-  particlePollutionData?: ApiGeojsonFeature[];
-  locationIndexData?: TLocationIndexData;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
   editorTabProps?: IEditorTabProps;
   exportTabProps?: IExportTabProps;
+  openUpgradeSubscriptionModal?: (message: ReactNode) => void;
+  saveConfig?: () => Promise<void>;
+  showInsights?: boolean;
+  userMenuPoiIcons?: IApiUserPoiIcon[];
+  // Stats START
+  censusData?: TCensusData;
+  federalElectionData?: FederalElectionDistrict;
+  locationIndexData?: TLocationIndexData;
+  particlePollutionData?: ApiGeojsonFeature[];
+  // Stats END
 }
 
-const MapMenu: FunctionComponent<IMapMenuProps> = ({
+const MapMenu: FC<IMapMenuProps> = ({
   groupedEntries,
   toggleAllLocalities,
   toggleRoute,
@@ -116,7 +120,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
       break;
     }
 
-    case MapDisplayModesEnum.EMBED:
+    case MapDisplayModesEnum.EMBEDDED:
     default: {
       mapMenuContentHeight = "calc(100% - var(--menu-item-h))";
     }

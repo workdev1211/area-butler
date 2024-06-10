@@ -493,7 +493,7 @@ export enum ResultStatusEnum {
 }
 
 export enum MapDisplayModesEnum {
-  EMBED = "EMBED",
+  EMBEDDED = "EMBEDDED",
   EDITOR = "EDITOR",
 }
 

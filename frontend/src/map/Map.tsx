@@ -496,7 +496,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     };
 
     const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-    const isEmbedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
+    const isEmbedMode = mapDisplayMode === MapDisplayModesEnum.EMBEDDED;
     const resultMapIcon = isIntegration ? intMyLocationIcon : myLocationIcon;
 
     const escFunction = useCallback(
