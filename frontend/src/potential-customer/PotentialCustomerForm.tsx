@@ -2,6 +2,9 @@ import { FunctionComponent, useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import Input from "../components/inputs/formik/Input";
 import TransportationParams from "../components/TransportationParams";
@@ -25,6 +28,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
   onSubmit,
   questionnaire,
 }) => {
+  const { t } = useTranslation();
   const [customer, setCustomer] =
     useState<Partial<ApiPotentialCustomer>>(inputCustomer);
 
@@ -38,7 +42,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
       validationSchema={Yup.object({
         name: questionnaire
           ? Yup.string()
-          : Yup.string().required("Name wird benötigt"),
+          : Yup.string().required(t(IntlKeys.potentialCustomers.nameRequired)),
         email: questionnaire ? Yup.string() : Yup.string().email(),
         preferredLocations: Yup.array(),
       })}
@@ -50,7 +54,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {!questionnaire && (
               <Input
-                label="Name der Zielgruppe"
+                label={t(IntlKeys.potentialCustomers.nameOfTargetGroup)}
                 name="name"
                 type="text"
                 onChange={(newValue) => {
@@ -59,7 +63,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
                     name: newValue.target.value,
                   });
                 }}
-                placeholder="Name"
+                placeholder={t(IntlKeys.common.name)}
                 className="input input-bordered w-full"
               />
             )}
@@ -82,8 +86,8 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
           </div>
           <div className="my-6 flex flex-col gap-6">
             <strong>
-              {questionnaire ? "Meine bevorzugten" : "Bevorzugte"}{" "}
-              Fortbewegungsarten
+              {questionnaire ? t(IntlKeys.potentialCustomers.myFavorite) : t(IntlKeys.potentialCustomers.preferred)}{" "}
+              {t(IntlKeys.potentialCustomers.typesOfTransportations)}
             </strong>
             <TransportationParams
               values={customer.routingProfiles || []}
@@ -97,7 +101,9 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
           </div>
           <div className="my-6">
             <strong>
-              {questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Lokalitäten
+              {questionnaire ?
+                t(IntlKeys.potentialCustomers.myFavorite) :
+                t(IntlKeys.potentialCustomers.preferred)} {t(IntlKeys.potentialCustomers.localities)}
             </strong>
             <LocalityParams
               values={getCombinedOsmEntityTypes().filter((oet) =>
@@ -112,7 +118,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
             />
           </div>
           <div className="my-6 flex flex-col gap-4">
-            <strong>{preferredLocationsTitle}</strong>
+            <strong>{t(IntlKeys.potentialCustomers.importantAddresses)}</strong>
             <ImportantAddresses
               inputValues={customer.preferredLocations}
               onChange={(newValues) => {

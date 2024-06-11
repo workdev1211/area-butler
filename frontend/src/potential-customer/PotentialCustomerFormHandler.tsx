@@ -1,6 +1,9 @@
 import { FunctionComponent, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   PotentialCustomerActionTypes,
   PotentialCustomerContext,
@@ -41,6 +44,7 @@ interface IPotentialCustomerFormHandlerProps {
 const PotentialCustomerFormHandler: FunctionComponent<
   IPotentialCustomerFormHandlerProps
 > = ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, customer }) => {
+  const { t } = useTranslation();
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
 
   const history = useHistory();
@@ -63,11 +67,11 @@ const PotentialCustomerFormHandler: FunctionComponent<
       });
 
       postSubmit(true);
-      toastSuccess("Interessent erfolgreich gespeichert!");
+      toastSuccess(t(IntlKeys.potentialCustomers.potentialCustomerSubmitSuccessful));
       history.push(`/potential-customers?id=${storedCustomer.id}`);
     } catch (err) {
       console.error(err);
-      toastError("Fehler beim Speichern eines Interessenten!");
+      toastError(t(IntlKeys.potentialCustomers.potentialCustomerSubmitFailed));
       postSubmit(false);
     }
   };

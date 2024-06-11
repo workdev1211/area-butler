@@ -2,6 +2,9 @@ import { FC, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import DefaultLayout from "../layout/defaultLayout";
 import BackButton from "../layout/BackButton";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -19,17 +22,18 @@ interface IRealEstatePageRouterProps {
 export type TInitRealEstate = Partial<ApiRealEstateListing> &
   Pick<ApiRealEstateListing, "name">;
 
-const defaultRealEstate: TInitRealEstate = {
-  name: "Neues Objekt",
-};
-
 const RealEstatePage: FC = () => {
+  const { t } = useTranslation();
   const {
     searchContextState: { storedContextState },
   } = useContext(SearchContext);
   const {
     realEstateState: { isListingsFetched, listings },
   } = useContext(RealEstateContext);
+
+  const defaultRealEstate: TInitRealEstate = {
+    name: t(IntlKeys.realEstate.createObject),
+  };
 
   const { realEstateId } = useParams<IRealEstatePageRouterProps>();
   const { getActualUser } = useTools();
@@ -88,14 +92,14 @@ const RealEstatePage: FC = () => {
         disabled={busy}
         className={busy ? `busy ${classes}` : classes}
       >
-        {realEstate.id ? "Speichern" : "Anlegen"}
+        {realEstate.id ? t(IntlKeys.common.save) : t(IntlKeys.common.create)}
       </button>
     );
   };
 
   return (
     <DefaultLayout
-      title={realEstate.name || "Unbekanntes Objekt"}
+      title={realEstate.name || t(IntlKeys.realEstate.unknownObject)}
       withHorizontalPadding={true}
       actionsBottom={[
         <BackButton to="/real-estates" key="real-estates-back" />,

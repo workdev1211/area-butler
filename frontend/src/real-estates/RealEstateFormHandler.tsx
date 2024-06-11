@@ -1,6 +1,9 @@
 import { FC, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { FormModalData } from "components/FormModal";
 import {
   deriveGeocodeByAddress,
@@ -97,6 +100,7 @@ export const RealEstateFormHandler: FC<IRealEstateFormHandlerProps> = ({
   realEstate,
   user,
 }) => {
+  const { t } = useTranslation();
   const { realEstateDispatch } = useContext(RealEstateContext);
 
   const history = useHistory();
@@ -121,10 +125,10 @@ export const RealEstateFormHandler: FC<IRealEstateFormHandlerProps> = ({
       });
 
       postSubmit(true);
-      toastSuccess("Objekt erfolgreich gespeichert!");
+      toastSuccess(t(IntlKeys.realEstate.objectSavedSuccessfully));
       history.push(`/real-estates?id=${updatedRealEstate.id}`);
     } catch (err) {
-      toastError("Fehler beim Speichern des Objektes");
+      toastError(t(IntlKeys.realEstate.objectErrorWhileSaving));
       console.error(err);
       postSubmit(false);
     }

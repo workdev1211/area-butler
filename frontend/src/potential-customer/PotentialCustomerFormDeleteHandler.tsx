@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { FormModalData } from "components/FormModal";
 import {
   PotentialCustomerActionTypes,
@@ -21,6 +24,7 @@ export const PotentialCustomerFormDeleteHandler: FunctionComponent<
   postSubmit = () => {},
   potentialCustomer,
 }) => {
+  const { t } = useTranslation();
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
   const { deletePotentialCustomer } = usePotentialCustomerData();
 
@@ -39,7 +43,7 @@ export const PotentialCustomerFormDeleteHandler: FunctionComponent<
         });
       }
 
-      toastSuccess("Interessent erfolgreich gelöscht!");
+      toastSuccess(t(IntlKeys.potentialCustomers.customerDeletedSuccess));
       postSubmit(true);
     } catch (err) {
       console.error(err);
@@ -49,7 +53,7 @@ export const PotentialCustomerFormDeleteHandler: FunctionComponent<
 
   return (
     <form id={formId} onSubmit={onSubmit}>
-      Möchten Sie den Interessenten wirklich löschen?
+      {t(IntlKeys.potentialCustomers.customerDeleteConfirm)}
     </form>
   );
 };

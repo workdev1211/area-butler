@@ -1,6 +1,9 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import DefaultLayout from "../layout/defaultLayout";
 import {
   PotentialCustomerActionTypes,
@@ -23,15 +26,9 @@ import { ApiTourNamesEnum } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
-import { preferredLocationsTitle } from "../shared/shared.functions";
 import { IPotentialCustomersHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import PotentialCustomerFormDeleteHandler from "../potential-customer/PotentialCustomerFormDeleteHandler";
-
-const deleteCustomerModalConfig = {
-  modalTitle: "Interessent löschen",
-  submitButtonTitle: "Löschen",
-};
 
 const createCustomerQuestionnaireModalConfig = {
   modalTitle: "Fragebogen versenden",
@@ -57,6 +54,7 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
 );
 
 const PotentialCustomersPage: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
   );
@@ -124,7 +122,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
       <>
         <li>
           <Link to="/potential-customers/new" className="btn btn-link">
-            <img src={plusIcon} alt="pdf-icon" /> Zielgruppe anlegen
+            <img src={plusIcon} alt="pdf-icon" /> {t(IntlKeys.potentialCustomers.createTargetGroup)}
           </Link>
         </li>
         {!isIntegrationUser && (
@@ -144,7 +142,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
                     })
               }
             >
-              <img src={plusIcon} alt="pdf-icon" /> Fragebogen versenden
+              <img src={plusIcon} alt="pdf-icon" /> {t(IntlKeys.potentialCustomers.sendQuestionnaire)}
             </button>
           </li>
         )}
@@ -153,14 +151,15 @@ const PotentialCustomersPage: FunctionComponent = () => {
   };
 
   const questionnaireModalConfig = {
-    ...createCustomerQuestionnaireModalConfig,
+    modalTitle: t(IntlKeys.potentialCustomers.customerCreateTitle),
+    submitButtonTitle: t(IntlKeys.common.send),
     modalOpen: questionnaireModalOpen,
     postSubmit: () => setQuestionnaireModalOpen(false),
   };
 
   return (
     <DefaultLayout
-      title="Meine Zielgruppen"
+      title={t(IntlKeys.nav.potentialCustomers)}
       withHorizontalPadding={false}
       actionsTop={<ActionsTop />}
     >
@@ -174,10 +173,10 @@ const PotentialCustomersPage: FunctionComponent = () => {
         <table className="table w-full">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>E-Mail</th>
-              <th>{preferredLocationsTitle}</th>
-              <th>Wohnvorstellung</th>
+              <th>{t(IntlKeys.common.name)}</th>
+              <th>{t(IntlKeys.common.email)}</th>
+              <th>{t(IntlKeys.potentialCustomers.importantAddresses)}</th>
+              <th>{t(IntlKeys.potentialCustomers.livingConcept)}</th>
               <th />
             </tr>
           </thead>
@@ -255,7 +254,8 @@ const PotentialCustomersPage: FunctionComponent = () => {
                           />
                           <FormModal
                             modalConfig={{
-                              ...deleteCustomerModalConfig,
+                              modalTitle: t(IntlKeys.potentialCustomers.customerDeleteTitle),
+                              submitButtonTitle: t(IntlKeys.common.delete),
                               modalButton: (
                                 <img
                                   src={deleteIcon}

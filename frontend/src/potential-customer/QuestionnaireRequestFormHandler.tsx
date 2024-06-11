@@ -5,6 +5,9 @@ import {FormModalData} from "../components/FormModal";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import React from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 export const mapFormToApiUpsertQuestionnaireRequest = async (
   values: any
 ): Promise<ApiUpsertQuestionnaireRequest> => {
@@ -17,6 +20,7 @@ export const mapFormToApiUpsertQuestionnaireRequest = async (
 
 export const QuestionnaireRequestFormHandler: React.FunctionComponent<FormModalData> =
   ({ formId, beforeSubmit = () => {}, postSubmit = () => {} }) => {
+    const { t } = useTranslation();
     const { post } = useHttp();
 
     const onSubmit = async (values: any) => {
@@ -29,11 +33,11 @@ export const QuestionnaireRequestFormHandler: React.FunctionComponent<FormModalD
           "/api/potential-customers/questionnaire-request",
           mappedPotentialCustomer
         );
-        toastSuccess("Fragebogen erfolgreich versandt!");
+        toastSuccess(t(IntlKeys.potentialCustomers.customerCreatedSuccess));
         postSubmit(true);
       } catch (err) {
         console.error(err);
-        toastError("Fehler beim Versenden des Fragebogens");
+        toastError(t(IntlKeys.potentialCustomers.customerCreatedFailed));
         postSubmit(false);
       }
     };

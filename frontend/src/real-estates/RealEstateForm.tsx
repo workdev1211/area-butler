@@ -2,6 +2,9 @@ import { ChangeEvent, FC, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   allFurnishing,
   allRealEstateCostTypes,
@@ -58,6 +61,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
   onSubmit,
   realEstate,
 }) => {
+  const { t } = useTranslation();
   const [resultRealEstate, setResultRealEstate] = useState<TInitRealEstate>(
     JSON.parse(JSON.stringify(realEstate))
   );
@@ -76,21 +80,27 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
   const minPrice = resultRealEstate?.costStructure?.minPrice?.amount;
   const maxPrice = resultRealEstate?.costStructure?.price?.amount;
 
-  const status1SelectOptions = Object.values(
+  const status1SelectOptions = Object.keys(
     ApiRealEstateStatusEnum
-  ).map<ISelectTextValue>((status) => ({ text: status, value: status }));
+  ).map<ISelectTextValue>((status) => ({
+    text: t((IntlKeys.realEstate.statuses as Record<string, string>)[status], status),
+    value: status
+  }));
 
   const statusCustTextValue = "custom";
   const statusCustOption = {
-    text: "Geben Sie Ihren Extra Status ein",
+    text: t(IntlKeys.realEstate.enterExtraStatus),
     value: statusCustTextValue,
   };
 
   status1SelectOptions.push(statusCustOption);
 
-  const status2SelectOptions = Object.values(
+  const status2SelectOptions = Object.keys(
     ApiRealEstateStatus2Enum
-  ).map<ISelectTextValue>((status) => ({ text: status, value: status }));
+  ).map<ISelectTextValue>((status) => ({
+    text: t((IntlKeys.common.statuses as Record<string, string>)[status]),
+    value: status,
+  }));
 
   status2SelectOptions.push(statusCustOption);
 
@@ -127,8 +137,8 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
     showInSnippet: Yup.boolean().required(),
     status: Yup.string(),
     status2: Yup.string(),
-    name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
-    externalUrl: Yup.string().url("Bitte geben Sie eine gültige URL an"),
+    name: Yup.string().required(t(IntlKeys.realEstate.enterObjectName)),
+    externalUrl: Yup.string().url(t(IntlKeys.realEstate.enterValidUrl)),
     priceStartingAt: Yup.boolean().required(),
     minPrice: Yup.number().min(0),
     price: Yup.number().min(0),
@@ -154,7 +164,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
       enableReinitialize={true}
       onSubmit={(values) => {
         if (!resultRealEstate.address || !resultRealEstate.coordinates) {
-          toastError("Bitte geben Sie die Immobilien-Adresse an");
+          toastError(t(IntlKeys.realEstate.enterRealEstateAddress));
           return;
         }
 
@@ -172,12 +182,12 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
           <Form id={formId}>
             <div className="mb-5">
               <Checkbox name="showInSnippet" key="showInSnippet">
-                In Snippet anzeigen
+                {t(IntlKeys.realEstate.showInSnippet)}
               </Checkbox>
             </div>
             <div className="form-control">
               <CustomTextSelect
-                label="Vermarktungsart"
+                label={t(IntlKeys.realEstate.marketingType)}
                 name="status"
                 selectOptions={status1SelectOptions}
                 customTextValue={statusCustTextValue}
@@ -186,7 +196,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
             </div>
             <div className="form-control mt-3">
               <CustomTextSelect
-                label="Status"
+                label={t(IntlKeys.common.status)}
                 name="status2"
                 selectOptions={status2SelectOptions}
                 customTextValue={statusCustTextValue}
@@ -195,19 +205,19 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
             </div>
             <div className="form-control">
               <Input
-                label="Objektname"
+                label={t(IntlKeys.realEstate.objectName)}
                 name="name"
                 type="text"
-                placeholder="Objektname eingeben"
+                placeholder={t(IntlKeys.realEstate.enterObjectNamePlaceholder)}
                 className="input input-bordered w-full"
               />
             </div>
             <div className="form-control">
               <Input
-                label="Externer Link"
+                label={t(IntlKeys.realEstate.externalLink)}
                 name="externalUrl"
                 type="text"
-                placeholder="Externer Link (z.B. https://www.google.de)"
+                placeholder={t(IntlKeys.realEstate.externalLinkPlaceholder)}
                 className="input input-bordered w-full"
               />
             </div>
@@ -231,39 +241,39 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
                     }
                   }}
                 >
-                  Ab
+                  {t(IntlKeys.common.from)}
                 </Checkbox>
               </div>
               {isMinPriceNeeded && (
                 <div className="form-control flex-1">
                   <Input
-                    label="Mindestpreis (€)"
+                    label={`${t(IntlKeys.realEstate.minPrice)} (€)`}
                     name="minPrice"
                     type="number"
-                    placeholder="Preis eingeben"
+                    placeholder={t(IntlKeys.realEstate.pricePlaceholder)}
                     className="input input-bordered w-full"
                   />
                 </div>
               )}
               <div className="form-control flex-1">
                 <Input
-                  label={`${isMinPriceNeeded ? "Höchstpreis" : "Preis"} (€)`}
+                  label={`${isMinPriceNeeded ? t(IntlKeys.realEstate.maxPrice): t(IntlKeys.common.price)} (€)`}
                   name="price"
                   type="number"
-                  placeholder="Preis eingeben"
+                  placeholder={t(IntlKeys.realEstate.pricePlaceholder)}
                   className="input input-bordered w-full"
                 />
               </div>
               <div className="form-control flex-1">
                 <Select
-                  label="Kostenart"
+                  label={t(IntlKeys.realEstate.costType)}
                   name="type"
                   type="number"
-                  placeholder="Kostenart eingeben"
+                  placeholder={t(IntlKeys.realEstate.costTypePlaceholder)}
                 >
                   {allRealEstateCostTypes.map((costType) => (
                     <option value={costType.type} key={costType.type}>
-                      {costType.label}
+                      {t((IntlKeys.realEstate.costTypes as Record<string, string>)[costType.type])}
                     </option>
                   ))}
                 </Select>
@@ -272,33 +282,33 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
             <div className="flex flex-wrap items-end gap-6">
               <div className="form-control mr-5 mb-2">
                 <Checkbox name="propertyStartingAt" key="propertyStartingAt">
-                  Ab
+                  {t(IntlKeys.common.from)}
                 </Checkbox>
               </div>
               <div className="form-control flex-1">
                 <Input
-                  label="Größe in Quadratmeer"
+                  label={t(IntlKeys.realEstate.realEstateSize)}
                   name="realEstateSizeInSquareMeters"
                   type="number"
-                  placeholder="Größe in Quadrameter"
+                  placeholder={t(IntlKeys.realEstate.realEstateSizePlaceholder)}
                   className="input input-bordered w-full"
                 />
               </div>
               <div className="form-control flex-1">
                 <Input
-                  label="Grundstück in Quadratmeer"
+                  label={t(IntlKeys.realEstate.propertySize)}
                   name="propertySizeInSquareMeters"
                   type="number"
-                  placeholder="Grundstück in Quadrameter"
+                  placeholder={t(IntlKeys.realEstate.propertySizePlaceholder)}
                   className="input input-bordered w-full"
                 />
               </div>
             </div>
             <div className="form-control">
               <Select
-                label="Energieeffizienklasse"
+                label={t(IntlKeys.realEstate.energyEfficiency)}
                 name="energyEfficiency"
-                placeholder="Energieeffizienzklasse"
+                placeholder={t(IntlKeys.realEstate.energyEfficiencyPlaceholder)}
               >
                 {Object.keys(ApiEnergyEfficiency).map((aee) => (
                   <option value={aee} key={aee}>
@@ -310,12 +320,12 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
             <label className="label mt-4">
               <span className="label-text">
                 {/* TODO make the option selectable not for the whole width */}
-                <strong>Ausstattung</strong>
+                <strong>{t(IntlKeys.realEstate.equipment)}</strong>
               </span>
             </label>
             {allFurnishing.map((furnishing) => (
               <Checkbox name={furnishing.type} key={furnishing.type}>
-                {furnishing.label}
+                {t(IntlKeys.realEstate.furnishing[furnishing.type])}
               </Checkbox>
             ))}
           </Form>

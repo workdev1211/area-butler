@@ -1,5 +1,8 @@
 import { FC, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./EditorTab.scss";
 
 import {
@@ -53,6 +56,7 @@ const EditorTab: FC<IEditorTabProps> = ({
   extraMapboxStyles = [],
   isNewSnapshot = false,
 }) => {
+  const { t } = useTranslation();
   const { getActualUser } = useTools();
   const { fetchLateSnapConfigs } = useLocationData();
   const { fetchRealEstStatuses } = useRealEstateData();
@@ -316,7 +320,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                       <h4 className="font-medium pl-2 cursor-pointer">
                         {group.title === realEstateListingsTitle
                           ? realEstateListingsTitleEmbed
-                          : group.title}{" "}
+                          : t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}{" "}
                       </h4>
                       <button
                         className="btn-sm btn-link"

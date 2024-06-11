@@ -2,6 +2,9 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import DefaultLayout from "../layout/defaultLayout";
 import {
   PotentialCustomerActionTypes,
@@ -17,13 +20,8 @@ export interface PotentialCustomerPageRouterProps {
   customerId: string;
 }
 
-const defaultCustomer: Partial<ApiPotentialCustomer> = {
-  name: "Neue Zielgruppe",
-  preferredLocations: [],
-  routingProfiles: [],
-};
-
 const PotentialCustomerPage: FunctionComponent = () => {
+  const { t } = useTranslation();
   const {
     searchContextState: { storedContextState },
   } = useContext(SearchContext);
@@ -33,7 +31,11 @@ const PotentialCustomerPage: FunctionComponent = () => {
 
   const { customerId } = useParams<PotentialCustomerPageRouterProps>();
   const isNewCustomer = customerId === "new" || customerId === "from-result";
-  let initialCustomer = { ...defaultCustomer };
+  let initialCustomer: Partial<ApiPotentialCustomer> = {
+    name: t(IntlKeys.potentialCustomers.newTargetGroup),
+    preferredLocations: [],
+    routingProfiles: [],
+  };
 
   if (customerId === "from-result" && storedContextState) {
     initialCustomer = {
@@ -101,14 +103,14 @@ const PotentialCustomerPage: FunctionComponent = () => {
         disabled={busy}
         className={`${busy ? "busy " : ""}${classes}`}
       >
-        {customer.id ? "Speichern" : "Anlegen"}
+        {customer.id ? t(IntlKeys.common.save) : t(IntlKeys.common.create)}
       </button>
     );
   };
 
   return (
     <DefaultLayout
-      title={customer.name || "Unbekannter Name"}
+      title={customer.name || t(IntlKeys.potentialCustomers.unknownName)}
       withHorizontalPadding={true}
       actionsBottom={[
         <BackButton to="/potential-customers" key="customer-back" />,

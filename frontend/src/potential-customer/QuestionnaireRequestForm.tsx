@@ -2,6 +2,9 @@ import { FunctionComponent } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import Input from "../components/inputs/formik/Input";
 import Checkbox from "../components/inputs/formik/Checkbox";
 
@@ -13,6 +16,7 @@ interface IQuestionnaireRequestFormProps {
 export const QuestionnaireRequestForm: FunctionComponent<
   IQuestionnaireRequestFormProps
 > = ({ formId, onSubmit }) => {
+  const { t } = useTranslation();
   return (
     <Formik
       initialValues={{
@@ -22,12 +26,12 @@ export const QuestionnaireRequestForm: FunctionComponent<
         userAgreement: false,
       }}
       validationSchema={Yup.object({
-        name: Yup.string().required("Bitte geben den Namen ein"),
+        name: Yup.string().required(t(IntlKeys.potentialCustomers.pleaseEnterName)),
         email: Yup.string()
           .email()
-          .required("Bitte geben Sie eine gültige Email-Adresse ein"),
+          .required(t(IntlKeys.potentialCustomers.pleaseEnterEmail)),
         preferredLocations: Yup.array(),
-        userAgreement: Yup.boolean().oneOf([true], "Freigabe wird benötigt."),
+        userAgreement: Yup.boolean().oneOf([true], t(IntlKeys.potentialCustomers.approvalIsRequired)),
       })}
       onSubmit={(values) => {
         const formValues = {
@@ -39,57 +43,50 @@ export const QuestionnaireRequestForm: FunctionComponent<
       <Form id={formId}>
         <div className="form-control">
           <Input
-            label="Name des Interessenten"
+            label={t(IntlKeys.potentialCustomers.nameTitle)}
             name="name"
             type="text"
-            placeholder="Name"
+            placeholder={t(IntlKeys.common.name)}
             className="input input-bordered w-full"
           />
         </div>
         <div className="form-control">
           <Input
-            label="Email des Interessenten"
+            label={t(IntlKeys.potentialCustomers.emailTitle)}
             name="email"
             type="text"
-            placeholder="Email"
+            placeholder={t(IntlKeys.common.email)}
             className="input input-bordered w-full"
           />
         </div>
         <div className="form-control my-5">
           <Checkbox name="userInCopy">
-            Ich möchte die Mail in Kopie erhalten
+            {t(IntlKeys.potentialCustomers.sentCopyEmail)}
           </Checkbox>
         </div>
         <p>
-          Was passiert beim Klick auf <strong>Senden</strong>?
+          {t(IntlKeys.potentialCustomers.whatHappenWhenYouClick)} <strong>{t(IntlKeys.common.send)}</strong>?
         </p>
         <ul className="list-decimal m-5 flex flex-col gap-3 text-sm">
           <li>
-            Der AreaButler verschickt eine E-Mail an Ihren Interessenten. Diese
-            E-Mail enthält einen Link.
+            {t(IntlKeys.potentialCustomers.questionnaireText1)}
           </li>
           <li>
-            Über diesen kann Ihr Interessent nun seine bevorzugten
-            Fortbewegungsarten und Lokalitäten sowie seine/ihre wichtigen
-            Adressen eingeben.
+            {t(IntlKeys.potentialCustomers.questionnaireText2)}
           </li>
           <li>
-            Das Ergebnis der Analyse sieht Ihr Interessent nicht - dies können
-            Sie exklusiv bereitstellen.
+            {t(IntlKeys.potentialCustomers.questionnaireText3)}
           </li>
           <li>
-            Sobald wir eine Antwort erhalten haben, erscheint der Interessent
-            unter "Meine Interessenten" zur Schnellauswahl.
+            {t(IntlKeys.potentialCustomers.questionnaireText4)}
           </li>
         </ul>
         <p className="text-sm">
-          Dadurch sparen Sie Zeit und Mühe und bieten einen persönlichen
-          Extraservice.
+          {t(IntlKeys.potentialCustomers.questionnaireText5)}
         </p>
         <div className="form-control my-5">
           <Checkbox name="userAgreement">
-            Der Kunde ist mit dem Erhalt von E-Mails vom AreaButler
-            einverstanden
+            {t(IntlKeys.potentialCustomers.customerAgreesToReceive)}
           </Checkbox>
         </div>
       </Form>
