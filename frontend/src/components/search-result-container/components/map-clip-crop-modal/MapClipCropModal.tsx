@@ -1,14 +1,14 @@
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
 import {
-  ReactCrop,
   centerCrop,
-  makeAspectCrop,
   convertToPixelCrop,
+  makeAspectCrop,
   PercentCrop,
+  ReactCrop,
 } from "react-image-crop";
 import { renderToStaticMarkup } from "react-dom/server";
 import { toPng } from "html-to-image";
@@ -32,10 +32,30 @@ interface IMapClipCropModalProps {
   directLink?: string;
 }
 
-const fullHdCropParams: ICropParams = {
-  name: "16:9",
-  aspect: +(16 / 9).toFixed(3),
+const fourToThreeCropParams = {
+  name: "4:3",
+  aspect: +(4 / 3).toFixed(3),
 };
+
+const allCropParams: ICropParams[] = [
+  {
+    name: "1:1",
+    aspect: 1,
+  },
+  fourToThreeCropParams,
+  {
+    name: "16:9",
+    aspect: +(16 / 9).toFixed(3),
+  },
+  {
+    name: "16:9 (portrait)",
+    aspect: +(9 / 16).toFixed(3),
+  },
+  {
+    name: "Benutzerdefinierten",
+    aspect: 0,
+  },
+];
 
 const getAspectCrop = (
   aspect: number,
@@ -64,7 +84,7 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
-const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
+const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   mapClipping,
   closeModal,
   color,
@@ -77,28 +97,11 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
   const [resultMapClipping, setResultMapClipping] = useState<string>();
   const [qrCodeImage, setQrCodeImage] = useState<HTMLImageElement>();
   const [cropState, setCropState] = useState<PercentCrop>();
-  const [cropParams, setCropParams] = useState<ICropParams>(fullHdCropParams);
+  const [cropParams, setCropParams] = useState<ICropParams>(
+    fourToThreeCropParams
+  );
   const [isShownQrCode, setIsShownQrCode] = useState(false);
 
-  const allCropParams: ICropParams[] = [
-    {
-      name: "1:1",
-      aspect: 1,
-    },
-    {
-      name: "4:3",
-      aspect: +(4 / 3).toFixed(3),
-    },
-    fullHdCropParams,
-    {
-      name: `16:9 (${t(IntlKeys.snapshotEditor.portrait)})`,
-      aspect: +(9 / 16).toFixed(3),
-    },
-    {
-      name: t(IntlKeys.snapshotEditor.userDefined),
-      aspect: 0,
-    },
-  ];
   const handleCropComplete = async (
     completedCropState: PercentCrop
   ): Promise<void> => {
@@ -235,7 +238,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
     }
   };
 
-  // handles the image redrawal
+  // handles the image redrawing
   useEffect(() => {
     const image = imgRef?.current;
 
@@ -317,7 +320,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
               <select
                 className="select select-bordered"
                 name="cropParams"
-                defaultValue={fullHdCropParams.name}
+                defaultValue={cropParams.name}
                 onChange={({ target: { value } }) => {
                   setCropParams(
                     allCropParams.find(({ name }) => name === value)!
