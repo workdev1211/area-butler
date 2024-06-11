@@ -1,7 +1,5 @@
-import { FunctionComponent, useContext } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { FC, useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import { saveAs } from "file-saver";
 
@@ -14,36 +12,44 @@ import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import sendToIntegrationIcon from "../../assets/icons/entrance-alt1.svg";
 import { ConfigContext } from "../../context/ConfigContext";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
-import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 import { integrationNames } from "../../../../shared/constants/integration";
+import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
+import { IntlKeys } from "i18n/keys";
 
 interface IMapClippingsCollapsableProps {
   clippings: MapClipping[];
   searchAddress: string;
 }
 
-const MapClippingsCollapsable: FunctionComponent<
-  IMapClippingsCollapsableProps
-> = ({ clippings, searchAddress}) => {
+const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
+  clippings,
+  searchAddress,
+}) => {
   const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
   const { sendToIntegration } = useIntegrationTools();
 
-  const parsedAddress = (searchAddress || t(IntlKeys.snapshotEditor.exportTab.myLocation))
+  const parsedAddress = (
+    searchAddress || t(IntlKeys.snapshotEditor.exportTab.myLocation)
+  )
     .replace(",", "-")
     .replace(/\s/g, "");
 
   const removeAllClippings = (): void => {
-    window.confirm(t(IntlKeys.snapshotEditor.exportTab.deleteAllMapSectionsConfirmation)) &&
+    window.confirm(
+      t(IntlKeys.snapshotEditor.exportTab.deleteAllMapSectionsConfirmation)
+    ) &&
       searchContextDispatch({
         type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
       });
   };
 
   const removeClipping = (clipping: MapClipping): void => {
-    window.confirm(t(IntlKeys.snapshotEditor.exportTab.deleteThisMapSectionsConfirmation)) &&
+    window.confirm(
+      t(IntlKeys.snapshotEditor.exportTab.deleteThisMapSectionsConfirmation)
+    ) &&
       searchContextDispatch({
         type: SearchContextActionTypes.REMOVE_MAP_CLIPPING,
         payload: clipping,
@@ -53,7 +59,9 @@ const MapClippingsCollapsable: FunctionComponent<
   const downloadClipping = (clipping: MapClipping, i: number): void => {
     saveAs(
       clipping.mapClippingDataUrl,
-      `${parsedAddress}-${t(IntlKeys.snapshotEditor.exportTab.mapSection)}-${i + 1}.png`
+      `${parsedAddress}-${t(IntlKeys.snapshotEditor.exportTab.mapSection)}-${
+        i + 1
+      }.png`
     );
   };
 
@@ -94,10 +102,10 @@ const MapClippingsCollapsable: FunctionComponent<
                 className="flex cursor-pointer"
                 onClick={() => {
                   void sendToIntegration({
-                    base64Content: clipping.mapClippingDataUrl,
+                    base64Image: clipping.mapClippingDataUrl,
                     exportType: AreaButlerExportTypesEnum.SCREENSHOT,
-                    fileTitle: `Lageplan ${i + 1}`,
                     filename: `Lageplan-${i + 1}.png`,
+                    fileTitle: `Lageplan ${i + 1}`,
                   });
                 }}
               >

@@ -54,7 +54,6 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
-  AreaButlerExportTypesEnum,
   IApiIntegrationUserSchema,
   IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
@@ -71,6 +70,7 @@ import {
 import { PlaceService } from '../place/place.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { ContingentIntService } from '../user/contingent-int.service';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
 @Injectable()
@@ -646,11 +646,11 @@ export class OnOfficeService {
       parentUser,
     }: TIntegrationUserDocument,
     {
+      base64Image,
       exportType,
-      base64Content,
+      filename,
       fileTitle,
       integrationId,
-      filename,
     }: IApiIntUploadEstateFileReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
@@ -679,7 +679,7 @@ export class OnOfficeService {
             resourcetype: resourceType,
             parameters: {
               extendedclaim: extendedClaim,
-              data: base64Content.replace(/^data:.*;base64,/, ''),
+              data: base64Image.replace(/^data:.*;base64,/, ''),
             },
           },
         ],

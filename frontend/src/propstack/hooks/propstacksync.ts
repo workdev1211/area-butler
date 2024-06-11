@@ -11,8 +11,8 @@ import {
   TSendToIntegrationData,
 } from "../../../../shared/types/integration";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
-import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 import { toastError } from "../../shared/shared.functions";
+import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
 
 export const usePropstackSync = () => {
   const { post, get, patch, put } = useHttp();

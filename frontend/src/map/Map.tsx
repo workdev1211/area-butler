@@ -1328,7 +1328,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gotoMapCenter]);
 
-    const takeScreenshot = (): void => {
+    const takeScreenshot = async (): Promise<void> => {
       if (isShownPreferredLocationsModal) {
         togglePreferredLocationsModal(false);
       }
@@ -1384,51 +1384,54 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         bottomElements[i].className = `${bottomElements[i].className} hidden`;
       }
 
-      toPng(document.querySelector(`#${searchResContainId}`) as HTMLElement, {
-        quality: 1,
-        pixelRatio: 2,
-      }).then((mapClipping) => {
-        addMapClipping(mapClipping);
+      const mapClipping = await toPng(
+        document.querySelector(`#${searchResContainId}`) as HTMLElement,
+        {
+          quality: 1,
+          pixelRatio: 2,
+        }
+      );
 
-        if (isShownPreferredLocationsModal) {
-          togglePreferredLocationsModal(true);
-        }
+      addMapClipping(mapClipping);
 
-        if (mapMenuContainer) {
-          mapMenuContainer.className = `${mapMenuContainer.className} map-menu-open`;
-          mapMenuContainer.style.transition = "width 0.2s";
-        }
+      if (isShownPreferredLocationsModal) {
+        togglePreferredLocationsModal(true);
+      }
 
-        if (mapMenuBtnContainer) {
-          mapMenuBtnContainer.style.display = "";
-        }
+      if (mapMenuContainer) {
+        mapMenuContainer.className = `${mapMenuContainer.className} map-menu-open`;
+        mapMenuContainer.style.transition = "width 0.2s";
+      }
 
-        if (kfMapMenuContainer) {
-          kfMapMenuContainer.style.transition = "right 0.2s";
-          kfMapMenuContainer.className = `${kfMapMenuContainer.className} map-menu-open`;
-        }
+      if (mapMenuBtnContainer) {
+        mapMenuBtnContainer.style.display = "";
+      }
 
-        if (meansContainer && hideIsochrones) {
-          meansContainer.style.display = "";
-        }
-        if (meansContainer && !hideIsochrones) {
-          meansContainer.className = `${meansContainer.className} map-menu-open`;
-        }
+      if (kfMapMenuContainer) {
+        kfMapMenuContainer.style.transition = "right 0.2s";
+        kfMapMenuContainer.className = `${kfMapMenuContainer.className} map-menu-open`;
+      }
 
-        if (poiSearchContainer) {
-          poiSearchContainer.className = poiSearchContainer.className.replace(
-            " hidden",
-            ""
-          );
-        }
+      if (meansContainer && hideIsochrones) {
+        meansContainer.style.display = "";
+      }
+      if (meansContainer && !hideIsochrones) {
+        meansContainer.className = `${meansContainer.className} map-menu-open`;
+      }
 
-        for (let i = 0; i < bottomElements.length; i++) {
-          bottomElements[i].className = bottomElements[i].className.replace(
-            " hidden",
-            ""
-          );
-        }
-      });
+      if (poiSearchContainer) {
+        poiSearchContainer.className = poiSearchContainer.className.replace(
+          " hidden",
+          ""
+        );
+      }
+
+      for (let i = 0; i < bottomElements.length; i++) {
+        bottomElements[i].className = bottomElements[i].className.replace(
+          " hidden",
+          ""
+        );
+      }
     };
 
     const toggleFullscreen = (): void => {
@@ -1656,7 +1659,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 role="button"
                 onClick={(event) => {
                   event.preventDefault();
-                  takeScreenshot();
+                  void takeScreenshot();
                 }}
                 style={{
                   backgroundColor: "white",

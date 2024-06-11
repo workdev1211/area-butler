@@ -563,6 +563,23 @@ const SearchResultContainer = forwardRef<
       });
     };
 
+    const handleMapClipCrop = async (
+      croppedMapClipping?: string
+    ): Promise<void> => {
+      if (croppedMapClipping) {
+        toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.ADD_MAP_CLIPPING,
+          payload: {
+            mapClippingDataUrl: croppedMapClipping,
+          },
+        });
+      }
+
+      setMapClipping(undefined);
+    };
+
     const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
     const resUserPoiIcons =
       userPoiIcons || (!isIntegrationUser ? user.poiIcons : undefined);
@@ -655,20 +672,7 @@ const SearchResultContainer = forwardRef<
         {mapClipping && (
           <MapClipCropModal
             mapClipping={mapClipping}
-            closeModal={(croppedMapClipping?: string) => {
-              if (croppedMapClipping) {
-                toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
-
-                searchContextDispatch({
-                  type: SearchContextActionTypes.ADD_MAP_CLIPPING,
-                  payload: {
-                    mapClippingDataUrl: croppedMapClipping,
-                  },
-                });
-              }
-
-              setMapClipping(undefined);
-            }}
+            closeModal={handleMapClipCrop}
             color={primaryColor?.slice(1)}
             directLink={directLink}
           />

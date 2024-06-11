@@ -4,6 +4,7 @@ import {
   ApiShowTour,
   IApiMapboxStyle,
   LanguageTypeEnum,
+  TAreaButlerExportTypes,
 } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
@@ -136,18 +137,6 @@ export type TApiIntegrationUserConfig = {
   isSpecialLink?: boolean;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
 };
-
-export type TAreaButlerExportTypes =
-  | OpenAiQueryTypeEnum
-  | AreaButlerExportTypesEnum;
-
-export enum AreaButlerExportTypesEnum {
-  EMBEDDED_LINKS = "EMBEDDED_LINKS",
-  QR_CODE = "QR_CODE",
-  INLINE_FRAME = "INLINE_FRAME",
-  ONE_PAGE_PNG = "ONE_PAGE_PNG",
-  SCREENSHOT = "SCREENSHOT",
-}
 
 export interface IIntUserExpMatchParams {
   fieldId: string;

@@ -1,8 +1,8 @@
 import { IsIn, IsNotEmpty, IsString, IsUrl } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
 import { IApiIntCreateEstateLinkReq } from '@area-butler-types/integration';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 
 @Exclude()
 class ApiIntCreateEstateLinkReqDto implements IApiIntCreateEstateLinkReq {

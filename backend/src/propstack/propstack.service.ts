@@ -280,7 +280,7 @@ export class PropstackService {
 
   uploadPropertyImage(
     { parameters }: TIntegrationUserDocument,
-    { base64Content, fileTitle, integrationId }: IApiIntUploadEstateFileReq,
+    { base64Image, fileTitle, integrationId }: IApiIntUploadEstateFileReq,
   ): Promise<void> {
     return this.propstackApiService.uploadPropertyImage(
       (parameters as IApiIntUserPropstackParams).apiKey,
@@ -288,7 +288,7 @@ export class PropstackService {
         imageable_id: parseInt(integrationId, 10),
         imageable_type: ApiPropstackImageTypeEnum.PROPERTY,
         is_private: false,
-        photo: base64Content,
+        photo: base64Image,
         title: fileTitle,
       },
     );

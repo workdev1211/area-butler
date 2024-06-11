@@ -1,7 +1,7 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { renderToStaticMarkup } from "react-dom/server";
 import { saveAs } from "file-saver";
@@ -12,9 +12,9 @@ import OnePagePng from "./OnePagePng";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
-import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 import { IOnePagePngDownProps } from "../../shared/one-page.types";
 import { integrationNames } from "../../../../shared/constants/integration";
+import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
 
 export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
   addressDescription,
@@ -91,7 +91,9 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
     void processMapClippings();
   }, [mapClippings]);
 
-  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(
+    IntlKeys.snapshotEditor.exportTab.myLocation
+  )}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -157,14 +159,16 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
           disabled={downloadButtonDisabled}
           onClick={async () => {
             void sendToIntegration({
-              base64Content: await getRenderedPngImage(),
+              base64Image: await getRenderedPngImage(),
               exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
-              fileTitle: documentTitle,
               filename: `${documentTitle}.png`,
+              fileTitle: documentTitle,
             });
           }}
         >
-          {t(IntlKeys.snapshotEditor.exportTab.sendTo, { integrationType: integrationNames[integrationType] })}
+          {t(IntlKeys.snapshotEditor.exportTab.sendTo, {
+            integrationType: integrationNames[integrationType],
+          })}
         </button>
       )}
 

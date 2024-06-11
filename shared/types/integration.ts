@@ -1,9 +1,5 @@
-import { ISelectTextValue } from "./types";
-import {
-  AreaButlerExportTypesEnum,
-  IIntUserExpMatchParams,
-  TApiIntUserProdContType,
-} from "./integration-user";
+import { IIntUserExpMatchParams } from "./integration-user";
+import { TApiIntUserProdContType } from "./integration-user";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
@@ -11,6 +7,7 @@ import {
 } from "./integration-user";
 import { OnOfficeProductTypesEnum } from "./on-office";
 import { PropstackProductTypeEnum } from "./propstack";
+import { AreaButlerExportTypesEnum, ISelectTextValue } from "./types";
 
 export enum IntegrationTypesEnum {
   MY_VIVENDA = "MY_VIVENDA",
@@ -145,11 +142,11 @@ export interface IApiIntUpdEstTextFieldReq {
 }
 
 export interface IApiIntUploadEstateFileReq {
+  base64Image: string;
   exportType:
     | AreaButlerExportTypesEnum.QR_CODE
     | AreaButlerExportTypesEnum.SCREENSHOT
     | AreaButlerExportTypesEnum.ONE_PAGE_PNG;
-  base64Content: string;
   fileTitle: string;
   integrationId: string;
   filename?: string;

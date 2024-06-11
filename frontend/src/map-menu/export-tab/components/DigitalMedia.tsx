@@ -28,7 +28,6 @@ import {
   IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
-import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
 import { UserContext } from "../../../context/UserContext";
 import UnlockProductButton from "../../components/UnlockProductButton";
 import { EntityGroup } from "../../../shared/search-result.types";
@@ -38,7 +37,10 @@ import { realEstateListingsTitle } from "../../../../../shared/constants/real-es
 import { ConfigContext } from "../../../context/ConfigContext";
 import { integrationNames } from "../../../../../shared/constants/integration";
 import { useTools } from "../../../hooks/tools";
-import { FeatureTypeEnum } from "../../../../../shared/types/types";
+import {
+  AreaButlerExportTypesEnum,
+  FeatureTypeEnum,
+} from "../../../../../shared/types/types";
 import { IntlKeys } from "i18n/keys";
 import PublicLinks from "./PublicLinks";
 
@@ -188,7 +190,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
                 <div
                   onClick={async () => {
                     void sendToIntegration({
-                      base64Content: await getQrCodeBase64(directLink),
+                      base64Image: await getQrCodeBase64(directLink),
                       exportType: AreaButlerExportTypesEnum.QR_CODE,
                       fileTitle: t(
                         IntlKeys.snapshotEditor.exportTab.qrCodeFileName

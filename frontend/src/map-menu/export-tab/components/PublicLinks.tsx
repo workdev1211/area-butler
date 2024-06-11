@@ -6,7 +6,6 @@ import copyIcon from "../../../assets/icons/copy.svg";
 import urlIcon from "../../../assets/icons/link.svg";
 import { copyTextToClipboard } from "../../../shared/shared.functions";
 import { useIntegrationTools } from "../../../hooks/integration/integrationtools";
-import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { integrationNames } from "../../../../../shared/constants/integration";
 import { useTools } from "../../../hooks/tools";
@@ -17,6 +16,7 @@ import {
   IntegrationTypesEnum,
 } from "../../../../../shared/types/integration";
 import { UserContext } from "../../../context/UserContext";
+import { AreaButlerExportTypesEnum } from "../../../../../shared/types/types";
 
 const PublicLinks: FC = () => {
   const { integrationType } = useContext(ConfigContext);

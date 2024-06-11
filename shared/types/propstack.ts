@@ -1,6 +1,5 @@
 import { IApiIntUpdEstTextFieldReq } from "./integration";
 import { OpenAiQueryTypeEnum } from "./open-ai";
-import { AreaButlerExportTypesEnum } from "./integration-user";
 
 export interface IApiPropstackLoginQueryParams {
   apiKey: string;

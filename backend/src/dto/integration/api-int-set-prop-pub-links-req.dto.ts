@@ -8,12 +8,12 @@ import {
 } from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
 
-import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
 import {
   IApiIntPublicLinkParams,
   IApiIntSetPropPubLinksReq,
 } from '@area-butler-types/integration';
 import ApiIntPublicLinkParamsDto from './api-int-public-link-params.dto';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 
 @Exclude()
 class ApiIntSetPropPubLinksReqDto implements IApiIntSetPropPubLinksReq {

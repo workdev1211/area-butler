@@ -14,6 +14,7 @@ import {
 } from "../constants/constants";
 import { IntegrationTypesEnum } from "./integration";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
+import { OpenAiQueryTypeEnum } from "./open-ai";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -52,8 +53,8 @@ export interface IApiUserExportFont {
 }
 
 export enum LanguageTypeEnum {
-  en = 'en',
-  de = 'de'
+  en = "en",
+  de = "de",
 }
 
 export interface ApiUser {
@@ -510,4 +511,26 @@ export enum FeatureTypeEnum {
   ONE_PAGE = "ONE_PAGE",
   OTHER_EXPORT = "OTHER_EXPORT",
   STATS_DATA = "STATS_DATA",
+}
+
+export enum AreaButlerExportTypesEnum {
+  EMBEDDED_LINKS = "EMBEDDED_LINKS",
+  QR_CODE = "QR_CODE",
+  INLINE_FRAME = "INLINE_FRAME",
+  ONE_PAGE_PNG = "ONE_PAGE_PNG",
+  SCREENSHOT = "SCREENSHOT",
+}
+
+export type TAreaButlerExportTypes =
+  | OpenAiQueryTypeEnum
+  | AreaButlerExportTypesEnum;
+
+export interface IApiUploadFileReq {
+  base64Image: string;
+  exportType:
+    | AreaButlerExportTypesEnum.QR_CODE
+    | AreaButlerExportTypesEnum.SCREENSHOT
+    | AreaButlerExportTypesEnum.ONE_PAGE_PNG;
+  filename?: string;
+  fileTitle?: string;
 }

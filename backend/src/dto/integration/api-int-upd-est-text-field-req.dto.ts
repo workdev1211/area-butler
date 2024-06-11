@@ -3,7 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { IApiIntUpdEstTextFieldReq } from '@area-butler-types/integration';
-import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 
 @Exclude()
 class ApiIntUpdEstTextFieldReqDto implements IApiIntUpdEstTextFieldReq {
