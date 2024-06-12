@@ -25,8 +25,12 @@ import {
   TApiIntUserProdContType,
 } from "../../../../shared/types/integration-user";
 import { useOnOfficeSync } from "../../on-office/hooks/onofficesync";
-import { wrongIntegrationErrorMsg } from "../../../../shared/constants/integration";
+import {
+  integrationNames,
+  wrongIntegrationErrorMsg,
+} from "../../../../shared/constants/integration";
 import { usePropstackSync } from "../../propstack/hooks/propstacksync";
+import { useMyVivendaSync } from "../../my-vivenda/hooks/myvivendasync";
 
 export const useIntegrationTools = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -41,6 +45,7 @@ export const useIntegrationTools = () => {
 
   const history = useHistory();
   const { post } = useHttp();
+  const { sendToMyVivenda } = useMyVivendaSync();
   const { sendToOnOffice } = useOnOfficeSync();
   const { sendToPropstack } = usePropstackSync();
 
@@ -68,35 +73,44 @@ export const useIntegrationTools = () => {
   const sendToIntegration = async (
     sendToIntegrationData: TSendToIntegrationData
   ): Promise<void> => {
-    if (!realEstateListing?.integrationId) {
-      const errorMessage = "Die Integrations-ID wird nicht angegeben!"; // Integration id is not provided!
-      toastError(errorMessage);
-      console.error(errorMessage);
+    if (integrationType !== IntegrationTypesEnum.MY_VIVENDA) {
+      if (!realEstateListing?.integrationId) {
+        const errorMessage = "Die Integrations-ID wird nicht angegeben!"; // Integration id is not provided!
+        toastError(errorMessage);
+        console.error(errorMessage);
+        return;
+      }
+
+      sendToIntegrationData.integrationId = realEstateListing.integrationId;
+    }
+
+    if (!Object.values(IntegrationTypesEnum).includes(integrationType!)) {
+      toastError(wrongIntegrationErrorMsg);
+      console.error(wrongIntegrationErrorMsg);
       return;
     }
 
-    sendToIntegrationData.integrationId = realEstateListing.integrationId;
-
     try {
       switch (integrationType) {
+        case IntegrationTypesEnum.MY_VIVENDA: {
+          await sendToMyVivenda(sendToIntegrationData);
+          break;
+        }
+
         case IntegrationTypesEnum.ON_OFFICE: {
           await sendToOnOffice(sendToIntegrationData);
-          toastSuccess("Die Daten wurden an onOffice gesendet!");
           break;
         }
 
         case IntegrationTypesEnum.PROPSTACK: {
           await sendToPropstack(sendToIntegrationData);
-          toastSuccess("Die Daten wurden an Propstack gesendet!");
           break;
         }
-
-        default: {
-          toastError(wrongIntegrationErrorMsg);
-          console.error(wrongIntegrationErrorMsg);
-          return;
-        }
       }
+
+      toastSuccess(
+        `Die Daten wurden an ${integrationNames[integrationType!]} gesendet!`
+      );
     } catch (e) {
       toastError("Der Fehler ist aufgetreten!");
       console.error(e);

@@ -18,6 +18,7 @@ import {
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
+  AreaButlerExportTypesEnum,
   IApiUserPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
@@ -64,6 +65,7 @@ import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import MyVivendaMapMenu, {
   TMyVivendaMapMenuProps,
 } from "../../my-vivenda/components/MyVivendaMapMenu";
+import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -133,6 +135,7 @@ const SearchResultContainer = forwardRef<
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
     const { createDirectLink, getActualUser } = useTools();
+    const { sendToIntegration } = useIntegrationTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
 
     const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBEDDED;
@@ -566,15 +569,25 @@ const SearchResultContainer = forwardRef<
     const handleMapClipCrop = async (
       croppedMapClipping?: string
     ): Promise<void> => {
-      if (croppedMapClipping) {
-        toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+      if (!croppedMapClipping) {
+        setMapClipping(undefined);
+        return;
+      }
 
-        searchContextDispatch({
-          type: SearchContextActionTypes.ADD_MAP_CLIPPING,
-          payload: {
-            mapClippingDataUrl: croppedMapClipping,
-          },
+      searchContextDispatch({
+        type: SearchContextActionTypes.ADD_MAP_CLIPPING,
+        payload: {
+          mapClippingDataUrl: croppedMapClipping,
+        },
+      });
+
+      if (integrationType) {
+        void sendToIntegration({
+          base64Image: croppedMapClipping,
+          exportType: AreaButlerExportTypesEnum.SCREENSHOT,
         });
+      } else {
+        toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
       }
 
       setMapClipping(undefined);

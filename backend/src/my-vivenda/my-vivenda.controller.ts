@@ -16,7 +16,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { IApiMyVivendaLoginRes } from '@area-butler-types/my-vivenda';
 import { MyVivendaHandleLoginInterceptor } from './interceptor/my-vivenda-handle-login.interceptor';
 import { InjectSnapshotId } from './inject-snapshot-id.decorator';
-import ApiMyVivendaUplMapScreenDto from './dto/api-my-vivenda-upl-map-screen-req.dto';
+import ApiUploadFileReqDto from '../dto/api-upload-file-req.dto';
 
 @ApiTags('my-vivenda')
 @Controller('api/my-vivenda')
@@ -37,10 +37,11 @@ export class MyVivendaController {
   }
 
   @ApiOperation({ description: 'Upload map screenshot' })
+  @UseInterceptors(MyVivendaHandleLoginInterceptor)
   @Post('map-screenshot')
   uploadScreenshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() { base64Image }: ApiMyVivendaUplMapScreenDto,
+    @Body() { base64Image }: ApiUploadFileReqDto,
   ): Promise<void> {
     return this.myVivendaService.uploadMapScreenshot(user, base64Image);
   }

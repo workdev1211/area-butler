@@ -614,6 +614,7 @@
   },
 
   "integration": {
-    "absentTokensError": "iFrame tokens are missing!"
+    "absentTokensError": "iFrame tokens are missing!",
+    "cropAndSend": "Crop and send"
   }
 }

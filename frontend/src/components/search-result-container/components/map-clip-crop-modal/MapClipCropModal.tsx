@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState, useContext } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -19,6 +19,7 @@ import "./MapClipCropModal.scss";
 import { toastDefaultError } from "../../../../shared/shared.functions";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import { MapClipQrCode } from "./MapClipQrCode";
+import { ConfigContext } from "../../../../context/ConfigContext";
 
 interface ICropParams {
   name: string;
@@ -92,6 +93,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
+  const { integrationType } = useContext(ConfigContext);
 
   const [initMapClipping, setInitMapClipping] = useState<string>(mapClipping);
   const [resultMapClipping, setResultMapClipping] = useState<string>();
@@ -368,7 +370,11 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                 closeModal(resultMapClipping);
               }}
             >
-              {t(IntlKeys.snapshotEditor.crop)}
+              {t(
+                integrationType
+                  ? IntlKeys.integration.cropAndSend
+                  : IntlKeys.snapshotEditor.crop
+              )}
             </button>
           </div>
         </div>

@@ -7,7 +7,12 @@ import {
 } from "./integration-user";
 import { OnOfficeProductTypesEnum } from "./on-office";
 import { PropstackProductTypeEnum } from "./propstack";
-import { AreaButlerExportTypesEnum, ISelectTextValue } from "./types";
+import {
+  AreaButlerExportTypesEnum,
+  IApiUploadFileReq,
+  ISelectTextValue,
+  ResultStatusEnum,
+} from "./types";
 
 export enum IntegrationTypesEnum {
   MY_VIVENDA = "MY_VIVENDA",
@@ -141,15 +146,8 @@ export interface IApiIntUpdEstTextFieldReq {
   exportMatchParams?: IIntUserExpMatchParams;
 }
 
-export interface IApiIntUploadEstateFileReq {
-  base64Image: string;
-  exportType:
-    | AreaButlerExportTypesEnum.QR_CODE
-    | AreaButlerExportTypesEnum.SCREENSHOT
-    | AreaButlerExportTypesEnum.ONE_PAGE_PNG;
-  fileTitle: string;
+export interface IApiIntUploadEstateFileReq extends IApiUploadFileReq {
   integrationId: string;
-  filename?: string;
 }
 
 export interface IApiIntCreateEstateLinkReq {
@@ -179,6 +177,7 @@ export type TSendToIntegrationData = {
   | Omit<IApiIntUploadEstateFileReq, "integrationId">
   | Omit<IApiIntCreateEstateLinkReq, "integrationId">
   | Omit<IApiIntSetPropPubLinksReq, "integrationId">
+  | IApiUploadFileReq
 );
 
 export type TIntegrationProductType =

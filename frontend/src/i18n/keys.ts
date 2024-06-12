@@ -651,5 +651,6 @@ export const IntlKeys = {
 
   integration: {
     absentTokensError: "integration.absentTokensError",
+    cropAndSend: "integration.cropAndSend",
   },
 };
