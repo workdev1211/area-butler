@@ -13,10 +13,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import {
-  ApiCoordinates,
-  ResultStatusEnum,
-} from '@area-butler-types/types';
+import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
@@ -140,6 +137,7 @@ export class LocationExtController extends ApiKeyAuthController {
         returnedAddressesNumber,
         returnedAddresses,
         apiRequestsNumber,
+        apiType: resultApiType,
       } = await this.addressesInRangeExtService.fetchAddressesInRange({
         apiType,
         radius,
@@ -152,7 +150,7 @@ export class LocationExtController extends ApiKeyAuthController {
         sourceAddress,
         returnedAddressesNumber,
         apiRequestsNumber,
-        apiType,
+        apiType: resultApiType,
       });
 
       return {

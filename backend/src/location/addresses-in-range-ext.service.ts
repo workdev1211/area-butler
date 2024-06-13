@@ -11,6 +11,7 @@ import {
 import { ApiHereLanguageEnum } from '../shared/types/here';
 import { PlaceService } from '../place/place.service';
 import { UserDocument } from '../user/schema/user.schema';
+import { configService } from '../config/config.service';
 
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
@@ -25,22 +26,24 @@ interface IFetchedAddressesInRange {
   returnedAddressesNumber: number;
   returnedAddresses: IApiAddressInRange[];
   apiRequestsNumber: number;
+  apiType: ApiAddrInRangeApiTypesEnum;
 }
 
 // const MAXIMUM_RADIUS = 400;
 // const MINIMUM_ADDRESSES_NUMBER = 200;
 
 interface IFetchAddrInRangeData {
-  apiType: ApiAddrInRangeApiTypesEnum;
   location: string | ApiCoordinates;
   radius: number; // meters
   user: UserDocument;
+  apiType?: ApiAddrInRangeApiTypesEnum;
   language?: Language;
 }
 
 @Injectable()
 export class AddressesInRangeExtService {
   private readonly logger = new Logger(AddressesInRangeExtService.name);
+  private readonly addrInRangeApiType = configService.getAddrInRangeApiType();
 
   constructor(
     private readonly hereGeocodeService: HereGeocodeService,
@@ -90,7 +93,9 @@ export class AddressesInRangeExtService {
         ) || Language.de;
     }
 
-    switch (apiType) {
+    const resultApiType = apiType || this.addrInRangeApiType;
+
+    switch (resultApiType) {
       case ApiAddrInRangeApiTypesEnum.HERE: {
         const hereLanguage =
           Object.values(ApiHereLanguageEnum).find(
@@ -159,6 +164,7 @@ export class AddressesInRangeExtService {
       returnedAddressesNumber: filteredAddresses.length,
       returnedAddresses: filteredAddresses,
       apiRequestsNumber: fetchedAddresses.apiRequestsNumber,
+      apiType: resultApiType,
     };
   }
 

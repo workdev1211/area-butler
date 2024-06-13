@@ -13,11 +13,8 @@ class ApiFetchAddrInRangeReqDto
   implements IApiFetchAddrInRangeReq
 {
   @IsOptional()
-  @Transform(({ value }) => +value, { toClassOnly: true })
-  @IsInt()
-  @Min(1)
-  @Max(400)
-  radius?: number = 150;
+  @IsEnum(ApiAddrInRangeApiTypesEnum)
+  apiType?: ApiAddrInRangeApiTypesEnum;
 
   @IsOptional()
   @IsEnum(Language, {
@@ -26,8 +23,11 @@ class ApiFetchAddrInRangeReqDto
   language?: Language = Language.de;
 
   @IsOptional()
-  @IsEnum(ApiAddrInRangeApiTypesEnum)
-  apiType?: ApiAddrInRangeApiTypesEnum = ApiAddrInRangeApiTypesEnum.HERE;
+  @Transform(({ value }) => +value, { toClassOnly: true })
+  @IsInt()
+  @Min(1)
+  @Max(400)
+  radius?: number = 150;
 }
 
 export default ApiFetchAddrInRangeReqDto;

@@ -10,6 +10,7 @@ import {
   systemEnvironments,
 } from '../../../shared/constants/constants';
 import { OverpassAvailCountryEnum } from '@area-butler-types/overpass';
+import { ApiAddrInRangeApiTypesEnum } from '../shared/types/external-api';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -112,6 +113,12 @@ class ConfigService {
 
   getHereApiKey(): string {
     return this.getValue('HERE_API_KEY');
+  }
+
+  getAddrInRangeApiType(): ApiAddrInRangeApiTypesEnum {
+    return this.getValue(
+      'ADDR_IN_RANGE_API_TYPE',
+    ) as ApiAddrInRangeApiTypesEnum;
   }
 
   // TODO rename to the "paymentEnv" and make it dependable from the systemEnv
