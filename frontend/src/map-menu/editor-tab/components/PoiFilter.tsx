@@ -1,5 +1,8 @@
 import { FunctionComponent, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   IApiSnapshotPoiFilter,
   PoiFilterTypesEnum,
@@ -15,6 +18,7 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
   poiFilter,
   onChange,
 }) => {
+  const { t } = useTranslation();
   const [poiFilterType, setPoiFilterType] = useState(
     poiFilter?.type || PoiFilterTypesEnum.NONE
   );
@@ -44,7 +48,7 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
           checked={poiFilterType === PoiFilterTypesEnum.NONE}
           onChange={() => {}}
         />
-        <div className="label-text">Keiner</div>
+        <div className="label-text">{t(IntlKeys.snapshotEditor.none)}</div>
       </div>
       <div
         className="flex items-center gap-1 cursor-pointer"
@@ -60,10 +64,10 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
           onChange={() => {}}
           style={{ flexShrink: 0 }}
         />
-        <div className="label-text">Distanz:</div>
+        <div className="label-text">{t(IntlKeys.snapshotEditor.distance)}:</div>
       </div>
       <div className="flex items-center gap-1 label-text">
-        <span>Zeige nur POIs in</span>
+        <span>{t(IntlKeys.snapshotEditor.showOnly)}</span>
         <input
           className="input input-bordered h-auto px-2"
           name="poi-distance"
@@ -79,7 +83,7 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
             }
           }}
         />
-        <span>Meter Umkreis</span>
+        <span>{t(IntlKeys.snapshotEditor.meterRadius)}</span>
       </div>
       <div
         className="flex items-center gap-1 cursor-pointer"
@@ -95,10 +99,10 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
           onChange={() => {}}
           style={{ flexShrink: 0 }}
         />
-        <div className="label-text">Anzahl:</div>
+        <div className="label-text">{t(IntlKeys.snapshotEditor.quantity)}:</div>
       </div>
       <div className="flex items-center gap-1 label-text">
-        <span>Zeige nur die nächsten</span>
+        <span>{t(IntlKeys.snapshotEditor.showOnlyTheText)}</span>
         <input
           className="input input-bordered h-auto px-2"
           name="poi-amount"
@@ -114,7 +118,7 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
             }
           }}
         />
-        <span>POIs</span>
+        <span>{t(IntlKeys.snapshotEditor.POIs)}</span>
       </div>
       <div className="flex col-span-2">
         <button
@@ -128,7 +132,7 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
               ) &&
               !(poiFilterType === PoiFilterTypesEnum.BY_AMOUNT && poiAmount)
             ) {
-              toastError("Bitte korrekten Wert eingeben!");
+              toastError(t(IntlKeys.snapshotEditor.enterValidValue));
               return;
             }
 
@@ -146,7 +150,7 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
             onChange(resultingPoiFilter);
           }}
         >
-          Anwenden
+          {t(IntlKeys.common.apply)}
         </button>
       </div>
     </div>

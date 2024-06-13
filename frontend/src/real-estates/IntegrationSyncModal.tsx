@@ -127,7 +127,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div className="form-control">
                 <label htmlFor="marketTypes" className="label">
-                  <span>{t(IntlKeys.realEstate.marketingType)}</span>
+                  <span>{t(IntlKeys.common.marketingType)}</span>
                 </label>
 
                 <select

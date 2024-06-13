@@ -98,7 +98,30 @@
       "description": "What are the structural data?",
       "contactUs": "We are happy to provide more in-depth data on the labor force,\n          unemployment rate, employees by skill level, GDP per capita,\n          business tax revenues, logistics attractiveness and much more. Simply contact us\n          us directly."
     },
-    "needsFilter": "Needs filter"
+    "needsFilter": "Needs filter",
+    "current": "Current",
+    "cardInYourBranding": "Card in your branding?",
+    "talkToUs": "Talk to us.",
+    "hideIndividualPOIs": "Hide individual POIs",
+    "POIDetailFilter": "POI detail filter",
+    "none": "None",
+    "distance": "Distance",
+    "showOnly": "Show only POIs in",
+    "meterRadius": "Meter radius",
+    "quantity": "Quantity",
+    "showOnlyTheText": "Show only the next",
+    "POIs": "POIs",
+    "enterValidValue": "Please enter the correct value!",
+    "configuration": "Configuration",
+    "configurationDesc": "Design, color, behavior",
+    "templates": "Templates",
+    "cardStyle": "Card style",
+    "menuStyle": "Menu style",
+    "standard": "Standard",
+    "minimal": "Minimal",
+    "preselectedProfile": "Preselected profiles",
+    "showIcon": "Show icon",
+    "showAddress": "Show address"
   },
   "common": {
     "showMore": "Show more",
@@ -134,6 +157,16 @@
     "statuses": {
       "ACTIVE": "Active",
       "INACTIVE": "Inactive"
+    },
+    "open": "Open",
+    "apply": "Apply",
+    "yes": "Yes",
+    "no": "No",
+    "marketingType": "Marketing type",
+    "transportationTypes": {
+      "walking": "On foot",
+      "cycling": "Bicycle",
+      "driving": "Car"
     }
   },
   "environmentalAnalysis": {
@@ -146,9 +179,6 @@
     "currentLocation": "Current location",
     "lastEntries": "Last entries",
     "analysisRadius": "Mobility & analysis radius",
-    "walking": "On foot",
-    "cycling": "Bicycle",
-    "driving": "Car",
     "availableIn": "Available in",
     "unit": "Unit",
     "km": "Kilometers",
@@ -188,7 +218,6 @@
     "syncPropertyFailed": "Property synchronization failed!",
     "synchronized": "Real estate is synchronized",
     "setFilter": "Set filter",
-    "marketingType": "Marketing type",
     "equipment": "Equipment",
     "note": "Note",
     "createdOn": "Created on",
@@ -279,5 +308,22 @@
     "myFavorite": "My favorite",
     "typesOfTransportations": "Modes of transportation",
     "localities": "Localities"
+  },
+  "mapSnapshots": {
+    "copiedToClipboard": "Successfully copied to clipboard!",
+    "duplicateConfirmation": "Do you really want to duplicate the card snippet?",
+    "duplicateFailed": "Error when duplicating a card snippet!",
+    "deleteConfirmation": "Do you really want to delete the map snippet?",
+    "deleteFailed": "Error when deleting a card snippet!",
+    "templateSaved": "Template saved.",
+    "openEditor": "Open editor",
+    "queryLimitReached": "Query limit reached",
+    "startAnalysis": "Start analysis",
+    "buyNewContingent": "Buy new contingent",
+    "noVisits": "No visits",
+    "copyLink": "Copy link",
+    "cancelTemplate": "Cancel template",
+    "setAsTemplate": "Set as template",
+    "duplicateCard": "Duplicate card"
   }
 }

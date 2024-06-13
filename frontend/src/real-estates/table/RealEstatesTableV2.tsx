@@ -165,7 +165,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
   const columns = useMemo<ColumnDef<IRealEstateTableItem, any>[]>(
     () => [
       columnHelper.accessor("status", {
-        header: t(IntlKeys.realEstate.marketingType),
+        header: t(IntlKeys.common.marketingType),
         cell: (props) => props.getValue() || null,
         size: 150,
         meta: {

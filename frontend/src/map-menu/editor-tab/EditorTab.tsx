@@ -45,8 +45,6 @@ import { IApiLateSnapConfigOption } from "../../../../shared/types/location";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { useTools } from "../../hooks/tools";
 
-const currentSnippetConfigLabel = "Aktuell";
-
 const EditorTab: FC<IEditorTabProps> = ({
   availableMeans = [],
   groupedEntries = [],
@@ -72,7 +70,7 @@ const EditorTab: FC<IEditorTabProps> = ({
     IApiLateSnapConfigOption[]
   >([]);
   const [selectedSnippetConfigId, setSelectedSnippetConfigId] = useState(
-    currentSnippetConfigLabel.toLowerCase()
+    t(IntlKeys.snapshotEditor.current).toLowerCase()
   );
   // Should not be simplified
   const [isReferenceMap, setIsReferenceMap] = useState<boolean>(
@@ -144,12 +142,12 @@ const EditorTab: FC<IEditorTabProps> = ({
     ...extraMapboxStyles,
     {
       key: "new-map-style-1",
-      label: "> Karte in Ihrem Branding? <",
+      label: `> ${t(IntlKeys.snapshotEditor.cardInYourBranding)} <`,
       isDisabled: true,
     },
     {
       key: "new-map-style-2",
-      label: "> Sprechen Sie uns an. <",
+      label: `> ${t(IntlKeys.snapshotEditor.talkToUs)} <`,
       isDisabled: true,
     },
   ];
@@ -283,9 +281,11 @@ const EditorTab: FC<IEditorTabProps> = ({
           <div className="collapse-title-container">
             <img src={poiVisibilityIcon} alt="poi-visibility-icon" />
             <div className="collapse-title-text">
-              <div className="collapse-title-text-1">POI-Detail-Filter</div>
+              <div className="collapse-title-text-1">
+                {t(IntlKeys.snapshotEditor.POIDetailFilter)}
+              </div>
               <div className="collapse-title-text-2">
-                Einzelne POIs ausblenden
+                {t(IntlKeys.snapshotEditor.hideIndividualPOIs)}
               </div>
             </div>
           </div>
@@ -328,7 +328,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                           toggleGroupOpen(group);
                         }}
                       >
-                        {checkIsGroupOpen(group) ? "Schließen" : "Öffnen"}
+                        {checkIsGroupOpen(group) ? t(IntlKeys.common.close) : t(IntlKeys.common.open)}
                       </button>
                     </div>
                     {checkIsGroupOpen(group) && (
@@ -378,9 +378,9 @@ const EditorTab: FC<IEditorTabProps> = ({
           <div className="collapse-title-container">
             <img src={configOptionsIcon} alt="config-options-icon" />
             <div className="collapse-title-text">
-              <div className="collapse-title-text-1">Konfiguration</div>
+              <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.configuration)}</div>
               <div className="collapse-title-text-2">
-                Design, Farbe, Verhalten
+                {t(IntlKeys.snapshotEditor.configurationDesc)}
               </div>
             </div>
           </div>
@@ -390,7 +390,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             {lateSnapConfigs.length > 0 && (
               <li>
                 <div className="flex items-center gap-6 py-1 w-full">
-                  <h4 className="w-[6.5rem] font-bold">Vorlagen</h4>
+                  <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.snapshotEditor.templates)}</h4>
                   <select
                     className="select select-bordered select-sm flex-1 w-full"
                     value={selectedSnippetConfigId}
@@ -417,7 +417,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             )}
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Karten-Stil</h4>
+                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.snapshotEditor.cardStyle)}</h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={
@@ -444,7 +444,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Vermarktungsart</h4>
+                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.common.marketingType)}</h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus || realEstAllTextStatus}
@@ -467,7 +467,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Status</h4>
+                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.common.status)}</h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus2 || realEstAllTextStatus}
@@ -490,7 +490,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Menü-Stil</h4>
+                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.snapshotEditor.menuStyle)}</h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -501,7 +501,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="radio radio-sm radio-primary mr-2"
                   />
-                  <span className="label-text">Standard</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.standard)}</span>
                 </label>
                 <label className="cursor-pointer label">
                   <input
@@ -513,7 +513,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="radio radio-sm radio-primary mr-2"
                   />
-                  <span className="label-text">Minimal</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.minimal)}</span>
                 </label>
               </div>
             </li>
@@ -527,7 +527,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex flex-col">
-                <h4 className="font-bold">Vorausgewählte Profile</h4>
+                <h4 className="font-bold">{t(IntlKeys.snapshotEditor.preselectedProfile)}</h4>
                 <div className="flex items-center gap-6 py-1">
                   {availableMeans.includes(MeansOfTransportation.WALK) && (
                     <label className="cursor-pointer label">
@@ -545,7 +545,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                         }}
                         className="checkbox checkbox-xs checkbox-primary mr-2"
                       />
-                      <span className="label-text">Zu Fuß</span>
+                      <span className="label-text">
+                        {t(IntlKeys.common.transportationTypes.walking)}
+                      </span>
                     </label>
                   )}
                   {availableMeans.includes(MeansOfTransportation.BICYCLE) && (
@@ -566,7 +568,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                         }}
                         className="checkbox checkbox-xs checkbox-primary mr-2"
                       />
-                      <span className="label-text">Fahrrad</span>
+                      <span className="label-text">
+                        {t(IntlKeys.common.transportationTypes.cycling)}
+                      </span>
                     </label>
                   )}
                   {availableMeans.includes(MeansOfTransportation.CAR) && (
@@ -585,7 +589,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                         }}
                         className="checkbox checkbox-xs checkbox-primary mr-2"
                       />
-                      <span className="label-text">Auto</span>
+                      <span className="label-text">
+                        {t(IntlKeys.common.transportationTypes.driving)}
+                      </span>
                     </label>
                   )}
                 </div>
@@ -603,7 +609,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Icon anzeigen</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.showIcon)}</span>
                 </label>
               </div>
             </li>
@@ -619,7 +625,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Adresse anzeigen</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.showAddress)}</span>
                 </label>
               </div>
             </li>

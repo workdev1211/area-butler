@@ -13,7 +13,6 @@ import ImportantAddresses from "../components/ImportantAddresses";
 // import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
 // import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
-import { preferredLocationsTitle } from "../shared/shared.functions";
 
 export interface PotentialCustomerFormProps {
   formId: string;

@@ -122,7 +122,7 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
                   alt="mean-icon"
                 />
                 <span className="mean-label">
-                  {t((IntlKeys.environmentalAnalysis as Record<string, string>)[mean.mode])}
+                  {t((IntlKeys.common.transportationTypes as Record<string, string>)[mean.mode])}
                 </span>
               </div>
               <label className="flex items-center cursor-pointer">

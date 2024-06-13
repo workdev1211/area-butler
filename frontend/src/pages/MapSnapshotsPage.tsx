@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useEffect } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import DefaultLayout from "../layout/defaultLayout";
 // TODO implement a tour
 // import TourStarter from "tour/TourStarter";
@@ -9,6 +12,7 @@ import { useLocationData } from "../hooks/locationdata";
 import { useTools } from "../hooks/tools";
 
 const MapSnapshotsPage: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
   const { getActualUser } = useTools();
   const { fetchSnapshots } = useLocationData();
@@ -43,7 +47,7 @@ const MapSnapshotsPage: FunctionComponent = () => {
   }, [user]);
 
   return (
-    <DefaultLayout title="Meine Karten" withHorizontalPadding={false}>
+    <DefaultLayout title={t(IntlKeys.nav.cards)} withHorizontalPadding={false}>
       {/* TODO implement a tour */}
       {/*<TourStarter tour="realEstates" />*/}
       {hasSubscription && hasHtmlSnippet && embeddableMaps.length > 0 && (

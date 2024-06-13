@@ -187,7 +187,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
             </div>
             <div className="form-control">
               <CustomTextSelect
-                label={t(IntlKeys.realEstate.marketingType)}
+                label={t(IntlKeys.common.marketingType)}
                 name="status"
                 selectOptions={status1SelectOptions}
                 customTextValue={statusCustTextValue}

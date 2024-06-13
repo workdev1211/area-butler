@@ -30,11 +30,6 @@ import { IPotentialCustomersHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import PotentialCustomerFormDeleteHandler from "../potential-customer/PotentialCustomerFormDeleteHandler";
 
-const createCustomerQuestionnaireModalConfig = {
-  modalTitle: "Fragebogen versenden",
-  submitButtonTitle: "Senden",
-};
-
 const subscriptionUpgradeSendCustomerRequestMessage = (
   <div>
     <p className="my-5">

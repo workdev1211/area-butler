@@ -1,5 +1,8 @@
 import { FunctionComponent, memo, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { EntityGroup } from "../../shared/search-result.types";
 import "./MapMenuKarlaFricke.scss";
 import {
@@ -39,6 +42,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
     group,
     isDropdownButton = false,
   }) => {
+    const { t } = useTranslation();
     const { searchContextDispatch } = useContext(SearchContext);
 
     const isRealEstateListing =
@@ -72,7 +76,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
-        {group.title}
+        {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
         {isDropdownButton && <span className="dropdown-triangle">&#9660;</span>}
       </li>
     );

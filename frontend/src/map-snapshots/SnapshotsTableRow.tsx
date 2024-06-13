@@ -1,4 +1,8 @@
 import { FunctionComponent, ReactNode, useContext } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
@@ -25,6 +29,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
   openCodeSnippetModal,
   templateSnapshotId,
 }) => {
+  const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
 
   const history = useHistory();
@@ -35,14 +40,14 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
     const success = copy(codeSnippet);
 
     if (success) {
-      toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+      toastSuccess(t(IntlKeys.mapSnapshots.copiedToClipboard));
     }
   };
 
   const handleDuplicate = async (snapshotId: string): Promise<void> => {
     try {
       const isDuplicateConfirmed = window.confirm(
-        "Wollen Sie wirklich das Kartensnippet duplizieren?"
+        t(IntlKeys.mapSnapshots.duplicateConfirmation)
       );
 
       if (isDuplicateConfirmed) {
@@ -54,7 +59,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
         });
       }
     } catch (err) {
-      toastError("Fehler beim Duplizieren eines Kartensnippet!");
+      toastError(t(IntlKeys.mapSnapshots.duplicateFailed));
       console.error(err);
     }
   };
@@ -62,7 +67,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
   const handleDelete = async (snapshotId: string): Promise<void> => {
     try {
       const confirmDeleteRequest = window.confirm(
-        "Wollen Sie wirklich das Kartensnippet löschen?"
+        t(IntlKeys.mapSnapshots.deleteConfirmation)
       );
 
       if (confirmDeleteRequest) {
@@ -74,7 +79,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
         });
       }
     } catch (err) {
-      toastError("Fehler beim Löschen eines Kartensnippet!");
+      toastError(t(IntlKeys.mapSnapshots.deleteFailed));
       console.error(err);
     }
   };
@@ -89,7 +94,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
       payload: updatedTemplateId || undefined,
     });
 
-    toastSuccess("Vorlage gespeichert.");
+    toastSuccess(t(IntlKeys.mapSnapshots.templateSaved));
   };
 
   const OpenMapEditorButton: FunctionComponent<{
@@ -103,21 +108,21 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
           history.push(`${snapshotEditorPath}/${embeddableMap.id}`);
         }}
       >
-        Editor öffnen
+        {t(IntlKeys.mapSnapshots.openEditor)}
       </button>
     );
   };
 
   const increaseLimitButton: ReactNode = (
     <button type="button" className="ml-5 rounded btn-xs btn-primary">
-      Editor öffnen
+      {t(IntlKeys.mapSnapshots.openEditor)}
     </button>
   );
 
   const increaseLimitModalConfig: ModalConfig = {
-    modalTitle: "Abfragelimit erreicht",
-    buttonTitle: "Analyse starten",
-    submitButtonTitle: "Neues Kontingent kaufen",
+    modalTitle: t(IntlKeys.mapSnapshots.queryLimitReached),
+    buttonTitle: t(IntlKeys.mapSnapshots.startAnalysis),
+    submitButtonTitle: t(IntlKeys.mapSnapshots.buyNewContingent),
     modalButton: increaseLimitButton,
   };
 
@@ -152,8 +157,8 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
             )} ${new Date(snapshot.lastAccess).toLocaleTimeString("de-DE")}`
           : "Kein Aufruf"}
       </td>
-      <td>{snapshot.visitAmount || "Keine Besuche"}</td>
-      <td>{snapshot.config?.showAddress ? "Ja" : "Nein"}</td>
+      <td>{snapshot.visitAmount || t(IntlKeys.mapSnapshots.noVisits)}</td>
+      <td>{snapshot.config?.showAddress ? t(IntlKeys.common.yes) : t(IntlKeys.common.no)}</td>
       <td>
         <div
           className="grid gap-y-3"
@@ -171,7 +176,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
               copyCodeToClipBoard(createDirectLink(snapshot.token));
             }}
           >
-            Link Kopieren
+            {t(IntlKeys.mapSnapshots.copyLink)}
           </button>
           {snapshot.id === templateSnapshotId ? (
             <button
@@ -181,7 +186,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
                 void updateTemplateSnapshotId(null);
               }}
             >
-              Vorlage aufheben
+              {t(IntlKeys.mapSnapshots.cancelTemplate)}
             </button>
           ) : (
             <button
@@ -191,7 +196,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
                 await updateTemplateSnapshotId(snapshot.id);
               }}
             >
-              Als Vorlage festlegen
+              {t(IntlKeys.mapSnapshots.setAsTemplate)}
             </button>
           )}
           <div />
@@ -202,7 +207,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
               await handleDuplicate(snapshot.id);
             }}
           >
-            Karte duplizieren
+            {t(IntlKeys.mapSnapshots.duplicateCard)}
           </button>
           <button
             className="ml-5 rounded btn-xs btn-primary"
@@ -211,7 +216,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
               await handleDelete(snapshot.id);
             }}
           >
-            Löschen
+            {t(IntlKeys.common.delete)}
           </button>
         </div>
       </td>
