@@ -18,12 +18,15 @@ import { availableCountries } from '../../../../shared/constants/location';
 
 export type UserDocument = User &
   Document & {
-    subscription?: SubscriptionDocument;
     parentUser?: UserDocument;
     poiIcons?: IApiUserPoiIcons;
+    subscription?: SubscriptionDocument;
   };
 
-@Schema()
+@Schema({
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 export class User {
   @Prop({ type: String, required: true })
   fullname: string;
@@ -107,3 +110,19 @@ export const retrieveTotalRequestContingent = (
 };
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.virtual('parentUser', {
+  ref: User.name,
+  localField: 'parentId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+UserSchema.virtual('poiIcons');
+UserSchema.virtual('subscription');
+
+// Left as an example
+// UserSchema.pre('save', function (this: UserDocument, next): void {
+//   delete this.poiIcons;
+//   next();
+// });

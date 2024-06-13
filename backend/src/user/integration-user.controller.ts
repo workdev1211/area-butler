@@ -72,6 +72,6 @@ export class IntegrationUserController {
         ),
     });
 
-    return plainToInstance(ApiIntegrationUserDto, integrationUser);
+    return plainToInstance(ApiIntegrationUserDto, integrationUser.toObject());
   }
 }

@@ -82,3 +82,10 @@ IntegrationUserSchema.index({ updatedAt: -1 });
 IntegrationUserSchema.virtual('isSubscriptionActive').get(function (): boolean {
   return dayjs().isBefore(this.subscription?.expiresAt);
 });
+
+IntegrationUserSchema.virtual('parentUser', {
+  ref: IntegrationUser.name,
+  localField: 'parentId',
+  foreignField: '_id',
+  justOne: true,
+});

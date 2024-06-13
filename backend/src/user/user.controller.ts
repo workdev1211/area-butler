@@ -183,6 +183,8 @@ export class UserController {
       );
     }
 
-    return plainToInstance(ApiUserDto, user, { exposeUnsetFields: false });
+    return plainToInstance(ApiUserDto, user.toObject(), {
+      exposeUnsetFields: false,
+    });
   }
 }
