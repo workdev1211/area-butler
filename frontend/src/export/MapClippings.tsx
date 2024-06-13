@@ -1,12 +1,11 @@
 import { FC } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
 
 import { ISelectableMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
 import { QrCode } from "./QrCode";
 import { IQrCodeState } from "../../../shared/types/export";
+import { IntlKeys } from "i18n/keys";
 
 interface IMapClippingsProps {
   mapClippings: ISelectableMapClipping[];
@@ -22,23 +21,26 @@ export const MapClippings: FC<IMapClippingsProps> = ({
   qrCode,
 }) => {
   const { t } = useTranslation();
-  const mapClippingPairs: ISelectableMapClipping[][] = mapClippings
-    .filter((c) => c.isSelected)
-    .reduce(
-      (
-        result: ISelectableMapClipping[][],
-        value,
-        index,
-        array: ISelectableMapClipping[]
-      ) => {
-        if (index % 2 === 0) {
-          result.push(array.slice(index, index + 2));
-        }
 
+  const mapClippingPairs: ISelectableMapClipping[][] = mapClippings.reduce(
+    (
+      result: ISelectableMapClipping[][],
+      value,
+      index,
+      array: ISelectableMapClipping[]
+    ) => {
+      if (!value.isSelected) {
         return result;
-      },
-      []
-    );
+      }
+
+      if (index % 2 === 0) {
+        result.push(array.slice(index, index + 2));
+      }
+
+      return result;
+    },
+    []
+  );
 
   return (
     <>

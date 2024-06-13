@@ -1,26 +1,25 @@
-import { FunctionComponent, useContext, useState } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { FC, useContext, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import mapScreenshotsIcon from "../../../assets/icons/map-menu/07-kartenausschnitte.svg";
 import MapClippingsCollapsable from "../../components/MapClippingsCollapsable";
 import { SearchContext } from "../../../context/SearchContext";
+import { IntlKeys } from "../../../i18n/keys";
 
 interface IMapScreenshotsProps {
   searchAddress: string;
   backgroundColor: string;
 }
 
-const MapScreenshots: FunctionComponent<IMapScreenshotsProps> = ({
+const MapScreenshots: FC<IMapScreenshotsProps> = ({
   searchAddress,
   backgroundColor,
 }) => {
-  const { t } = useTranslation();
   const {
     searchContextState: { mapClippings },
   } = useContext(SearchContext);
+  const { t } = useTranslation();
 
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
 

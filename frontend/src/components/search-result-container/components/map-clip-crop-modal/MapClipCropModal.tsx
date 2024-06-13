@@ -1,8 +1,4 @@
-import { FC, useEffect, useRef, useState, useContext } from "react";
-
-import { useTranslation } from "react-i18next";
-import { IntlKeys } from "i18n/keys";
-
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import {
   centerCrop,
   convertToPixelCrop,
@@ -12,6 +8,7 @@ import {
 } from "react-image-crop";
 import { renderToStaticMarkup } from "react-dom/server";
 import { toPng } from "html-to-image";
+import { useTranslation } from "react-i18next";
 
 import "react-image-crop/src/ReactCrop.scss";
 import "./MapClipCropModal.scss";
@@ -20,6 +17,7 @@ import { toastDefaultError } from "../../../../shared/shared.functions";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import { MapClipQrCode } from "./MapClipQrCode";
 import { ConfigContext } from "../../../../context/ConfigContext";
+import { IntlKeys } from "../../../../i18n/keys";
 
 interface ICropParams {
   name: string;
@@ -32,31 +30,6 @@ interface IMapClipCropModalProps {
   color?: string;
   directLink?: string;
 }
-
-const fourToThreeCropParams = {
-  name: "4:3",
-  aspect: +(4 / 3).toFixed(3),
-};
-
-const allCropParams: ICropParams[] = [
-  {
-    name: "1:1",
-    aspect: 1,
-  },
-  fourToThreeCropParams,
-  {
-    name: "16:9",
-    aspect: +(16 / 9).toFixed(3),
-  },
-  {
-    name: "16:9 (portrait)",
-    aspect: +(9 / 16).toFixed(3),
-  },
-  {
-    name: "Benutzerdefinierten",
-    aspect: 0,
-  },
-];
 
 const getAspectCrop = (
   aspect: number,
@@ -91,9 +64,35 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   color,
   directLink,
 }) => {
-  const { t } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
+
   const { integrationType } = useContext(ConfigContext);
+  const { t } = useTranslation();
+
+  const fourToThreeCropParams = {
+    name: "4:3",
+    aspect: +(4 / 3).toFixed(3),
+  };
+
+  const allCropParams: ICropParams[] = [
+    {
+      name: "1:1",
+      aspect: 1,
+    },
+    fourToThreeCropParams,
+    {
+      name: "16:9",
+      aspect: +(16 / 9).toFixed(3),
+    },
+    {
+      name: "16:9 (portrait)",
+      aspect: +(9 / 16).toFixed(3),
+    },
+    {
+      name: t(IntlKeys.common.userDefined),
+      aspect: 0,
+    },
+  ];
 
   const [initMapClipping, setInitMapClipping] = useState<string>(mapClipping);
   const [resultMapClipping, setResultMapClipping] = useState<string>();

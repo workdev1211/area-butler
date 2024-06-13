@@ -1,7 +1,6 @@
 import { FC, useContext } from "react";
-import { useTranslation } from "react-i18next";
-
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 import {
   MapClipping,
@@ -25,17 +24,18 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
   clippings,
   searchAddress,
 }) => {
-  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
   const { sendToIntegration } = useIntegrationTools();
+  const { t } = useTranslation();
 
   const parsedAddress = (
     searchAddress || t(IntlKeys.snapshotEditor.exportTab.myLocation)
   )
     .replace(",", "-")
     .replace(/\s/g, "");
+  const screenshotName = t(IntlKeys.snapshotEditor.screenshotName);
 
   const removeAllClippings = (): void => {
     window.confirm(
@@ -104,8 +104,8 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
                   void sendToIntegration({
                     base64Image: clipping.mapClippingDataUrl,
                     exportType: AreaButlerExportTypesEnum.SCREENSHOT,
-                    filename: `Lageplan-${i + 1}.png`,
-                    fileTitle: `Lageplan ${i + 1}`,
+                    filename: `${screenshotName}-${i + 1}.png`,
+                    fileTitle: `${screenshotName} ${i + 1}`,
                   });
                 }}
               >

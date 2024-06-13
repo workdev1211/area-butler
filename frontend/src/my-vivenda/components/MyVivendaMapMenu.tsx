@@ -1,4 +1,5 @@
 import { FC, useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import "../../map-menu/MapMenu.scss";
 
@@ -7,6 +8,7 @@ import { MapDisplayModesEnum } from "../../../../shared/types/types";
 import Localities from "../../map-menu/map-tab/components/Localities";
 import { SearchContext } from "../../context/SearchContext";
 import { IMapMenuProps } from "../../map-menu/MapMenu";
+import { IntlKeys } from "../../i18n/keys";
 
 export type TMyVivendaMapMenuProps = Pick<
   IMapMenuProps,
@@ -39,6 +41,7 @@ const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
+  const { t } = useTranslation();
 
   const isShownAddress = !!config?.showAddress || !config;
   const backgroundColor =
@@ -67,7 +70,7 @@ const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
           <div className="map-menu-header-text">
             {isShownAddress
               ? searchAddress
-              : "Genaue Adresse nicht veröffentlicht"}
+              : t(IntlKeys.snapshotEditor.addressNotPublished)}
           </div>
         </button>
       </div>

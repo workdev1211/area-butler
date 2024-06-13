@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import SearchResultContainer from "components/search-result-container/SearchResultContainer";
 import { ICurrentMapRef } from "shared/search-result.types";
@@ -48,6 +49,7 @@ import {
   setTransportParamForResEntity,
 } from "../shared/pois.functions";
 import { IntegrationTypesEnum } from "../../../shared/types/integration";
+import { IntlKeys } from "../i18n/keys";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -71,6 +73,7 @@ const SnapshotEditorPage: FC = () => {
   const { getActualUser } = useTools();
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
+  const { t } = useTranslation();
 
   const { fetchCensusData } = useCensusData();
   const { fetchFederalElectionData } = useFederalElectionData();
@@ -103,9 +106,7 @@ const SnapshotEditorPage: FC = () => {
   // fetching a snapshot
   useEffect(() => {
     if (!isAvailHtmlSnippet) {
-      toastError(
-        "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors."
-      );
+      toastError(t(IntlKeys.snapshotEditor.notAllowedToUse));
 
       history.push("/profile");
     }
@@ -408,7 +409,7 @@ const SnapshotEditorPage: FC = () => {
   if (!snapshot) {
     return (
       <div className="flex items-center justify-center h-screen text-lg">
-        {isErrorOccurred ? "Ein Fehler ist aufgetreten!" : <Loading />}
+        {isErrorOccurred ? t(IntlKeys.common.errorOccurred) : <Loading />}
       </div>
     );
   }

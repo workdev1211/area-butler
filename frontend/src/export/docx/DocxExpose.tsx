@@ -1,8 +1,4 @@
 import { FC } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
-
 import {
   Document,
   HeadingLevel,
@@ -13,6 +9,7 @@ import {
   Table,
 } from "docx";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
@@ -44,6 +41,7 @@ import { ILegendItem } from "../Legend";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
+import { IntlKeys } from "../../i18n/keys";
 
 interface IDocxExposeProps {
   censusData?: TCensusData;

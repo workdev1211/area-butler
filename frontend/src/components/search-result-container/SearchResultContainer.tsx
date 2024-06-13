@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   IGotoMapCenter,
@@ -66,6 +67,7 @@ import MyVivendaMapMenu, {
   TMyVivendaMapMenuProps,
 } from "../../my-vivenda/components/MyVivendaMapMenu";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
+import { IntlKeys } from "../../i18n/keys";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -137,6 +139,7 @@ const SearchResultContainer = forwardRef<
     const { createDirectLink, getActualUser } = useTools();
     const { sendToIntegration } = useIntegrationTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
+    const { t } = useTranslation();
 
     const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBEDDED;
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";
@@ -587,7 +590,7 @@ const SearchResultContainer = forwardRef<
           exportType: AreaButlerExportTypesEnum.SCREENSHOT,
         });
       } else {
-        toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+        toastSuccess(t(IntlKeys.screenshot.cropSuccessful));
       }
 
       setMapClipping(undefined);

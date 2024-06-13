@@ -1,6 +1,7 @@
 import { FC, lazy, Suspense, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./MyVivendaContainer.scss";
@@ -15,6 +16,7 @@ import { Loading, LoadingMessage } from "../components/Loading";
 import { IIntegrationHandleLogin } from "../../../shared/types/integration";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useMyVivendaLogin } from "./hooks/myvivendalogin";
+import { IntlKeys } from "../i18n/keys";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -37,6 +39,7 @@ const MyVivendaContainer: FC = () => {
 
   const history = useHistory();
   const { handleMyVivendaLogin } = useMyVivendaLogin();
+  const { t } = useTranslation();
   const [loginStatus, setLoginStatus] = useState<IIntegrationHandleLogin>();
 
   // performs a login
@@ -78,7 +81,7 @@ const MyVivendaContainer: FC = () => {
     return (
       <div className="flex items-center justify-center h-screen text-lg">
         {loginStatus?.requestStatus === ResultStatusEnum.FAILURE ? (
-          loginStatus.message || "Ein Fehler ist aufgetreten!"
+          loginStatus.message || t(IntlKeys.common.errorOccurred)
         ) : (
           <Loading />
         )}

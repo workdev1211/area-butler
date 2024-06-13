@@ -50,6 +50,8 @@
       "cycling": "Fahrrad",
       "driving": "Auto"
     },
+    "userDefined": "Benutzerdefinierten",
+    "custom": "Benutzerdefinierten",
     "successfullyCopiedToClipboard": "Erfolgreich in Zwischenablage kopiert!",
     "qrCode": "QR code",
     "pdf": "PDF",
@@ -366,7 +368,9 @@
       "label": "Wirtschaftliche Kennzahlen",
       "description": "Wie stehen die Strukturdaten?",
       "contactUs": "Gerne liefern wir tiefergehende Daten zu den Themen Arbeitskräfte,\n          Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro Kopf,\n          Gewerbesteuereinnahmen, Logistik-Attraktivität u.v.m. Sprechen Sie uns\n          hierzu einfach direkt an."
-    }
+    },
+    "notAllowedToUse": "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors.",
+    "screenshotName": "Lageplan"
   },
   "realEstate": {
     "sync": "Sync-Immobilien",
@@ -615,6 +619,7 @@
 
   "integration": {
     "absentTokensError": "Es fehlen iFrame-Token!",
-    "cropAndSend": "Zuschneiden & übertragen"
+    "cropAndSend": "Zuschneiden & übertragen",
+    "wrongExportTypeGiven": "Falscher Exporttyp wurde angegeben!"
   }
 }

@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+import { useTranslation } from "react-i18next";
 
 import { useHttp } from "../../hooks/http";
 import { TSendToIntegrationData } from "../../../../shared/types/integration";
@@ -7,9 +8,11 @@ import {
   AreaButlerExportTypesEnum,
   IApiUploadFileReq,
 } from "../../../../shared/types/types";
+import { IntlKeys } from "../../i18n/keys";
 
 export const useMyVivendaSync = () => {
   const { post } = useHttp();
+  const { t } = useTranslation();
 
   const uploadMapScreenshot = (
     uploadMapScreenData: IApiUploadFileReq
@@ -28,7 +31,7 @@ export const useMyVivendaSync = () => {
       }
     }
 
-    const errorMessage = "Falscher Exporttyp wurde angegeben!";
+    const errorMessage = t(IntlKeys.integration.wrongExportTypeGiven);
     toastError(errorMessage);
     console.error(errorMessage);
     throw new Error(errorMessage);

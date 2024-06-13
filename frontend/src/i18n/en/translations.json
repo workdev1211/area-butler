@@ -121,6 +121,7 @@
     "minimal": "Minimal",
     "preselectedProfile": "Preselected profiles",
     "showIcon": "Show icon",
+    "notAllowedToUse": "Only the Business+ subscription allows the use of the map editor.",
     "showAddress": "Show address",
     "showStreetViewLink": "Show Street View link",
     "groupPOIOnZoom": "Group POIs when zooming out",
@@ -273,7 +274,8 @@
     "typeOfFeedback": "Type of feedback",
     "improvement": "Improvement",
     "error": "Error",
-    "other": "Miscellaneous"
+    "other": "Miscellaneous",
+    "screenshotName": "Map screenshot"
   },
   "common": {
     "showMore": "Show more",
@@ -320,6 +322,8 @@
       "cycling": "Bicycle",
       "driving": "Car"
     },
+    "userDefined": "Custom",
+    "custom": "Custom",
     "deleteAll": "Delete all",
     "copy": "Copy",
     "unlock": "Unlock",
@@ -615,6 +619,7 @@
 
   "integration": {
     "absentTokensError": "iFrame tokens are missing!",
-    "cropAndSend": "Crop and send"
+    "cropAndSend": "Crop and send",
+    "wrongExportTypeGiven": "Incorrect export type was specified!"
   }
 }

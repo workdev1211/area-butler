@@ -1,5 +1,6 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import "./MapPage.scss";
 
@@ -37,6 +38,7 @@ import {
   deriveInitialEntityGroups,
   setTransportParamForResEntity,
 } from "../../shared/pois.functions";
+import { IntlKeys } from "../../i18n/keys";
 
 const MapPage: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -57,6 +59,7 @@ const MapPage: FC = () => {
 
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
+  const { t } = useTranslation();
 
   const [snapshotRes, setSnapshotRes] =
     useState<ApiSearchResultSnapshotResponse>();
@@ -380,7 +383,7 @@ const MapPage: FC = () => {
   ) {
     return (
       <div className="flex items-center justify-center h-screen text-lg">
-        {isErrorOccurred ? "Ein Fehler ist aufgetreten!" : <Loading />}
+        {isErrorOccurred ? t(IntlKeys.common.errorOccurred) : <Loading />}
       </div>
     );
   }

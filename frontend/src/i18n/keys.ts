@@ -50,6 +50,9 @@ export const IntlKeys = {
       driving: "common.transportationTypes.driving",
       cycling: "common.transportationTypes.cycling",
     },
+    myLocation: "common.myLocation",
+    userDefined: "common.userDefined",
+    custom: "common.custom",
     successfullyCopiedToClipboard: "common.successfullyCopiedToClipboard",
     qrCode: "common.qrCode",
     pdf: "common.pdf",
@@ -399,6 +402,8 @@ export const IntlKeys = {
       description: "snapshotEditor.economicMetric.description",
       contactUs: "snapshotEditor.economicMetric.contactUs",
     },
+    notAllowedToUse: "snapshotEditor.notAllowedToUse",
+    screenshotName: "snapshotEditor.screenshotName"
   },
 
   realEstate: {
@@ -652,5 +657,6 @@ export const IntlKeys = {
   integration: {
     absentTokensError: "integration.absentTokensError",
     cropAndSend: "integration.cropAndSend",
+    wrongExportTypeGiven: "integration.wrongExportTypeGiven",
   },
 };
