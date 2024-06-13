@@ -4,7 +4,7 @@ import deTranslation from './de/translations.json';
 import enTranslation from './en/translations.json';
 
 i18next.use(initReactI18next).init({
-  lng: 'en', // for language switch
+  lng: 'de', // for language switch
   debug: true,
   resources: {
     de: {
