@@ -59,6 +59,7 @@ export const IntlKeys = {
       MINUTES: "common.transportationUnits.KILOMETERS",
     },
     description: "common.description",
+    addressExpired: "common.addressExpired",
   },
 
   imageUpload: {

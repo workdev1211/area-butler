@@ -333,6 +333,7 @@
       "MINUTES": "minutes"
     },
     "description": "Description",
+    "addressExpired": "Your address has expired. Please visit the {{appUrl}} and renew it.",
     "cancel": "Cancel"
   },
   "environmentalAnalysis": {

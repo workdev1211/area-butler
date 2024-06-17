@@ -120,11 +120,6 @@ export type TUnlockIntProduct = (
   actionType?: IntegrationActionTypeEnum
 ) => void;
 
-export interface IIntegrationHandleLogin {
-  requestStatus: ResultStatusEnum;
-  message?: string;
-}
-
 export interface IApiSyncEstatesIntFilterParams {
   estateStatus?: string;
   estateMarketType?: string;

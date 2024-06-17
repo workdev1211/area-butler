@@ -12,13 +12,13 @@ import {
   SearchContextActionTypes,
 } from "../../context/SearchContext";
 import { ResultStatusEnum } from "../../../../shared/types/types";
-import { IIntegrationHandleLogin } from "../../../../shared/types/integration";
 import {
   IApiPropstackLoginQueryParams,
   PropstackActionTypeEnum,
   PropstackFieldNameEnum,
 } from "../../../../shared/types/propstack";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
+import { ILoginStatus } from "../../shared/shared.types";
 
 const loginQueryParamsSchema: Yup.ObjectSchema<IApiPropstackLoginQueryParams> =
   Yup.object({
@@ -42,7 +42,7 @@ export const usePropstackLogin = () => {
 
   const { post } = useHttp();
 
-  const handlePropstackLogin = async (): Promise<IIntegrationHandleLogin> => {
+  const handlePropstackLogin = async (): Promise<ILoginStatus> => {
     const queryParamsAndUrl =
       getQueryParamsAndUrl<IApiPropstackLoginQueryParams>();
 
@@ -64,8 +64,8 @@ export const usePropstackLogin = () => {
   const performLogin = async ({
     apiKey,
     ...loginData
-  }: IApiPropstackLoginQueryParams): Promise<IIntegrationHandleLogin> => {
-    const response: IIntegrationHandleLogin = {
+  }: IApiPropstackLoginQueryParams): Promise<ILoginStatus> => {
+    const response: ILoginStatus = {
       requestStatus: ResultStatusEnum.SUCCESS,
     };
 

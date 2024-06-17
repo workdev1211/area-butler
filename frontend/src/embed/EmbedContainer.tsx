@@ -1,11 +1,14 @@
 import { FC, MouseEvent, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
+import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 
 import "./EmbedContainer.scss";
 
 import {
   IApiFetchedEmbeddedData,
   MapDisplayModesEnum,
+  ResultStatusEnum,
 } from "../../../shared/types/types";
 import {
   SearchContext,
@@ -17,13 +20,19 @@ import {
   RealEstateActionTypeEnum,
   RealEstateContext,
 } from "../context/RealEstateContext";
-import {
-  addressExpiredMessage,
-  subscriptionExpiredMessage,
-} from "../../../shared/messages/error.message";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../shared/shared.constants";
 import { deriveInitialEntityGroups } from "../shared/pois.functions";
+import { getQueryParamsAndUrl } from "../shared/shared.functions";
+import { IFetchEmbedMapQueryParams } from "../../../shared/types/location";
+import { ILoginStatus } from "../shared/shared.types";
+import { IntlKeys } from "../i18n/keys";
+import { Loading } from "../components/Loading";
+
+const queryParamsSchema: Yup.ObjectSchema<IFetchEmbedMapQueryParams> =
+  Yup.object({
+    token: Yup.string().required(),
+  });
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -36,31 +45,19 @@ const calculateViewHeight = () => {
 
 calculateViewHeight();
 
+const appUrl = process.env.REACT_APP_BASE_URL;
+
 const EmbedContainer: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
+  const { t } = useTranslation();
 
   const [embeddedData, setEmbeddedData] = useState<IApiFetchedEmbeddedData>();
-  const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [mapDisplayMode, setMapDisplayMode] = useState<MapDisplayModesEnum>();
-
-  const getQueryVariable = (variable: string): string | undefined => {
-    const query = window.location.search.substring(1);
-    const vars = query.split("&");
-
-    for (let i = 0; i < vars.length; i++) {
-      let pair = vars[i].split("=");
-
-      if (pair[0] === variable) {
-        return pair[1];
-      }
-    }
-
-    return;
-  };
+  const [loginStatus, setLoginStatus] = useState<ILoginStatus>();
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent): void => {
@@ -86,15 +83,25 @@ const EmbedContainer: FC = () => {
   // fetch saved response
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      const baseUrl = process.env.REACT_APP_BASE_URL || "";
+      const queryParamsAndUrl =
+        getQueryParamsAndUrl<IFetchEmbedMapQueryParams>();
+
+      if (!queryParamsAndUrl || !appUrl) {
+        setLoginStatus({ requestStatus: ResultStatusEnum.FAILURE });
+        return;
+      }
 
       try {
+        await queryParamsSchema.validate(queryParamsAndUrl.queryParams);
+
+        const {
+          queryParams: { token },
+        } = queryParamsAndUrl;
+
+        const url = `${appUrl}/api/location/embedded/iframe/${token}`;
+
         const fetchedEmbeddedData = (
-          await axios.get<IApiFetchedEmbeddedData>(
-            `${baseUrl}/api/location/embedded/iframe/${getQueryVariable(
-              "token"
-            )}`
-          )
+          await axios.get<IApiFetchedEmbeddedData>(url)
         ).data;
 
         const config = fetchedEmbeddedData.snapshotRes.config;
@@ -109,14 +116,25 @@ const EmbedContainer: FC = () => {
 
         setEmbeddedData(fetchedEmbeddedData);
       } catch (e: any) {
+        console.error(e);
+
+        if (!e?.response?.data) {
+          setLoginStatus({ requestStatus: ResultStatusEnum.FAILURE });
+          return;
+        }
+
         const { statusCode, message } = e.response.data;
 
-        setIsAddressExpired(
-          statusCode === 402 &&
-            [addressExpiredMessage, subscriptionExpiredMessage].includes(
-              message
-            )
-        );
+        setLoginStatus({
+          message:
+            statusCode !== 402
+              ? message
+              : t(IntlKeys.common.addressExpired, {
+                  appUrl: encodeURI(appUrl),
+                  interpolation: { escapeValue: false },
+                }),
+          requestStatus: ResultStatusEnum.FAILURE,
+        });
       }
     };
 
@@ -255,10 +273,14 @@ const EmbedContainer: FC = () => {
   };
 
   if (!searchContextState.searchResponse || !mapDisplayMode || !embeddedData) {
-    return isAddressExpired ? (
-      <div>{`Ihre Adresse ist abgelaufen. Bitte besuchen Sie die ${process.env.REACT_APP_BASE_URL} und verlängern Sie sie.`}</div>
-    ) : (
-      <div>Loading...</div>
+    return (
+      <div className="flex items-center justify-center h-screen text-lg">
+        {loginStatus?.requestStatus === ResultStatusEnum.FAILURE ? (
+          loginStatus.message || t(IntlKeys.common.errorOccurred)
+        ) : (
+          <Loading />
+        )}
+      </div>
     );
   }
 

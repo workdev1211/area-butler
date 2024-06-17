@@ -1,5 +1,7 @@
 import { RefObject } from "react";
 import { FormikProps } from "formik/dist/types";
+import { ResultStatusEnum } from "../../../shared/types/types";
+import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 
 export interface IPoiIcon {
   icon: string;
@@ -29,4 +31,13 @@ export interface ISearchParamsHistoryState
 export interface IQueryParamsAndUrl<T = unknown> {
   queryParams: T;
   url: string;
+}
+
+export interface ILoginStatus {
+  requestStatus: ResultStatusEnum;
+  message?: string;
+}
+
+export interface IOnOfficeLoginStatus extends ILoginStatus {
+  actionType?: OnOfficeLoginActionTypesEnum;
 }

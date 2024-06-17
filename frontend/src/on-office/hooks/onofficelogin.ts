@@ -11,7 +11,6 @@ import {
   IApiOnOfficeConfirmOrderReq,
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeLoginReq,
-  IOnOfficeHandleLogin,
   OnOfficeLoginActionTypesEnum,
   TApiOnOfficeConfirmOrderRes,
 } from "../../../../shared/types/on-office";
@@ -22,7 +21,10 @@ import {
   SearchContextActionTypes,
 } from "../../context/SearchContext";
 import { ResultStatusEnum } from "../../../../shared/types/types";
-import { IQueryParamsAndUrl } from "../../shared/shared.types";
+import {
+  IOnOfficeLoginStatus,
+  IQueryParamsAndUrl,
+} from "../../shared/shared.types";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
 const loginQueryParamsSchema = Yup.object({
@@ -60,7 +62,7 @@ export const useOnOfficeLogin = () => {
 
   const { post } = useHttp();
 
-  const handleOnOfficeLogin = async (): Promise<IOnOfficeHandleLogin> => {
+  const handleOnOfficeLogin = async (): Promise<IOnOfficeLoginStatus> => {
     const queryParamsAndUrl = getQueryParamsAndUrl();
 
     if (!queryParamsAndUrl) {
@@ -110,13 +112,13 @@ export const useOnOfficeLogin = () => {
   const performLogin = async ({
     queryParams,
     url,
-  }: IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>): Promise<IOnOfficeHandleLogin> => {
+  }: IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>): Promise<IOnOfficeLoginStatus> => {
     const loginReq: IApiOnOfficeLoginReq = {
       url,
       onOfficeQueryParams: queryParams,
     };
 
-    const response: IOnOfficeHandleLogin = {
+    const response: IOnOfficeLoginStatus = {
       requestStatus: ResultStatusEnum.SUCCESS,
       actionType: OnOfficeLoginActionTypesEnum.PERFORM_LOGIN,
     };
@@ -139,13 +141,13 @@ export const useOnOfficeLogin = () => {
   const confirmOrder = async ({
     queryParams,
     url,
-  }: IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>): Promise<IOnOfficeHandleLogin> => {
+  }: IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>): Promise<IOnOfficeLoginStatus> => {
     const confirmOrderReq: IApiOnOfficeConfirmOrderReq = {
       url,
       onOfficeQueryParams: queryParams,
     };
 
-    const response: IOnOfficeHandleLogin = {
+    const response: IOnOfficeLoginStatus = {
       requestStatus: ResultStatusEnum.SUCCESS,
       actionType: OnOfficeLoginActionTypesEnum.CONFIRM_ORDER,
     };

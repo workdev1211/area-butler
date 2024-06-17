@@ -1,5 +1,4 @@
 import { IApiIntUserLoginRes } from "./integration-user";
-import { IIntegrationHandleLogin } from "./integration";
 
 export enum OnOfficeProductTypesEnum {
   OPEN_AI = "OPEN_AI",
@@ -299,10 +298,6 @@ export enum ApiOnOfficeTransactionStatusesEnum {
 export enum OnOfficeLoginActionTypesEnum {
   PERFORM_LOGIN = "PERFORM_LOGIN",
   CONFIRM_ORDER = "CONFIRM_ORDER",
-}
-
-export interface IOnOfficeHandleLogin extends IIntegrationHandleLogin {
-  actionType?: OnOfficeLoginActionTypesEnum;
 }
 
 export interface IApiOnOfficeSyncEstatesFilterParams {

@@ -16,10 +16,7 @@ import IntegrationNav from "./layout/IntegrationNav";
 import { ResultStatusEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
 import { useOnOfficeLogin } from "./hooks/onofficelogin";
-import {
-  IOnOfficeHandleLogin,
-  OnOfficeLoginActionTypesEnum,
-} from "../../../shared/types/on-office";
+import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
@@ -27,6 +24,7 @@ import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import { IOnOfficeLoginStatus } from "../shared/shared.types";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -66,7 +64,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   const { handleOnOfficeLogin } = useOnOfficeLogin();
   const { checkIsSubActive } = useIntegrationTools();
 
-  const [loginStatus, setLoginStatus] = useState<IOnOfficeHandleLogin>();
+  const [loginStatus, setLoginStatus] = useState<IOnOfficeLoginStatus>();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 

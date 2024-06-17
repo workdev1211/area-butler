@@ -58,7 +58,8 @@
       "KILOMETERS": "Kilometer",
       "MINUTES": "Minuten"
     },
-    "description": "Beschreibung"
+    "description": "Beschreibung",
+    "addressExpired": "Ihre Adresse ist abgelaufen. Bitte besuchen Sie die {{appUrl}} und verlängern Sie sie."
   },
   "environmentalAnalysis": {
     "createBtn": "Analyse & Karte erstellen",

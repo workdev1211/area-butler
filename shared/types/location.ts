@@ -261,3 +261,7 @@ export interface IApiLateSnapConfigOption {
   label: string;
   config: ApiSearchResultSnapshotConfig;
 }
+
+export interface IFetchEmbedMapQueryParams {
+  token: string;
+}

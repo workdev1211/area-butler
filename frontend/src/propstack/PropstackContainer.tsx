@@ -14,9 +14,9 @@ import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
-import { IIntegrationHandleLogin } from "../../../shared/types/integration";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import { ILoginStatus } from "../shared/shared.types";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -54,7 +54,7 @@ const PropstackContainer: FC = () => {
   const { handlePropstackLogin } = usePropstackLogin();
   const { checkIsSubActive } = useIntegrationTools();
 
-  const [loginStatus, setLoginStatus] = useState<IIntegrationHandleLogin>();
+  const [loginStatus, setLoginStatus] = useState<ILoginStatus>();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
