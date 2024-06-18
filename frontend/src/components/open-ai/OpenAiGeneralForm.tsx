@@ -1,4 +1,8 @@
 import {FunctionComponent, useEffect, useState} from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {Form, Formik, useFormikContext} from "formik";
 import * as Yup from "yup";
 
@@ -48,16 +52,6 @@ interface IOpenAiGeneralFormProps {
   formRef?: TFormikInnerRef<IOpenAiGeneralFormValues>;
 }
 
-const defTargetGroupOption: ISelectTextValue = {
-  text: defaultTargetGroupName,
-  value: "default",
-};
-
-const custTargetGroupOption: ISelectTextValue = {
-  text: "Eigene Zielgruppe eingeben",
-  value: "custom",
-};
-
 const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
   formId,
   initialValues,
@@ -66,7 +60,18 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
   isFromOnePage,
   formRef,
 }) => {
+  const { t } = useTranslation();
   const { fetchPotentCustomerNames } = usePotentialCustomerData();
+
+  const custTargetGroupOption: ISelectTextValue = {
+    text: t(IntlKeys.snapshotEditor.exportTab.enterYourOwnTargetGroup),
+    value: "custom",
+  };
+
+  const defTargetGroupOption: ISelectTextValue = {
+    text: t(IntlKeys.snapshotEditor.exportTab.defaultTargetGroupName),
+    value: "default",
+  };
 
   const [targetGroupOptions, setTargetGroupOptions] = useState<
     ISelectTextValue[]
@@ -123,9 +128,9 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
           <Form id={formId}>
             <div className="form-control max-w-xs">
               <CustomTextSelect
-                mainLabel="Zielgruppe"
-                label="Zielgruppe Name"
-                placeholder="Zielgruppe Name"
+                mainLabel={t(IntlKeys.snapshotEditor.exportTab.targetGroup)}
+                label={t(IntlKeys.snapshotEditor.exportTab.targetGroupName)}
+                placeholder={t(IntlKeys.snapshotEditor.exportTab.targetGroupName)}
                 name="targetGroupName"
                 selectOptions={targetGroupOptions}
                 customTextValue={custTargetGroupOption.value}
@@ -137,8 +142,8 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
 
             <div className="form-control">
               <Select
-                label="Texttonalität"
-                placeholder="Texttonalität"
+                label={t(IntlKeys.snapshotEditor.exportTab.textTonality)}
+                placeholder={t(IntlKeys.snapshotEditor.exportTab.textTonality)}
                 name="tonality"
                 defaultValue={OpenAiTonalityEnum.EASYGOING_YOUTHFUL}
               >
@@ -165,8 +170,8 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
             {!isFromOnePage && (
               <div className="form-control">
                 <Select
-                  label="Gewünschte Textlänge"
-                  placeholder="Gewünschte Textlänge"
+                  label={t(IntlKeys.snapshotEditor.exportTab.desiredTextLength)}
+                  placeholder={t(IntlKeys.snapshotEditor.exportTab.desiredTextLength)}
                   name="textLength"
                   defaultValue={OpenAiTextLengthEnum.MEDIUM}
                 >
@@ -190,7 +195,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
               >
                 <div
                   className="tooltip tooltip-left tooltip-accent text-justify font-medium"
-                  data-tip="In dieses Feld können Sie einen zusätzlichen Wunsch an die KI eingeben. Dieser Wunsch wird bei der Erstellung des Textes möglichst berücksichtigt."
+                  data-tip={t(IntlKeys.snapshotEditor.exportTab.customTextTooltip)}
                 >
                   i
                 </div>
@@ -198,9 +203,9 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
 
               <div className="grid w-full">
                 <CustomTextSelect
-                  mainLabel="Weitere KI-Anweisungen"
-                  label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
-                  placeholder="Benutzerdefinierter Text"
+                  mainLabel={t(IntlKeys.snapshotEditor.exportTab.furtherAIInstructions)}
+                  label={t(IntlKeys.snapshotEditor.exportTab.resultsText, { count: values.customText?.length })}
+                  placeholder={t(IntlKeys.snapshotEditor.exportTab.userDefinedText)}
                   name="customText"
                   selectOptions={openAiCustomTextOptions}
                   customTextValue={OpenAiCustomTextEnum.CUSTOM}

@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./EntityTable.scss";
 import {
   FederalElectionDistrict,
@@ -16,6 +19,7 @@ export interface FederalElectionSummaryProps {
 const FederalElectionSummary: FunctionComponent<
   FederalElectionSummaryProps
 > = ({ federalElectionDistrict, primaryColor = "#aa0c54" }) => {
+  const { t } = useTranslation();
   if (!federalElectionDistrict.results?.length) {
     return null;
   }
@@ -33,9 +37,9 @@ const FederalElectionSummary: FunctionComponent<
         <table className="entity-table">
           <thead style={{ backgroundAttachment: "fixed" }}>
             <tr style={tableHeaderStyle}>
-              <th>Partei</th>
-              <th>Ergebnis Zweitstimme (Prozent)</th>
-              <th>Ergebnis bei der letzten Wahl</th>
+              <th>{t(IntlKeys.snapshotEditor.socialDemographics.politicalParty)}</th>
+              <th>{t(IntlKeys.snapshotEditor.exportTab.resultSecondVote)}</th>
+              <th>{t(IntlKeys.snapshotEditor.exportTab.resultLastElection)}</th>
             </tr>
           </thead>
           <tbody>

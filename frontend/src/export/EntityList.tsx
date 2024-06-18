@@ -1,4 +1,7 @@
 import React from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
 import {
   deriveColorPalette,
   distanceToHumanReadable
@@ -17,6 +20,7 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
   limit = 3,
   primaryColor = "#aa0c54"
 }) => {
+  const { t } = useTranslation();
   const colorPalette = deriveColorPalette(primaryColor);
 
   const entityListItemStyle = {
@@ -29,13 +33,17 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
     .slice(0, limit);
   return (
     <>
-      <h1 className="text-base ml-2 font-bold">{entityGroup.title}</h1>
+      <h1 className="text-base ml-2 font-bold">
+        {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entityGroup.title])}
+      </h1>
       <ol>
         {items.map((item, index: number) => (
           <li className="my-2" key={item.id}>
             <div className="entity-list-item" style={entityListItemStyle}>
               {`${index + 1}. ${
-                item.name ? item.name : entityGroup.title
+                item.name ?
+                  item.name :
+                  t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entityGroup.title])
               } (${distanceToHumanReadable(item.distanceInMeters)})`}
             </div>
           </li>

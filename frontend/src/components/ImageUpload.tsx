@@ -1,5 +1,8 @@
 import { FunctionComponent, ChangeEvent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./ImageUpload.scss";
 
 import { toastError } from "../shared/shared.functions";
@@ -16,16 +19,17 @@ interface IImageUploadProps {
 const ImageUpload: FunctionComponent<IImageUploadProps> = ({
   image,
   setImage,
-  label = "Dein Logo",
-  uploadLabel = "Logo hochladen",
+  label,
+  uploadLabel,
   inputId = "upload-button",
   onChange,
 }) => {
+  const { t } = useTranslation();
   const getBase64 = (event: ChangeEvent<HTMLInputElement>): void => {
     let file = event.target.files![0];
 
     if (file.size > 5242880) {
-      toastError("Dein Logo darf nicht größer als 5 MB sein!");
+      toastError(t(IntlKeys.imageUpload.sizeError));
       return;
     }
 
@@ -52,14 +56,14 @@ const ImageUpload: FunctionComponent<IImageUploadProps> = ({
     <div className="img-upload">
       <div>
         <label htmlFor={inputId}>
-          {label}:
+          {label || t(IntlKeys.imageUpload.defaultLabel)}:
           {image ? (
             <div className="img-container mt-1">
               <img src={image} alt="logo" />
             </div>
           ) : (
             <div className="img-placeholder mt-1">
-              <span>{uploadLabel}</span>
+              <span>{uploadLabel || t(IntlKeys.imageUpload.defaultUploadLabel)}</span>
             </div>
           )}
         </label>
@@ -71,7 +75,7 @@ const ImageUpload: FunctionComponent<IImageUploadProps> = ({
           onChange={handleChange}
         />
       </div>
-      <small>Unterstützte Formate: png, jpg, svg, maximale Größe: 5MB</small>
+      <small>{t(IntlKeys.imageUpload.supportedFormats)}</small>
     </div>
   );
 };

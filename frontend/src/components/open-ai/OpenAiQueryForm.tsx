@@ -1,4 +1,8 @@
 import { FunctionComponent, useEffect } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
@@ -38,9 +42,10 @@ const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
   onSubmit,
   formRef,
 }) => {
+  const { t } = useTranslation();
   const label = initialValues?.isFormalToInformal
-    ? "Kopieren Sie hier den Text in Sie Form hinein"
-    : "Ihre Anfrage an die KI";
+    ? t(IntlKeys.snapshotEditor.exportTab.copyTheText)
+    : t(IntlKeys.snapshotEditor.exportTab.yourRequestToAI);
 
   const validationSchema = Yup.object({
     text: Yup.string(),

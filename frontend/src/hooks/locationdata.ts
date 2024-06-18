@@ -88,7 +88,7 @@ export const useLocationData = () => {
           : `/api/location/snapshot/${snapshotId}`
       )
     ).data;
-
+    // TODO: translate this
     toastSuccess("Das Duplizieren der Karte war erfolgreich.");
 
     return duplicatedSnapshot;

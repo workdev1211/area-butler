@@ -1,4 +1,8 @@
 import { FunctionComponent } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   Document,
   HeadingLevel,
@@ -74,10 +78,11 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
   legend,
   qrCode,
 }) => {
+  const { t } = useTranslation();
   const { createDirectLink } = useTools();
 
   const colorPalette = deriveColorPalette(color);
-  let documentTitle = "MeinStandort_AreaButler";
+  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -94,7 +99,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
 
     const gridSummary = createTable(
       {
-        title: "Die Umgebung",
+        title: t(IntlKeys.snapshotEditor.exportTab.surroundings),
         pageBreak: false,
         columnWidths: [4000, 3000, 3000, 3000, 3000],
         headerColor: colorPalette.primaryColor,
@@ -125,7 +130,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
       censusData && censusData.addressData.length > 0
         ? createTable({
             pageBreak: false,
-            title: "Nachbarschaftsdemographie",
+            title: t(IntlKeys.snapshotEditor.exportTab.neighborhoodDemographic),
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
@@ -137,7 +142,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
       federalElectionData && Object.keys(federalElectionData).length > 0
         ? createTable({
             pageBreak: false,
-            title: "Bundestagswahl 2021",
+            title: t(IntlKeys.snapshotEditor.exportTab.federalElections),
             columnWidths: [2000, 5000, 5000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
@@ -149,7 +154,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
       particlePollutionData && particlePollutionData.length > 0
         ? createTable({
             pageBreak: false,
-            title: "Feinstaubbelastung",
+            title: t(IntlKeys.snapshotEditor.exportTab.particularMatterPollution),
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
@@ -186,7 +191,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
         new Paragraph({
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: "Kartenausschnitte",
+          text: t(IntlKeys.snapshotEditor.exportTab.mapSection),
         }),
       ]
     );
@@ -199,7 +204,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
           pageBreakBefore: true,
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: "Kartenlegende",
+          text: t(IntlKeys.snapshotEditor.exportTab.cardLegend),
         }),
         watermark,
         legendTable
@@ -209,7 +214,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
     // docx supports jpeg, jpg, bmp, gif and png
 
     const metadata = logo
-      ? logo.match(base64PrefixRegex)![0]
+      ? logo.match(base64PrefixRegex)?.[0]
       : "data:image/png;base64,";
 
     const imageBase64Data = logo
@@ -318,7 +323,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
 
   return (
     <button className="btn btn-primary btn-sm" onClick={generate}>
-      Exportieren
+      {t(IntlKeys.common.export)}
     </button>
   );
 };

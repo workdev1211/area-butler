@@ -5,6 +5,10 @@ import {
   useRef,
   useState,
 } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { FormikProps } from "formik/dist/types";
 
 import {
@@ -53,6 +57,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   showResult,
   fixedQueryType,
 }) => {
+  const { t } = useTranslation();
   const {
     cachingState: { openAi: cachedOpenAi },
     cachingDispatch,
@@ -141,7 +146,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         }
 
         default: {
-          toastError("Ein Fehler ist aufgetreten!");
+          toastError(t(IntlKeys.snapshotEditor.exportTab.errorOccurred));
           return;
         }
       }
@@ -166,11 +171,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-0">
       <div>
-        <div className="section-title mb-2">Inhaltliche Angaben</div>
+        <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.exportTab.contentDetails)}</div>
 
         <div className="form-control">
           <label htmlFor="queryType" className="label">
-            <span className="label-text">Zielformat</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.targetFormat)}</span>
           </label>
 
           <select
@@ -191,11 +196,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               key={placeholderSelectOptionKey}
               disabled={true}
             >
-              Was möchten Sie generieren?
+              {t(IntlKeys.snapshotEditor.exportTab.generateQuestion)}
             </option>
             {resultQueryTypes.map(({ type, label }) => (
               <option value={type} key={type} className="flex flex-col">
-                {label}
+                {t((IntlKeys.snapshotEditor.exportTab.openAITypesOptionLabel as Record<string, string>)[type])}
               </option>
             ))}
           </select>
@@ -306,7 +311,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           OpenAiQueryTypeEnum.GENERAL_QUESTION,
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <>
-            <div className="section-title mb-2">Textuelle Angaben</div>
+            <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.exportTab.textualInformation)}</div>
 
             <OpenAiGeneralForm
               formId="open-ai-general-form"

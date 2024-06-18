@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
 import crossIcon from "../assets/icons/cross.svg";
 import {
@@ -26,6 +30,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   queryType,
   performUnlock,
 }) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { sendToIntegration } = useIntegrationTools();
   const { checkIsFeatAvailable } = useTools();
@@ -47,7 +52,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   const handleUnlock = (): void => {
     if (performUnlock) {
       performUnlock(
-        "KI-Texte freischalten?",
+        t(IntlKeys.snapshotEditor.exportTab.unlockAiTexts),
         IntegrationActionTypeEnum.UNLOCK_OPEN_AI
       );
     }
@@ -57,7 +62,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     <div className="modal modal-open z-2000">
       <div className="modal-box max-h-screen min-w-[75%]">
         <h1 className="text-xl flex items-center gap-2 p-3 border-b">
-          KI Texte aus der magischen Feder
+          {t(IntlKeys.snapshotEditor.exportTab.aiTextsFromMagicPen)}
           <button
             className="btn btn-sm absolute right-3 top-3"
             onClick={closeModal}

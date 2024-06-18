@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
@@ -40,15 +44,16 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
   onSubmit,
   formRef,
 }) => {
+  const { t } = useTranslation();
   const { searchContextState } = useContext(SearchContext);
 
   const meansOfTransportation = searchContextState.transportationParams.map(
     ({ type }) => {
-      const { label, type: value } = meansOfTransportations.find(
+      const { label, type: value, mode } = meansOfTransportations.find(
         ({ type: constantType }) => type === constantType
       )!;
 
-      return { label, value };
+      return { label, value, mode };
     }
   );
 
@@ -83,15 +88,15 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
       <Form id={formId}>
         <div className="form-control">
           <Select
-            label="KI-Wissensgebiet"
-            placeholder="KI-Wissensgebiet"
+            label={t(IntlKeys.snapshotEditor.exportTab.aiFieldOfKnowledge)}
+            placeholder={t(IntlKeys.snapshotEditor.exportTab.aiFieldOfKnowledge)}
             name="meanOfTransportation"
             disabled={meansOfTransportation.length === 1}
             defaultValue={processedInitialValues.meanOfTransportation}
           >
-            {meansOfTransportation.map(({ label, value }) => (
+            {meansOfTransportation.map(({ mode, value }) => (
               <option value={value} key={value}>
-                {label}
+                {t((IntlKeys.common.transportationTypes as Record<string, string>)[mode])}
               </option>
             ))}
           </Select>

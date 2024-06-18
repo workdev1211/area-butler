@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./EntityTable.scss";
 import {
   meansOfTransportations,
@@ -34,6 +37,7 @@ export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
   primaryColor = "#aa0c54",
   activeMeans,
 }) => {
+  const { t } = useTranslation();
   const byFootAvailable = transportationParams.some(
     (param) =>
       param.type === MeansOfTransportation.WALK &&
@@ -64,7 +68,7 @@ export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
         <thead style={{ backgroundAttachment: "fixed" }}>
           <tr style={tableHeaderStyle}>
             <th />
-            <th>Nächster Ort</th>
+            <th>{t(IntlKeys.snapshotEditor.exportTab.nextPlace)}</th>
             {transportationParams
               .filter((t) => activeMeans.includes(t.type))
               .sort(
@@ -76,15 +80,15 @@ export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
                 <th key={`entity-grid-header-item-${routingProfile.type}`}>
                   <span>
                     {
-                      meansOfTransportations.find(
+                      t((IntlKeys.common.transportationTypes as Record<string, string>)[meansOfTransportations.find(
                         (means) => means.type === routingProfile.type
-                      )?.label
+                      )?.type || ''])
                     }{" "}
                     ({routingProfile.amount}{" "}
                     {
-                      unitsOfTransportation.find(
+                      t((IntlKeys.common.transportationUnits as Record<string, string>)[unitsOfTransportation.find(
                         (unit) => unit.type === routingProfile.unit
-                      )?.label
+                      )?.type || ''])
                     }
                     )
                   </span>
@@ -96,7 +100,9 @@ export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
           {groupedEntries.map((group) => (
             <tr key={`entity-grid-item-${group.title}`}>
               <td>
-                <h5 className="font-bold">{group.title}</h5>
+                <h5 className="font-bold">
+                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+                </h5>
               </td>
               <td>
                 {distanceToHumanReadable(

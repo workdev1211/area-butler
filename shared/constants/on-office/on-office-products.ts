@@ -56,6 +56,7 @@ export const legacyOnOfficeProdNames: Record<
   [ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE]: "Erbe P4: Lage-Exposé",
 };
 
+//TODO: translate this
 export const statsExportUnlockText = "Alle Funktionen freischalten?";
 export const searchUnlockText = "Schnappschusserstellung freischalten?";
 

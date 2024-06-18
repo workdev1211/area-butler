@@ -7,6 +7,9 @@ import {
 } from "react";
 import { FormikProps } from "formik/dist/types";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./OnePageExportModal.scss";
 
 import {
@@ -84,6 +87,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   snapshotId,
   hasOpenAiFeature = false,
 }) => {
+  const { t } = useTranslation();
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
@@ -259,7 +263,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const userLogo = integrationUser ? integrationUser.config.logo : user?.logo;
   const isTrial = user?.subscription?.type === ApiSubscriptionPlanType.TRIAL;
 
-  const buttonTitle = "Lage Exposé generieren";
+  const buttonTitle = t(IntlKeys.snapshotEditor.exportTab.generateLocationExpose);
   const snapshotConfig = searchContextState.responseConfig!;
   // 'var(--primary-gradient)' is not extracted in the 'OnePagePng' component
   const color =
@@ -282,7 +286,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             style={{ width: "calc(100% + 21px)" }}
           >
             <span className="text-sm font-bold pl-[24px]">
-              Bitte führen Sie alle Schritte aus.
+              {t(IntlKeys.snapshotEditor.exportTab.pleaseCompleteAllSteps)}
             </span>
           </div>
         </div>
@@ -320,7 +324,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 });
               }}
             >
-              1. Lagebeschreibung ({locationDescription.length}/
+              1. {t(IntlKeys.snapshotEditor.exportTab.locationDescription)} ({locationDescription.length}/
               {onePageCharacterLimit})
             </div>
 
@@ -367,7 +371,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                       }}
                       disabled={isOpenAiBusy}
                     >
-                      KI-Text generieren
+                      {t(IntlKeys.snapshotEditor.exportTab.generateAIText)}
                     </button>
                   </div>
 
@@ -470,7 +474,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
         <div className="modal-action">
           <button type="button" onClick={onClose} className="btn btn-sm">
-            Schließen
+            {t(IntlKeys.common.close)}
           </button>
 
           {!isPng && (

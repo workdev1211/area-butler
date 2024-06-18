@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { useContext } from "react";
@@ -27,6 +30,7 @@ const ProfileFormHandler: React.FunctionComponent<ProfileFormHandlerProps> = ({
   postSubmit = () => {}
 }) => {
   const { post } = useHttp();
+  const { t } = useTranslation();
 
   const { userDispatch } = useContext(UserContext);
 
@@ -40,11 +44,11 @@ const ProfileFormHandler: React.FunctionComponent<ProfileFormHandlerProps> = ({
       const updatedUser = (await post<ApiUser>("/api/users/me", mappedUser))
         .data;
       userDispatch({ type: UserActionTypes.SET_USER, payload: updatedUser });
-      toastSuccess("Profil aktualisiert!");
+      toastSuccess(t(IntlKeys.yourProfile.profileUpdated));
       postSubmit(true);
     } catch (err) {
       console.error(err);
-      toastError("Fehler beim Aktualisieren Ihres Profiles");
+      toastError(t(IntlKeys.yourProfile.profileUpdateError));
       postSubmit(false);
     }
   };

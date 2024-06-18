@@ -1,4 +1,8 @@
 import React, { useRef, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./ColorPicker.scss";
 import { SketchPicker } from "react-color";
 import useOnClickOutside from "../hooks/onclickoutside";
@@ -13,9 +17,10 @@ export interface ColorPickerProps {
 const ColorPicker: React.FunctionComponent<ColorPickerProps> = ({
   color,
   setColor,
-  label = "Deine Primärfarbe",
+  label,
   onChange
 }) => {
+  const { t } = useTranslation();
   const pickerRef = useRef(null);
   const [showPopover, setShowPopover] = useState(false);
 
@@ -31,7 +36,7 @@ const ColorPicker: React.FunctionComponent<ColorPickerProps> = ({
   return (
     <div className="color-picker">
       <div>
-        <label htmlFor="color-picker">{label}:</label>
+        <label htmlFor="color-picker">{label || t(IntlKeys.yourProfile.yourPrimaryColor)}:</label>
         <div
           className="color-picker-field mt-1"
           onClick={() => setShowPopover(!showPopover)}

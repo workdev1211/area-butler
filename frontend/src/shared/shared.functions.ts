@@ -596,7 +596,7 @@ export const copyTextToClipboard = (text?: string): void => {
   }
 
   const isCopied = copy(text);
-
+  // REDO this for translations
   if (isCopied) {
     toastSuccess("Erfolgreich in Zwischenablage kopiert!");
   }

@@ -1,5 +1,8 @@
 import { FunctionComponent, CSSProperties, ReactNode } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import areaButlerLogo from "../assets/img/logo.svg";
 
 interface IPdfPageProps {
@@ -16,6 +19,7 @@ export const PdfPage: FunctionComponent<IPdfPageProps> = ({
   logo = areaButlerLogo,
   leftHeaderElement = <div />,
 }) => {
+  const { t } = useTranslation();
   const style: CSSProperties = {
     pageBreakAfter: "always",
     minHeight: "29.6cm",
@@ -39,7 +43,7 @@ export const PdfPage: FunctionComponent<IPdfPageProps> = ({
         </div>
         {title && <div className="flex-1 py-5 px-10 text-2xl">{title}</div>}
         <div className="py-5 px-10 text-2xl border-l-2">
-          Seite - {nextPageNumber()}
+          {t(IntlKeys.common.page)} - {nextPageNumber()}
         </div>
       </div>
     </div>

@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./UserCrmSettings.scss";
 
 import { UserActionTypes, UserContext } from "../context/UserContext";
@@ -13,6 +16,7 @@ import { apiConnectTypeNames } from "../../../shared/constants/real-estate";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 
 const UserCrmSettings: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
   const { post } = useHttp();
 
@@ -31,11 +35,9 @@ const UserCrmSettings: FunctionComponent = () => {
 
   return (
     <div className="flex flex-col mt-10 gap-3">
-      <h1 className="text-xl font-bold">CRM-Einstellungen</h1>
+      <h1 className="text-xl font-bold">{t(IntlKeys.yourProfile.CRMSettings)}</h1>
       <div>
-        Die folgenden Einstellungen definieren die Parameter, die zum Abrufen
-        der Daten aus externen CRMs erforderlich sind, z.b. Propstack, onOffice
-        usw.
+        {t(IntlKeys.yourProfile.CRMSettingsDescription)}
       </div>
       <div className="api-connections-grid grid items-center gap-5">
         {/* PROPSTACK */}
@@ -44,11 +46,11 @@ const UserCrmSettings: FunctionComponent = () => {
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">API Key</span>
+            <span className="label-text">{t(IntlKeys.yourProfile.apiKey)}</span>
           </label>
           <input
             type="text"
-            placeholder="API Key"
+            placeholder={t(IntlKeys.yourProfile.apiKey)}
             className="input input-bordered"
             value={propstackApiKey}
             onChange={({ target: { value } }) => {
@@ -75,19 +77,19 @@ const UserCrmSettings: FunctionComponent = () => {
                   connectSettings
                 );
 
-                toastSuccess("Die Verbindung wurde erfolgreich getestet.");
+                toastSuccess(t(IntlKeys.yourProfile.connectionTestedSuccessfully));
 
                 userDispatch({
                   type: UserActionTypes.SET_API_CONNECTION,
                   payload: connectSettings,
                 });
               } catch (e) {
-                toastError("Der Fehler ist aufgetreten!");
+                toastError(t(IntlKeys.common.errorOccurred));
                 setPropstackApiKey("");
               }
             }}
           >
-            Testen und speichern
+            {t(IntlKeys.yourProfile.testAndSave)}
           </button>
         </div>
         {/* ON_OFFICE */}
@@ -96,11 +98,11 @@ const UserCrmSettings: FunctionComponent = () => {
         </div>
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Token</span>
+            <span className="label-text">{t(IntlKeys.yourProfile.token)}</span>
           </label>
           <input
             type="text"
-            placeholder="Token"
+            placeholder={t(IntlKeys.yourProfile.token)}
             className="input input-bordered"
             value={onOfficeToken}
             onChange={({ target: { value } }) => {
@@ -108,11 +110,11 @@ const UserCrmSettings: FunctionComponent = () => {
             }}
           />
           <label className="label">
-            <span className="label-text">Secret</span>
+            <span className="label-text">{t(IntlKeys.yourProfile.secret)}</span>
           </label>
           <input
             type="text"
-            placeholder="Secret"
+            placeholder={t(IntlKeys.yourProfile.secret)}
             className="input input-bordered"
             value={onOfficeSecret}
             onChange={({ target: { value } }) => {
@@ -140,20 +142,20 @@ const UserCrmSettings: FunctionComponent = () => {
                   connectSettings
                 );
 
-                toastSuccess("Die Verbindung wurde erfolgreich getestet.");
+                toastSuccess(t(IntlKeys.yourProfile.connectionTestedSuccessfully));
 
                 userDispatch({
                   type: UserActionTypes.SET_API_CONNECTION,
                   payload: connectSettings,
                 });
               } catch (e) {
-                toastError("Der Fehler ist aufgetreten!");
+                toastError(t(IntlKeys.common.errorOccurred));
                 setOnOfficeToken("");
                 setOnOfficeSecret("");
               }
             }}
           >
-            Testen und speichern
+            {t(IntlKeys.yourProfile.testAndSave)}
           </button>
         </div>
       </div>

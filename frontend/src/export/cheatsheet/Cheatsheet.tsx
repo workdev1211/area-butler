@@ -1,5 +1,8 @@
 import { forwardRef, useContext } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { EntityList } from "export/EntityList";
 import FederalElectionSummary from "export/FederalElectionSummary";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
@@ -51,6 +54,7 @@ interface ICheatsheetProps {
 const chunkSize = 25;
 
 export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
+  const { t } = useTranslation();
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
@@ -118,7 +122,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       )}
 
       <PdfPage
-        title="Zusammenfassung"
+        title={t(IntlKeys.snapshotEditor.exportTab.summary)}
         logo={props.logo}
         nextPageNumber={nextPageNumber}
         leftHeaderElement={qrCodeElement}
@@ -128,7 +132,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
             <>
               <div className="text-2xl font-bold">{props.listingAddress}</div>
               <div className="text-xl font-bold mt-1 text-black">
-                Lage Überblick
+                {t(IntlKeys.snapshotEditor.exportTab.locationOverview)}
               </div>
             </>
           )}
@@ -136,7 +140,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {props.realEstateListing && (
             <>
               <h3 className="text-2xl w-56 font-bold text-black">
-                Lage Überblick
+                {t(IntlKeys.snapshotEditor.exportTab.locationOverview)}
               </h3>
 
               <div className="font-bold">{props.realEstateListing.address}</div>
@@ -144,14 +148,14 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               {responseConfig?.isDetailsShown &&
                 props.realEstateListing?.costStructure && (
                   <div>
-                    <strong>Kosten:</strong>{" "}
+                    <strong>{t(IntlKeys.snapshotEditor.exportTab.costs)}:</strong>{" "}
                     {getRealEstateCost(props.realEstateListing?.costStructure)}{" "}
                     (
                     {
-                      allRealEstateCostTypes.find(
+                      t((IntlKeys.realEstate.costTypes as Record<string, string>)[allRealEstateCostTypes.find(
                         (t) =>
                           t.type === props.realEstateListing.costStructure?.type
-                      )?.label
+                      )?.type || ''])
                     }
                     )
                   </div>
@@ -177,7 +181,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
         <div className="mx-5 flex gap-2 flex-wrap">
           {chunkedGroupes.length === 0 ? (
-            <div>Keine Orte ausgewählt</div>
+            <div>{t(IntlKeys.snapshotEditor.exportTab.noLocationSelected)}</div>
           ) : (
             chunkedGroupes[0].map((group) => (
               <div className="text-xs" key={`tab-content-${group.title}`}>
@@ -195,7 +199,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       {chunkedGroupes.length > 1 &&
         chunkedGroupes.slice(1).map((chunk, i) => (
           <PdfPage
-            title="Zusammenfassung"
+            title={t(IntlKeys.snapshotEditor.exportTab.summary)}
             logo={props.logo}
             nextPageNumber={nextPageNumber}
             leftHeaderElement={qrCodeElement}
@@ -230,7 +234,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
         <PdfPage
           nextPageNumber={nextPageNumber}
           logo={props.logo}
-          title="Kartenlegende"
+          title={t(IntlKeys.snapshotEditor.exportTab.cardLegend)}
           leftHeaderElement={qrCodeElement}
         >
           <div className="ml-10 mt-3">
@@ -241,7 +245,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
       {(censusData || federalElectionData || particlePollutionData) && (
         <PdfPage
-          title="Einblicke"
+          title={t(IntlKeys.snapshotEditor.exportTab.insights)}
           logo={props.logo}
           nextPageNumber={nextPageNumber}
           leftHeaderElement={qrCodeElement}
@@ -249,7 +253,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {censusData && censusData.addressData.length > 0 && (
             <>
               <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-                Nachbarschaftsdemographie
+                {t(IntlKeys.snapshotEditor.exportTab.neighborhoodDemographic)}
               </h4>
               <CensusSummary
                 primaryColor={props.color}
@@ -261,7 +265,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {federalElectionData && (
             <>
               <h4 className="mx-10 text-xl w-56 font-bold">
-                Bundestagswahl 2021
+                {t(IntlKeys.snapshotEditor.exportTab.federalElections)}
               </h4>
               <FederalElectionSummary
                 primaryColor={props.color}
@@ -273,7 +277,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {particlePollutionData && particlePollutionData.length > 0 && (
             <>
               <h4 className="mx-10 text-xl w-56 font-bold">
-                Feinstaubbelastung
+                {t(IntlKeys.snapshotEditor.environmentInfo.particulateMatterPollution)}
               </h4>
               <ParticlePollutionSummary
                 primaryColor={props.color}

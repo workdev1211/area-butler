@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { v4 as uuid } from "uuid";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
@@ -15,6 +19,7 @@ import { deriveTotalRequestContingent } from "../shared/shared.functions";
 import UserCrmSettings from "../user/UserCrmSettings";
 
 const UserProfilePage: FunctionComponent = () => {
+  const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
   const { get } = useHttp();
   const { userState, userDispatch } = useContext(UserContext);
@@ -59,7 +64,7 @@ const UserProfilePage: FunctionComponent = () => {
         disabled={busy}
         className={busy ? `busy ${classes}` : classes}
       >
-        Speichern
+        {t(IntlKeys.common.save)}
       </button>
     );
   };
@@ -78,7 +83,7 @@ const UserProfilePage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="Ihr Profil"
+      title={t(IntlKeys.yourProfile.title)}
       withHorizontalPadding={true}
       actionsBottom={[
         <BackButton to="/" key="user-profile-back" />,

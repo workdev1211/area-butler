@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import OnePageLegendIcon from "../../OnePageLegendIcon";
 import { distanceToHumanReadable } from "../../../../shared/shared.functions";
 import { truncateText } from "../../../../../../shared/functions/shared.functions";
@@ -13,6 +16,7 @@ interface IOnePagePngPoiListProps {
 const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
   entityGroups,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -28,7 +32,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
           fontWeight: 700,
         }}
       >
-        Überblick
+        {t(IntlKeys.snapshotEditor.exportTab.overview)}
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
@@ -58,7 +62,14 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                   fontWeight: 700,
                 }}
               >
-                {group.title}
+                {t(
+                  (
+                    IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                      string,
+                      string
+                    >
+                  )[group.title]
+                )}
               </div>
             </div>
 
@@ -83,7 +94,15 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                   {`(${distanceToHumanReadable(
                     item.distanceInMeters
                   )}) ${truncateText(
-                    item.name || group.title,
+                    item.name ||
+                      t(
+                        (
+                          IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                            string,
+                            string
+                          >
+                        )[group.title]
+                      ),
                     poiNameMaxLength
                   )}`}
                 </div>

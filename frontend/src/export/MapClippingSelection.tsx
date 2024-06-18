@@ -1,5 +1,8 @@
 import { FunctionComponent, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { MapClipping } from "context/SearchContext";
 import { toastError } from "../shared/shared.functions";
 
@@ -22,6 +25,7 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
   setSelectableMapClippings,
   limit,
 }) => {
+  const { t } = useTranslation();
   const onSelectionChange = (mapClipping: ISelectableMapClipping): void => {
     const selectedMapClippingsCount = selectableMapClippings.reduce(
       (result, mapClipping) => {
@@ -40,7 +44,7 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
         selectedMapClippingsCount === limit) &&
       !mapClipping.isSelected
     ) {
-      toastError("Es wurden zu viele Gruppen ausgewählt!");
+      toastError(t(IntlKeys.snapshotEditor.exportTab.tooManyGroups));
       return;
     }
 
@@ -65,14 +69,14 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
       >
         {selectableMapClippings.length > 0 ? (
           <span>
-            Ausgewählte Bilder{" "}
+            {t(IntlKeys.snapshotEditor.exportTab.selectedPictures)}{" "}
             {selectableMapClippings.filter((c) => c.isSelected).length} /{" "}
             {limit
               ? `${limit} (${selectableMapClippings.length})`
               : selectableMapClippings.length}
           </span>
         ) : (
-          <span>Keine Kartenausschnitte gespeichert</span>
+          <span>{t(IntlKeys.snapshotEditor.exportTab.noMapSelectionsSaved)}</span>
         )}
       </div>
       <div className="collapse-content bg-white flex flex-col">

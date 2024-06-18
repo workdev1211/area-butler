@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { getRealEstateCost } from "../../../../shared/real-estate.functions";
 import { allRealEstateCostTypes } from "../../../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../../../shared/types/real-estate";
@@ -18,6 +21,7 @@ const OnePageLogoAddress: FunctionComponent<IOnePageLogoAddressProps> = ({
   realEstateListing,
   listingAddress,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-1.5">
       <img className="self-start h-14" src={logo} alt="Logo" />
@@ -35,7 +39,7 @@ const OnePageLogoAddress: FunctionComponent<IOnePageLogoAddressProps> = ({
             {snapshotConfig?.isDetailsShown &&
               realEstateListing?.costStructure && (
                 <div>
-                  <strong>Kosten:</strong>{" "}
+                  <strong>{t(IntlKeys.snapshotEditor.exportTab.costs)}:</strong>{" "}
                   {getRealEstateCost(realEstateListing?.costStructure)} (
                   {
                     allRealEstateCostTypes.find(

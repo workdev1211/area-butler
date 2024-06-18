@@ -1,4 +1,8 @@
 import { FunctionComponent } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { ReactSortable } from "react-sortablejs";
 
 import { toastError } from "../../shared/shared.functions";
@@ -15,6 +19,7 @@ interface IOnePageMapClippingSelectionProps {
 const OnePageMapClippingSelection: FunctionComponent<
   IOnePageMapClippingSelectionProps
 > = ({ selectableMapClippings, setSelectableMapClippings, limit }) => {
+  const { t } = useTranslation();
   const onSelectionChange = (mapClipping: ISelectableMapClipping): void => {
     const selectedMapClippingsCount = selectableMapClippings.reduce(
       (result, mapClipping) => {
@@ -33,7 +38,7 @@ const OnePageMapClippingSelection: FunctionComponent<
         selectedMapClippingsCount === limit) &&
       !mapClipping.isSelected
     ) {
-      toastError("Es wurden zu viele Gruppen ausgewählt!");
+      toastError(t(IntlKeys.snapshotEditor.exportTab.tooManyGroups));
       return;
     }
 
@@ -45,12 +50,12 @@ const OnePageMapClippingSelection: FunctionComponent<
     <div>
       {selectableMapClippings.length > 0 ? (
         <div>
-          Ausgewählte Kartenausschnitte{" "}
+          {t(IntlKeys.snapshotEditor.exportTab.selectedMapSections)}{" "}
           {selectableMapClippings.filter((c) => c.isSelected).length}/
           {limit || selectableMapClippings.length}
         </div>
       ) : (
-        <div>Keine Kartenausschnitte gespeichert</div>
+        <div>{t(IntlKeys.snapshotEditor.exportTab.noMapSelectionsSaved)}</div>
       )}
 
       <ReactSortable

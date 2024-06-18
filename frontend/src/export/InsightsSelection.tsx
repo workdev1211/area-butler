@@ -1,5 +1,8 @@
 import React from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 export interface InsightsSelectionProps {
   showFederalElection: boolean;
   setShowFederalElection: (value: boolean) => void;
@@ -23,9 +26,10 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
   hasParticlePollutionInSubscription,
   hasFederalElectionInSubscription
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="mt-5">
-      <h1 className="my-5 font-bold">Einblicke</h1>
+      <h1 className="my-5 font-bold">{t(IntlKeys.snapshotEditor.exportTab.insights)}</h1>
       <div className="flex flex-col">
         {hasCensusInSubscription && (
           <label
@@ -38,7 +42,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
               className="checkbox checkbox-primary"
               onChange={() => setShowCensus(!showCensus)}
             />
-            <span className="label-text">Zensus Atlas</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.censusAtlas)}</span>
           </label>
         )}
         {hasFederalElectionInSubscription && (
@@ -52,7 +56,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
               className="checkbox checkbox-primary"
               onChange={() => setShowFederalElection(!showFederalElection)}
             />
-            <span className="label-text">Bundestagswahl 2021</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.federalElections)}</span>
           </label>
         )}
         {hasParticlePollutionInSubscription && (
@@ -66,7 +70,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
               className="checkbox checkbox-primary"
               onChange={() => setShowParticlePollution(!showParticlePollution)}
             />
-            <span className="label-text">Feinstaubbelastung</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.particularMatterPollution)}</span>
           </label>
         )}
       </div>

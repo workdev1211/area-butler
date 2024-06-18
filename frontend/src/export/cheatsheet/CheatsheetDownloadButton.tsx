@@ -1,4 +1,8 @@
 import { FunctionComponent, useRef, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import ReactToPrint from "react-to-print";
 
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
@@ -57,6 +61,7 @@ export const CheatsheetDownload: FunctionComponent<
   legend,
   qrCode,
 }) => {
+  const { t } = useTranslation();
   const componentRef = useRef();
   const [activePrinting, setActivePrinting] = useState(false);
 
@@ -64,7 +69,7 @@ export const CheatsheetDownload: FunctionComponent<
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 
-  let documentTitle = "MeinStandort_AreaButler";
+  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -107,7 +112,7 @@ export const CheatsheetDownload: FunctionComponent<
             className="btn btn-primary btn-sm"
             disabled={downloadButtonDisabled}
           >
-            Exportieren
+            {t(IntlKeys.common.export)}
           </button>
         )}
         content={() => componentRef.current!}

@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import OnePageLegendIcon from "../../OnePageLegendIcon";
 import { distanceToHumanReadable } from "../../../../shared/shared.functions";
 import { truncateText } from "../../../../../../shared/functions/shared.functions";
@@ -13,9 +16,10 @@ interface IOnePagePoiListProps {
 const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
   filteredGroups,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="text-2xl font-bold">Überblick</div>
+      <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.overview)}</div>
       <div className="flex gap-3 flex-wrap">
         {filteredGroups.map((group) => {
           return (
@@ -26,7 +30,9 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
             >
               <div className="flex items-center gap-1.5">
                 {group.icon && <OnePageLegendIcon icon={group.icon} />}
-                <div className="text-base font-bold">{group.title}</div>
+                <div className="text-base font-bold">
+                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+                </div>
               </div>
               <div
                 className="flex flex-col gap-1.5"
@@ -45,7 +51,7 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
                       {`(${distanceToHumanReadable(
                         item.distanceInMeters
                       )}) ${truncateText(
-                        item.name || group.title,
+                        item.name || t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title]),
                         poiNameMaxLength
                       )}`}
                     </div>

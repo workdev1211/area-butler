@@ -1,5 +1,8 @@
 import { FunctionComponent, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import aiIcon from "../../../assets/icons/ai-big.svg";
 import aiLocationDescIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.svg";
@@ -20,6 +23,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
   backgroundColor,
   performUnlock,
 }) => {
+  const { t } = useTranslation();
   const [isOpenAiTextsOpen, setIsOpenAiTextsOpen] = useState(false);
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
   const [openAiQueryType, setOpenAiQueryType] = useState<OpenAiQueryTypeEnum>();
@@ -55,10 +59,10 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
             <img src={aiLocationDescIcon} alt="ai-description-icon" />
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">
-                Automatische Texte (KI)
+                {t(IntlKeys.snapshotEditor.exportTab.automaticTextsTitle)}
               </div>
               <div className="collapse-title-text-2">
-                Für Inspiration aus der magischen Feder
+                {t(IntlKeys.snapshotEditor.exportTab.automaticTextsDescription)}
               </div>
             </div>
           </div>
@@ -98,7 +102,9 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
                     src={aiIcon}
                     alt="ai"
                   />
-                  <span>{sidebarLabel}</span>
+                  <span>
+                    {t((IntlKeys.snapshotEditor.exportTab.openAITypesSideBarLabel as Record<string, string>)[type])}
+                  </span>
                 </h3>
               </li>
             ))}

@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import EntityGridSummary from "export/EntityGridSummary";
 import { deriveColorPalette } from "shared/shared.functions";
 import {
@@ -43,6 +46,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
   qrCode,
   isFirstPage,
 }) => {
+  const { t } = useTranslation();
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
@@ -68,7 +72,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
               <div className="text-2xl font-bold">{listingAddress}</div>
               <div>
                 <h3 className="text-xl w-96 font-bold text-black">
-                  Ihre Mobilitätskriterien
+                  {t(IntlKeys.snapshotEditor.exportTab.mobilityCriteria)}
                 </h3>
                 <div className="flex gap-2">
                   {transportationParams.map(
@@ -80,15 +84,15 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                       >
                         <span>
                           {
-                            meansOfTransportations.find(
+                            t((IntlKeys.common.transportationTypes as Record<string, string>)[meansOfTransportations.find(
                               (means) => means.type === routingProfile.type
-                            )?.label
+                            )?.type || ''])
                           }{" "}
                           ({routingProfile.amount}{" "}
                           {
-                            unitsOfTransportation.find(
+                            t((IntlKeys.common.transportationUnits as Record<string, string>)[unitsOfTransportation.find(
                               (unit) => unit.type === routingProfile.unit
-                            )?.label
+                            )?.type || ''])
                           }
                           )
                         </span>
@@ -104,20 +108,20 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
               {realEstateListing && (
                 <>
                   <h3 className="text-xl w-96 font-bold text-black">
-                    Ihre neue Immobilie
+                    {t(IntlKeys.snapshotEditor.exportTab.yourNewProperty)}
                   </h3>
                   <div className="font-bold">{realEstateListing.address}</div>
 
                   {responseConfig?.isDetailsShown &&
                     realEstateListing?.costStructure && (
                       <div className="text-justify">
-                        <strong>Kosten:</strong>{" "}
+                        <strong>{t(IntlKeys.snapshotEditor.exportTab.costs)}:</strong>{" "}
                         {getRealEstateCost(realEstateListing?.costStructure)} (
                         {
-                          allRealEstateCostTypes.find(
+                          t((IntlKeys.realEstate.costTypes as Record<string, string>)[allRealEstateCostTypes.find(
                             (t) =>
                               t.type === realEstateListing.costStructure?.type
-                          )?.label
+                          )?.type || ''])
                         }
                         )
                       </div>
@@ -154,7 +158,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
 
       <div className={!isFirstPage ? "pt-5" : ""}>
         <h3 className="text-xl w-96 font-bold mx-10 text-black">
-          Die Umgebung
+          {t(IntlKeys.snapshotEditor.exportTab.surroundings)}
         </h3>
         <EntityGridSummary
           groupedEntries={groupedEntries}

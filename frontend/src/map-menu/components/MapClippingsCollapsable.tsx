@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { saveAs } from "file-saver";
 
 import {
@@ -20,23 +24,26 @@ interface IMapClippingsCollapsableProps {
 
 const MapClippingsCollapsable: FunctionComponent<
   IMapClippingsCollapsableProps
-> = ({ clippings, searchAddress = "Mein_Standort" }) => {
+> = ({ clippings, searchAddress}) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
   const { sendToIntegration } = useIntegrationTools();
 
-  const parsedAddress = searchAddress.replace(",", "-").replace(/\s/g, "");
+  const parsedAddress = (searchAddress || t(IntlKeys.snapshotEditor.exportTab.myLocation))
+    .replace(",", "-")
+    .replace(/\s/g, "");
 
   const removeAllClippings = (): void => {
-    window.confirm("Möchten Sie wirklich alle Kartenausschnitte löschen?") &&
+    window.confirm(t(IntlKeys.snapshotEditor.exportTab.deleteAllMapSectionsConfirmation)) &&
       searchContextDispatch({
         type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
       });
   };
 
   const removeClipping = (clipping: MapClipping): void => {
-    window.confirm("Möchten Sie wirklich diesen Kartenausschnitt löschen?") &&
+    window.confirm(t(IntlKeys.snapshotEditor.exportTab.deleteThisMapSectionsConfirmation)) &&
       searchContextDispatch({
         type: SearchContextActionTypes.REMOVE_MAP_CLIPPING,
         payload: clipping,
@@ -46,7 +53,7 @@ const MapClippingsCollapsable: FunctionComponent<
   const downloadClipping = (clipping: MapClipping, i: number): void => {
     saveAs(
       clipping.mapClippingDataUrl,
-      `${parsedAddress}-Kartenausschnitt-${i + 1}.png`
+      `${parsedAddress}-${t(IntlKeys.snapshotEditor.exportTab.mapSection)}-${i + 1}.png`
     );
   };
 
@@ -112,7 +119,7 @@ const MapClippingsCollapsable: FunctionComponent<
         }}
         className="mt-5 btn btn-sm btn-secondary w-full"
       >
-        Alle Löschen
+        {t(IntlKeys.common.deleteAll)}
       </button>
     </div>
   );

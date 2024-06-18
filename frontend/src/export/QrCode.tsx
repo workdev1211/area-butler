@@ -1,4 +1,8 @@
 import { FunctionComponent, useEffect, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { QRCodeToDataURLOptions, toDataURL } from "qrcode";
 
 import { useTools } from "../hooks/tools";
@@ -30,6 +34,7 @@ export const QrCode: FunctionComponent<IQrCodeProps> = ({
   containerClasses = "",
   imageClasses = "h-20",
 }) => {
+  const { t } = useTranslation();
   const { createDirectLink } = useTools();
   const [qrCodeImage, setQrCodeImage] = useState<string>();
 
@@ -59,8 +64,8 @@ export const QrCode: FunctionComponent<IQrCodeProps> = ({
       />
 
       <div className="flex flex-col">
-        <div>Scannen und neue</div>
-        <div>Wohnlage entdecken</div>
+        <div>{t(IntlKeys.snapshotEditor.exportTab.scanAndNew)}</div>
+        <div>{t(IntlKeys.snapshotEditor.exportTab.discoverResidentialArea)}</div>
       </div>
     </div>
   );

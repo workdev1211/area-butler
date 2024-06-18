@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import ImageUpload from "../components/ImageUpload";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import ColorPicker from "../components/ColorPicker";
@@ -7,6 +10,7 @@ import { toastSuccess } from "../shared/shared.functions";
 import { useTools } from "../hooks/tools";
 
 const UserExportSettings: FunctionComponent = () => {
+  const { t } = useTranslation();
   const {
     userState: { user },
     userDispatch,
@@ -28,7 +32,7 @@ const UserExportSettings: FunctionComponent = () => {
       payload: logo || undefined,
     });
 
-    toastSuccess("Logo gespeichert.");
+    toastSuccess(t(IntlKeys.yourProfile.logoSaved));
   };
 
   const updateMapIcon = async (mapIcon: string | null): Promise<void> => {
@@ -39,7 +43,7 @@ const UserExportSettings: FunctionComponent = () => {
       payload: mapIcon || undefined,
     });
 
-    toastSuccess("Logo gespeichert.");
+    toastSuccess(t(IntlKeys.yourProfile.logoSaved));
   };
 
   const updateColor = async (color: string | null): Promise<void> => {
@@ -50,7 +54,7 @@ const UserExportSettings: FunctionComponent = () => {
       payload: color || undefined,
     });
 
-    toastSuccess("Primärfarbe gespeichert.");
+    toastSuccess(t(IntlKeys.yourProfile.primaryColorSaved));
   };
 
   const rollbackSettings = async (): Promise<void> => {
@@ -77,15 +81,14 @@ const UserExportSettings: FunctionComponent = () => {
     setLogo(undefined);
     setMapIcon(undefined);
 
-    toastSuccess("Export Einstellungen zurückgesetzt.");
+    toastSuccess(t(IntlKeys.yourProfile.exportSettingsReset));
   };
 
   return (
     <div className="mt-10">
-      <h1 className="font-bold text-xl mb-2">Export-Einstellungen</h1>
+      <h1 className="font-bold text-xl mb-2">{t(IntlKeys.yourProfile.exportSettings)}</h1>
       <p>
-        Die nachfolgenden Einstellungen verändern das enthaltene Logo und die
-        verwendete Primärfarbe beim Export von Standortanalysen.
+        {t(IntlKeys.yourProfile.exportSettingsDescription)}
       </p>
       <ImageUpload image={logo} setImage={setLogo} onChange={updateLogo} />
       <ImageUpload
@@ -93,8 +96,8 @@ const UserExportSettings: FunctionComponent = () => {
         setImage={setMapIcon}
         onChange={updateMapIcon}
         inputId="upload-map-icon-button"
-        label="Karten Icon"
-        uploadLabel="Icon hochladen"
+        label={t(IntlKeys.snapshotEditor.cardsIcon)}
+        uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
       />
       <div className="mt-5">
         <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
@@ -102,7 +105,7 @@ const UserExportSettings: FunctionComponent = () => {
       {(!!user!.logo || !!user!.color || !!user!.mapIcon) && (
         <div className="mt-5">
           <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
-            Export Einstellungen Zurücksetzen
+            {t(IntlKeys.yourProfile.exportSettingsResetBtn)}
           </button>
         </div>
       )}

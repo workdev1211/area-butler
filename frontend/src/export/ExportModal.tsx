@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   MapClipping,
   SearchContext,
@@ -44,6 +47,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
   snapshotToken,
   exportType,
 }) => {
+  const { t } = useTranslation();
   const groupCopy: EntityGroup[] = JSON.parse(
     JSON.stringify(groupedEntries)
   ).filter(
@@ -136,8 +140,8 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
 
   const buttonTitle =
     exportType !== ExportTypeEnum.CHEATSHEET
-      ? "Umgebungsanalyse exportieren"
-      : "Spickzettel exportieren";
+      ? t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisExport)
+      : t(IntlKeys.snapshotEditor.exportTab.cheatSheetExport);
 
   const resultingColor =
     searchContextState.responseConfig?.primaryColor ||
@@ -180,7 +184,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
               )}
 
               <div>
-                <h1 className="my-5 font-bold">Bilder</h1>
+                <h1 className="my-5 font-bold">{t(IntlKeys.snapshotEditor.exportTab.pictures)}</h1>
 
                 <div className="mb-5">
                   <label
@@ -199,7 +203,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                         );
                       }}
                     />
-                    <span className="label-text">QR code</span>
+                    <span className="label-text">{t(IntlKeys.common.qrCode)}</span>
                   </label>
                 </div>
 
@@ -218,7 +222,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
 
             <div className="modal-action">
               <button type="button" onClick={onClose} className="btn btn-sm">
-                Schließen
+                {t(IntlKeys.common.close)}
               </button>
 
               {exportType === ExportTypeEnum.EXPOSE && (

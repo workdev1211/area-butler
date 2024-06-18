@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { saveAs } from "file-saver";
 import JsZip from "jszip";
 
@@ -56,6 +60,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   backgroundColor,
   performUnlock,
 }) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const {
     userState: { integrationUser },
@@ -113,7 +118,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   const handleUnlock = (): void => {
     if (performUnlock) {
       performUnlock(
-        "Interaktive Karte freischalten?",
+        t(IntlKeys.snapshotEditor.exportTab.unlockInteractiveMap),
         IntegrationActionTypeEnum.UNLOCK_IFRAME
       );
     }
@@ -183,9 +188,9 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
         <div className="collapse-title-container">
           <img src={digitalMediaIcon} alt="digital-media-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">Digitale Medien</div>
+            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.digitalMedia)}</div>
             <div className="collapse-title-text-2">
-              Für Webseite, Exposés, E-Mail
+              {t(IntlKeys.snapshotEditor.exportTab.digitalMediaDescription)}
             </div>
           </div>
         </div>
@@ -198,7 +203,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={urlIcon} alt="iframe-url" />
-                <span>Öffentlicher Link</span>
+                <span>{t(IntlKeys.snapshotEditor.exportTab.publicLink)}</span>
               </div>
               <div
                 onClick={() => {
@@ -206,7 +211,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 }}
               >
                 <img src={copyIcon} alt="copy" />
-                <span>Kopieren</span>
+                <span>{t(IntlKeys.common.copy)}</span>
               </div>
               {!!intUserLinkExpType && (
                 <div
@@ -224,6 +229,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                       return;
                     }
 
+                    // TODO: confirm translations here
                     const title =
                       intUserLinkExpType ===
                       AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
@@ -248,7 +254,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={qrCodeIcon} alt="url-link" />
-                <span>QR-Code Link</span>
+                <span>{t(IntlKeys.snapshotEditor.exportTab.qrCodeLink)}</span>
               </div>
               <div
                 onClick={async () => {
@@ -259,7 +265,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 }}
               >
                 <img src={downloadIcon} alt="download-qr-code" />
-                <span>Herunterladen</span>
+                <span>{t(IntlKeys.snapshotEditor.exportTab.download)}</span>
               </div>
               {integrationType && (
                 <div
@@ -267,8 +273,8 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                     void sendToIntegration({
                       base64Content: await getQrCodeBase64(directLink),
                       exportType: AreaButlerExportTypesEnum.QR_CODE,
-                      fileTitle: "QR-Lageplan",
-                      filename: `QR-Lageplan.png`,
+                      fileTitle: t(IntlKeys.snapshotEditor.exportTab.qrCodeFileName),
+                      filename: `${t(IntlKeys.snapshotEditor.exportTab.qrCodeLink)}.png`,
                       // left just in case
                       // filename: `${searchAddress.replace(
                       //   /[\s|,]+/g,
@@ -288,7 +294,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={legendIcon} alt="download-legend" />
-                <span>Legende POI Icons</span>
+                <span>{t(IntlKeys.snapshotEditor.exportTab.legendPOIIcons)}</span>
               </div>
               <div
                 onClick={() => {
@@ -299,7 +305,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 }}
               >
                 <img src={downloadIcon} alt="download-qr-code" />
-                <span>Herunterladen</span>
+                <span>{t(IntlKeys.snapshotEditor.exportTab.download)}</span>
               </div>
             </div>
 
@@ -308,7 +314,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={iframeIcon} alt="iframe" />
-                <span>iFrame für Website</span>
+                <span>{t(IntlKeys.snapshotEditor.exportTab.iframeForWebsite)}</span>
               </div>
               <div
                 onClick={() => {
@@ -316,7 +322,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 }}
               >
                 <img src={copyIcon} alt="copy-iframe" />
-                <span>Kopieren</span>
+                <span>{t(IntlKeys.common.copy)}</span>
               </div>
               {isIntUserIframeExportAvail && (
                 <div

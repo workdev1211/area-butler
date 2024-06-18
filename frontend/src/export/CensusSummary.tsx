@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./EntityTable.scss";
 import { deriveColorPalette } from "shared/shared.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
@@ -14,6 +17,7 @@ export const CensusSummary: FunctionComponent<ICensusSummaryProps> = ({
   censusData,
   primaryColor = "#aa0c54",
 }) => {
+  const { t } = useTranslation();
   const censusCenter =
     censusData.addressData.find((c) =>
       (c.properties as any).some((p: any) => p.value !== "unbekannt")
@@ -32,9 +36,9 @@ export const CensusSummary: FunctionComponent<ICensusSummaryProps> = ({
         <table className="entity-table">
           <thead style={{ backgroundAttachment: "fixed" }}>
             <tr style={tableHeaderStyle}>
-              <th>Beschreibung (pro km2)</th>
-              <th>Wert</th>
-              <th>Ø Deutschland</th>
+              <th>{t(IntlKeys.snapshotEditor.exportTab.descriptionPerKm)}</th>
+              <th>{t(IntlKeys.common.value)}</th>
+              <th>{t(IntlKeys.snapshotEditor.exportTab.germany)}</th>
             </tr>
           </thead>
           <tbody>

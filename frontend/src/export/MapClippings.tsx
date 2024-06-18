@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { ISelectableMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
 import { QrCode } from "./QrCode";
@@ -18,6 +21,7 @@ export const MapClippings: FunctionComponent<IMapClippingsProps> = ({
   nextPageNumber = () => "01",
   qrCode,
 }) => {
+  const { t } = useTranslation();
   const mapClippingPairs: ISelectableMapClipping[][] = mapClippings
     .filter((c) => c.isSelected)
     .reduce(
@@ -42,7 +46,7 @@ export const MapClippings: FunctionComponent<IMapClippingsProps> = ({
         <PdfPage
           nextPageNumber={nextPageNumber}
           logo={logo}
-          title="Kartenausschnitte"
+          title={t(IntlKeys.snapshotEditor.exportTab.mapSection)}
           key={pairIndex}
           leftHeaderElement={
             qrCode.isShownQrCode && (

@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -40,6 +43,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
   backgroundColor,
   performUnlock,
 }) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -116,7 +120,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         : IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT;
 
       performUnlock(
-        isOnePageExport ? "Lage-Exposé freischalten?" : statsExportUnlockText,
+        isOnePageExport ? t(IntlKeys.snapshotEditor.exportTab.unlockLocationExpose) : statsExportUnlockText,
         actionType
       );
     }
@@ -184,7 +188,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
               <div className="collapse-title-text-1">
-                Reporte und Lage Exposé
+                {t(IntlKeys.snapshotEditor.exportTab.reportsAndLocationExpose)}
                 {/*<span*/}
                 {/*  className={`badge ${*/}
                 {/*    isReportsOpen ? "badge-accent" : "badge-primary"*/}
@@ -195,7 +199,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
               </div>
             </div>
             <div className="collapse-title-text-2">
-              Für Zahlen, Daten & Fakten zur Lage
+              {t(IntlKeys.snapshotEditor.exportTab.reportsAndLocationExposeDescription)}
             </div>
           </div>
         </div>
@@ -216,7 +220,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              <span>Lage Exposé generieren</span>
+              <span>{t(IntlKeys.snapshotEditor.exportTab.generateLocationExpose)}</span>
               {/*<span className="badge badge-primary">NEU</span>*/}
             </h3>
           </li>
@@ -233,7 +237,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              Umfeldanalyse PDF
+              {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisPDF)}
             </h3>
           </li>
           <li>
@@ -249,7 +253,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              Umfeldanalyse DOC
+              {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisDOC)}
             </h3>
           </li>
           <li>
@@ -265,7 +269,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              Überblick PDF
+              {t(IntlKeys.snapshotEditor.exportTab.overviewPDF)}
             </h3>
           </li>
         </ul>

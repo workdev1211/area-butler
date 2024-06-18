@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { renderToStaticMarkup } from "react-dom/server";
 import { saveAs } from "file-saver";
 import { toPng } from "html-to-image";
@@ -27,6 +31,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
   qrCodeImage,
   exportFonts,
 }) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
 
   const { sendToIntegration } = useIntegrationTools();
@@ -86,7 +91,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
     void processMapClippings();
   }, [mapClippings]);
 
-  let documentTitle = "MeinStandort_AreaButler";
+  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -159,7 +164,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
             });
           }}
         >
-          An {integrationNames[integrationType]} senden
+          {t(IntlKeys.snapshotEditor.exportTab.sendTo, { integrationType: integrationNames[integrationType] })}
         </button>
       )}
 
@@ -170,7 +175,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
           saveAs(await getRenderedPngImage(), `${documentTitle}.png`);
         }}
       >
-        Exportieren
+        {t(IntlKeys.common.export)}
       </button>
     </>
   );

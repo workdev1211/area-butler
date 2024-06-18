@@ -1,5 +1,8 @@
 import { ForwardedRef, forwardRef } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { EntityTable } from "export/EntityTable";
 import FederalElectionSummary from "export/FederalElectionSummary";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
@@ -45,6 +48,7 @@ const chunkSize = 24;
 
 export const Expose = forwardRef(
   (props: IExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
+    const { t } = useTranslation();
     const filteredGroups = props.groupedEntries.filter(
       (group) =>
         group.title !== preferredLocationsTitle &&
@@ -111,7 +115,7 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">Umfeldanalyse</div>
+              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysis)}</div>
             }
             key={`entity-group-chunk-${i}`}
           >
@@ -132,7 +136,7 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">Umgebung</div>
+              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.surroundingsHeader)}</div>
             }
           >
             {importantEntities && importantEntities.items.length > 0 && (
@@ -159,7 +163,7 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">Kartenlegende</div>
+              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.cardLegend)}</div>
             }
           >
             <div className="m-10">
@@ -175,7 +179,9 @@ export const Expose = forwardRef(
                 nextPageNumber={nextPageNumber}
                 logo={props.logo}
                 leftHeaderElement={
-                  <div className="text-2xl font-bold">{group.title}</div>
+                  <div className="text-2xl font-bold">
+                    {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+                  </div>
                 }
                 key={group.title}
               >
@@ -194,13 +200,13 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">Einblicke</div>
+              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.insights)}</div>
             }
           >
             {censusData && censusData.addressData.length > 0 && (
               <>
                 <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-                  Nachbarschaftsdemographie
+                  {t(IntlKeys.snapshotEditor.exportTab.neighborhoodDemographic)}
                 </h4>
                 <CensusSummary
                   primaryColor={props.color}
@@ -211,7 +217,7 @@ export const Expose = forwardRef(
             {federalElectionData && federalElectionData?.results?.length > 0 && (
               <>
                 <h4 className="mx-10 text-xl w-56 font-bold">
-                  Bundestagswahl 2021
+                  {t(IntlKeys.snapshotEditor.exportTab.federalElections)}
                 </h4>
                 <FederalElectionSummary
                   primaryColor={props.color}
@@ -222,7 +228,7 @@ export const Expose = forwardRef(
             {particlePollutionData && particlePollutionData.length > 0 && (
               <>
                 <h4 className="mx-10 text-xl w-56 font-bold">
-                  Feinstaubbelastung
+                  {t(IntlKeys.snapshotEditor.environmentInfo.particulateMatterPollution)}
                 </h4>
                 <ParticlePollutionSummary
                   primaryColor={props.color}

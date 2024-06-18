@@ -1,4 +1,7 @@
 import { FunctionComponent, useContext, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
 import { useHistory } from "react-router-dom";
 
 import {
@@ -24,6 +27,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
   backgroundColor,
   snapshotId,
 }) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -52,9 +56,9 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
         <div className="collapse-title-container">
           <img src={fileIcon} alt="customer-data-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">Eigene Dateien</div>
+            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.ownFiles)}</div>
             <div className="collapse-title-text-2">
-              Dateien und Objekt speichern, Zielgruppe anlegen
+              {t(IntlKeys.snapshotEditor.exportTab.ownFilesDescription)}
             </div>
           </div>
         </div>
@@ -66,7 +70,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               className="max-w-fit items-center cursor-pointer"
               onClick={() => {
                 if (!searchContextState.localityParams.length) {
-                  toastSuccess("Wird geladen ... bitte erneut klicken.");
+                  toastSuccess(t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain));
                   return;
                 }
 
@@ -85,7 +89,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               }}
             >
               <img className="w-6 h-6" src={editIcon} alt="pdf" />
-              Zielgruppe speichern
+              {t(IntlKeys.snapshotEditor.exportTab.saveTargetGroup)}
             </h3>
           </li>
           {!integrationType && (
@@ -94,7 +98,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                 className="max-w-fit items-center cursor-pointer"
                 onClick={() => {
                   if (!searchContextState.placesLocation?.label) {
-                    toastSuccess("Wird geladen ... bitte erneut klicken.");
+                    toastSuccess(t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain));
                     return;
                   }
 
@@ -109,7 +113,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                 }}
               >
                 <img className="w-6 h-6" src={editIcon} alt="pdf" />
-                Objekt anlegen
+                {t(IntlKeys.realEstate.createObject)}
               </h3>
             </li>
           )}
@@ -121,7 +125,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               }}
             >
               <img className="w-6 h-6" src={copyIcon} alt="pdf" />
-              Karte duplizieren
+              {t(IntlKeys.mapSnapshots.duplicateCard)}
             </h3>
           </li>
         </ul>

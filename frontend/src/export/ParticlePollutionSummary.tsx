@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./EntityTable.scss";
 
 import {
@@ -18,6 +21,7 @@ const ParticlePollutionSummary: FunctionComponent<IPartPollutSumProps> = ({
   particlePollutionData,
   primaryColor = "#aa0c54",
 }) => {
+  const { t } = useTranslation();
   const colorPalette = deriveColorPalette(primaryColor);
 
   const tableHeaderStyle = {
@@ -38,19 +42,19 @@ const ParticlePollutionSummary: FunctionComponent<IPartPollutSumProps> = ({
       <table className="entity-table">
         <thead style={{ backgroundAttachment: "fixed" }}>
           <tr style={tableHeaderStyle}>
-            <th>Beschreibung</th>
-            <th>Wert</th>
-            <th>Ø Deutschland</th>
+            <th>{t(IntlKeys.common.description)}</th>
+            <th>{t(IntlKeys.common.value)}</th>
+            <th>{t(IntlKeys.snapshotEditor.exportTab.germany)}</th>
           </tr>
         </thead>
         <tbody>
           <tr key="pollution-table-data-mean">
-            <td>Durchschnittliche Belastung</td>
+            <td>{t(IntlKeys.snapshotEditor.environmentInfo.avgLoad)}</td>
             <td>{pollutionData.mean} g/m3</td>
             <td>{averageParticlePollution.mean} g/m3</td>
           </tr>
           <tr key="pollution-table-days-above-threshold">
-            <td>Tage über Grenzwert (50 g/m3)</td>
+            <td>{t(IntlKeys.snapshotEditor.environmentInfo.daysAboveLimit)} (50 g/m3)</td>
             <td>{pollutionData.daysAboveThreshold}</td>
             <td>{averageParticlePollution.daysAboveThreshold}</td>
           </tr>

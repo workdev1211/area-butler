@@ -1,5 +1,8 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 
 interface IEntitySelectionProps {
@@ -13,6 +16,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
   setGroupedEntries,
   limit = 10,
 }) => {
+  const { t } = useTranslation();
   useEffect(() => {
     groupedEntries.forEach((group) =>
       group.items.forEach((item: ResultEntity, i: number) => {
@@ -51,7 +55,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
   return (
     <div>
       <h1 className="my-5 font-bold">
-        Ausgewählte Lokalitäten (
+        {t(IntlKeys.snapshotEditor.exportTab.selectedLocalities)} (
         {groupedEntries.filter((group) => group.active).length} /{" "}
         {groupedEntries.length})
       </h1>
@@ -85,7 +89,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
               }}
             />
             <span>
-              {group.title} ({group.items.length})
+              {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])} ({group.items.length})
             </span>
           </div>
 
@@ -106,7 +110,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text text-sm">
-                    {item.name ?? item.label} (
+                    {item.name ?? t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[item.label])} (
                     {Math.round(item.distanceInMeters)} m)
                   </span>
                 </div>

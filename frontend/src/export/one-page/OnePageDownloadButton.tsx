@@ -1,4 +1,8 @@
 import { FunctionComponent, useRef } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import ReactToPrint from "react-to-print";
 
 import OnePage from "./OnePage";
@@ -19,9 +23,10 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
   downloadButtonDisabled,
   qrCodeImage,
 }) => {
+  const { t } = useTranslation();
   const componentRef = useRef(null);
 
-  let documentTitle = "MeinStandort_AreaButler";
+  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -56,7 +61,7 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
                 </div>
               </div>
             )}
-            <div>Exportieren</div>
+            <div>{t(IntlKeys.common.export)}</div>
           </button>
         )}
         content={() => componentRef.current!}

@@ -457,6 +457,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     );
                   }}
                 >
+                  {/*
+                  // TODO: change BE for translations
+                  */}
                   {realEstStatuses.status.map((status) => (
                     <option key={status} value={status}>
                       {status}
@@ -480,6 +483,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     );
                   }}
                 >
+                  {/*
+                  // TODO: change BE for translations
+                  */}
                   {realEstStatuses.status2.map((status) => (
                     <option key={status} value={status}>
                       {status}
@@ -644,7 +650,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Street View Link anzeigen</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.showStreetViewLink)}</span>
                 </label>
               </div>
             </li>
@@ -661,7 +667,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    POIs gruppieren beim Rauszoomen
+                    {t(IntlKeys.snapshotEditor.groupPOIOnZoom)}
                   </span>
                 </label>
               </div>
@@ -681,7 +687,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Isochronen ausblenden</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.hideIsochrones)}</span>
                 </label>
               </div>
             </li>
@@ -701,7 +707,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Objekt Infos angezeigt (Lage-Exposé / Snapshot)
+                    {t(IntlKeys.snapshotEditor.objectInfoDisplayed)}
                   </span>
                 </label>
               </div>
@@ -722,7 +728,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Kartenmenü im Iframe minimieren
+                    {t(IntlKeys.snapshotEditor.minimizeOnIframe)}
                   </span>
                 </label>
               </div>
@@ -737,7 +743,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     onChange={handleSetIsRefMap}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Referenzkarte</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.referenceCard)}</span>
                 </label>
               </div>
             </li>
@@ -767,7 +773,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                           className="checkbox checkbox-xs checkbox-primary mr-2"
                         />
                         <span className="label-text">
-                          Bedürfnisfilter für Immobilien
+                          {t(IntlKeys.snapshotEditor.needsFilterForRealEstate)}
                         </span>
                       </label>
                     </div>
@@ -777,7 +783,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             <li>
               <div className="flex items-center gap-6 py-1">
                 <ColorPicker
-                  label="Primärfarbe"
+                  label={t(IntlKeys.snapshotEditor.primaryColor)}
                   color={color}
                   setColor={setColor}
                   onChange={(color) => {
@@ -791,7 +797,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                       changeColor(undefined);
                     }}
                   >
-                    Farbe Zurücksetzen
+                    {t(IntlKeys.snapshotEditor.resetColor)}
                   </button>
                 )}
               </div>
@@ -799,8 +805,8 @@ const EditorTab: FC<IEditorTabProps> = ({
             <li>
               <div className="flex items-center gap-6 py-1">
                 <ImageUpload
-                  label="Karten Icon"
-                  uploadLabel="Icon hochladen"
+                  label={t(IntlKeys.snapshotEditor.cardsIcon)}
+                  uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
                   inputId="map-icon-upload-button"
                   image={mapIcon}
                   setImage={setMapIcon}
@@ -815,12 +821,12 @@ const EditorTab: FC<IEditorTabProps> = ({
                       changeMapIcon(undefined);
                     }}
                   >
-                    Icon Zurücksetzen
+                    {t(IntlKeys.snapshotEditor.resetIcon)}
                   </button>
                 )}
               </div>
             </li>
-            <li className="font-bold">Objekttooltip</li>
+            <li className="font-bold">{t(IntlKeys.snapshotEditor.objectTooltip)}</li>
             <li>
               <div className="flex items-center gap-6 py-1">
                 <label className="cursor-pointer label">
@@ -838,7 +844,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Kosten ausblenden</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.hideCost)}</span>
                 </label>
               </div>
             </li>
@@ -857,7 +863,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Objekttyp anzeigen</span>
+                  <span className="label-text">{t(IntlKeys.snapshotEditor.showObjectType)}</span>
                 </label>
               </div>
             </li>
@@ -879,7 +885,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Weitere Objektmerkmale ausblenden
+                    {t(IntlKeys.snapshotEditor.hideOtherPropertyFeatures)}
                   </span>
                 </label>
               </div>

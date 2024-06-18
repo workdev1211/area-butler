@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
@@ -57,6 +61,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
   onSubmit,
   formRef,
 }) => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const {
     searchContextState: { realEstateListing },
@@ -129,8 +134,8 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
           <div className="form-control">
             <Select
               className="select select-bordered w-full max-w-full"
-              label="Immobilie"
-              placeholder="Immobilienbeschreibung"
+              label={t(IntlKeys.snapshotEditor.exportTab.realEstate)}
+              placeholder={t(IntlKeys.snapshotEditor.exportTab.realEstatePlaceholder)}
               name="realEstateId"
               disabled={listings.length < 2}
               defaultValue={
@@ -143,7 +148,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
                   key={placeholderSelectOptionKey}
                   disabled={true}
                 >
-                  Immobilie auswählen
+                  {t(IntlKeys.snapshotEditor.exportTab.selectRealEstate)}
                 </option>
               )}
               {listings.map(({ id, name, address }) => (
@@ -156,9 +161,9 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
 
           <div className="form-control">
             <CustomTextSelect
-              mainLabel="Objektart"
-              label="Beschreibung"
-              placeholder="Objektart"
+              mainLabel={t(IntlKeys.snapshotEditor.exportTab.objectType)}
+              label={t(IntlKeys.common.description)}
+              placeholder={t(IntlKeys.snapshotEditor.exportTab.objectType)}
               name="realEstateType"
               selectOptions={openAiRealEstTypeOptions}
               customTextValue={OpenAiRealEstTypesEnum.CUSTOM}

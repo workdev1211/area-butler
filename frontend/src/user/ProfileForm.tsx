@@ -1,4 +1,8 @@
 import { FunctionComponent } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -16,6 +20,7 @@ export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
   inputUser,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
   return (
     <Formik
       initialValues={{
@@ -23,10 +28,10 @@ export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
         email: inputUser?.email,
       }}
       validationSchema={Yup.object({
-        fullname: Yup.string().required("Bitte geben Sie einen Namen ein"),
+        fullname: Yup.string().required(t(IntlKeys.yourProfile.pleaseEnterName)),
         email: Yup.string()
           .email()
-          .required("Bitte geben Sie eine gültige Email-Adresse ein"),
+          .required(t(IntlKeys.yourProfile.pleaseEnterEmail)),
       })}
       onSubmit={(values) => {
         const formValues = {
@@ -39,19 +44,19 @@ export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
         <div className="form-control">
           <Input
             disabled={true}
-            label="Ihre Email-Adresse"
+            label={t(IntlKeys.yourProfile.yourEmail)}
             name="email"
             type="text"
-            placeholder="Ihre Email-Adresse"
+            placeholder={t(IntlKeys.yourProfile.yourEmail)}
             className="input input-bordered w-full"
           />
         </div>
         <div className="form-control">
           <Input
-            label="Ihr Name"
+            label={t(IntlKeys.yourProfile.yourName)}
             name="fullname"
             type="text"
-            placeholder="Ihr Name"
+            placeholder={t(IntlKeys.yourProfile.yourName)}
             className="input input-bordered w-full"
           />
         </div>

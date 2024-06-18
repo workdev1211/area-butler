@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./EntityTable.scss";
 
 import { MeansOfTransportation } from "../../../shared/types/types";
@@ -26,6 +29,7 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
   showRoutingColumns = true,
   primaryColor = "#aa0c54",
 }) => {
+  const { t } = useTranslation();
   const items = [...entityGroup.items].slice(0, limit);
   const hasNames =
     items.some((item) => item.name && item.name.length) || entityGroup.title;
@@ -45,21 +49,21 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
       <table className="entity-table">
         <thead style={{ backgroundAttachment: "fixed" }}>
           <tr style={tableHeaderStyle}>
-            {hasNames && <th>Name</th>}
-            <th>Entfernung</th>
+            {hasNames && <th>{t(IntlKeys.common.name)}</th>}
+            <th>{t(IntlKeys.snapshotEditor.exportTab.distance)}</th>
             {showRoutingColumns &&
               byFoot &&
               activeMeans.includes(MeansOfTransportation.WALK) && (
-                <th>Zu Fuß</th>
+                <th>{t(IntlKeys.common.transportationTypes.walking)}</th>
               )}
             {showRoutingColumns &&
               byBike &&
               activeMeans.includes(MeansOfTransportation.BICYCLE) && (
-                <th>Fahrrad</th>
+                <th>{t(IntlKeys.common.transportationTypes.cycling)}</th>
               )}
             {showRoutingColumns &&
               byCar &&
-              activeMeans.includes(MeansOfTransportation.CAR) && <th>Auto</th>}
+              activeMeans.includes(MeansOfTransportation.CAR) && <th>{t(IntlKeys.common.transportationTypes.driving)}</th>}
           </tr>
         </thead>
         <tbody>
@@ -75,11 +79,13 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
                   item.distanceInMeters
                 }
               >
-                {hasNames && <td>{item.name || entityGroup.title}</td>}
+                {hasNames && <td>
+                  {item.name || t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entityGroup.title])}
+                </td>}
                 <td>
                   {item.distanceInMeters
                     ? distanceToHumanReadable(item.distanceInMeters)
-                    : "unbekannt"}
+                    : t(IntlKeys.common.unknown)}
                 </td>
                 {showRoutingColumns &&
                   byFoot &&

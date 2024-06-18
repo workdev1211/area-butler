@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { ISelectableMapClipping } from "../../../MapClippingSelection";
 import downArrowIcon from "../../../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 
@@ -14,6 +17,7 @@ const OnePagePngMapQrCode: FunctionComponent<IOnePagePngMapQrCodeProps> = ({
   color,
   qrCodeImage,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -96,7 +100,7 @@ const OnePagePngMapQrCode: FunctionComponent<IOnePagePngMapQrCodeProps> = ({
                     lineHeight: "1rem",
                   }}
                 >
-                  Scannen und neue Wohnlage entdecken
+                  {t(IntlKeys.snapshotEditor.exportTab.scanAndNew)} {t(IntlKeys.snapshotEditor.exportTab.discoverResidentialArea)}
                 </div>
                 <img
                   src={downArrowIcon}

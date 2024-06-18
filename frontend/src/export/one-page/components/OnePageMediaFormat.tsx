@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import "./../OnePageExportModal.scss";
 
 import { ISelectableMapClipping } from "../../MapClippingSelection";
@@ -45,6 +48,7 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
   isOpenCollapsable,
   toggleCollapsable,
 }) => {
+  const { t } = useTranslation();
   const { cachingDispatch } = useContext(CachingContext);
 
   return (
@@ -60,7 +64,7 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
         }}
         onClick={toggleCollapsable}
       >
-        3. Medien & Format
+        3. {t(IntlKeys.snapshotEditor.exportTab.mediaAndFormat)}
       </div>
       <div className="collapse-content">
         <div className="flex flex-col gap-5 pt-5">
@@ -84,7 +88,7 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
                   checked={!isPng}
                   onChange={() => {}}
                 />
-                <span className="label-text">PDF</span>
+                <span className="label-text">{t(IntlKeys.common.pdf)}</span>
               </div>
               <div
                 className="flex items-center gap-2"
@@ -104,7 +108,7 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
                   checked={isPng}
                   onChange={() => {}}
                 />
-                <span className="label-text">PNG</span>
+                <span className="label-text">{t(IntlKeys.common.png)}</span>
               </div>
             </div>
 
@@ -128,7 +132,7 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
                   className="checkbox checkbox-primary"
                   readOnly
                 />
-                <span className="label-text">Transparenter Hintergrund</span>
+                <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.transparentBackground)}</span>
               </div>
             )}
           </div>
@@ -156,7 +160,7 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
               }}
               disabled={selectableMapClippings.length === 0}
             />
-            <span className="label-text">QR-Code</span>
+            <span className="label-text">{t(IntlKeys.common.qrCode)}</span>
           </label>
 
           <div className="divider m-0" />

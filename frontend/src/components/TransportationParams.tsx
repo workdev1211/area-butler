@@ -198,10 +198,10 @@ const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
                     }
                   >
                     <option value={UnitsOfTransportation.KILOMETERS}>
-                      {t(IntlKeys.environmentalAnalysis.km)}
+                      {t(IntlKeys.common.transportationUnits.KILOMETERS)}
                     </option>
                     <option value={UnitsOfTransportation.MINUTES}>
-                      {t(IntlKeys.environmentalAnalysis.min)}
+                      {t(IntlKeys.common.transportationUnits.MINUTES)}
                     </option>
                   </select>
                 </div>

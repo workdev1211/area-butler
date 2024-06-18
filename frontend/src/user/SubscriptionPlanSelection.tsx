@@ -40,6 +40,7 @@ export const getPlanPriceDescription = (priceId: string): JSX.Element => {
   if (
     Object.values(businessPlusV2Subscription.prices[0].id).includes(priceId)
   ) {
+    //TODO translate them
     return <BusinessPlusMonthlyDescription />;
   }
 

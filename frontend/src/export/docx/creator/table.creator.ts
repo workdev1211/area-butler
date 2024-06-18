@@ -139,6 +139,7 @@ export const mapTableDataFromEntityGroup = (
   activeMeans: MeansOfTransportation[]
 ): { data: { header: string[]; body: string[][] } } => {
   const header = [];
+  //TODO: translate this and other table data
   header.push("Name");
   header.push("Entfernung");
 

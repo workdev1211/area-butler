@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { TUnlockIntProduct } from "../../../../shared/types/integration";
 
 interface IUnlockProductButtonProps {
@@ -9,6 +12,7 @@ interface IUnlockProductButtonProps {
 const UnlockProductButton: FunctionComponent<IUnlockProductButtonProps> = ({
   performUnlock,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className="flex flex-col gap-5"
@@ -27,7 +31,7 @@ const UnlockProductButton: FunctionComponent<IUnlockProductButtonProps> = ({
           performUnlock();
         }}
       >
-        Freischalten
+        {t(IntlKeys.common.unlock)}
       </button>
     </div>
   );

@@ -1,4 +1,8 @@
 import { FunctionComponent } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { ReactSortable } from "react-sortablejs";
 
 import { setBackgroundColor, toastError } from "../../shared/shared.functions";
@@ -16,6 +20,7 @@ interface IOnePageEntitySelectionProps {
 const OnePageEntitySelection: FunctionComponent<
   IOnePageEntitySelectionProps
 > = ({ entityGroups, setEntityGroups, closeCollapsable, color }) => {
+  const { t } = useTranslation();
   const onGroupSelectionChange = (group: ISortableEntityGroup): void => {
     const activeGroupNumber = entityGroups.reduce(
       (result, group) => (group.active ? result + 1 : result),
@@ -27,7 +32,7 @@ const OnePageEntitySelection: FunctionComponent<
         activeGroupNumber === ENTITY_GROUP_LIMIT) &&
       !group.active
     ) {
-      toastError("Es wurden zu viele Gruppen ausgewählt!");
+      toastError(t(IntlKeys.snapshotEditor.exportTab.tooManyGroups));
       return;
     }
 
@@ -44,7 +49,7 @@ const OnePageEntitySelection: FunctionComponent<
         }}
         onClick={closeCollapsable}
       >
-        2. POI-Tabelle ({entityGroups.filter((group) => group.active).length}/
+        2. {t(IntlKeys.snapshotEditor.exportTab.POITable)} ({entityGroups.filter((group) => group.active).length}/
         {ENTITY_GROUP_LIMIT || entityGroups.length})
       </div>
       <div className="collapse-content">
@@ -65,7 +70,7 @@ const OnePageEntitySelection: FunctionComponent<
                 onChange={() => {}}
               />
               <div className="select-none">
-                {group.title} ({group.items.length})
+                {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])} ({group.items.length})
               </div>
             </div>
           ))}

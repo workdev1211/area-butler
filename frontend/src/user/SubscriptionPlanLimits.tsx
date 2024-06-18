@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
+
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -27,6 +31,7 @@ export interface SubscriptionPlanLimitsProps {
 const SubscriptionPlanLimits: FunctionComponent<
   SubscriptionPlanLimitsProps
 > = ({ user }) => {
+  const { t } = useTranslation();
   const { stripeEnv } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
   const history = useHistory();
@@ -37,7 +42,7 @@ const SubscriptionPlanLimits: FunctionComponent<
   const subscription = user.subscription;
   const subscriptionLabel =
     allSubscriptionTypes.find((item) => subscription?.type === item.type)
-      ?.name || "Unbekannt";
+      ?.name || t(IntlKeys.common.unknown);
   const totalRequestContingent = deriveTotalRequestContingent(user);
 
   const cancelTrialSubscription = async () => {
@@ -74,7 +79,7 @@ const SubscriptionPlanLimits: FunctionComponent<
     <>
       {isShownModal && (
         <ConfirmationModal
-          text="Testphase beenden und Plan auswählen?"
+          text={t(IntlKeys.yourProfile.endTestAndSelectPlan)}
           closeModal={() => {
             setIsShownModal(false);
           }}
@@ -85,10 +90,10 @@ const SubscriptionPlanLimits: FunctionComponent<
       <div className="mt-20 flex flex-col gap-5">
         <div>
           <h1 className="font-bold text-xl">
-            Dein aktueller Plan und dein Kontingent
+            {t(IntlKeys.yourProfile.yourCurrentPlan)}
           </h1>
           <h3 className="font-bold">
-            Aktueller Plan: {subscriptionLabel} bis{" "}
+            {t(IntlKeys.yourProfile.currentPlan)}: {subscriptionLabel} bis{" "}
             {dayjs(user?.subscription?.endsAt)
               .tz("Europe/Berlin")
               .format("DD-MM-YYYY HH:mm")}
@@ -101,7 +106,7 @@ const SubscriptionPlanLimits: FunctionComponent<
               className="btn bg-primary-gradient btn-primary"
               data-tour="manage-subscription"
             >
-              Zahlung und Abonnement verwalten
+              {t(IntlKeys.yourProfile.managePaymentAndSubscription)}
             </button>
           )}
           {subscription?.type === ApiSubscriptionPlanType.TRIAL && (
@@ -112,7 +117,7 @@ const SubscriptionPlanLimits: FunctionComponent<
               className="btn bg-primary-gradient btn-primary"
               data-tour="manage-subscription"
             >
-              Testphase beenden und Plan auswählen
+              {t(IntlKeys.yourProfile.endTestAndSelectPlanBtn)}
             </button>
           )}
         </div>
@@ -122,7 +127,7 @@ const SubscriptionPlanLimits: FunctionComponent<
           data-tour="request-contingent"
         >
           <span className="w-64 flex items-center">
-            Anfragen ausgeführt {user.requestsExecuted}/{totalRequestContingent}
+            {t(IntlKeys.yourProfile.requestExecuted)} {user.requestsExecuted}/{totalRequestContingent}
             :
             <RequestContingentDropDown
               requestContingents={user.requestContingents}

@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import mapScreenshotsIcon from "../../../assets/icons/map-menu/07-kartenausschnitte.svg";
 import MapClippingsCollapsable from "../../components/MapClippingsCollapsable";
@@ -14,6 +17,7 @@ const MapScreenshots: FunctionComponent<IMapScreenshotsProps> = ({
   searchAddress,
   backgroundColor,
 }) => {
+  const { t } = useTranslation();
   const {
     searchContextState: { mapClippings },
   } = useContext(SearchContext);
@@ -39,9 +43,9 @@ const MapScreenshots: FunctionComponent<IMapScreenshotsProps> = ({
         <div className="collapse-title-container">
           <img src={mapScreenshotsIcon} alt="map-screenshots-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">Kartenausschnitte</div>
+            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.mapSection)}</div>
             <div className="collapse-title-text-2">
-              Für Exposés, Print Medien, Bildergalerien
+              {t(IntlKeys.snapshotEditor.exportTab.mapSectionDescription)}
             </div>
           </div>
         </div>
@@ -60,8 +64,7 @@ const MapScreenshots: FunctionComponent<IMapScreenshotsProps> = ({
                 "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
             }}
           >
-            Bitte verwenden Sie den Screenshot-Button in der unteren linken Ecke
-            der Karte.
+            {t(IntlKeys.snapshotEditor.exportTab.useScreenshotBtn)}
           </div>
         )}
       </div>
