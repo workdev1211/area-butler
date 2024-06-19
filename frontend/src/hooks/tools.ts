@@ -8,6 +8,7 @@ import {
   ApiTourNamesEnum,
   ApiUser,
   FeatureTypeEnum,
+  IIframeTokens,
 } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import { useHttp } from "./http";
@@ -17,6 +18,15 @@ import { SearchContext } from "../context/SearchContext";
 import { useIntegrationTools } from "./integration/integrationtools";
 import { defaultErrorMessage } from "../../../shared/constants/error";
 import { IntlKeys } from "../i18n/keys";
+
+interface IGetTokenDataParams extends Partial<IIframeTokens> {
+  isAddressShown?: boolean;
+}
+
+interface IGetTokenDataResult {
+  token: string;
+  isAddressShown?: boolean;
+}
 
 export const useTools = () => {
   const { systemEnv } = useContext(ConfigContext);
@@ -32,8 +42,12 @@ export const useTools = () => {
   const { t } = useTranslation();
   const isIntegrationUser = !!integrationUser;
 
-  const createDirectLink = (): string => {
-    const { token, isAddressShown } = getTokenParams();
+  // try to keep it consistent with backend/src/shared/functions/shared.ts:createDirectLink
+  const createDirectLink = (
+    getTokenDataParams?: IGetTokenDataParams
+  ): string => {
+    const { token, isAddressShown: resIsAddressShown } =
+      getTokenData(getTokenDataParams);
     const origin = window.location.origin;
 
     let url = `${
@@ -42,8 +56,8 @@ export const useTools = () => {
         : `${origin.replace(/^(https?:\/\/\w*)(:.*)?$/, "$1")}:3002`
     }/embed?token=${token}`;
 
-    if (typeof isAddressShown === "boolean") {
-      url += `&isAddressShown=${isAddressShown}`;
+    if (typeof resIsAddressShown === "boolean") {
+      url += `&isAddressShown=${resIsAddressShown}`;
     }
 
     return url;
@@ -180,22 +194,42 @@ export const useTools = () => {
     ).data;
   };
 
-  const getTokenParams = (): { token: string; isAddressShown?: boolean } => {
+  const getTokenData = (
+    getTokenDataParams?: IGetTokenDataParams
+  ): IGetTokenDataResult => {
+    const resultTokens: Partial<IIframeTokens> | undefined = getTokenDataParams
+      ? {
+          addressToken: getTokenDataParams.addressToken,
+          token: getTokenDataParams.token,
+          unaddressToken: getTokenDataParams.unaddressToken,
+        }
+      : responseTokens;
+
     // left for compatibility purposes
-    if (responseTokens?.token) {
-      return { token: responseTokens.token };
+    if (resultTokens?.token) {
+      return { token: resultTokens.token };
     }
 
-    if (responseConfig?.showAddress && responseTokens?.addressToken) {
-      return { token: responseTokens.addressToken, isAddressShown: true };
+    if (!resultTokens?.addressToken || !resultTokens?.unaddressToken) {
+      toastError(t(IntlKeys.integration.absentTokensError));
+      throw new Error(t(IntlKeys.integration.absentTokensError));
     }
 
-    if (!responseConfig?.showAddress && responseTokens?.unaddressToken) {
-      return { token: responseTokens.unaddressToken, isAddressShown: false };
+    if (typeof getTokenDataParams?.isAddressShown === "boolean") {
+      return {
+        isAddressShown: getTokenDataParams.isAddressShown,
+        token: getTokenDataParams.isAddressShown
+          ? resultTokens.addressToken
+          : resultTokens.unaddressToken,
+      };
     }
 
-    toastError(t(IntlKeys.integration.absentTokensError));
-    throw new Error(t(IntlKeys.integration.absentTokensError));
+    return {
+      isAddressShown: !!responseConfig?.showAddress,
+      token: !!responseConfig?.showAddress
+        ? resultTokens.addressToken
+        : resultTokens.unaddressToken,
+    };
   };
 
   return {
@@ -207,6 +241,6 @@ export const useTools = () => {
     updateUserSettings,
     hideTour,
     hideTours,
-    getTokenParams,
+    getTokenData,
   };
 };

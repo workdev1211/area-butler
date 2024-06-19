@@ -3,7 +3,8 @@ import {
   Get,
   HttpException,
   Logger,
-  Param,
+  NotFoundException,
+  Query,
   StreamableFile,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -17,11 +18,10 @@ import { FetchSnapshotService } from './fetch-snapshot.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
-import { IntegrationUserService } from '../user/integration-user.service';
 import { UserService } from '../user/user.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
-import { checkIsParent } from '../../../shared/functions/integration.functions';
+import ApiFetchEmbeddedMapReqDto from './dto/api-fetch-embedded-map-req.dto';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')
@@ -30,67 +30,56 @@ export class EmbeddedMapController {
 
   constructor(
     private readonly fetchSnapshotService: FetchSnapshotService,
-    private readonly integrationUserService: IntegrationUserService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly userService: UserService,
   ) {}
 
   @ApiOperation({ description: 'Fetch an embedded map' })
-  @Get('iframe/:token')
+  @Get('iframe')
   async fetchEmbeddedMap(
-    @Param('token') token: string,
+    @Query() { isAddressShown, token }: ApiFetchEmbeddedMapReqDto,
   ): Promise<IApiFetchedEmbeddedData> {
     const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDocByToken(
-      token,
+      {
+        isAddressShown,
+        token,
+      },
     );
 
     if (!snapshotDoc) {
-      return;
+      throw new NotFoundException('Snapshot not found!');
     }
 
-    const user = snapshotDoc.integrationParams
-      ? await this.integrationUserService.findOne(
-          snapshotDoc.integrationParams.integrationType,
-          {
-            integrationUserId: snapshotDoc.integrationParams.integrationUserId,
-          },
-        )
-      : await this.userService.findById({
-          userId: snapshotDoc.userId,
-          withAssets: true,
-          withSubscription: true,
-        });
+    const { integrationUser, userId } = snapshotDoc;
 
-    if (!user) {
+    const resultUser =
+      integrationUser ||
+      (await this.userService.findById({
+        userId,
+        withAssets: true,
+        withSubscription: true,
+      }));
+
+    if ((integrationUser && userId) || !resultUser) {
       throw new HttpException('Unknown user!', 400);
     }
 
-    const isIntegrationUser = 'integrationUserId' in user;
+    const isIntegrationUser = 'integrationUserId' in resultUser;
     let isTrial = false;
 
     if (!isIntegrationUser) {
-      if (!user.subscription) {
-        this.logger.error(user.id, user.email);
+      if (!resultUser.subscription) {
+        this.logger.error(resultUser.id, resultUser.email);
         throw new HttpException(subscriptionExpiredMessage, 402);
       }
 
-      isTrial = user.subscription.type === ApiSubscriptionPlanType.TRIAL;
+      isTrial = resultUser.subscription.type === ApiSubscriptionPlanType.TRIAL;
       this.fetchSnapshotService.checkLocationExpiration(snapshotDoc);
     }
 
     if (isIntegrationUser) {
-      if (user.parentId) {
-        const parentUser = await this.integrationUserService.findByDbId(
-          user.parentId,
-        );
-
-        if (parentUser && checkIsParent(user, parentUser)) {
-          user.parentUser = parentUser;
-        }
-      }
-
       await this.fetchSnapshotService.checkIntSnapshotIframeExp(
-        user,
+        resultUser,
         snapshotDoc,
       );
     }
@@ -99,15 +88,19 @@ export class EmbeddedMapController {
     snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
     await snapshotDoc.save();
 
-    const snapshotRes = await this.fetchSnapshotService.getSnapshotRes(user, {
-      isTrial,
-      snapshotDoc,
-      isEmbedded: true,
-    });
+    const snapshotRes = await this.fetchSnapshotService.getSnapshotRes(
+      resultUser,
+      {
+        isTrial,
+        snapshotDoc,
+        isAddressShown,
+        isEmbedded: true,
+      },
+    );
 
     const filterQuery: FilterQuery<RealEstateListingDocument> = {
-      status: snapshotDoc.config.realEstateStatus,
-      status2: snapshotDoc.config.realEstateStatus2,
+      status: snapshotRes.config.realEstateStatus,
+      status2: snapshotRes.config.realEstateStatus2,
     };
 
     if (snapshotRes.snapshot.realEstate) {
@@ -118,12 +111,12 @@ export class EmbeddedMapController {
 
     const realEstates = (
       await this.realEstateListingService.fetchRealEstateListings(
-        user,
+        resultUser,
         filterQuery,
       )
     ).map((realEstate) =>
       mapRealEstateListingToApiRealEstateListing(
-        user,
+        resultUser,
         realEstate,
         snapshotRes.config.showAddress,
       ),
@@ -132,17 +125,30 @@ export class EmbeddedMapController {
     return {
       realEstates,
       snapshotRes,
-      userPoiIcons: !isIntegrationUser ? user.poiIcons : undefined,
+      userPoiIcons: !isIntegrationUser ? resultUser.poiIcons : undefined,
     };
   }
 
   @ApiOperation({ description: 'Fetch a QrCode for an embedded map' })
   @Get('qr-code/:token')
-  async fetchQrCode(@Param('token') token: string): Promise<StreamableFile> {
+  async fetchQrCode(
+    @Query() { isAddressShown, token }: ApiFetchEmbeddedMapReqDto,
+  ): Promise<StreamableFile> {
     const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDocByToken(
-      token,
+      {
+        isAddressShown,
+        token,
+        projectQuery: {
+          addressToken: 1,
+          token: 1,
+          unaddressToken: 1,
+          'config.showAddress': 1,
+          'snapshot.placesLocation.label': 1,
+        },
+      },
     );
-    const directLink = createDirectLink(token);
+
+    const directLink = createDirectLink(snapshotDoc, isAddressShown);
 
     const qrCode = await toBuffer(directLink, {
       type: 'png',

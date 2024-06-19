@@ -67,7 +67,9 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() createSnapshotReqDto: ApiCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotService.createSnapshot(user, { snapshotReq: createSnapshotReqDto });
+    return this.snapshotService.createSnapshot(user, {
+      snapshotReq: createSnapshotReqDto,
+    });
   }
 
   @ApiOperation({ description: 'Update an existing map snapshot' })
@@ -114,15 +116,17 @@ export class LocationController extends AuthenticatedController {
     } = fetchSnapshotsReq;
 
     const resProjectQuery = projectQuery || {
-      token: 1,
-      description: 1,
+      addressToken: 1,
       config: 1,
       createdAt: 1,
+      description: 1,
       endsAt: 1,
       lastAccess: 1,
+      token: 1,
+      unaddressToken: 1,
       visitAmount: 1,
-      'snapshot.location': 1,
       'snapshot.description': 1,
+      'snapshot.location': 1,
       'snapshot.placesLocation.label': 1,
     };
 

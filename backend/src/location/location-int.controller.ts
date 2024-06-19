@@ -71,12 +71,9 @@ export class LocationIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() createSnapshotReqDto: ApiCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotService.createSnapshot(
-      integrationUser,
-      {
-        snapshotReq: createSnapshotReqDto
-      }
-    );
+    return this.snapshotService.createSnapshot(integrationUser, {
+      snapshotReq: createSnapshotReqDto,
+    });
   }
 
   @ApiOperation({
@@ -97,17 +94,19 @@ export class LocationIntController {
     } = fetchSnapshotsReq;
 
     const resProjectQuery = projectQuery || {
-      token: 1,
-      description: 1,
+      addressToken: 1,
       config: 1,
       createdAt: 1,
+      description: 1,
       endsAt: 1,
       lastAccess: 1,
+      token: 1,
+      unaddressToken: 1,
       visitAmount: 1,
-      'snapshot.location': 1,
-      'snapshot.description': 1,
-      'snapshot.placesLocation.label': 1,
       'integrationParams.integrationId': 1,
+      'snapshot.description': 1,
+      'snapshot.location': 1,
+      'snapshot.placesLocation.label': 1,
     };
 
     return this.fetchSnapshotService.fetchSnapshots(integrationUser, {

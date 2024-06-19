@@ -106,7 +106,7 @@ export class PropstackWebhookService {
       return;
     }
 
-    const { id: snapshotId, token } =
+    const snapshotResponse =
       await this.snapshotExtService.createSnapshotByPlace({
         place,
         realEstateListing,
@@ -130,9 +130,9 @@ export class PropstackWebhookService {
     const openAiDescriptions = await this.propstackService.fetchTextFieldValues(
       {
         eventId,
-        snapshotId,
         user,
         realEstateId: realEstateListing.id,
+        snapshotId: snapshotResponse.id,
       },
     );
 
@@ -152,7 +152,7 @@ export class PropstackWebhookService {
         this.propstackApiService.createPropertyLink(propstackApiKey, {
           property_id: resultProperty.id,
           title: 'Interaktive Karte',
-          url: createDirectLink(token),
+          url: createDirectLink(snapshotResponse),
           on_landing_page: true,
           is_embedable: true,
         }),

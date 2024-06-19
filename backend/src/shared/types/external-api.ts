@@ -180,12 +180,13 @@ export interface IApiQueryOpenAiExtReqStatus
 export interface IApiQueryOpenAiExtRes extends IExternalApiRes<string> {}
 
 export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
+  isAddressShown?: boolean;
+  markerColor?: string;
+  poiTypes?: OsmName[];
+  publicationId?: string;
   responseType?: SnapshotDataTypesEnum;
   snapshotId?: string;
-  publicationId?: string;
-  markerColor?: string;
   templateSnapshotId?: string;
-  poiTypes?: OsmName[];
 }
 
 export interface IApiFetchSnapshotDataReqStatus

@@ -231,7 +231,8 @@ export class SnapshotService {
     delete snapshotDocObj.lastAccess;
     delete snapshotDocObj.updatedAt;
     snapshotDocObj.createdAt = new Date();
-    snapshotDocObj.token = randomBytes(60).toString('hex');
+    snapshotDocObj.addressToken = randomBytes(60).toString('hex');
+    snapshotDocObj.unaddressToken = randomBytes(60).toString('hex');
     snapshotDocObj.visitAmount = 0;
 
     return this.fetchSnapshotService.getSnapshotRes(user, {

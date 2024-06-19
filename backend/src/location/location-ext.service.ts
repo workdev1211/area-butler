@@ -113,18 +113,19 @@ export class LocationExtService {
     fetchSnapshotData: IApiFetchSnapshotDataReq,
   ): Promise<IApiFetchSnapshotDataRes> {
     const {
+      address,
+      distance,
+      isAddressShown,
+      lat,
+      lng,
+      markerColor,
+      poiTypes,
+      publicationId,
       responseType,
       snapshotId,
       templateSnapshotId,
-      lat,
-      lng,
-      address,
       transportMode,
-      distance,
       unit,
-      poiTypes,
-      markerColor,
-      publicationId
     } = fetchSnapshotData;
 
     let snapshotResponse:
@@ -161,7 +162,7 @@ export class LocationExtService {
         ],
         poiTypes,
         externalId: publicationId,
-        primaryColor: markerColor
+        primaryColor: markerColor,
       });
     }
 
@@ -173,7 +174,7 @@ export class LocationExtService {
       snapshotId: snapshotResponse.id,
     } as IApiFetchSnapshotDataRes;
 
-    const directLink = createDirectLink(snapshotResponse.token);
+    const directLink = createDirectLink(snapshotResponse, isAddressShown);
 
     switch (responseType) {
       case SnapshotDataTypesEnum.DIRECT_LINK: {

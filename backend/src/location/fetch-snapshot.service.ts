@@ -14,10 +14,11 @@ import { SubscriptionService } from '../user/subscription.service';
 import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
+  SNAPSHOT_INT_USER_PATH,
   SNAPSHOT_REAL_EST_PATH,
 } from './schema/search-result-snapshot.schema';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import { UserDocument } from '../user/schema/user.schema';
+import { PARENT_USER_PATH, UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { TApiMongoSortQuery } from '../shared/types/shared';
@@ -30,10 +31,11 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
+import { IFetchEmbedMapQueryParams } from '@area-butler-types/location';
 
 interface IFetchSnapshotMainParams {
-  isFetchRealEstate?: boolean;
   filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
+  isFetchRealEstate?: boolean;
   projectQuery?: ProjectionFields<SearchResultSnapshotDocument>;
   sortQuery?: TApiMongoSortQuery;
 }
@@ -43,8 +45,13 @@ interface IFetchSnapshotsParams extends Partial<IFetchSnapshotMainParams> {
   limitNumber: number;
 }
 
+interface IFetchSnapDocByTokenParams
+  extends Omit<IFetchSnapshotMainParams, 'filterQuery' | 'isFetchRealEstate'>,
+    IFetchEmbedMapQueryParams<boolean> {}
+
 interface IGetSnapshotResParams {
   snapshotDoc: SearchResultSnapshotDocument;
+  isAddressShown?: boolean;
   isEmbedded?: boolean;
   isTrial?: boolean;
 }
@@ -91,21 +98,44 @@ export class FetchSnapshotService {
       .populate(populateOptions);
   }
 
-  async fetchSnapshotDocByToken(
-    token: string,
-    fetchParams?: Omit<IFetchSnapshotMainParams, 'filterQuery'>,
-  ): Promise<SearchResultSnapshotDocument> {
-    return this.searchResultSnapshotModel
-      .findOne({ token }, fetchParams?.projectQuery)
-      .sort(fetchParams?.sortQuery);
+  async fetchSnapshotDocByToken({
+    isAddressShown,
+    projectQuery,
+    sortQuery,
+    token,
+  }: IFetchSnapDocByTokenParams): Promise<SearchResultSnapshotDocument> {
+    let filterQuery: FilterQuery<SearchResultSnapshotDocument>;
+
+    if (typeof isAddressShown === 'boolean') {
+      filterQuery = isAddressShown
+        ? { addressToken: token }
+        : { unaddressToken: token };
+    } else {
+      filterQuery = { token };
+    }
+
+    return (
+      this.searchResultSnapshotModel
+        .findOne(filterQuery, projectQuery)
+        .sort(sortQuery)
+        // TODO return after adding 'subscription' or 'subscriptionId' populated field to the user entity
+        // .populate(SNAPSHOT_USER_PATH)
+        .populate({
+          path: SNAPSHOT_INT_USER_PATH,
+          populate: {
+            path: PARENT_USER_PATH,
+          },
+        })
+    );
   }
 
   async getSnapshotRes(
     user: UserDocument | TIntegrationUserDocument,
-    { isEmbedded, isTrial, snapshotDoc }: IGetSnapshotResParams,
+    { isAddressShown, isEmbedded, isTrial, snapshotDoc }: IGetSnapshotResParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotResDtoData: TSnapshotResDtoData = {
       ...snapshotDoc.toObject(),
+      isAddressShown,
       isEmbedded,
       isTrial,
     };

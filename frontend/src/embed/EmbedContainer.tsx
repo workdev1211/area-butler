@@ -28,10 +28,12 @@ import { IFetchEmbedMapQueryParams } from "../../../shared/types/location";
 import { ILoginStatus } from "../shared/shared.types";
 import { IntlKeys } from "../i18n/keys";
 import { Loading } from "../components/Loading";
+import { boolStringMapping } from "../../../shared/constants/constants";
 
 const queryParamsSchema: Yup.ObjectSchema<IFetchEmbedMapQueryParams> =
   Yup.object({
     token: Yup.string().required(),
+    isAddressShown: Yup.mixed<string>().oneOf(Object.keys(boolStringMapping)),
   });
 
 window.addEventListener("resize", () => {
@@ -95,10 +97,18 @@ const EmbedContainer: FC = () => {
         await queryParamsSchema.validate(queryParamsAndUrl.queryParams);
 
         const {
-          queryParams: { token },
+          queryParams: { token, isAddressShown },
         } = queryParamsAndUrl;
 
-        const url = `${appUrl}/api/location/embedded/iframe/${token}`;
+        const resIsAddressShown = isAddressShown
+          ? boolStringMapping[isAddressShown]
+          : undefined;
+
+        let url = `${appUrl}/api/location/embedded/iframe?token=${token}`;
+
+        if (typeof resIsAddressShown === "boolean") {
+          url += `&isAddressShown=${isAddressShown}`;
+        }
 
         const fetchedEmbeddedData = (
           await axios.get<IApiFetchedEmbeddedData>(url)
@@ -106,12 +116,15 @@ const EmbedContainer: FC = () => {
 
         const config = fetchedEmbeddedData.snapshotRes.config;
 
-        if (config && !("showAddress" in config)) {
-          config["showAddress"] = true;
-        }
+        if (config) {
+          config.showAddress =
+            typeof resIsAddressShown === "boolean"
+              ? resIsAddressShown
+              : !!config.showAddress;
 
-        if (config && !("showStreetViewLink" in config)) {
-          config["showStreetViewLink"] = true;
+          if (!("showStreetViewLink" in config)) {
+            config.showStreetViewLink = true;
+          }
         }
 
         setEmbeddedData(fetchedEmbeddedData);

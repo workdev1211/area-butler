@@ -15,6 +15,7 @@ import ApiSearchResultSnapshotDto from './snapshot/api-search-result-snapshot.dt
 import ApiSearchResultSnapshotConfigDto from './snapshot/api-search-result-snapshot-config.dto';
 
 export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
+  isAddressShown?: boolean;
   isEmbedded?: boolean;
   isTrial?: boolean;
   realEstateListing?: ApiRealEstateListing;
@@ -46,6 +47,7 @@ class ApiSearchResultSnapshotResponseDto
     ({
       value,
       obj: {
+        isAddressShown,
         isEmbedded = false,
         config: { showAddress = false },
       },
@@ -53,7 +55,13 @@ class ApiSearchResultSnapshotResponseDto
       obj: TSnapshotResDtoData;
       value: ApiSearchResultSnapshot;
     }): ApiSearchResultSnapshot =>
-      processAddressVisibility(value, showAddress, isEmbedded),
+      processAddressVisibility(
+        value,
+        isEmbedded && typeof isAddressShown === 'boolean'
+          ? isAddressShown
+          : showAddress,
+        isEmbedded,
+      ),
     {
       toClassOnly: true,
     },

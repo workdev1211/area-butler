@@ -1,7 +1,12 @@
 import { UpdateQuery } from 'mongoose';
 
-import { ApiCoordinates, IApiMapboxStyle } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  ApiSearchResultSnapshotResponse,
+  IApiMapboxStyle,
+} from '@area-butler-types/types';
 import { configService } from '../../config/config.service';
+import { SearchResultSnapshotDocument } from '../../location/schema/search-result-snapshot.schema';
 
 export const getRawPriceValue = (priceValue: string): string =>
   priceValue.replace('.', '');
@@ -71,8 +76,36 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
   return Math.round(earthRadius * c);
 };
 
-export const createDirectLink = (token: string): string =>
-  `${configService.getBaseAppUrl()}/embed?token=${token}`;
+// try to keep it consistent with frontend/src/hooks/tools.ts:createDirectLink
+export const createDirectLink = (
+  {
+    addressToken,
+    token,
+    unaddressToken,
+    config: { showAddress },
+  }: SearchResultSnapshotDocument | ApiSearchResultSnapshotResponse,
+  isAddressShown?: boolean,
+): string => {
+  let url = `${configService.getBaseAppUrl()}/embed?token=`;
+
+  if (token) {
+    url += token;
+    return url;
+  }
+
+  if (typeof isAddressShown === 'boolean') {
+    url += `${
+      isAddressShown ? addressToken : unaddressToken
+    }&isAddressShown=${isAddressShown}`;
+    return url;
+  }
+
+  url += `${
+    showAddress ? addressToken : unaddressToken
+  }&isAddressShown=${!!showAddress}`;
+
+  return url;
+};
 
 // generates the 'updateOne' / 'updateMany' queries taking into account the undefined params
 // all the undefined params should be '$unset'

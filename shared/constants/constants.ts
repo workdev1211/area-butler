@@ -369,4 +369,7 @@ export const umlautMap = {
 };
 
 export const onePageCharacterLimit = 600;
-export const onePageOpenAiWordLimit = 40;
+export const boolStringMapping: { [key: string]: boolean } = {
+  true: true,
+  false: false,
+};

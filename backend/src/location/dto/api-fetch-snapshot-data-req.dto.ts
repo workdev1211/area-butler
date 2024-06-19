@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -24,11 +25,11 @@ class ApiFetchSnapshotDataReqDto
 {
   @IsOptional()
   @IsString()
-  snapshotId?: string;
+  address?: string;
 
   @IsOptional()
-  @IsString()
-  templateSnapshotId?: string;
+  @IsBoolean()
+  isAddressShown?: boolean;
 
   @ValidateIf(
     ({ snapshotId, lat, lng, address }) =>
@@ -50,24 +51,7 @@ class ApiFetchSnapshotDataReqDto
 
   @IsOptional()
   @IsString()
-  address?: string;
-
-  @IsOptional()
-  @IsString()
-  publicationId?: string;
-
-  @IsOptional()
-  @IsString()
   markerColor?: string;
-
-  @IsOptional()
-  @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
-    toClassOnly: true,
-  })
-  @IsEnum(SnapshotDataTypesEnum, {
-    message: getEnumValidMessage,
-  })
-  responseType?: SnapshotDataTypesEnum = SnapshotDataTypesEnum.DIRECT_LINK;
 
   @IsOptional()
   @Transform(
@@ -80,6 +64,27 @@ class ApiFetchSnapshotDataReqDto
   @IsArray()
   @IsEnum(OsmName, { each: true, message: getEnumValidMessage })
   poiTypes?: OsmName[] = defaultPoiTypes;
+
+  @IsOptional()
+  @IsString()
+  publicationId?: string;
+
+  @IsOptional()
+  @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
+    toClassOnly: true,
+  })
+  @IsEnum(SnapshotDataTypesEnum, {
+    message: getEnumValidMessage,
+  })
+  responseType?: SnapshotDataTypesEnum = SnapshotDataTypesEnum.DIRECT_LINK;
+
+  @IsOptional()
+  @IsString()
+  snapshotId?: string;
+
+  @IsOptional()
+  @IsString()
+  templateSnapshotId?: string;
 }
 
 export default ApiFetchSnapshotDataReqDto;

@@ -57,7 +57,7 @@ export class LocationExtController extends ApiKeyAuthController {
     @Body()
     { coordinates, address, snapshotId }: ApiCreateSnapshotFromTemplateDto,
   ): Promise<{ snapshotId: string; directLink: string }> {
-    const { id, token } =
+    const snapshotResponse =
       await this.snapshotExtService.createSnapshotFromTemplate(
         user,
         coordinates || address,
@@ -65,8 +65,8 @@ export class LocationExtController extends ApiKeyAuthController {
       );
 
     return {
-      snapshotId: id,
-      directLink: createDirectLink(token),
+      directLink: createDirectLink(snapshotResponse),
+      snapshotId: snapshotResponse.id,
     };
   }
 

@@ -262,6 +262,9 @@ export interface IApiLateSnapConfigOption {
   config: ApiSearchResultSnapshotConfig;
 }
 
-export interface IFetchEmbedMapQueryParams {
+export interface IFetchEmbedMapQueryParams<
+  T extends string | boolean = string
+> {
   token: string;
+  isAddressShown?: T;
 }

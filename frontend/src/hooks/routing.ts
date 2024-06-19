@@ -9,9 +9,9 @@ import { useTools } from "./tools";
 
 export const useRouting = () => {
   const { post } = useHttp();
-  const { getTokenParams } = useTools();
+  const { getTokenData } = useTools();
 
-  const { token, isAddressShown } = getTokenParams();
+  const { token, isAddressShown } = getTokenData();
 
   const fetchRoutes = async (
     query: ApiRouteQuery
