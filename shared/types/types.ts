@@ -51,6 +51,11 @@ export interface IApiUserExportFont {
   fontFaces: string[];
 }
 
+export enum LanguageTypeEnum {
+  en = 'en',
+  de = 'de'
+}
+
 export interface ApiUser {
   fullname: string;
   email: string;
@@ -69,6 +74,7 @@ export interface ApiUser {
   apiConnections?: TApiUserApiConnections;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
   templateSnapshotId?: string;
+  language: LanguageTypeEnum;
 }
 
 export type TApiUserApiConnectSettings = Partial<

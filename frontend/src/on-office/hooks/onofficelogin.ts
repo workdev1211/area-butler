@@ -1,4 +1,7 @@
 import { useContext } from "react";
+
+import { useTranslation } from "react-i18next";
+
 import * as Yup from "yup";
 
 import { getQueryParamsAndUrl } from "../../shared/shared.functions";
@@ -51,6 +54,7 @@ const confirmOrderSchema = Yup.object({
 });
 
 export const useOnOfficeLogin = () => {
+  const { i18n } = useTranslation();
   const { userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
@@ -122,7 +126,7 @@ export const useOnOfficeLogin = () => {
         await post<IApiIntUserLoginRes>("/api/on-office/login", loginReq)
       ).data;
 
-      dispatchContextData(loginRes);
+      await dispatchContextData(loginRes);
     } catch (e: any) {
       console.error("Login error: ", e);
       response.requestStatus = ResultStatusEnum.FAILURE;
@@ -162,7 +166,7 @@ export const useOnOfficeLogin = () => {
         return response;
       }
 
-      dispatchContextData(confirmOrderRes);
+      await dispatchContextData(confirmOrderRes);
     } catch (e) {
       console.error("Order confirmation error: ", e);
       response.requestStatus = ResultStatusEnum.FAILURE;
@@ -171,7 +175,7 @@ export const useOnOfficeLogin = () => {
     return response;
   };
 
-  const dispatchContextData = ({
+  const dispatchContextData = async ({
     accessToken,
     availProdContingents,
     config,
@@ -180,7 +184,8 @@ export const useOnOfficeLogin = () => {
     latestSnapshot,
     realEstate,
     subscription,
-  }: IApiIntUserLoginRes): void => {
+  }: IApiIntUserLoginRes): Promise<void> => {
+    await i18n.changeLanguage(config.language);
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {

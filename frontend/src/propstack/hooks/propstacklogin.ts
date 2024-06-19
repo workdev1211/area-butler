@@ -1,4 +1,7 @@
 import { useContext } from "react";
+
+import { useTranslation } from "react-i18next";
+
 import * as Yup from "yup";
 
 import { getQueryParamsAndUrl } from "../../shared/shared.functions";
@@ -33,6 +36,7 @@ const loginQueryParamsSchema: Yup.ObjectSchema<IApiPropstackLoginQueryParams> =
   });
 
 export const usePropstackLogin = () => {
+  const { i18n } = useTranslation();
   const { userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
@@ -75,7 +79,7 @@ export const usePropstackLogin = () => {
         })
       ).data;
 
-      dispatchContextData(loginRes);
+      await dispatchContextData(loginRes);
     } catch (e: any) {
       console.error("Login error: ", e);
       response.requestStatus = ResultStatusEnum.FAILURE;
@@ -85,7 +89,7 @@ export const usePropstackLogin = () => {
     return response;
   };
 
-  const dispatchContextData = ({
+  const dispatchContextData = async ({
     accessToken,
     availProdContingents,
     config,
@@ -95,7 +99,8 @@ export const usePropstackLogin = () => {
     openAiQueryType,
     realEstate,
     subscription,
-  }: IApiIntUserLoginRes): void => {
+  }: IApiIntUserLoginRes): Promise<void> => {
+    await i18n.changeLanguage(config.language);
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {

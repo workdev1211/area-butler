@@ -1,4 +1,7 @@
 import { lazy, Suspense, useContext, useEffect } from "react";
+
+import { useTranslation } from "react-i18next";
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
@@ -81,6 +84,7 @@ const MapSnapshotsPage = lazy(() => import("./pages/MapSnapshotsPage"));
 // const maintenanceKey = "is-seen-maintenance-2023-02-23";
 
 function App() {
+  const { i18n } = useTranslation();
   const { paypalClientId } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
 
@@ -138,6 +142,7 @@ function App() {
 
     const fetchUser = async () => {
       const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
+      await i18n.changeLanguage(user.language);
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
 
       const latestUserRequests: ApiUserRequests = (

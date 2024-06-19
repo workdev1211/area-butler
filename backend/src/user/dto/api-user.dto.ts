@@ -18,6 +18,7 @@ import {
   IApiMapboxStyle,
   IApiUserExportFont,
   IApiUserPoiIcons,
+  LanguageTypeEnum,
   TApiUserApiConnections,
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
@@ -206,6 +207,18 @@ class ApiUserDto implements ApiUser {
   @IsOptional()
   @IsString()
   templateSnapshotId?: string;
+
+  @Expose()
+  @Transform(
+    ({ value }: { value: LanguageTypeEnum }): LanguageTypeEnum =>
+      value || LanguageTypeEnum.de,
+    {
+      toClassOnly: true,
+    },
+  )
+  @IsNotEmpty()
+  @IsEnum(LanguageTypeEnum)
+  language: LanguageTypeEnum;
 }
 
 export default ApiUserDto;

@@ -3,6 +3,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiShowTour,
   IApiMapboxStyle,
+  LanguageTypeEnum
 } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
@@ -130,6 +131,7 @@ export type TApiIntegrationUserConfig = {
   extraMapboxStyles?: IApiMapboxStyle[];
   isSpecialLink?: boolean;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
+  language: LanguageTypeEnum
 };
 
 export type TAreaButlerExportTypes =

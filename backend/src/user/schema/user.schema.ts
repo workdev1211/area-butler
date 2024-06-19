@@ -8,6 +8,7 @@ import {
   IApiUserExportFont,
   IApiUserPoiIcons,
   TApiUserApiConnections,
+  LanguageTypeEnum
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
@@ -93,6 +94,9 @@ export class User {
 
   @Prop({ type: String })
   parentId: string;
+
+  @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
+  language: LanguageTypeEnum;
 }
 
 export const retrieveTotalRequestContingent = (
