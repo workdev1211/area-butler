@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -37,7 +37,7 @@ interface ILocationExportProps {
   performUnlock?: TUnlockIntProduct;
 }
 
-const LocationExport: FunctionComponent<ILocationExportProps> = ({
+const LocationExport: FC<ILocationExportProps> = ({
   snapshotId,
   hasOpenAiFeature,
   backgroundColor,
@@ -282,7 +282,6 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
               entities={resultingGroups}
               groupedEntries={entityGroups}
               censusData={searchContextState.censusData!}
-              snapshotToken={searchContextState.responseToken}
               exportType={exportType}
             />
           )}
@@ -290,7 +289,6 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         {isExportAvailable && exportType === ExportTypeEnum.ONE_PAGE && (
           <OnePageExportModal
             entityGroups={entityGroups}
-            snapshotToken={searchContextState.responseToken}
             snapshotId={snapshotId}
             hasOpenAiFeature={hasOpenAiFeature}
           />

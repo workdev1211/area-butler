@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -35,16 +35,14 @@ interface IExportModalProps {
   groupedEntries: any;
   censusData?: TCensusData;
   activeMeans: MeansOfTransportation[];
-  snapshotToken?: string;
   exportType: ExportTypeEnum;
 }
 
-const ExportModal: FunctionComponent<IExportModalProps> = ({
+const ExportModal: FC<IExportModalProps> = ({
   entities,
   groupedEntries,
   censusData,
   activeMeans,
-  snapshotToken,
   exportType,
 }) => {
   const { t } = useTranslation();
@@ -108,7 +106,6 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
     ISelectableMapClipping[]
   >(initialSelectableMapClippings);
   const [qrCodeState, setQrCodeState] = useState<IQrCodeState>({
-    snapshotToken,
     isShownQrCode: true,
   });
 
@@ -196,11 +193,10 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                       checked={qrCodeState.isShownQrCode}
                       className="checkbox checkbox-primary"
                       onChange={() => {
-                        setQrCodeState(
-                          qrCodeState.isShownQrCode
-                            ? { isShownQrCode: false }
-                            : { snapshotToken, isShownQrCode: true }
-                        );
+                        // TODO check if it could be simplified
+                        setQrCodeState({
+                          isShownQrCode: qrCodeState.isShownQrCode,
+                        });
                       }}
                     />
                     <span className="label-text">{t(IntlKeys.common.qrCode)}</span>

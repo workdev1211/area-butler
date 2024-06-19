@@ -85,7 +85,6 @@ import {
   defaultMyLocationIconSize,
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
-import { useTools } from "../hooks/tools";
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 
@@ -328,7 +327,7 @@ interface IMapProps {
   addMapClipping: (dataUrl: string) => void;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
-  snippetToken?: string;
+  directLink?: string;
   mapDisplayMode: MapDisplayModesEnum;
   config?: ApiSearchResultSnapshotConfig;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
@@ -427,7 +426,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       hideEntity,
       setMapCenterZoom,
       addMapClipping,
-      snippetToken,
+      directLink,
       hideIsochrones,
       setHideIsochrones,
       toggleSatelliteMapMode,
@@ -474,8 +473,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           L.Browser.mobile && mapRef.current?.dragging.disable(),
       },
     }));
-
-    const { createDirectLink } = useTools();
 
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -1612,7 +1609,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 </a>
               ) : (
                 <a
-                  href={`${createDirectLink(snippetToken!)}`}
+                  href={directLink}
                   target="_blank"
                   rel="noreferrer"
                   className="leaflet-control-zoom-in cursor-pointer"

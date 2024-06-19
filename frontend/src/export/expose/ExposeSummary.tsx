@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -36,7 +36,7 @@ export interface ExposeSummaryProps {
   isFirstPage: boolean;
 }
 
-const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
+const ExposeSummary: FC<ExposeSummaryProps> = ({
   realEstateListing,
   listingAddress,
   groupedEntries,
@@ -146,7 +146,6 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
 
               {qrCode.isShownQrCode && (
                 <QrCode
-                  snapshotToken={qrCode.snapshotToken}
                   containerClasses={realEstateListing ? "mt-3" : ""}
                   imageClasses="h-28"
                 />

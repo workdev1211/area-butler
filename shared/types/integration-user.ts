@@ -8,6 +8,7 @@ import {
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
+import { TIntegrationUserDocument } from "../../backend/src/user/schema/integration-user.schema";
 
 export interface IApiIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
@@ -15,8 +16,10 @@ export interface IApiIntegrationUserSchema {
   integrationUserId: string;
   config?: TApiIntegrationUserConfig;
   isParent?: boolean;
+  isSubscriptionActive?: boolean;
   parameters?: TApiIntegrationUserParameters;
   parentId?: string;
+  parentUser?: TIntegrationUserDocument;
   productContingents?: TApiIntegrationUserProductContingents;
   productsUsed?: TApiIntegrationUserProductsUsed;
   subscription?: IIntUserSubscription;

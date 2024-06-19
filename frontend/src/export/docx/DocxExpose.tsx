@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -62,7 +62,7 @@ interface IDocxExposeProps {
   qrCode: IQrCodeState;
 }
 
-const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
+const DocxExpose: FC<IDocxExposeProps> = ({
   groupedEntries,
   mapClippings,
   censusData,
@@ -272,7 +272,7 @@ const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
         headers: {
           ...(qrCode.isShownQrCode
             ? await createQrCodeHeader(
-                createDirectLink(qrCode.snapshotToken!),
+                createDirectLink(),
                 imageBase64Data,
                 logoRatio
               )

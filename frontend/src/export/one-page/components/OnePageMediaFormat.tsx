@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -28,13 +28,12 @@ interface IOnePageMediaFormatProps {
   setIsTransparentBackground: (isTransparentBackground: boolean) => void;
   qrCodeState: IQrCodeState;
   setQrCodeState: (qrCodeState: IQrCodeState) => void;
-  snapshotToken: string;
   backgroundColor: string;
   isOpenCollapsable: boolean;
   toggleCollapsable: () => void;
 }
 
-const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
+const OnePageMediaFormat: FC<IOnePageMediaFormatProps> = ({
   selectableMapClippings,
   setSelectableMapClippings,
   isPng,
@@ -43,7 +42,6 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
   setIsTransparentBackground,
   qrCodeState,
   setQrCodeState,
-  snapshotToken,
   backgroundColor,
   isOpenCollapsable,
   toggleCollapsable,
@@ -147,9 +145,10 @@ const OnePageMediaFormat: FunctionComponent<IOnePageMediaFormatProps> = ({
               }
               className="checkbox checkbox-primary"
               onChange={() => {
-                const resultingQrCodeState = qrCodeState.isShownQrCode
-                  ? { isShownQrCode: false }
-                  : { snapshotToken, isShownQrCode: true };
+                // TODO check if it could be simplified
+                const resultingQrCodeState = {
+                  isShownQrCode: qrCodeState.isShownQrCode,
+                };
 
                 setQrCodeState(resultingQrCodeState);
 

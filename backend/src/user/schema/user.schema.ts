@@ -8,7 +8,7 @@ import {
   IApiUserExportFont,
   IApiUserPoiIcons,
   TApiUserApiConnections,
-  LanguageTypeEnum
+  LanguageTypeEnum,
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
@@ -17,12 +17,9 @@ import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 import { availableCountries } from '../../../../shared/constants/location';
 
-export type UserDocument = User &
-  Document & {
-    parentUser?: UserDocument;
-    poiIcons?: IApiUserPoiIcons;
-    subscription?: SubscriptionDocument;
-  };
+export type UserDocument = User & Document;
+
+export const PARENT_USER_PATH = 'parentUser';
 
 @Schema({
   toJSON: { virtuals: true },
@@ -32,7 +29,7 @@ export class User {
   @Prop({ type: String, required: true })
   fullname: string;
 
-  @Prop({ type: String, required: true, unique: true, index: true })
+  @Prop({ type: String, required: true, unique: true })
   email: string;
 
   @Prop({ type: Date, default: Date.now })
@@ -97,6 +94,10 @@ export class User {
 
   @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
   language: LanguageTypeEnum;
+
+  parentUser?: UserDocument;
+  poiIcons?: IApiUserPoiIcons;
+  subscription?: SubscriptionDocument;
 }
 
 export const retrieveTotalRequestContingent = (
@@ -115,7 +116,7 @@ export const retrieveTotalRequestContingent = (
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.virtual('parentUser', {
+UserSchema.virtual(PARENT_USER_PATH, {
   ref: User.name,
   localField: 'parentId',
   foreignField: '_id',

@@ -76,7 +76,8 @@ export class SnapshotService {
     }
 
     const isIntegrationUser = 'integrationUserId' in user;
-    const token = randomBytes(60).toString('hex');
+    const addressToken = randomBytes(60).toString('hex');
+    const unaddressToken = randomBytes(60).toString('hex');
     let mapboxAccessToken;
 
     if (isIntegrationUser) {
@@ -118,10 +119,11 @@ export class SnapshotService {
     const createdAt = dayjs();
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
+      addressToken,
+      externalId,
       mapboxAccessToken,
       snapshot,
-      token,
-      externalId,
+      unaddressToken,
       config: snapshotConfig,
       createdAt: createdAt.toDate(),
     };
@@ -200,14 +202,15 @@ export class SnapshotService {
     ).save();
 
     return {
-      id: savedSnapshotDoc.id,
+      addressToken: savedSnapshotDoc.addressToken,
       config: savedSnapshotDoc.config,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,
       externalId: savedSnapshotDoc.externalId,
+      id: savedSnapshotDoc.id,
       mapboxAccessToken: savedSnapshotDoc.mapboxAccessToken,
-      token: savedSnapshotDoc.token,
       snapshot: savedSnapshotDoc.snapshot,
+      unaddressToken: savedSnapshotDoc.unaddressToken,
     };
   }
 

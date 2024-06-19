@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -8,7 +8,6 @@ import { QRCodeToDataURLOptions, toDataURL } from "qrcode";
 import { useTools } from "../hooks/tools";
 
 interface IQrCodeProps {
-  snapshotToken?: string;
   containerClasses?: string;
   imageClasses?: string;
 }
@@ -29,8 +28,7 @@ export const getQrCodeBase64 = async (
   return toDataURL(text, options);
 };
 
-export const QrCode: FunctionComponent<IQrCodeProps> = ({
-  snapshotToken,
+export const QrCode: FC<IQrCodeProps> = ({
   containerClasses = "",
   imageClasses = "h-20",
 }) => {
@@ -39,19 +37,15 @@ export const QrCode: FunctionComponent<IQrCodeProps> = ({
   const [qrCodeImage, setQrCodeImage] = useState<string>();
 
   useEffect(() => {
-    if (!snapshotToken) {
-      return;
-    }
-
     const createQrCode = async (): Promise<void> => {
-      setQrCodeImage(await getQrCodeBase64(createDirectLink(snapshotToken)));
+      setQrCodeImage(await getQrCodeBase64(createDirectLink()));
     };
 
     void createQrCode();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!snapshotToken || !qrCodeImage) {
+  if (!qrCodeImage) {
     return null;
   }
 

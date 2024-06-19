@@ -41,22 +41,16 @@ export interface ApiRouteDestination {
   coordinates: ApiCoordinates;
 }
 
-export interface ApiRouteQuery {
-  snapshotToken?: string;
-  userEmail?: string;
+export interface ApiTransitRouteQuery {
   origin: ApiCoordinates;
   destinations: ApiRouteDestination[];
-  meansOfTransportation?: MeansOfTransportation[];
-}
-
-export interface ApiTransitRouteQuery {
+  isAddressShown?: boolean;
   snapshotToken?: string;
   userEmail?: string;
-  origin: ApiCoordinates;
-  destinations: {
-    title: string;
-    coordinates: ApiCoordinates;
-  }[];
+}
+
+export interface ApiRouteQuery extends ApiTransitRouteQuery {
+  meansOfTransportation?: MeansOfTransportation[];
 }
 
 export interface IApiPreferredLocationRouteQuery {

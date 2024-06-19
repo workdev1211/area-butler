@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -15,7 +15,7 @@ interface IMapClippingsProps {
   qrCode: IQrCodeState;
 }
 
-export const MapClippings: FunctionComponent<IMapClippingsProps> = ({
+export const MapClippings: FC<IMapClippingsProps> = ({
   mapClippings,
   logo,
   nextPageNumber = () => "01",
@@ -48,11 +48,7 @@ export const MapClippings: FunctionComponent<IMapClippingsProps> = ({
           logo={logo}
           title={t(IntlKeys.snapshotEditor.exportTab.mapSection)}
           key={pairIndex}
-          leftHeaderElement={
-            qrCode.isShownQrCode && (
-              <QrCode snapshotToken={qrCode.snapshotToken} />
-            )
-          }
+          leftHeaderElement={qrCode.isShownQrCode && <QrCode />}
         >
           <div id="expose-map-clippings" className="m-10 flex flex-col gap-10">
             {pair.map((clipping, clippingIndex) => (

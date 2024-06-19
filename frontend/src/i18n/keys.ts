@@ -647,4 +647,8 @@ export const IntlKeys = {
       takePicture: "tour.intMapPage.takePicture",
     },
   },
+
+  integration: {
+    absentTokensError: "integration.absentTokensError",
+  },
 };

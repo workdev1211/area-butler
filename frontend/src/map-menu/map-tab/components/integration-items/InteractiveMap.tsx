@@ -35,7 +35,6 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
     searchContextState: {
       snapshotId,
       // integrationIframeEndsAt,
-      responseToken,
       responseConfig: config,
     },
     searchContextDispatch,
@@ -48,7 +47,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   const [isInteractiveMapOpen, setIsInteractiveMapOpen] = useState(false);
   const [isShownModal, setIsShownModal] = useState(false);
 
-  const directLink = createDirectLink(responseToken);
+  const directLink = createDirectLink();
   // const isIntegrationIframeExpired = integrationIframeEndsAt
   //   ? dayjs().isAfter(integrationIframeEndsAt)
   //   : true;

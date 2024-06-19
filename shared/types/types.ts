@@ -402,11 +402,16 @@ export interface ApiSearchResultSnapshotConfig {
   zoomLevel?: number;
 }
 
-export interface ApiSearchResultSnapshotResponse {
+export interface IIframeTokens {
+  addressToken: string;
+  unaddressToken: string;
+  token?: string;
+}
+
+export interface ApiSearchResultSnapshotResponse extends IIframeTokens {
   id: string;
   createdAt: Date;
   mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
-  token: string;
   snapshot: ApiSearchResultSnapshot;
 
   config?: ApiSearchResultSnapshotConfig;

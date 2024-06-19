@@ -1,10 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, FilterQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   IApiIntegrationUserSchema,
+  IApiIntUserOnOfficeParams,
+  IApiIntUserPropstackParams,
   IIntUserSubscription,
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
@@ -12,11 +14,9 @@ import {
   TApiIntegrationUserProductsUsed,
 } from '@area-butler-types/integration-user';
 import { IntUserSubscriptionSchema } from './int-user-subscription.schema';
+import { PARENT_USER_PATH } from './user.schema';
 
-export type TIntegrationUserDocument = IntegrationUser &
-  Document & { parentUser?: TIntegrationUserDocument };
-
-// TODO try to make 'parentUser' a populated field validated by the 'checkIsParent' method
+export type TIntegrationUserDocument = IntegrationUser & Document;
 
 @Schema({
   timestamps: true,
@@ -62,6 +62,7 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   subscription?: IIntUserSubscription;
 
   isSubscriptionActive?: boolean;
+  parentUser?: TIntegrationUserDocument;
 }
 
 export const IntegrationUserSchema =
@@ -83,9 +84,32 @@ IntegrationUserSchema.virtual('isSubscriptionActive').get(function (): boolean {
   return dayjs().isBefore(this.subscription?.expiresAt);
 });
 
-IntegrationUserSchema.virtual('parentUser', {
+IntegrationUserSchema.virtual(PARENT_USER_PATH, {
   ref: IntegrationUser.name,
   localField: 'parentId',
   foreignField: '_id',
+  match: (doc: TIntegrationUserDocument) => {
+    const filterQuery: FilterQuery<TIntegrationUserDocument> = {
+      integrationType: doc.integrationType,
+    };
+
+    switch (doc.integrationType) {
+      case IntegrationTypesEnum.ON_OFFICE: {
+        filterQuery['parameters.customerWebId'] = (
+          doc.parameters as IApiIntUserOnOfficeParams
+        ).customerWebId;
+        break;
+      }
+
+      case IntegrationTypesEnum.PROPSTACK: {
+        filterQuery['parameters.shopId'] = (
+          doc.parameters as IApiIntUserPropstackParams
+        ).shopId;
+        break;
+      }
+    }
+
+    return filterQuery;
+  },
   justOne: true,
 });

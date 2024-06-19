@@ -1,7 +1,7 @@
-import { FunctionComponent, ReactNode, useContext } from "react";
+import { FC, ReactNode, useContext } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
@@ -24,7 +24,7 @@ interface ISnapshotsTableRowProps {
   templateSnapshotId?: string;
 }
 
-const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
+const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   snapshot,
   openCodeSnippetModal,
   templateSnapshotId,
@@ -97,7 +97,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
     toastSuccess(t(IntlKeys.mapSnapshots.templateSaved));
   };
 
-  const OpenMapEditorButton: FunctionComponent<{
+  const OpenMapEditorButton: FC<{
     embeddableMap: ApiSearchResultSnapshotResponse;
   }> = ({ embeddableMap }) => {
     return (
@@ -126,7 +126,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
     modalButton: increaseLimitButton,
   };
 
-  const IncreaseLimitModal: FunctionComponent<{
+  const IncreaseLimitModal: FC<{
     modelId?: string;
   }> = ({ modelId }) => (
     <FormModal modalConfig={increaseLimitModalConfig}>
@@ -158,7 +158,11 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
           : "Kein Aufruf"}
       </td>
       <td>{snapshot.visitAmount || t(IntlKeys.mapSnapshots.noVisits)}</td>
-      <td>{snapshot.config?.showAddress ? t(IntlKeys.common.yes) : t(IntlKeys.common.no)}</td>
+      <td>
+        {snapshot.config?.showAddress
+          ? t(IntlKeys.common.yes)
+          : t(IntlKeys.common.no)}
+      </td>
       <td>
         <div
           className="grid gap-y-3"
@@ -173,7 +177,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
             className="ml-5 rounded btn-xs btn-primary"
             onClick={(e) => {
               e.stopPropagation();
-              copyCodeToClipBoard(createDirectLink(snapshot.token));
+              copyCodeToClipBoard(createDirectLink());
             }}
           >
             {t(IntlKeys.mapSnapshots.copyLink)}

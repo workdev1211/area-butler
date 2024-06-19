@@ -2,7 +2,6 @@ import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { LeanDocument } from 'mongoose';
 
 import {
-  ApiCoordinates,
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
@@ -42,9 +41,6 @@ class ApiSearchResultSnapshotResponseDto
   mapboxAccessToken: string;
 
   @Expose()
-  token: string;
-
-  @Expose()
   @Type(() => ApiSearchResultSnapshotDto)
   @Transform(
     ({
@@ -63,6 +59,12 @@ class ApiSearchResultSnapshotResponseDto
     },
   )
   snapshot: ApiSearchResultSnapshot;
+
+  @Expose()
+  addressToken: string;
+
+  @Expose()
+  unaddressToken: string;
 
   @Expose()
   @Type(() => ApiSearchResultSnapshotConfigDto)
@@ -92,6 +94,9 @@ class ApiSearchResultSnapshotResponseDto
 
   @Expose()
   lastAccess?: Date;
+
+  @Expose()
+  token?: string;
 
   @Expose()
   updatedAt?: Date;

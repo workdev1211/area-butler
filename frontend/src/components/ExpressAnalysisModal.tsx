@@ -132,7 +132,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   searchContextState.responseGroupedEntities,
                   searchContextState.responseActiveMeans
                 )}
-                snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
                 exportType={ExportTypeEnum.EXPOSE}
               />
@@ -150,7 +149,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   searchContextState.responseGroupedEntities,
                   searchContextState.responseActiveMeans
                 )}
-                snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
                 exportType={ExportTypeEnum.EXPOSE_DOCX}
               />
@@ -168,7 +166,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   searchContextState.responseGroupedEntities,
                   searchContextState.responseActiveMeans
                 )}
-                snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
                 exportType={ExportTypeEnum.CHEATSHEET}
               />
@@ -273,7 +270,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             <h3
               className="flex max-w-fit items-center cursor-pointer gap-2"
               onClick={() => {
-                copyCodeToClipBoard(createDirectLink(snapshotResponse.token));
+                copyCodeToClipBoard(createDirectLink());
               }}
             >
               <img className="w-6 h-6" src={copyIcon} alt="copy" />
@@ -283,9 +280,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               className="flex max-w-fit items-center cursor-pointer gap-2"
               onClick={async () => {
                 saveAs(
-                  await getQrCodeBase64(
-                    createDirectLink(snapshotResponse.token)
-                  ),
+                  await getQrCodeBase64(createDirectLink()),
                   `${snapshotResponse.snapshot.placesLocation.label.replace(
                     /[\s|,]+/g,
                     "-"
@@ -299,7 +294,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             <h3
               className="flex max-w-fit items-center cursor-pointer gap-2"
               onClick={() => {
-                copyCodeToClipBoard(createCodeSnippet(snapshotResponse.token));
+                copyCodeToClipBoard(createCodeSnippet());
               }}
             >
               <img className="w-6 h-6" src={copyIcon} alt="copy" />

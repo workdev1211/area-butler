@@ -1,7 +1,7 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
@@ -13,7 +13,7 @@ interface IEmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
 }
 
-const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
+const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
   embeddableMaps,
 }) => {
   const { t } = useTranslation();
@@ -37,8 +37,8 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   const openCodeSnippetModal = (
     snapshot: ApiSearchResultSnapshotResponse
   ): void => {
-    setCodeSnippet(createCodeSnippet(snapshot.token));
-    setDirectLink(createDirectLink(snapshot.token));
+    setCodeSnippet(createCodeSnippet());
+    setDirectLink(createDirectLink());
     setSnapshot(snapshot);
     setIsShownModal(true);
   };

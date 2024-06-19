@@ -112,7 +112,10 @@ const MapPage: FC = () => {
     }
 
     const {
+      addressToken,
       config,
+      token,
+      unaddressToken,
       snapshot: {
         localityParams,
         location,
@@ -191,8 +194,8 @@ const MapPage: FC = () => {
     });
 
     searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: snapshotRes.token,
+      type: SearchContextActionTypes.SET_RESPONSE_TOKENS,
+      payload: { addressToken, token, unaddressToken },
     });
 
     searchContextDispatch({

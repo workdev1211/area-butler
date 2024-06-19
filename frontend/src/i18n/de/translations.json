@@ -610,5 +610,9 @@
       "goFullscreen": "Hier können Sie den Vollbildmodus aktivieren bzw. deaktivieren.",
       "takePicture": "Hier können Sie die aktuelle Ansicht der Karte als Bild speichern und rechts im Menü herunterladen. Die hier aufgenommenen Snapshots sind dann auch in Ihren Exporten hinterlegt."
     }
+  },
+
+  "integration": {
+    "absentTokensError": "Es fehlen iFrame-Token!"
   }
 }

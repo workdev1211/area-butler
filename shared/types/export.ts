@@ -8,5 +8,4 @@ export enum ExportTypeEnum {
 
 export interface IQrCodeState {
   isShownQrCode: boolean;
-  snapshotToken?: string;
 }

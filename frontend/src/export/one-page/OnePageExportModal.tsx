@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import { FormikProps } from "formik/dist/types";
 
 import { useTranslation } from 'react-i18next';
@@ -70,7 +64,6 @@ export interface ISortableEntityGroup extends EntityGroup {
 
 interface IOnePageExportModalProps {
   entityGroups: EntityGroup[];
-  snapshotToken: string;
   snapshotId: string;
   hasOpenAiFeature?: boolean;
 }
@@ -81,9 +74,8 @@ export const initialExportFlowState: IExportFlowState = {
   mapClippings: false,
 };
 
-const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
+const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   entityGroups,
-  snapshotToken,
   snapshotId,
   hasOpenAiFeature = false,
 }) => {
@@ -172,10 +164,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     cachedOnePage.isTransparentBackground || false
   );
   const [qrCodeState, setQrCodeState] = useState<IQrCodeState>(
-    cachedOnePage.qrCodeState || {
-      snapshotToken,
-      isShownQrCode: true,
-    }
+    cachedOnePage.qrCodeState || { isShownQrCode: true }
   );
   const [qrCodeImage, setQrCodeImage] = useState<string>();
   const [selectMapClippings, setSelectMapClippings] = useState<
@@ -187,15 +176,13 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const [isOpenAiBusy, setIsOpenAiBusy] = useState(false);
 
   useEffect(() => {
-    if (!qrCodeState.isShownQrCode || !qrCodeState.snapshotToken) {
+    if (!qrCodeState.isShownQrCode) {
       setQrCodeImage(undefined);
       return;
     }
 
     const createQrCode = async () => {
-      setQrCodeImage(
-        await getQrCodeBase64(createDirectLink(qrCodeState.snapshotToken!))
-      );
+      setQrCodeImage(await getQrCodeBase64(createDirectLink()));
     };
 
     void createQrCode();
@@ -445,7 +432,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             setIsTransparentBackground={setIsTransparentBackground}
             qrCodeState={qrCodeState}
             setQrCodeState={setQrCodeState}
-            snapshotToken={snapshotToken}
             backgroundColor={color}
             isOpenCollapsable={isOpen.mapClippings}
             toggleCollapsable={() => {

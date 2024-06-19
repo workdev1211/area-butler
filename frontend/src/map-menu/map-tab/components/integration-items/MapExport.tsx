@@ -155,7 +155,6 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
         {searchContextState.printingOnePageActive && (
           <OnePageExportModal
             entityGroups={groupedEntries}
-            snapshotToken={searchContextState.responseToken}
             snapshotId={searchContextState.snapshotId!}
             hasOpenAiFeature={true}
           />

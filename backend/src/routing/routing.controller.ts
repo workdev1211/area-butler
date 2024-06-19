@@ -11,10 +11,10 @@ import { RoutingService } from './routing.service';
 import {
   ApiRouteQueryResultItem,
   ApiTransitRouteQueryResultItem,
-  IApiPreferredLocationRouteQueryResult,
+  // IApiPreferredLocationRouteQueryResult,
 } from '@area-butler-types/routing';
 import ApiRouteQueryDto from '../dto/api-route-query.dto';
-import ApiPreferredLocationRouteQueryDto from '../dto/api-preferred-location-route-query.dto';
+// import ApiPreferredLocationRouteQueryDto from '../dto/api-preferred-location-route-query.dto';
 import { InjectUserEmailOrIntInterceptor } from './interceptor/inject-user-email-or-int.interceptor';
 
 @ApiTags('routes')
@@ -60,28 +60,29 @@ export class RoutingController {
     }
   }
 
-  @ApiOperation({
-    description: 'Fetch all routes for preferred locations',
-  })
-  @UseInterceptors(InjectUserEmailOrIntInterceptor)
-  @Post('fetch-preferred')
-  async fetchPreferredLocationRoutes(
-    @Body() query: ApiPreferredLocationRouteQueryDto,
-  ): Promise<IApiPreferredLocationRouteQueryResult> {
-    const emptyResults: IApiPreferredLocationRouteQueryResult = {
-      routes: [],
-      transitRoutes: [],
-    };
-
-    if (!query.preferredLocations.length) {
-      return emptyResults;
-    }
-
-    try {
-      return this.routingService.fetchPreferredLocationRoutes(query);
-    } catch (e) {
-      this.logger.error('Could not fetch routes for preferred locations', e);
-      return emptyResults;
-    }
-  }
+  // Left just in case of possible future usage
+  // @ApiOperation({
+  //   description: 'Fetch all routes for preferred locations',
+  // })
+  // @UseInterceptors(InjectUserEmailOrIntInterceptor)
+  // @Post('fetch-preferred')
+  // async fetchPreferredLocationRoutes(
+  //   @Body() query: ApiPreferredLocationRouteQueryDto,
+  // ): Promise<IApiPreferredLocationRouteQueryResult> {
+  //   const emptyResults: IApiPreferredLocationRouteQueryResult = {
+  //     routes: [],
+  //     transitRoutes: [],
+  //   };
+  //
+  //   if (!query.preferredLocations.length) {
+  //     return emptyResults;
+  //   }
+  //
+  //   try {
+  //     return this.routingService.fetchPreferredLocationRoutes(query);
+  //   } catch (e) {
+  //     this.logger.error('Could not fetch routes for preferred locations', e);
+  //     return emptyResults;
+  //   }
+  // }
 }

@@ -1,19 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as SchemaType } from 'mongoose';
 
-import { ApiSearchResultSnapshotConfig } from '@area-butler-types/types';
+import {
+  ApiSearchResultSnapshotConfig,
+  IIframeTokens,
+} from '@area-butler-types/types';
 import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
 import {
   ISnapshotDataSchema,
   SnapshotDataSchema,
 } from './snapshot-data.schema';
+import { User, UserDocument } from '../../user/schema/user.schema';
+import {
+  IntegrationUser,
+  TIntegrationUserDocument,
+} from '../../user/schema/integration-user.schema';
 
-interface ISearchResultSnapshotSchema {
+interface ISearchResultSnapshotSchema extends IIframeTokens {
   config: ApiSearchResultSnapshotConfig;
   mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
   snapshot: ISnapshotDataSchema;
-  token: string;
   createdAt?: Date;
   description?: string;
   endsAt?: Date; // end date of the Pay per Use map
@@ -21,9 +28,11 @@ interface ISearchResultSnapshotSchema {
   // TODO move to the 'integrationParams'
   iframeEndsAt?: Date; // expiration date for the integration iFrame
   integrationParams?: IApiIntegrationParams;
+  integrationUser?: TIntegrationUserDocument;
   isTrial?: boolean;
   lastAccess?: Date;
   updatedAt?: Date;
+  user?: UserDocument;
   userId?: string;
   visitAmount?: number;
 }
@@ -32,9 +41,21 @@ export type SearchResultSnapshotDocument = ISearchResultSnapshotSchema &
   Document;
 
 export const SNAPSHOT_REAL_EST_PATH = 'snapshot.realEstate';
+export const SNAPSHOT_USER_PATH = 'user';
+export const SNAPSHOT_INT_USER_PATH = 'integrationUser';
 
 @Schema()
 export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
+  @Prop({
+    type: String,
+    unique: true,
+    sparse: true,
+    validate: function (val: string): boolean {
+      return !this.token && !!val;
+    },
+  })
+  addressToken: string;
+
   @Prop({ type: Object, required: true })
   config: ApiSearchResultSnapshotConfig;
 
@@ -44,8 +65,15 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   @Prop({ type: SnapshotDataSchema, required: true })
   snapshot: ISnapshotDataSchema;
 
-  @Prop({ type: String, required: true })
-  token: string;
+  @Prop({
+    type: String,
+    unique: true,
+    sparse: true,
+    validate: function (val: string): boolean {
+      return !this.token && !!val;
+    },
+  })
+  unaddressToken: string;
 
   @Prop({ type: Date, default: Date.now })
   createdAt?: Date;
@@ -71,6 +99,15 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   @Prop({ type: Date })
   lastAccess?: Date;
 
+  @Prop({
+    type: String,
+    index: true,
+    validate: function (val: string): boolean {
+      return !this.addressToken && !this.unaddressToken && !!val;
+    },
+  })
+  token?: string;
+
   @Prop({ type: Date })
   updatedAt?: Date;
 
@@ -79,7 +116,29 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
 
   @Prop({ type: Number, default: 0 })
   visitAmount?: number;
+
+  integrationUser?: TIntegrationUserDocument;
+  user?: UserDocument;
 }
 
 export const SearchResultSnapshotSchema: SchemaType<SearchResultSnapshotDocument> =
   SchemaFactory.createForClass(SearchResultSnapshot);
+
+SearchResultSnapshotSchema.virtual(SNAPSHOT_USER_PATH, {
+  ref: User.name,
+  localField: 'userId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+// Multiple foreign fields
+// https://github.com/Automattic/mongoose/issues/6608#issuecomment-723662319
+SearchResultSnapshotSchema.virtual(SNAPSHOT_INT_USER_PATH, {
+  ref: IntegrationUser.name,
+  localField: 'integrationParams.integrationUserId',
+  foreignField: 'integrationUserId',
+  match: (doc: SearchResultSnapshotDocument) => ({
+    integrationType: doc.integrationParams?.integrationType,
+  }),
+  justOne: true,
+});

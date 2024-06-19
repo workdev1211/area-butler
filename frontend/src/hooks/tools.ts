@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 import { ConfigContext } from "../context/ConfigContext";
 import { UserContext } from "../context/UserContext";
@@ -15,6 +16,7 @@ import { checkIsSearchNotUnlocked } from "../../../shared/functions/integration.
 import { SearchContext } from "../context/SearchContext";
 import { useIntegrationTools } from "./integration/integrationtools";
 import { defaultErrorMessage } from "../../../shared/constants/error";
+import { IntlKeys } from "../i18n/keys";
 
 export const useTools = () => {
   const { systemEnv } = useContext(ConfigContext);
@@ -22,28 +24,36 @@ export const useTools = () => {
     userState: { user, integrationUser },
   } = useContext(UserContext);
   const {
-    searchContextState: { realEstateListing },
+    searchContextState: { realEstateListing, responseConfig, responseTokens },
   } = useContext(SearchContext);
 
   const { patch, post } = useHttp();
   const { checkIsSubActive } = useIntegrationTools();
+  const { t } = useTranslation();
   const isIntegrationUser = !!integrationUser;
 
-  const createDirectLink = (token: string): string => {
+  const createDirectLink = (): string => {
+    const { token, isAddressShown } = getTokenParams();
     const origin = window.location.origin;
 
-    return `${
+    let url = `${
       systemEnv !== "local"
         ? origin
         : `${origin.replace(/^(https?:\/\/\w*)(:.*)?$/, "$1")}:3002`
     }/embed?token=${token}`;
+
+    if (typeof isAddressShown === "boolean") {
+      url += `&isAddressShown=${isAddressShown}`;
+    }
+
+    return url;
   };
 
-  const createCodeSnippet = (token: string): string => `<iframe
+  const createCodeSnippet = (): string => `<iframe
   style="border: none"
   width="100%"
   height="100%"
-  src="${createDirectLink(token)}"
+  src="${createDirectLink()}"
   title="AreaButler Map Snippet"
 ></iframe>`;
 
@@ -170,6 +180,24 @@ export const useTools = () => {
     ).data;
   };
 
+  const getTokenParams = (): { token: string; isAddressShown?: boolean } => {
+    // left for compatibility purposes
+    if (responseTokens?.token) {
+      return { token: responseTokens.token };
+    }
+
+    if (responseConfig?.showAddress && responseTokens?.addressToken) {
+      return { token: responseTokens.addressToken, isAddressShown: true };
+    }
+
+    if (!responseConfig?.showAddress && responseTokens?.unaddressToken) {
+      return { token: responseTokens.unaddressToken, isAddressShown: false };
+    }
+
+    toastError(t(IntlKeys.integration.absentTokensError));
+    throw new Error(t(IntlKeys.integration.absentTokensError));
+  };
+
   return {
     createDirectLink,
     createCodeSnippet,
@@ -179,5 +207,6 @@ export const useTools = () => {
     updateUserSettings,
     hideTour,
     hideTours,
+    getTokenParams,
   };
 };

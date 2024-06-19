@@ -610,5 +610,9 @@
       "goFullscreen": "You can activate or deactivate full screen mode here.",
       "takePicture": "Here you can save the current view of the map as an image and download it from the menu on the right. The snapshots taken here are then also stored in your exports."
     }
+  },
+
+  "integration": {
+    "absentTokensError": "iFrame tokens are missing!"
   }
 }

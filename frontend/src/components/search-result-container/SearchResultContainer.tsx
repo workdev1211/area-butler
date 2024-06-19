@@ -179,7 +179,7 @@ const SearchResultContainer = forwardRef<
       ? user.config.extraMapboxStyles
       : user.extraMapboxStyles;
 
-    const directLink = createDirectLink(searchContextState.responseToken);
+    const directLink = createDirectLink();
 
     useEffect(() => {
       if (
@@ -317,7 +317,7 @@ const SearchResultContainer = forwardRef<
 
       setExportTabProps({
         directLink,
-        codeSnippet: createCodeSnippet(searchContextState.responseToken),
+        codeSnippet: createCodeSnippet(),
         searchAddress: searchContextState.placesLocation?.label,
         snapshotId: searchContextState.snapshotId,
       });
@@ -332,7 +332,7 @@ const SearchResultContainer = forwardRef<
       searchContextState.mapZoomLevel,
       searchContextState.placesLocation?.label,
       searchContextState.responseConfig,
-      searchContextState.responseToken,
+      searchContextState.responseTokens,
       searchContextState.searchResponse,
       searchContextState.snapshotId,
     ]);
@@ -385,20 +385,19 @@ const SearchResultContainer = forwardRef<
       }
 
       const routesResult = await fetchRoutes({
-        snapshotToken: searchContextState.responseToken,
-        userEmail: !isIntegrationUser ? user.email : undefined,
+        destinations: [
+          {
+            title: item.name || `${item.id}`,
+            coordinates: item.coordinates,
+          },
+        ],
         meansOfTransportation: [
           MeansOfTransportation.WALK,
           MeansOfTransportation.BICYCLE,
           MeansOfTransportation.CAR,
         ],
         origin: origin,
-        destinations: [
-          {
-            title: item.name || "" + item.id,
-            coordinates: item.coordinates,
-          },
-        ],
+        userEmail: !isIntegrationUser ? user.email : undefined,
       });
 
       if (routesResult.length) {
@@ -449,15 +448,14 @@ const SearchResultContainer = forwardRef<
       }
 
       const routesResult = await fetchTransitRoutes({
-        snapshotToken: searchContextState.responseToken,
-        userEmail: !isIntegrationUser ? user.email : undefined,
-        origin: origin,
         destinations: [
           {
             title: item.name || `${item.id}`,
             coordinates: item.coordinates,
           },
         ],
+        origin: origin,
+        userEmail: !isIntegrationUser ? user.email : undefined,
       });
 
       if (routesResult.length) {
@@ -651,7 +649,7 @@ const SearchResultContainer = forwardRef<
             searchResponse={searchResponse}
             searchAddress={searchAddress}
             groupedEntities={resultGroupEntities ?? []}
-            snippetToken={searchContextState.responseToken}
+            directLink={directLink}
             means={{
               byFoot: searchContextState.responseActiveMeans.includes(
                 MeansOfTransportation.WALK

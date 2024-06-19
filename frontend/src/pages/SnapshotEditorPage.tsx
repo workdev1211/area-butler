@@ -152,8 +152,12 @@ const SnapshotEditorPage: FC = () => {
         return;
       }
 
-      const { location, preferredLocations, searchResponse } =
-        snapshotRes.snapshot;
+      const {
+        addressToken,
+        token,
+        unaddressToken,
+        snapshot: { location, preferredLocations, searchResponse },
+      } = snapshotRes;
 
       const filteredRealEstates = filterRealEstates({
         location,
@@ -172,8 +176,8 @@ const SnapshotEditorPage: FC = () => {
       });
 
       searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-        payload: snapshotRes.token,
+        type: SearchContextActionTypes.SET_RESPONSE_TOKENS,
+        payload: { addressToken, token, unaddressToken },
       });
 
       searchContextDispatch({

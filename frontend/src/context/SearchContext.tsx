@@ -9,6 +9,7 @@ import {
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
+  IIframeTokens,
   MeansOfTransportation,
   OsmName,
   TransportationParam,
@@ -63,7 +64,7 @@ export interface SearchContextState {
   responseActiveMeans: MeansOfTransportation[];
   responseRoutes: EntityRoute[];
   responseTransitRoutes: EntityTransitRoute[];
-  responseToken: string;
+  responseTokens?: Partial<IIframeTokens>;
   gotoMapCenter?: IGotoMapCenter;
   storedContextState?: IStoredContextState;
   snapshotId?: string;
@@ -90,7 +91,6 @@ export const initialState: SearchContextState = {
   responseActiveMeans: [],
   responseRoutes: [],
   responseTransitRoutes: [],
-  responseToken: "",
 };
 
 export enum SearchContextActionTypes {
@@ -106,7 +106,7 @@ export enum SearchContextActionTypes {
   SET_RESPONSE_ACTIVE_MEANS = "SET_RESPONSE_ACTIVE_MEANS",
   SET_RESPONSE_ROUTES = "SET_RESPONSE_ROUTES",
   SET_RESPONSE_TRANSIT_ROUTES = "SET_RESPONSE_TRANSIT_ROUTES",
-  SET_RESPONSE_TOKEN = "SET_RESPONSE_TOKEN",
+  SET_RESPONSE_TOKENS = "SET_RESPONSE_TOKENS",
   TOGGLE_SINGLE_RESPONSE_GROUP = "TOGGLE_SINGLE_RESPONSE_GROUP",
   TOGGLE_RESPONSE_GROUP = "TOGGLE_RESPONSE_GROUP",
   SET_RESPONSE_CONFIG = "SET_RESPONSE_CONFIG",
@@ -154,7 +154,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: string;
   [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: string;
   [SearchContextActionTypes.SET_RESPONSE_ROUTES]: EntityRoute[];
-  [SearchContextActionTypes.SET_RESPONSE_TOKEN]: string;
+  [SearchContextActionTypes.SET_RESPONSE_TOKENS]: Partial<IIframeTokens>;
   [SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES]: EntityTransitRoute[];
   [SearchContextActionTypes.SET_CENSUS_DATA]: TCensusData | undefined;
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]:
@@ -246,10 +246,10 @@ export const searchContextReducer = (
         responseActiveMeans: [...action.payload],
       };
     }
-    case SearchContextActionTypes.SET_RESPONSE_TOKEN: {
+    case SearchContextActionTypes.SET_RESPONSE_TOKENS: {
       return {
         ...state,
-        responseToken: action.payload,
+        responseTokens: action.payload,
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_ROUTES: {

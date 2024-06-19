@@ -59,11 +59,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
 
-  const qrCodeElement = props.qrCode.isShownQrCode ? (
-    <QrCode snapshotToken={props.qrCode.snapshotToken} />
-  ) : (
-    <div />
-  );
+  const qrCodeElement = props.qrCode.isShownQrCode ? <QrCode /> : <div />;
 
   const filteredGroups = props.groupedEntries.filter(
     (group: EntityGroup) =>

@@ -39,10 +39,11 @@ export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
 
     if (!req.body.userEmail && req.body.snapshotToken) {
       const snapshotDoc =
-        await this.fetchSnapshotService.fetchSnapshotDocByToken(
-          req.body.snapshotToken,
-          { projectQuery: { userId: 1 } },
-        );
+        await this.fetchSnapshotService.fetchSnapshotDocByToken({
+          isAddressShown: req.body.isAddressShown,
+          projectQuery: { userId: 1 },
+          token: req.body.snapshotToken,
+        });
 
       if (!snapshotDoc) {
         throw new HttpException('Unknown token', 400);

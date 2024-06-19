@@ -149,7 +149,7 @@ const EmbedContainer: FC = () => {
 
     const {
       realEstates,
-      snapshotRes: { config, snapshot },
+      snapshotRes: { addressToken, config, snapshot, token, unaddressToken },
     } = embeddedData;
 
     if (!config) {
@@ -225,8 +225,8 @@ const EmbedContainer: FC = () => {
     });
 
     searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: embeddedData.snapshotRes.token,
+      type: SearchContextActionTypes.SET_RESPONSE_TOKENS,
+      payload: { addressToken, token, unaddressToken },
     });
 
     searchContextDispatch({
