@@ -1,21 +1,23 @@
 import { Step, Locale } from "react-joyride";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 const defaultLocale: Locale = {
-  skip: <span aria-label="skip">Abbrechen</span>,
-  next: "Weiter",
-  back: "Zurück",
-  last: "Beenden",
+  skip: <span aria-label="skip">{i18.t(IntlKeys.common.cancel)}</span>,
+  next: i18.t(IntlKeys.tour.next),
+  back: i18.t(IntlKeys.common.back),
+  last: i18.t(IntlKeys.tour.exit),
 };
 
 const Steps: Step[] = [
   {
     content: (
       <>
-        <h2 className="mb-5 font-bold">Willkommen beim AreaButler!</h2>
-        <div>
-          Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort
-          mit beliebigen Kriterien durchführen.
-        </div>
+        <h2 className="mb-5 font-bold">
+          {i18.t(IntlKeys.tour.searchPage.welcome)}
+        </h2>
+        <div>{i18.t(IntlKeys.tour.searchPage.welcomeDescription)}</div>
       </>
     ),
     locale: defaultLocale,
@@ -23,13 +25,12 @@ const Steps: Step[] = [
     target: "body",
   },
   {
-    content: "Zeigt Ihnen die letzten gesuchten Adressen an",
+    content: i18.t(IntlKeys.tour.searchPage.lastSearchedAddresses),
     locale: defaultLocale,
     target: 'div[data-tour="last-requests"]',
   },
   {
-    content:
-      'Hier können Sie Ihre, unter "Meine Immobilien" gespeicherten Objekte auswählen, um die Adresse automatisch auszufüllen',
+    content: i18.t(IntlKeys.tour.searchPage.myRealEstates),
     locale: defaultLocale,
     target: 'div[data-tour="my-real-estates"]',
   },
@@ -37,10 +38,7 @@ const Steps: Step[] = [
     content: (
       <>
         <p className="text-base">
-          Hier können Sie den Umkreis der Suche bestimmen und einstellen, welche
-          Isochronen in Ihrer Karte angezeigt werden. Die Angabe erfolgt über
-          Meter oder Zeitangabe. Sie können drei Arten der Fortbewegung
-          auswählen (Zu Fuß, Fahrrad und/oder Auto)
+          {i18.t(IntlKeys.tour.searchPage.transportationType)}
         </p>
       </>
     ),
@@ -48,27 +46,23 @@ const Steps: Step[] = [
     target: 'div[data-tour="transportation-type-WALK"]',
   },
   {
-    content:
-      "Zeit sparen durch Ihre Zielgruppen: eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist, wie bei Ihren Objekten, auch für Ihre Zielgruppen möglich.",
+    content: i18.t(IntlKeys.tour.searchPage.myCustomers),
     locale: defaultLocale,
     target: 'div[data-tour="my-customers"]',
   },
   {
-    content:
-      "Hier können Sie bis zu vier wichtige Adressen hinterlegen. Diese werden in der Karte hervorgehoben. Ebenfalls steht eine Routenberechnung zu diesen wichtigen Adressen zur Verfügung.",
+    content: i18.t(IntlKeys.tour.searchPage.importantAddress),
     locale: defaultLocale,
     target: 'button[data-tour="add-important-address"]',
   },
   {
-    content:
-      "Hier können Sie die POI Kategorien auswählen, die Sie in die Analyse und Ihre Karte mit aufnehmen möchten.",
+    content: i18.t(IntlKeys.tour.searchPage.localityParams),
     locale: defaultLocale,
     placement: "top",
     target: 'div[data-tour="locality-params"]',
   },
   {
-    content:
-      "Fertig. Es kann losgehen und Sie können die Analyse starten oder aktualisieren.",
+    content: i18.t(IntlKeys.tour.searchPage.startAnalysis),
     locale: defaultLocale,
     placement: "top",
     target: 'button[data-tour="start-search"]',

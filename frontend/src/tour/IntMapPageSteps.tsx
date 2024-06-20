@@ -1,71 +1,66 @@
 import { Locale, Step } from "react-joyride";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 const defaultLocale: Locale = {
-  skip: <span aria-label="skip">Abbrechen</span>,
-  next: "Weiter",
-  back: "Zurück",
-  last: "Beenden",
+  skip: <span aria-label="skip">{i18.t(IntlKeys.common.cancel)}</span>,
+  next: i18.t(IntlKeys.tour.next),
+  back: i18.t(IntlKeys.common.back),
+  last: i18.t(IntlKeys.tour.exit),
 };
 
 const Steps: Step[] = [
   {
-    content:
-      "Auf dieser Seite lassen sich die Ergebnisse der Umgebungsanalyse betrachten",
+    content: i18.t(IntlKeys.tour.intMapPage.welcome),
     locale: defaultLocale,
     placement: "center",
     target: "body",
   },
   {
-    content:
-      "Die Karte bietet eine interaktive Möglichkeit zur Bewertung des Standorts und der Umgebung in verschiedenen Zoomstufen",
+    content: i18.t(IntlKeys.tour.intMapPage.map),
     locale: defaultLocale,
     placement: "top-start",
     target: 'div[data-tour="map"]',
   },
   {
-    content:
-      "Hier sehen Sie eine Auflistung aller Orte, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen und die Erreichbarkeit betrachten",
+    content: i18.t(IntlKeys.tour.intMapPage.sideMenu),
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="side-menu"]',
   },
   {
-    content:
-      "Wenn Sie die interaktive Karte veröffentlichen, stellen wir die von Ihnen erstellte Karte online. Die Karte ist dann 6 Monate unter diesem Link, dem QR-Code und dem iFrame erreichbar. Sollten Sie eine längere online Zeit wünschen, sprechen Sie uns gerne an.",
+    content: i18.t(IntlKeys.tour.intMapPage.publishIframe),
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="publish-iframe"]',
   },
   {
-    content:
-      "Über einen Klick auf die Adresse können Sie jederzeit bequem zurück zum Start auf der Karte navigieren",
+    content: i18.t(IntlKeys.tour.intMapPage.resetPosition),
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="reset-position"]',
   },
   {
-    content:
-      "Hier können Sie ein- und ausblenden welche Mobilitätsart Sie betrachten wollen. Zb. in Rot: was kann ich zu Fuß erreichen in der angegebenen Zeit",
+    content: i18.t(IntlKeys.tour.intMapPage.mapNavbar),
     locale: defaultLocale,
     placement: "bottom",
     target: 'div[data-tour="map-navbar"]',
   },
   {
-    content:
-      "Ein Klick zoomt und zentriert die Karte auf die Erreichbarkeitslinie/Isochrone des gewählten Fortbewegungsmittels.",
+    content: i18.t(IntlKeys.tour.intMapPage.zoomToBounds),
     locale: defaultLocale,
     placement: "right",
     target: 'div[data-tour="zoom-to-bounds"]',
   },
   {
-    content: "Hier können Sie den Vollbildmodus aktivieren bzw. deaktivieren.",
+    content: i18.t(IntlKeys.tour.intMapPage.goFullscreen),
     locale: defaultLocale,
     placement: "right",
     target: 'a[data-tour="go-fullscreen"]',
   },
   {
-    content:
-      "Hier können Sie die aktuelle Ansicht der Karte als Bild speichern und rechts im Menü herunterladen. Die hier aufgenommenen Snapshots sind dann auch in Ihren Exporten hinterlegt.",
+    content: i18.t(IntlKeys.tour.intMapPage.takePicture),
     locale: defaultLocale,
     placement: "right",
     target: 'a[data-tour="take-map-picture"]',

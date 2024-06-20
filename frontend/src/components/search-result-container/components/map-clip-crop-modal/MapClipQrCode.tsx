@@ -1,5 +1,8 @@
 import { FunctionComponent } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 interface IMapClipQrCodeImage {
   qrCodeImage: string;
   color?: string;
@@ -9,6 +12,7 @@ export const MapClipQrCode: FunctionComponent<IMapClipQrCodeImage> = ({
   qrCodeImage,
   color = "white",
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -35,8 +39,8 @@ export const MapClipQrCode: FunctionComponent<IMapClipQrCodeImage> = ({
           fontWeight: "bold",
         }}
       >
-        <div>Scannen und neue</div>
-        <div>Wohnlage entdecken</div>
+        <div>{t(IntlKeys.snapshotEditor.exportTab.scanAndNew)}</div>
+        <div>{t(IntlKeys.snapshotEditor.exportTab.discoverResidentialArea)}</div>
       </div>
     </div>
   );

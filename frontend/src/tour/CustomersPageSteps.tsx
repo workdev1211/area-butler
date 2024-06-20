@@ -1,50 +1,47 @@
 import { Step, Locale } from "react-joyride";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 const defaultLocale: Locale = {
-  skip: <span aria-label="skip">Abbrechen</span>,
-  next: "Weiter",
-  back: "Zurück",
-  last: "Beenden",
+  skip: <span aria-label="skip">{i18.t(IntlKeys.common.cancel)}</span>,
+  next: i18.t(IntlKeys.tour.next),
+  back: i18.t(IntlKeys.common.back),
+  last: i18.t(IntlKeys.tour.exit),
 };
 
 const Steps: Step[] = [
   {
-    content: 'Auf dieser Seite lassen sich Ihre Interessenten/Zielgruppen verwalten.',
+    content: i18.t(IntlKeys.tour.customersPage.welcome),
     locale: defaultLocale,
     placement: "center",
     target: "body",
   },
   {
-    content:
-      "In dieser Tabelle werden Ihre Interessenten/Zielgruppen, mit allen relevanten Informationen, dargestellt.",
+    content: i18.t(IntlKeys.tour.customersPage.tableOverview),
     locale: defaultLocale,
     target: 'div[data-tour="customers-table"]',
   },
   {
-    content:
-      "Über das Suche Symbol lässt sich eine neue Umgebungsanalyse starten. Die Daten des Interessenten/der Zielgruppe werden in der Suche vorbelegt.",
+    content: i18.t(IntlKeys.tour.customersPage.searchBtn),
     locale: defaultLocale,
     target: 'img[data-tour="customers-table-item-search-button-0"]',
   },
   {
-    content:
-      "Über das Stift Symbol lassen sich Interessenten und Zielgruppen editieren.",
+    content: i18.t(IntlKeys.tour.customersPage.editBtn),
     locale: defaultLocale,
     target: 'img[data-tour="customers-table-item-edit-button-0"]',
   },
   {
-    content:
-      "Über den Papierkorb lassen sich die Interessenten oder Zielgruppen löschen.",
+    content: i18.t(IntlKeys.tour.customersPage.deleteBtn),
     locale: defaultLocale,
     target: 'img[data-tour="customers-table-item-delete-button-0"]',
   },
   {
-    content:
-      "Über das Aktionen Menu können Sie weitere Interessenten oder Zielgruppen anlegen oder einen Fragebogen an einen neuen Interessenten per E-Mail versenden.",
+    content: i18.t(IntlKeys.tour.customersPage.createBtn),
     locale: defaultLocale,
     target: 'div[data-tour="actions-top"]',
   },
 ];
-
 
 export default Steps;

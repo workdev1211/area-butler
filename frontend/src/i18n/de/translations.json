@@ -12,6 +12,7 @@
     "noResults": "Keine Ergebnisse",
     "searching": "Suche...",
     "close": "Schließen",
+    "cancel": "Abbrechen",
     "open": "Öffnen",
     "apply": "Anwenden",
     "send": "Senden",
@@ -144,6 +145,22 @@
     "cardsIcon": "Karten Icon",
     "uploadIcon": "Icon hochladen",
     "addressNotPublished": "Genaue Adresse nicht veröffentlicht",
+    "selectRatio": "Seitenverhältnis wählen",
+    "selectRatioTooltip": "Wähle den Kartenausschnitt und das Seitenverhältnis (1:1, 4:3, 16:9 oder ein eigenes Format). Tipp für dein Lage-Exposé: Erstelle zwei Bilder: ein großes in 16:9 der Mikrolage und ein kleineres in 1:1 der Makrolage, das in die untere linke Ecke des großen Bildes kommt. Mehr dazu in unseren FAQs unter areabutler.de.",
+    "userDefined": "Benutzerdefinierten",
+    "showQRCode": "QR-Code anzeigen",
+    "crop": "Zuschneiden",
+    "portrait": "portrait",
+    "helpAndFeedback": "Hilfe & Feedback",
+    "startTour": "Tour starten",
+    "feedbackQuestion": "Liegt etwas auf dem Herzen?",
+    "supportQuestion": "Dürfen wir unterstützen?",
+    "specifyTypeOfFeedback": "Dürfen wir unterstützen?",
+    "enterDescription": "Bitte geben Sie eine Beschreibung an",
+    "typeOfFeedback": "Art des Feedbacks",
+    "improvement": "Verbesserung",
+    "error": "Fehler",
+    "other": "Sonstiges",
     "exportTab": {
       "mapSection": "Kartenausschnitte",
       "mapSectionDescription": "Für Exposés, Print Medien, Bildergalerien",
@@ -247,6 +264,7 @@
       "ownFilesDescription": "Dateien und Objekt speichern, Zielgruppe anlegen",
       "loadingClickAgain": "Wird geladen ... bitte erneut klicken.",
       "saveTargetGroup": "Zielgruppe speichern",
+      "interactiveMap": "Interaktive Karte",
       "openAITypesSideBarLabel": {
         "LOCATION_DESCRIPTION": "Lage - Beschreibung",
         "REAL_ESTATE_DESCRIPTION": "Objekt - Beschreibung",
@@ -476,7 +494,15 @@
     "copyLink": "Link Kopieren",
     "cancelTemplate": "Vorlage aufheben",
     "setAsTemplate": "Als Vorlage festlegen",
-    "duplicateCard": "Karte duplizieren"
+    "duplicateCard": "Karte duplizieren",
+    "duplicateCardSuccessfully": "Das Duplizieren der Karte war erfolgreich.",
+    "settingSaved": "Einstellungen gespeichert!",
+    "settingSavingError": "Fehler beim Speichern der Einstellungen!",
+    "changingNoteError": "Fehler beim Ändern der Notiz",
+    "yourCardSnippet": "Ihr Karten-Snippet",
+    "noteField": "Notizfeld",
+    "directLink": "Direkt Link",
+    "htmlSnippet": "HTML Snippet"
   },
   "yourProfile": {
     "title": "Ihr Profil",
@@ -506,5 +532,82 @@
     "currentPlan": "Aktueller Plan",
     "managePaymentAndSubscription": "Zahlung und Abonnement verwalten",
     "requestExecuted": "Anfragen ausgeführt"
+  },
+  "tour": {
+    "tourEndingError": "Fehler beim Beenden der Tour",
+    "mayWeHelp": "Dürfen wir helfen?",
+    "doNotShowAnyMore": "Ich möchte keine weiteren Tipps angezeigt bekommen",
+    "noInterest": "Kein Interesse",
+    "startIntroduction": "Einführung beginnen",
+    "next": "Weiter",
+    "exit": "Beenden",
+    "tourDescription": {
+      "search": "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
+      "result": "Möchten Sie eine kurze Einführung zur Ergebnisseite bekommen?",
+      "customers": "Möchten Sie eine kurze Einführung zur Interessentenseite bekommen?",
+      "realEstates": "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
+      "profile": "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
+      "editor": "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?",
+      "intMap": "Möchten Sie eine kurze Einführung in die Kartenausschnittsseite?",
+      "intSearch": "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?"
+    },
+    "searchPage": {
+      "welcome": "Willkommen beim AreaButler!",
+      "welcomeDescription": "Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort\n          mit beliebigen Kriterien durchführen.",
+      "lastSearchedAddresses": "Zeigt Ihnen die letzten gesuchten Adressen an",
+      "myRealEstates": "Hier können Sie Ihre, unter \"Meine Immobilien\" gespeicherten Objekte auswählen, um die Adresse automatisch auszufüllen",
+      "transportationType": "Hier können Sie den Umkreis der Suche bestimmen und einstellen, welche\n          Isochronen in Ihrer Karte angezeigt werden. Die Angabe erfolgt über\n          Meter oder Zeitangabe. Sie können drei Arten der Fortbewegung\n          auswählen (Zu Fuß, Fahrrad und/oder Auto)",
+      "myCustomers": "Zeit sparen durch Ihre Zielgruppen: eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist, wie bei Ihren Objekten, auch für Ihre Zielgruppen möglich.",
+      "importantAddress": "Hier können Sie bis zu vier wichtige Adressen hinterlegen. Diese werden in der Karte hervorgehoben. Ebenfalls steht eine Routenberechnung zu diesen wichtigen Adressen zur Verfügung.",
+      "localityParams": "Hier können Sie die POI Kategorien auswählen, die Sie in die Analyse und Ihre Karte mit aufnehmen möchten.",
+      "startAnalysis": "Fertig. Es kann losgehen und Sie können die Analyse starten oder aktualisieren."
+    },
+    "realEstatesPage": {
+      "welcome": "Auf dieser Seite lassen sich Ihre Objekte verwalten.",
+      "tableOverview": "In dieser Tabelle werden Ihre Objekte dargestellt mit allen relevanten Informationen.",
+      "searchBtn": "Über das Suche Symbol lässt sich eine neue Umgebungsanalyse starten. Die Daten des Objektes werden in der Suche vorbelegt.",
+      "editBtn": "Über das Stift Symbol lassen sich Objekte editieren.",
+      "deleteBtn": "Über den Papierkorb lassen sich die Objekte löschen.",
+      "createBtn": "Über das Aktionen Menu lassen sich weitere Objekte anlegen."
+    },
+    "customersPage": {
+      "welcome": "Auf dieser Seite lassen sich Ihre Interessenten/Zielgruppen verwalten.",
+      "tableOverview": "In dieser Tabelle werden Ihre Interessenten/Zielgruppen, mit allen relevanten Informationen, dargestellt.",
+      "searchBtn": "Über das Suche Symbol lässt sich eine neue Umgebungsanalyse starten. Die Daten des Interessenten/der Zielgruppe werden in der Suche vorbelegt.",
+      "editBtn": "Über das Stift Symbol lassen sich Interessenten und Zielgruppen editieren.",
+      "deleteBtn": "Über den Papierkorb lassen sich die Interessenten oder Zielgruppen löschen.",
+      "createBtn": "Über das Aktionen Menu können Sie weitere Interessenten oder Zielgruppen anlegen oder einen Fragebogen an einen neuen Interessenten per E-Mail versenden."
+    },
+    "profilePage": {
+      "welcome": "Auf dieser Seite lassen sich Ihre persönlichen Informationen und Ihr Abonnement verwalten sowie Ihre aktuellen Kontingente einsehen.",
+      "form": "Hier lässt sich Ihr Name anpassen sowie die Email-Adresse einsehen, die mit diesem Konto verknüpft ist.",
+      "subscription": "Über diesen Knopf lässt sich Ihr Abonnement verwalten. Durch Klicken werden Sie auf das Kundenportal weitergeleitet.",
+      "requestContingent": "In diesen Zeilen lassen sich Ihre aktuellen Kontingente betrachten. Der Info-Knopf bietet eine monatliche Übersicht über Ihr Abfragekontingent."
+    },
+    "editorPage": {
+      "welcome": "Umgebung analysieren, Karte anpassen, Dokumente & Links exportieren. Es gibt\n        viel zu entdecken und dafür gibts hier Tipps, Tricks und kurze Erklärvideos ...",
+      "mapNavbar": "Hier können Sie filtern, welches Erreichbarkeitsgebiet Sie betrachten\n        wollen z.B. in rot: was kann man, in der angegebenen Zeit, zu Fuß\n        erreichen.",
+      "toggleBounds": "Keine Lust auf zackige Linien im Kartenausschnitt? Hier können Sie die\n        Erreichbarkeitslinien aus- und einblenden aber trotzdem die POIs in der\n        Karte behalten.",
+      "zoomToBounds": "Auto-Zoom: Zoomt und zentriert die Karte auf das jeweilige\n        Erreichbarkeitsgebiet.",
+      "goFullscreen": "Vorschau: Zeigt die Karte in einem neuen Vorschau-Tab genau so, wie Ihre\n        KundInnen diese sehen werden.",
+      "takeMapPicture": "Erstellen Sie hier den aktuellen Kartenausschnitt als Bild. Sie können\n        die Bilder unter Exporte herunterladen. Sie werden auch in Ihre\n        Export-Dokumente integriert. Tipp: Verändern Sie die Größe Ihres\n        Browserfensters für das perfekte Seitenverhältnis, für Ihren\n        Anwendungsfall.",
+      "sideBar": "Neue Seitenleiste",
+      "tabsIcons": "Tabs: greifen Sie direkt auf das zu, was Sie benötigen. Hier zu jedem\n        Tab ein kurzes Erklärvideo.",
+      "showMapMenuBar": "Hier können Sie die Seitenleiste ein- oder ausblenden z.B. um\n        Kartenausschnitte aufzunehmen.",
+      "resetPosition": "Über einen Klick auf die Adresse gelangen Sie wieder zur zentrierten\n        Ausgangsposition.",
+      "mapMenuContents": "Lokalitäten, Indizes, Daten: Die einzelnen Kategorien lassen sich aus-\n        und einklappen und einzelne POIs anklicken und in der Karte hervorheben.\n        Hier finden Sie auch weitere Daten & Fakten.",
+      "saveBtn": "Speichern: Änderungen an Ihrer Karte speichern & veröffentlichen."
+    },
+    "intMapPage": {
+      "welcome": "Auf dieser Seite lassen sich die Ergebnisse der Umgebungsanalyse betrachten",
+      "map": "Die Karte bietet eine interaktive Möglichkeit zur Bewertung des Standorts und der Umgebung in verschiedenen Zoomstufen",
+      "sideMenu": "Hier sehen Sie eine Auflistung aller Orte, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen und die Erreichbarkeit betrachten",
+      "publishIframe": "Wenn Sie die interaktive Karte veröffentlichen, stellen wir die von Ihnen erstellte Karte online. Die Karte ist dann 6 Monate unter diesem Link, dem QR-Code und dem iFrame erreichbar. Sollten Sie eine längere online Zeit wünschen, sprechen Sie uns gerne an.",
+      "resetPosition": "Über einen Klick auf die Adresse können Sie jederzeit bequem zurück zum Start auf der Karte navigieren",
+      "mapNavbar": "Hier können Sie ein- und ausblenden welche Mobilitätsart Sie betrachten wollen. Zb. in Rot: was kann ich zu Fuß erreichen in der angegebenen Zeit",
+      "zoomToBounds": "Ein Klick zoomt und zentriert die Karte auf die Erreichbarkeitslinie/Isochrone des gewählten Fortbewegungsmittels.",
+      "goFullscreen": "Hier können Sie den Vollbildmodus aktivieren bzw. deaktivieren.",
+      "takePicture": "Hier können Sie die aktuelle Ansicht der Karte als Bild speichern und rechts im Menü herunterladen. Die hier aufgenommenen Snapshots sind dann auch in Ihren Exporten hinterlegt."
+    }
   }
 }

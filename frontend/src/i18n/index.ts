@@ -15,3 +15,5 @@ i18next.use(initReactI18next).init({
     },
   },
 });
+
+export default i18next;

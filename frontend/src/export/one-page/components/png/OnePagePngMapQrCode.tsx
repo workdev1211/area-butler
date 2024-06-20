@@ -33,7 +33,7 @@ const OnePagePngMapQrCode: FunctionComponent<IOnePagePngMapQrCodeProps> = ({
           fontWeight: 700,
         }}
       >
-        Interaktive Karte
+        {t(IntlKeys.snapshotEditor.exportTab.interactiveMap)}
       </div>
       <div
         style={{

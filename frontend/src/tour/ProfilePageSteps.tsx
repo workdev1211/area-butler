@@ -1,38 +1,37 @@
 import { Step, Locale } from "react-joyride";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 const defaultLocale: Locale = {
-  skip: <span aria-label="skip">Abbrechen</span>,
-  next: "Weiter",
-  back: "Zurück",
-  last: "Beenden",
+  skip: <span aria-label="skip">{i18.t(IntlKeys.common.cancel)}</span>,
+  next: i18.t(IntlKeys.tour.next),
+  back: i18.t(IntlKeys.common.back),
+  last: i18.t(IntlKeys.tour.exit),
 };
 
 const Steps: Step[] = [
   {
-    content: 'Auf dieser Seite lassen sich Ihre persönlichen Informationen und Ihr Abonnement verwalten sowie Ihre aktuellen Kontingente einsehen.',
+    content: i18.t(IntlKeys.tour.profilePage.welcome),
     locale: defaultLocale,
     placement: "center",
     target: "body",
   },
   {
-    content:
-      "Hier lässt sich Ihr Name anpassen sowie die Email-Adresse einsehen, die mit diesem Konto verknüpft ist.",
+    content: i18.t(IntlKeys.tour.profilePage.form),
     locale: defaultLocale,
     target: 'div[data-tour="profile-form"]',
   },
   {
-    content:
-      "Über diesen Knopf lässt sich Ihr Abonnement verwalten. Durch Klicken werden Sie auf das Kundenportal weitergeleitet.",
+    content: i18.t(IntlKeys.tour.profilePage.subscription),
     locale: defaultLocale,
     target: 'button[data-tour="manage-subscription"]',
   },
   {
-    content:
-      "In diesen Zeilen lassen sich Ihre aktuellen Kontingente betrachten. Der Info-Knopf bietet eine monatliche Übersicht über Ihr Abfragekontingent.",
+    content: i18.t(IntlKeys.tour.profilePage.requestContingent),
     locale: defaultLocale,
     target: 'div[data-tour="request-contingent"]',
-  }
+  },
 ];
-
 
 export default Steps;

@@ -25,7 +25,7 @@ import { ApiConfig } from "../../shared/types/types";
 import { ConfigContext } from "context/ConfigContext";
 import { UserContextProvider } from "./context/UserContext";
 
-import 'i18n/config';
+import 'i18n';
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 

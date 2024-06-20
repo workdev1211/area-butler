@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import copy from "copy-to-clipboard";
 import { saveAs } from "file-saver";
 
@@ -29,6 +33,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
   snapshot,
   label,
 }) => {
+  const { t } = useTranslation();
   const { userDispatch } = useContext(UserContext);
 
   const { updateSnapshot } = useLocationData();
@@ -39,7 +44,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
     const success = copy(codeSnippet);
 
     if (success) {
-      toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+      toastSuccess(t(IntlKeys.common.successfullyCopiedToClipboard));
     }
   };
 
@@ -59,7 +64,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
           payload: { id: snapshot.id, description: description || "" },
         });
       } catch (err) {
-        toastError("Fehler beim Ändern der Notiz");
+        toastError(t(IntlKeys.mapSnapshots.changingNoteError));
         console.error(err);
       }
     }
@@ -82,7 +87,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
     <div className="modal modal-open z-9999">
       <div className="modal-box flex flex-col">
         <div className="flex justify-between items-center">
-          <div>Ihr Karten-Snippet</div>
+          <div>{t(IntlKeys.mapSnapshots.yourCardSnippet)}</div>
           <img
             className="cursor-pointer w-5 h-5"
             style={svgPrimaryColorFilter}
@@ -96,7 +101,9 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
           <div>
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Notizfeld</span>
+                <span className="label-text">
+                  {t(IntlKeys.mapSnapshots.noteField)}
+                </span>
               </label>
               <textarea
                 className="textarea textarea-primary"
@@ -117,7 +124,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
             }}
           >
             <img className="w-6 h-6" src={copyIcon} alt="copy" />
-            Direkt Link
+            {t(IntlKeys.mapSnapshots.directLink)}
           </h3>
           <code className="break-all text-sm">{directLink}</code>
         </div>
@@ -142,7 +149,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
               src={downloadIcon}
               alt="download-qr-code"
             />
-            QR Code
+            {t(IntlKeys.common.qrCode)}
           </h3>
         </div>
 
@@ -154,7 +161,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
             }}
           >
             <img className="w-6 h-6" src={copyIcon} alt="copy" />
-            HTML Snippet
+            {t(IntlKeys.mapSnapshots.htmlSnippet)}
           </h3>
           <code className="break-all text-sm">{codeSnippet}</code>
         </div>

@@ -1,50 +1,47 @@
 import { Step, Locale } from "react-joyride";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 const defaultLocale: Locale = {
-  skip: <span aria-label="skip">Abbrechen</span>,
-  next: "Weiter",
-  back: "Zurück",
-  last: "Beenden",
+  skip: <span aria-label="skip">{i18.t(IntlKeys.common.cancel)}</span>,
+  next: i18.t(IntlKeys.tour.next),
+  back: i18.t(IntlKeys.common.back),
+  last: i18.t(IntlKeys.tour.exit),
 };
 
 const Steps: Step[] = [
   {
-    content: 'Auf dieser Seite lassen sich Ihre Objekte verwalten.',
+    content: i18.t(IntlKeys.tour.realEstatesPage.welcome),
     locale: defaultLocale,
     placement: "center",
     target: "body",
   },
   {
-    content:
-      "In dieser Tabelle werden Ihre Objekte dargestellt mit allen relevanten Informationen.",
+    content: i18.t(IntlKeys.tour.realEstatesPage.tableOverview),
     locale: defaultLocale,
     target: 'div[data-tour="real-estates-table"]',
   },
   {
-    content:
-      "Über das Suche Symbol lässt sich eine neue Umgebungsanalyse starten. Die Daten des Objektes werden in der Suche vorbelegt.",
+    content: i18.t(IntlKeys.tour.realEstatesPage.searchBtn),
     locale: defaultLocale,
     target: 'img[data-tour="real-estates-table-item-search-button-0"]',
   },
   {
-    content:
-      "Über das Stift Symbol lassen sich Objekte editieren.",
+    content: i18.t(IntlKeys.tour.realEstatesPage.editBtn),
     locale: defaultLocale,
     target: 'img[data-tour="real-estates-table-item-edit-button-0"]',
   },
   {
-    content:
-      "Über den Papierkorb lassen sich die Objekte löschen.",
+    content: i18.t(IntlKeys.tour.realEstatesPage.deleteBtn),
     locale: defaultLocale,
     target: 'img[data-tour="real-estates-table-item-delete-button-0"]',
   },
   {
-    content:
-      "Über das Aktionen Menu lassen sich weitere Objekte anlegen.",
+    content: i18.t(IntlKeys.tour.realEstatesPage.createBtn),
     locale: defaultLocale,
     target: 'div[data-tour="actions-top"]',
   },
 ];
-
 
 export default Steps;

@@ -1,4 +1,8 @@
 import { RefObject, useContext } from "react";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import { AxiosResponse } from "axios";
 
 import {
@@ -21,6 +25,7 @@ import { IApiLateSnapConfigOption } from "../../../shared/types/location";
 import { ConfigContext } from "../context/ConfigContext";
 
 export const useLocationData = () => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -88,8 +93,7 @@ export const useLocationData = () => {
           : `/api/location/snapshot/${snapshotId}`
       )
     ).data;
-    // TODO: translate this
-    toastSuccess("Das Duplizieren der Karte war erfolgreich.");
+    toastSuccess(t(IntlKeys.mapSnapshots.duplicateCardSuccessfully));
 
     return duplicatedSnapshot;
   };
@@ -188,11 +192,11 @@ export const useLocationData = () => {
         type: SearchContextActionTypes.CLEAR_CUSTOM_POIS,
       });
 
-      toastSuccess("Einstellungen gespeichert!");
+      toastSuccess(t(IntlKeys.mapSnapshots.settingSaved));
 
       return snapshotResponse;
     } catch (e) {
-      toastError("Fehler beim Speichern der Einstellungen!");
+      toastError(t(IntlKeys.mapSnapshots.settingSavingError));
     }
   };
 

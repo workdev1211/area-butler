@@ -254,8 +254,25 @@
         "LOCATION_REAL_ESTATE_DESCRIPTION": "Exposé text",
         "FORMAL_TO_INFORMAL": "Transformation you-form into you-form",
         "GENERAL_QUESTION": "Ask AI a general question"
-      }
-    }
+      },
+      "interactiveMap": "Interactive map"
+    },
+    "selectRatio": "Select aspect ratio",
+    "selectRatioTooltip": "Select the map section and the aspect ratio (1:1, 4:3, 16:9 or your own format). Tip for your location exposé: Create two images: a large one in 16:9 of the micro location and a smaller one in 1:1 of the macro location, which is placed in the bottom left corner of the large image. Find out more in our FAQs at areabutler.de.",
+    "userDefined": "User-defined",
+    "showQRCode": "Show QR code",
+    "crop": "Crop",
+    "portrait": "portrait",
+    "helpAndFeedback": "Help & Feedback",
+    "startTour": "Start tour",
+    "feedbackQuestion": "Is there something on your mind?",
+    "supportQuestion": "May we provide support?",
+    "specifyTypeOfFeedback": "May we provide support?",
+    "enterDescription": "Please enter a description",
+    "typeOfFeedback": "Type of feedback",
+    "improvement": "Improvement",
+    "error": "Error",
+    "other": "Miscellaneous"
   },
   "common": {
     "showMore": "Show more",
@@ -315,7 +332,8 @@
       "KILOMETERS": "Kilometers",
       "MINUTES": "minutes"
     },
-    "description": "Description"
+    "description": "Description",
+    "cancel": "Cancel"
   },
   "environmentalAnalysis": {
     "createBtn": "Create analysis & map",
@@ -470,7 +488,15 @@
     "copyLink": "Copy link",
     "cancelTemplate": "Cancel template",
     "setAsTemplate": "Set as template",
-    "duplicateCard": "Duplicate card"
+    "duplicateCard": "Duplicate card",
+    "duplicateCardSuccessfully": "The duplication of the card was successful.",
+    "settingSaved": "Settings saved!",
+    "settingSavingError": "Error when saving the settings!",
+    "changingNoteError": "Error when changing the note",
+    "yourCardSnippet": "Your card snippet",
+    "noteField": "Note field",
+    "directLink": "Direct link",
+    "htmlSnippet": "HTML Snippet"
   },
   "imageUpload": {
     "supportedFormats": "Supported formats: png, jpg, svg, maximum size: 5MB",
@@ -506,5 +532,82 @@
     "currentPlan": "Current plan",
     "managePaymentAndSubscription": "Manage payment and subscription",
     "requestExecuted": "Requests executed"
+  },
+  "tour": {
+    "tourEndingError": "Error when ending the tour",
+    "mayWeHelp": "May we help?",
+    "doNotShowAnyMore": "I do not want any more tips to be displayed",
+    "noInterest": "No interest",
+    "startIntroduction": "Start introduction",
+    "tourDescription": {
+      "search": "Would you like a brief introduction to environmental analysis?",
+      "result": "Would you like a brief introduction to the results page?",
+      "customers": "Would you like a brief introduction to the prospect page?",
+      "realEstates": "Would you like a brief introduction to the property page?",
+      "profile": "Would you like a brief introduction to the profile page?",
+      "editor": "Would you like a brief introduction to the map editor?",
+      "intMap": "Would you like a brief introduction to the map section page?",
+      "intSearch": "Would you like a brief introduction to environmental analysis?"
+    },
+    "next": "Next",
+    "exit": "Exit",
+    "searchPage": {
+      "welcome": "Welcome to the AreaButler!",
+      "welcomeDescription": "On this page, you can carry out the environment analysis for a location\n          with any criteria.",
+      "lastSearchedAddresses": "Shows you the last addresses you searched for",
+      "myRealEstates": "Here you can select your properties saved under \"My properties\" to fill in the address automatically",
+      "transportationType": "Here you can define the radius of the search and set which\n          isochrones are displayed on your map. The specification is made via\n          meters or time. You can select three types of transportation\n          (on foot, by bike and/or by car)",
+      "myCustomers": "Save time with your target groups: the movement profile and locations can be pre-assigned for your target groups in the same way as for your properties.",
+      "importantAddress": "You can enter up to four important addresses here. These are highlighted on the map. A route calculation to these important addresses is also available.",
+      "localityParams": "Here you can select the POI categories that you would like to include in the analysis and your map.",
+      "startAnalysis": "Done. You can start or update the analysis."
+    },
+    "realEstatesPage": {
+      "welcome": "You can manage your objects on this page.",
+      "tableOverview": "Your objects are displayed in this table with all relevant information.",
+      "searchBtn": "A new environment analysis can be started via the search icon. The object data is pre-populated in the search.",
+      "editBtn": "Objects can be edited using the pencil icon.",
+      "deleteBtn": "The objects can be deleted via the recycle bin.",
+      "createBtn": "Additional objects can be created via the Actions menu."
+    },
+    "customersPage": {
+      "welcome": "You can manage your prospects/target groups on this page.",
+      "tableOverview": "This table shows your prospective customers/target groups with all relevant information.",
+      "searchBtn": "A new environment analysis can be started via the search icon. The data of the interested party/target group is pre-populated in the search.",
+      "editBtn": "Interested parties and target groups can be edited using the pencil symbol.",
+      "deleteBtn": "Interested parties or target groups can be deleted via the recycle bin.",
+      "createBtn": "You can use the Actions menu to create additional interested parties or target groups or send a questionnaire to a new interested party by e-mail."
+    },
+    "profilePage": {
+      "welcome": "On this page you can manage your personal information and your subscription and view your current quotas.",
+      "form": "Here you can customize your name and view the email address associated with this account.",
+      "subscription": "This button allows you to manage your subscription. By clicking on it, you will be redirected to the customer portal.",
+      "requestContingent": "Your current quotas can be viewed in these lines. The info button provides a monthly overview of your query quota."
+    },
+    "editorPage": {
+      "welcome": "Analyze environment, customize map, export documents & links. There is\n        a lot to discover and you can find tips, tricks and short explanatory videos here ...",
+      "mapNavbar": "Here you can filter which accessibility area you want to look at\n        e.g. in red: what can be reached on foot in the specified time?\n        within the specified time.",
+      "toggleBounds": "Not in the mood for jagged lines in the map section? Here you can\n        show and hide the accessibility lines but still keep the POIs on the map.\n        POIs on the map.",
+      "zoomToBounds": "Auto-zoom: Zooms and centers the map on the respective\n        accessibility area.",
+      "goFullscreen": "Preview: Shows the map in a new preview tab exactly as your customers will see it.\n        customers will see it.",
+      "takeMapPicture": "Create the current map section as an image here. You can\n        download the images under Exports. They are also integrated into your\n        integrated into your export documents. Tip: Change the size of your\n        browser window for the perfect aspect ratio for your\n        use case.",
+      "sideBar": "New sidebar",
+      "tabsIcons": "Tabs: access what you need directly. Here for each\n        tab a short explanatory video.",
+      "showMapMenuBar": "Here you can show or hide the sidebar, e.g. to\n        include map sections.",
+      "resetPosition": "Click on the address to return to the centered starting position.\n        starting position.",
+      "mapMenuContents": "Localities, indices, data: The individual categories can be expanded and\n        and click on individual POIs to highlight them on the map.\n        You can also find more facts & figures here.",
+      "saveBtn": "Save: Save & publish changes to your map."
+    },
+    "intMapPage": {
+      "welcome": "The results of the environment analysis can be viewed on this page",
+      "map": "The map offers an interactive option for evaluating the location and the surrounding area at various zoom levels",
+      "sideMenu": "Here you can see a list of all the places that are nearby. The individual menu items can be expanded and the accessibility can be viewed",
+      "publishIframe": "If you publish the interactive map, we will put the map you have created online. The map will then be accessible for 6 months via this link, the QR code and the iFrame. If you would like a longer online period, please contact us.",
+      "resetPosition": "You can easily navigate back to the start on the map at any time by clicking on the address",
+      "mapNavbar": "Here you can show and hide which type of mobility you want to view. E.g. in red: what can I reach on foot in the specified time",
+      "zoomToBounds": "One click zooms and centers the map on the accessibility line/isochrone of the selected means of transport.",
+      "goFullscreen": "You can activate or deactivate full screen mode here.",
+      "takePicture": "Here you can save the current view of the map as an image and download it from the menu on the right. The snapshots taken here are then also stored in your exports."
+    }
   }
 }

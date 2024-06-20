@@ -1,4 +1,8 @@
 import { FunctionComponent } from "react";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -14,6 +18,7 @@ export const FeedbackForm: FunctionComponent<IFeedbackFormData> = ({
   formId,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
   return (
     <Formik
       initialValues={{
@@ -21,9 +26,11 @@ export const FeedbackForm: FunctionComponent<IFeedbackFormData> = ({
         type: "IMPROVEMENT",
       }}
       validationSchema={Yup.object({
-        type: Yup.string().required("Bitte geben Sie die Art des Feedbacks an"),
+        type: Yup.string().required(
+          t(IntlKeys.snapshotEditor.specifyTypeOfFeedback)
+        ),
         description: Yup.string().required(
-          "Bitte geben Sie eine Beschreibung an"
+          t(IntlKeys.snapshotEditor.enterDescription)
         ),
       })}
       onSubmit={onSubmit}
@@ -31,22 +38,24 @@ export const FeedbackForm: FunctionComponent<IFeedbackFormData> = ({
       <Form id={formId}>
         <div className="form-control">
           <Select
-            label="Art des Feedbacks"
+            label={t(IntlKeys.snapshotEditor.typeOfFeedback)}
             name="type"
             type="number"
-            placeholder="Art des Feedbacks"
+            placeholder={t(IntlKeys.snapshotEditor.typeOfFeedback)}
           >
-            <option value="IMPROVEMENT">Verbesserung</option>
-            <option value="ERROR">Fehler</option>
-            <option value="OTHER">Sonstiges</option>
+            <option value="IMPROVEMENT">
+              {t(IntlKeys.snapshotEditor.improvement)}
+            </option>
+            <option value="ERROR">{t(IntlKeys.snapshotEditor.error)}</option>
+            <option value="OTHER">{t(IntlKeys.snapshotEditor.other)}</option>
           </Select>
         </div>
         <div className="form-control">
           <Textarea
             rows={12}
-            label="Beschreibung"
+            label={t(IntlKeys.common.description)}
             name="description"
-            placeholder="Beschreibung"
+            placeholder={t(IntlKeys.common.description)}
           />
         </div>
       </Form>

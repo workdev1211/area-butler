@@ -28,7 +28,7 @@ import { IntegrationTypesEnum } from "../../shared/types/integration";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { CachingContextProvider } from "./context/CachingContext";
 
-import 'i18n/config';
+import 'i18n';
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 

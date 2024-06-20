@@ -1,4 +1,8 @@
 import { FunctionComponent, useEffect, useRef, useState } from "react";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import {
   ReactCrop,
   centerCrop,
@@ -33,26 +37,6 @@ const fullHdCropParams: ICropParams = {
   aspect: +(16 / 9).toFixed(3),
 };
 
-const allCropParams: ICropParams[] = [
-  {
-    name: "1:1",
-    aspect: 1,
-  },
-  {
-    name: "4:3",
-    aspect: +(4 / 3).toFixed(3),
-  },
-  fullHdCropParams,
-  {
-    name: "16:9 (portrait)",
-    aspect: +(9 / 16).toFixed(3),
-  },
-  {
-    name: "Benutzerdefinierten",
-    aspect: 0,
-  },
-];
-
 const getAspectCrop = (
   aspect: number,
   width: number,
@@ -86,6 +70,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
   color,
   directLink,
 }) => {
+  const { t } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
 
   const [initMapClipping, setInitMapClipping] = useState<string>(mapClipping);
@@ -95,6 +80,25 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
   const [cropParams, setCropParams] = useState<ICropParams>(fullHdCropParams);
   const [isShownQrCode, setIsShownQrCode] = useState(false);
 
+  const allCropParams: ICropParams[] = [
+    {
+      name: "1:1",
+      aspect: 1,
+    },
+    {
+      name: "4:3",
+      aspect: +(4 / 3).toFixed(3),
+    },
+    fullHdCropParams,
+    {
+      name: `16:9 (${t(IntlKeys.snapshotEditor.portrait)})`,
+      aspect: +(9 / 16).toFixed(3),
+    },
+    {
+      name: t(IntlKeys.snapshotEditor.userDefined),
+      aspect: 0,
+    },
+  ];
   const handleCropComplete = async (
     completedCropState: PercentCrop
   ): Promise<void> => {
@@ -298,14 +302,16 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
               >
                 <div
                   className="tooltip tooltip-right tooltip-accent text-justify font-medium"
-                  data-tip="Wähle den Kartenausschnitt und das Seitenverhältnis (1:1, 4:3, 16:9 oder ein eigenes Format). Tipp für dein Lage-Exposé: Erstelle zwei Bilder: ein großes in 16:9 der Mikrolage und ein kleineres in 1:1 der Makrolage, das in die untere linke Ecke des großen Bildes kommt. Mehr dazu in unseren FAQs unter areabutler.de."
+                  data-tip={t(IntlKeys.snapshotEditor.selectRatioTooltip)}
                 >
                   i
                 </div>
               </div>
 
               <label className="label" htmlFor="cropParams">
-                <span className="label-text">Seitenverhältnis wählen</span>
+                <span className="label-text">
+                  {t(IntlKeys.snapshotEditor.selectRatio)}
+                </span>
               </label>
 
               <select
@@ -335,7 +341,9 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
                   onChange={drawQrCode}
                   className="checkbox checkbox-xs checkbox-primary mr-2"
                 />
-                <span className="label-text">QR-Code anzeigen</span>
+                <span className="label-text">
+                  {t(IntlKeys.snapshotEditor.showQRCode)}
+                </span>
               </label>
             )}
           </div>
@@ -347,7 +355,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
                 closeModal();
               }}
             >
-              Schließen
+              {t(IntlKeys.common.close)}
             </button>
 
             <button
@@ -357,7 +365,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
                 closeModal(resultMapClipping);
               }}
             >
-              Zuschneiden
+              {t(IntlKeys.snapshotEditor.crop)}
             </button>
           </div>
         </div>
