@@ -41,9 +41,7 @@ export interface IApiPropstackUpdEstTextFieldReq
   exportType:
     | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION;
 }
 
 export enum PropstackActionTypeEnum {

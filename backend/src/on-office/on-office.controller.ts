@@ -35,7 +35,8 @@ import ApiOnOfficeSyncEstatesFilterParamsDto from './dto/api-on-office-sync-esta
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
-import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
+// import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
+import ApiIntSetPropPubLinksReqDto from '../dto/integration/api-int-set-prop-pub-links-req.dto';
 
 @ApiTags('on-office')
 @Controller('api/on-office')
@@ -129,18 +130,19 @@ export class OnOfficeController {
     );
   }
 
-  @ApiOperation({ description: 'Create a link' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('estate-link')
-  createEstateLink(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() createEstateLinkDto: ApiIntCreateEstateLinkReqDto,
-  ): Promise<void> {
-    return this.onOfficeService.createEstateLink(
-      integrationUser,
-      createEstateLinkDto,
-    );
-  }
+  // Reserved for possible future use
+  // @ApiOperation({ description: 'Create a link' })
+  // @UseInterceptors(InjectIntegrationUserInterceptor)
+  // @Post('estate-link')
+  // createEstateLink(
+  //   @InjectUser() integrationUser: TIntegrationUserDocument,
+  //   @Body() createEstateLinkDto: ApiIntCreateEstateLinkReqDto,
+  // ): Promise<void> {
+  //   return this.onOfficeService.createEstateLink(
+  //     integrationUser,
+  //     createEstateLinkDto,
+  //   );
+  // }
 
   @ApiOperation({ description: 'Fetch available estate statuses' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
@@ -162,6 +164,19 @@ export class OnOfficeController {
     return this.realEstateCrmImportService.importFromOnOffice(
       integrationUser,
       estateStatusParams,
+    );
+  }
+
+  @ApiOperation({ description: 'Set public links' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('property-public-links')
+  setPropPublicLinks(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() setPropPubLinksReqDto: ApiIntSetPropPubLinksReqDto,
+  ): Promise<void> {
+    return this.onOfficeService.setPropPublicLinks(
+      integrationUser,
+      setPropPubLinksReqDto,
     );
   }
 }

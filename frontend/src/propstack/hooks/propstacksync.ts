@@ -2,7 +2,8 @@ import { AxiosResponse } from "axios";
 
 import { useHttp } from "../../hooks/http";
 import {
-  IApiIntCreateEstateLinkReq,
+  // IApiIntCreateEstateLinkReq,
+  IApiIntSetPropPubLinksReq,
   IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
@@ -16,12 +17,21 @@ import { toastError } from "../../shared/shared.functions";
 export const usePropstackSync = () => {
   const { post, get, patch, put } = useHttp();
 
-  const createPropertyLink = (
-    createEstateLinkData: IApiIntCreateEstateLinkReq
+  // Reserved for possible future use
+  // const createPropertyLink = (
+  //   createEstateLinkData: IApiIntCreateEstateLinkReq
+  // ): Promise<AxiosResponse<void>> =>
+  //   post<void, IApiIntCreateEstateLinkReq>(
+  //     "/api/propstack/property-link",
+  //     createEstateLinkData
+  //   );
+
+  const setPropPublicLinks = (
+    propPublicLinkData: IApiIntSetPropPubLinksReq
   ): Promise<AxiosResponse<void>> =>
-    post<void, IApiIntCreateEstateLinkReq>(
-      "/api/propstack/property-link",
-      createEstateLinkData
+    post<void, IApiIntSetPropPubLinksReq>(
+      "/api/propstack/property-public-links",
+      propPublicLinkData
     );
 
   const uploadPropertyImage = (
@@ -75,10 +85,9 @@ export const usePropstackSync = () => {
         );
       }
 
-      case AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS:
-      case AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS: {
-        return createPropertyLink(
-          sendToPropstackData as IApiIntCreateEstateLinkReq
+      case AreaButlerExportTypesEnum.EMBEDDED_LINKS: {
+        return setPropPublicLinks(
+          sendToPropstackData as IApiIntSetPropPubLinksReq
         );
       }
     }

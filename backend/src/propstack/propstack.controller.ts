@@ -24,11 +24,12 @@ import { IApiIntUserLoginRes } from '@area-butler-types/integration-user';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propstack-login-user.interceptor';
-import ApiPropstackSyncEstatesReqDto from './dto/api-propstack-sync-estates-req.dto';
+import ApiPropstackSyncPropertiesReqDto from './dto/api-propstack-sync-properties-req.dto';
 import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
-import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
-import { IPropstackLink } from '../shared/types/propstack';
-import ApiPropstackUpdEstTextFieldReqDto from './dto/api-propstack-upd-est-text-field-req.dto';
+// import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
+// import { IPropstackLink } from '../shared/types/propstack';
+import ApiPropstackUpdPropTextFieldReqDto from './dto/api-propstack-upd-prop-text-field-req.dto';
+import ApiIntSetPropPubLinksReqDto from '../dto/integration/api-int-set-prop-pub-links-req.dto';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -92,18 +93,19 @@ export class PropstackController {
   //   );
   // }
 
-  @ApiOperation({ description: 'Create property link' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('property-link')
-  createPropertyLink(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() createEstateLinkDto: ApiIntCreateEstateLinkReqDto,
-  ): Promise<IPropstackLink> {
-    return this.propstackService.createPropertyLink(
-      integrationUser,
-      createEstateLinkDto,
-    );
-  }
+  // Reserved for possible future use
+  // @ApiOperation({ description: 'Create property link' })
+  // @UseInterceptors(InjectIntegrationUserInterceptor)
+  // @Post('property-link')
+  // createPropertyLink(
+  //   @InjectUser() integrationUser: TIntegrationUserDocument,
+  //   @Body() createEstateLinkDto: ApiIntCreateEstateLinkReqDto,
+  // ): Promise<IPropstackLink> {
+  //   return this.propstackService.createPropertyLink(
+  //     integrationUser,
+  //     createEstateLinkDto,
+  //   );
+  // }
 
   @ApiOperation({ description: 'Upload property image' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
@@ -132,7 +134,7 @@ export class PropstackController {
   @Patch('property-text')
   updatePropertyTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() updEstTextFieldDto: ApiPropstackUpdEstTextFieldReqDto,
+    @Body() updEstTextFieldDto: ApiPropstackUpdPropTextFieldReqDto,
   ): Promise<void> {
     return this.propstackService.updatePropertyTextField(
       integrationUser,
@@ -146,11 +148,24 @@ export class PropstackController {
   syncEstateData(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
-    syncEstatesReqDto: ApiPropstackSyncEstatesReqDto,
+    syncEstatesReqDto: ApiPropstackSyncPropertiesReqDto,
   ): Promise<string[]> {
     return this.realEstateCrmImportService.importFromPropstack(
       integrationUser,
       syncEstatesReqDto,
+    );
+  }
+
+  @ApiOperation({ description: 'Set public links' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('property-public-links')
+  setPropPublicLinks(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() setPropPubLinksReqDto: ApiIntSetPropPubLinksReqDto,
+  ): Promise<void> {
+    return this.propstackService.setPropPublicLinks(
+      integrationUser,
+      setPropPubLinksReqDto,
     );
   }
 }

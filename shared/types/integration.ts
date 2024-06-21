@@ -1,6 +1,7 @@
-import { ISelectTextValue, ResultStatusEnum } from "./types";
+import { ISelectTextValue } from "./types";
 import {
   AreaButlerExportTypesEnum,
+  IIntUserExpMatchParams,
   TApiIntUserProdContType,
 } from "./integration-user";
 import { OpenAiQueryTypeEnum } from "./open-ai";
@@ -136,10 +137,10 @@ export interface IApiIntUpdEstTextFieldReq {
     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
     | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
     | AreaButlerExportTypesEnum.INLINE_FRAME
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+    | AreaButlerExportTypesEnum.EMBEDDED_LINKS;
   integrationId: string;
   text: string;
+  exportMatchParams?: IIntUserExpMatchParams;
 }
 
 export interface IApiIntUploadEstateFileReq {
@@ -154,21 +155,32 @@ export interface IApiIntUploadEstateFileReq {
 }
 
 export interface IApiIntCreateEstateLinkReq {
-  exportType:
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+  exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS;
   integrationId: string;
   title: string;
   url: string;
 }
 
+export interface IApiIntPublicLinkParams {
+  isAddressShown: boolean;
+  url: string;
+  isLinkEntity?: boolean;
+  title?: string;
+}
+
+export interface IApiIntSetPropPubLinksReq {
+  exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS;
+  integrationId: string;
+  publicLinkParams: IApiIntPublicLinkParams[];
+}
+
 export type TSendToIntegrationData = {
-  isFileLink?: boolean;
   integrationId?: string;
 } & (
   | Omit<IApiIntUpdEstTextFieldReq, "integrationId">
   | Omit<IApiIntUploadEstateFileReq, "integrationId">
   | Omit<IApiIntCreateEstateLinkReq, "integrationId">
+  | Omit<IApiIntSetPropPubLinksReq, "integrationId">
 );
 
 export type TIntegrationProductType =

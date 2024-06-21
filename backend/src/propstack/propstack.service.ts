@@ -13,6 +13,7 @@ import { Types } from 'mongoose';
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
   IApiIntCreateEstateLinkReq,
+  IApiIntSetPropPubLinksReq,
   IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
@@ -122,6 +123,26 @@ export class PropstackService {
       parameters: { apiKey, shopId, ...connectData },
       isParent: true,
     });
+  }
+
+  async setPropPublicLinks(
+    { parameters }: TIntegrationUserDocument,
+    { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
+  ): Promise<void> {
+    await Promise.all(
+      publicLinkParams.map(({ title, url }) =>
+        this.propstackApiService.createPropertyLink(
+          (parameters as IApiIntUserPropstackParams).apiKey,
+          {
+            title,
+            url,
+            is_embedable: true,
+            on_landing_page: true,
+            property_id: parseInt(integrationId, 10),
+          },
+        ),
+      ),
+    );
   }
 
   private async getSnapshotRealEstate(

@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 
 import "./ExportTab.scss";
 
@@ -12,9 +12,7 @@ import OpenAiTexts from "./components/OpenAiTexts";
 // import CustomerLinks from "./components/CustomerLinks";
 import CustomerData from "./components/CustomerData";
 
-const ExportTab: FunctionComponent<IExportTabProps> = ({
-  codeSnippet,
-  directLink,
+const ExportTab: FC<IExportTabProps> = ({
   searchAddress,
   snapshotId,
   performUnlock,
@@ -40,8 +38,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
       />
 
       <DigitalMedia
-        codeSnippet={codeSnippet}
-        directLink={directLink}
         searchAddress={searchAddress}
         backgroundColor={backgroundColor}
         performUnlock={performUnlock}

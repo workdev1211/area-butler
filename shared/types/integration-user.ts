@@ -3,7 +3,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiShowTour,
   IApiMapboxStyle,
-  LanguageTypeEnum
+  LanguageTypeEnum,
 } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
@@ -123,6 +123,7 @@ export type TApiIntegrationUserProductsUsed = Partial<
   Record<TApiIntUserProdContType, number>
 >;
 export type TApiIntegrationUserConfig = {
+  language: LanguageTypeEnum;
   mapboxAccessToken?: string;
   hideProductPage?: boolean;
   color?: string;
@@ -134,7 +135,6 @@ export type TApiIntegrationUserConfig = {
   extraMapboxStyles?: IApiMapboxStyle[];
   isSpecialLink?: boolean;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
-  language: LanguageTypeEnum
 };
 
 export type TAreaButlerExportTypes =
@@ -142,8 +142,7 @@ export type TAreaButlerExportTypes =
   | AreaButlerExportTypesEnum;
 
 export enum AreaButlerExportTypesEnum {
-  EMBEDDED_LINK_WITH_ADDRESS = "EMBEDDED_LINK_WITH_ADDRESS",
-  EMBEDDED_LINK_WO_ADDRESS = "EMBEDDED_LINK_WO_ADDRESS",
+  EMBEDDED_LINKS = "EMBEDDED_LINKS",
   QR_CODE = "QR_CODE",
   INLINE_FRAME = "INLINE_FRAME",
   ONE_PAGE_PNG = "ONE_PAGE_PNG",

@@ -72,8 +72,6 @@ export interface IEditorTabProps {
 }
 
 export interface IExportTabProps {
-  codeSnippet: string;
-  directLink: string;
   searchAddress: string;
   snapshotId: string;
   performUnlock?: TUnlockIntProduct;

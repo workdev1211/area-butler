@@ -255,7 +255,8 @@
         "FORMAL_TO_INFORMAL": "Transformation you-form into you-form",
         "GENERAL_QUESTION": "Ask AI a general question"
       },
-      "interactiveMap": "Interactive map"
+      "interactiveMap": "Interactive map",
+      "publicLinks": "Links with and without address"
     },
     "selectRatio": "Select aspect ratio",
     "selectRatioTooltip": "Select the map section and the aspect ratio (1:1, 4:3, 16:9 or your own format). Tip for your location exposé: Create two images: a large one in 16:9 of the micro location and a smaller one in 1:1 of the macro location, which is placed in the bottom left corner of the large image. Find out more in our FAQs at areabutler.de.",

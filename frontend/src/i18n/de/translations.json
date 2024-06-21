@@ -279,7 +279,8 @@
         "LOCATION_REAL_ESTATE_DESCRIPTION": "Exposé Text",
         "FORMAL_TO_INFORMAL": "Transformation Sie-Form in Du-Form",
         "GENERAL_QUESTION": "Generelle Frage an KI stellen"
-      }
+      },
+      "publicLinks": "Links mit und ohne Adresse"
     },
     "pointsOfInterest": {
       "label": "Points-of-Interest",

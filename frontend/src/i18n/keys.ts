@@ -310,6 +310,7 @@ export const IntlKeys = {
         GENERAL_QUESTION:
           "snapshotEditor.exportTab.openAITypesOptionLabel.GENERAL_QUESTION",
       },
+      publicLinks: "snapshotEditor.exportTab.publicLinks",
     },
     pointsOfInterest: {
       label: "snapshotEditor.pointsOfInterest.label",

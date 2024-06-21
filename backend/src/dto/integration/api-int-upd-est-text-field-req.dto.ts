@@ -14,16 +14,12 @@ class ApiIntUpdEstTextFieldReqDto implements IApiIntUpdEstTextFieldReq {
     OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
     OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
     AreaButlerExportTypesEnum.INLINE_FRAME,
-    AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
-    AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,
   ])
   exportType:
     | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
     | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
-    | AreaButlerExportTypesEnum.INLINE_FRAME
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+    | AreaButlerExportTypesEnum.INLINE_FRAME;
 
   @Expose()
   @IsNotEmpty()

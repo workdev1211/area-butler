@@ -1,4 +1,9 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  Logger,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
@@ -38,6 +43,7 @@ import {
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 import {
   IApiIntCreateEstateLinkReq,
+  IApiIntSetPropPubLinksReq,
   IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
@@ -65,6 +71,7 @@ import {
 import { PlaceService } from '../place/place.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { ContingentIntService } from '../user/contingent-int.service';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
 @Injectable()
 export class OnOfficeService {
@@ -547,7 +554,12 @@ export class OnOfficeService {
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
-    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
+    {
+      exportMatchParams,
+      exportType,
+      integrationId,
+      text,
+    }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -563,39 +575,35 @@ export class OnOfficeService {
 
     const defaultMaxTextLength = 2000;
     const resExpMatching = exportMatching || parentUser?.config.exportMatching;
-    let expMatchingParams = resExpMatching && resExpMatching[exportType];
+    let resExportMatchParams =
+      exportMatchParams || (resExpMatching && resExpMatching[exportType]);
 
-    if (!expMatchingParams) {
-      switch (exportType) {
-        case AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS: {
-          expMatchingParams = {
-            fieldId: 'MPAreaButlerUrlWithAddress',
-          };
-          break;
-        }
+    if (
+      !resExportMatchParams &&
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+      ].includes(exportType as OpenAiQueryTypeEnum)
+    ) {
+      resExportMatchParams = {
+        fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
+        maxTextLength: defaultMaxTextLength,
+      };
+    }
 
-        case AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS: {
-          expMatchingParams = {
-            fieldId: 'MPAreaButlerUrlNoAddress',
-          };
-          break;
-        }
-
-        default: {
-          expMatchingParams = {
-            fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
-            maxTextLength: defaultMaxTextLength,
-          };
-        }
-      }
+    if (!resExportMatchParams) {
+      throw new UnprocessableEntityException(
+        'Could not determine the field id!',
+      );
     }
 
     const processedText =
-      expMatchingParams.maxTextLength === 0
+      resExportMatchParams.maxTextLength === 0
         ? text
         : text.slice(
             0,
-            expMatchingParams.maxTextLength || defaultMaxTextLength,
+            resExportMatchParams.maxTextLength || defaultMaxTextLength,
           );
 
     const request: IApiOnOfficeRequest = {
@@ -613,7 +621,7 @@ export class OnOfficeService {
             parameters: {
               extendedclaim: extendedClaim,
               data: {
-                [expMatchingParams.fieldId]: processedText,
+                [resExportMatchParams.fieldId]: processedText,
               },
             },
           },
@@ -909,6 +917,35 @@ export class OnOfficeService {
           }))
         : undefined,
     };
+  }
+
+  async setPropPublicLinks(
+    integrationUser: TIntegrationUserDocument,
+    { exportType, integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
+  ): Promise<void> {
+    await Promise.all(
+      publicLinkParams.map(({ isAddressShown, isLinkEntity, title, url }) => {
+        if (isLinkEntity) {
+          return this.createEstateLink(integrationUser, {
+            exportType,
+            integrationId,
+            title,
+            url,
+          });
+        }
+
+        return this.updateEstateTextField(integrationUser, {
+          exportType,
+          integrationId,
+          text: url,
+          exportMatchParams: {
+            fieldId: isAddressShown
+              ? 'MPAreaButlerUrlWithAddress'
+              : 'MPAreaButlerUrlNoAddress',
+          },
+        });
+      }),
+    );
   }
 
   private async fetchAndProcessEstateData(

@@ -125,7 +125,7 @@ const SearchResultContainer = forwardRef<
       useContext(SearchContext);
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
-    const { createDirectLink, createCodeSnippet, getActualUser } = useTools();
+    const { createDirectLink, getActualUser } = useTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
 
     const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
@@ -316,8 +316,6 @@ const SearchResultContainer = forwardRef<
       });
 
       setExportTabProps({
-        directLink,
-        codeSnippet: createCodeSnippet(),
         searchAddress: searchContextState.placesLocation?.label,
         snapshotId: searchContextState.snapshotId,
       });

@@ -6,7 +6,7 @@ import { IApiPropstackFetchPropQueryParams } from '../../shared/types/propstack'
 import { PropstackPropMarketTypesEnum } from '@area-butler-types/propstack';
 
 @Exclude()
-class ApiPropstackSyncEstatesReqDto
+class ApiPropstackSyncPropertiesReqDto
   implements
     Pick<IApiPropstackFetchPropQueryParams, 'status' | 'marketing_type'>
 {
@@ -31,4 +31,4 @@ class ApiPropstackSyncEstatesReqDto
   marketing_type?: PropstackPropMarketTypesEnum;
 }
 
-export default ApiPropstackSyncEstatesReqDto;
+export default ApiPropstackSyncPropertiesReqDto;

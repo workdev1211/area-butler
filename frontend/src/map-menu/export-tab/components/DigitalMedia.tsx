@@ -1,10 +1,7 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
-
+import { FC, useContext, useEffect, useState } from "react";
 import { saveAs } from "file-saver";
 import JsZip from "jszip";
+import { useTranslation } from "react-i18next";
 
 import "./DigitalMedia.scss";
 
@@ -16,7 +13,6 @@ import sendToOnOfficeIcon from "../../../assets/icons/entrance-alt1.svg";
 import { getQrCodeBase64 } from "../../../export/QrCode";
 import copyIcon from "../../../assets/icons/copy.svg";
 import downloadIcon from "../../../assets/icons/download.svg";
-import urlIcon from "../../../assets/icons/link.svg";
 import qrCodeIcon from "../../../assets/icons/map-menu/editor-tab/qr-code.svg";
 import legendIcon from "../../../assets/icons/map-menu/editor-tab/legend-icons.svg";
 import iframeIcon from "../../../assets/icons/map-menu/editor-tab/iframe.svg";
@@ -30,7 +26,6 @@ import { useIntegrationTools } from "../../../hooks/integration/integrationtools
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
 import {
   IntegrationActionTypeEnum,
-  IntegrationTypesEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
@@ -44,30 +39,26 @@ import { ConfigContext } from "../../../context/ConfigContext";
 import { integrationNames } from "../../../../../shared/constants/integration";
 import { useTools } from "../../../hooks/tools";
 import { FeatureTypeEnum } from "../../../../../shared/types/types";
+import { IntlKeys } from "i18n/keys";
+import PublicLinks from "./PublicLinks";
 
 interface IDigitalMediaProps {
-  codeSnippet: string;
-  directLink: string;
   searchAddress: string;
   backgroundColor: string;
   performUnlock?: TUnlockIntProduct;
 }
 
-const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
-  codeSnippet,
-  directLink,
+const DigitalMedia: FC<IDigitalMediaProps> = ({
   searchAddress,
   backgroundColor,
   performUnlock,
 }) => {
-  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
   const {
     searchContextState: {
-      responseConfig,
       responseGroupedEntities,
       responseActiveMeans,
       printingZipActive,
@@ -75,8 +66,11 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     searchContextDispatch,
   } = useContext(SearchContext);
 
+  const { t } = useTranslation();
   const { sendToIntegration } = useIntegrationTools();
-  const { checkIsFeatAvailable } = useTools();
+  const { checkIsFeatAvailable, createCodeSnippet, createDirectLink } =
+    useTools();
+
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
   useEffect(() => {
@@ -124,40 +118,6 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     }
   };
 
-  const getIntUserLinkExpType = ():
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS => {
-    if (integrationUser?.config.isSpecialLink) {
-      return responseConfig?.showAddress
-        ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-        : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
-    }
-
-    if (integrationUser?.config?.exportMatching) {
-      if (
-        responseConfig?.showAddress &&
-        integrationUser.config.exportMatching[
-          AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-        ]
-      ) {
-        return AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
-      }
-
-      if (
-        !responseConfig?.showAddress &&
-        integrationUser.config.exportMatching[
-          AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-        ]
-      ) {
-        return AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
-      }
-    }
-
-    return responseConfig?.showAddress
-      ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-      : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
-  };
-
   const isIframeAvailable = checkIsFeatAvailable(FeatureTypeEnum.IFRAME);
 
   const isIntUserIframeExportAvail = !!(
@@ -167,7 +127,8 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     ]
   );
 
-  const intUserLinkExpType = integrationType && getIntUserLinkExpType();
+  const codeSnippet = createCodeSnippet();
+  const directLink = createDirectLink();
 
   return (
     <div
@@ -188,66 +149,22 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
         <div className="collapse-title-container">
           <img src={digitalMediaIcon} alt="digital-media-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.digitalMedia)}</div>
+            <div className="collapse-title-text-1">
+              {t(IntlKeys.snapshotEditor.exportTab.digitalMedia)}
+            </div>
             <div className="collapse-title-text-2">
               {t(IntlKeys.snapshotEditor.exportTab.digitalMediaDescription)}
             </div>
           </div>
         </div>
       </div>
+
       <div className="collapse-content">
         {isIframeAvailable ? (
           <div className="digital-media">
             {/* Embedded snapshot url */}
 
-            <div>
-              <div>
-                <img src={urlIcon} alt="iframe-url" />
-                <span>{t(IntlKeys.snapshotEditor.exportTab.publicLink)}</span>
-              </div>
-              <div
-                onClick={() => {
-                  copyTextToClipboard(directLink);
-                }}
-              >
-                <img src={copyIcon} alt="copy" />
-                <span>{t(IntlKeys.common.copy)}</span>
-              </div>
-              {!!intUserLinkExpType && (
-                <div
-                  onClick={() => {
-                    // TODO PROPSTACK SPECIFIC - waiting for the custom field names from Propstack
-                    if (
-                      !integrationUser?.config.isSpecialLink &&
-                      integrationType !== IntegrationTypesEnum.PROPSTACK
-                    ) {
-                      void sendToIntegration({
-                        exportType: intUserLinkExpType,
-                        text: directLink,
-                      });
-
-                      return;
-                    }
-
-                    // TODO: confirm translations here
-                    const title =
-                      intUserLinkExpType ===
-                      AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-                        ? "Anonym - AreaButler Link ohne Adresse"
-                        : "Mit Adresse - AreaButler Link";
-
-                    void sendToIntegration({
-                      title,
-                      exportType: intUserLinkExpType,
-                      url: directLink,
-                    });
-                  }}
-                >
-                  <img src={sendToOnOfficeIcon} alt="send-to-integration" />
-                  <span>{integrationNames[integrationType]}</span>
-                </div>
-              )}
-            </div>
+            <PublicLinks />
 
             {/* QR-code */}
 
@@ -273,8 +190,12 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                     void sendToIntegration({
                       base64Content: await getQrCodeBase64(directLink),
                       exportType: AreaButlerExportTypesEnum.QR_CODE,
-                      fileTitle: t(IntlKeys.snapshotEditor.exportTab.qrCodeFileName),
-                      filename: `${t(IntlKeys.snapshotEditor.exportTab.qrCodeLink)}.png`,
+                      fileTitle: t(
+                        IntlKeys.snapshotEditor.exportTab.qrCodeFileName
+                      ),
+                      filename: `${t(
+                        IntlKeys.snapshotEditor.exportTab.qrCodeLink
+                      )}.png`,
                       // left just in case
                       // filename: `${searchAddress.replace(
                       //   /[\s|,]+/g,
@@ -294,7 +215,9 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={legendIcon} alt="download-legend" />
-                <span>{t(IntlKeys.snapshotEditor.exportTab.legendPOIIcons)}</span>
+                <span>
+                  {t(IntlKeys.snapshotEditor.exportTab.legendPOIIcons)}
+                </span>
               </div>
               <div
                 onClick={() => {
@@ -314,7 +237,9 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={iframeIcon} alt="iframe" />
-                <span>{t(IntlKeys.snapshotEditor.exportTab.iframeForWebsite)}</span>
+                <span>
+                  {t(IntlKeys.snapshotEditor.exportTab.iframeForWebsite)}
+                </span>
               </div>
               <div
                 onClick={() => {
@@ -333,7 +258,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                     });
                   }}
                 >
-                  <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
+                  <img src={sendToOnOfficeIcon} alt="send-to-integration" />
                   <span>onOffice</span>
                 </div>
               )}
