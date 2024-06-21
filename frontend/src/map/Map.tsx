@@ -12,7 +12,6 @@ import center from "@turf/center";
 import { toPng } from "html-to-image";
 import { renderToStaticMarkup } from "react-dom/server";
 
-
 import * as L from "leaflet";
 // LEFT JUST IN CASE - the old touch screen solution
 // import { GestureHandling } from "leaflet-gesture-handling";
@@ -89,6 +88,7 @@ import {
 import { useTools } from "../hooks/tools";
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
+
 // import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 export class IdMarker extends L.Marker {
@@ -722,11 +722,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         const resultingSize =
           config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
-        let html = `<img src="${resultMapIcon}" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`
+        let html = `<img src="${resultMapIcon}" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`;
         if (config?.mapIcon) {
-          html = `<img src="${config.mapIcon}" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`
-        } else if(config.primaryColor) {
-          html = renderToStaticMarkup(<DefaultMarker style={{ width: '100%', height: resultingSize }} fill={config.primaryColor}/>)
+          html = `<img src="${config.mapIcon}" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`;
+        } else if (config.primaryColor) {
+          html = renderToStaticMarkup(
+            <DefaultMarker
+              style={{ width: "100%", height: resultingSize }}
+              fill={config.primaryColor}
+            />
+          );
         }
 
         const myLocationLeafletIcon = L.divIcon({
@@ -761,7 +766,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             const streetViewContent = `
             <br/><br/>
             <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
-              <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
+              <img class="w-4 h-4" src=${googleIcon} alt="icon" />
                <span>Street View</span>
             </a>
           `;
@@ -1239,7 +1244,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
       mapIcon.options.html = mapIconHtml.replace(
-        /^(.*style=").*(".*)$/,
+        /^(.*style=")[^<]*(".*)$/,
         `$1width: ${
           resultingMapIconSize * mapIconRatio
         }px; height: ${resultingMapIconSize}px;$2`
