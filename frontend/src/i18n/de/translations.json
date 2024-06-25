@@ -619,7 +619,7 @@
   },
 
   "integration": {
-    "absentTokensError": "Es fehlen iFrame-Token!",
+    "absentTokensError": "Es fehlt ein iFrame-Token!",
     "cropAndSend": "Zuschneiden & übertragen",
     "wrongExportTypeGiven": "Falscher Exporttyp wurde angegeben!"
   }

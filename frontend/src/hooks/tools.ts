@@ -19,8 +19,9 @@ import { useIntegrationTools } from "./integration/integrationtools";
 import { defaultErrorMessage } from "../../../shared/constants/error";
 import { IntlKeys } from "../i18n/keys";
 
-interface IGetTokenDataParams extends Partial<IIframeTokens> {
+interface IGetTokenDataParams {
   isAddressShown?: boolean;
+  tokens?: Partial<IIframeTokens>;
 }
 
 interface IGetTokenDataResult {
@@ -43,11 +44,9 @@ export const useTools = () => {
   const isIntegrationUser = !!integrationUser;
 
   // try to keep it consistent with backend/src/shared/functions/shared.ts:createDirectLink
-  const createDirectLink = (
-    getTokenDataParams?: IGetTokenDataParams
-  ): string => {
+  const createDirectLink = (tokenDataParams?: IGetTokenDataParams): string => {
     const { token, isAddressShown: resIsAddressShown } =
-      getTokenData(getTokenDataParams);
+      getTokenData(tokenDataParams);
     const origin = window.location.origin;
 
     let url = `${
@@ -195,15 +194,16 @@ export const useTools = () => {
   };
 
   const getTokenData = (
-    getTokenDataParams?: IGetTokenDataParams
+    tokenDataParams?: IGetTokenDataParams
   ): IGetTokenDataResult => {
-    const resultTokens: Partial<IIframeTokens> | undefined = getTokenDataParams
-      ? {
-          addressToken: getTokenDataParams.addressToken,
-          token: getTokenDataParams.token,
-          unaddressToken: getTokenDataParams.unaddressToken,
-        }
-      : responseTokens;
+    const resultTokens: Partial<IIframeTokens> | undefined =
+      tokenDataParams?.tokens
+        ? {
+            addressToken: tokenDataParams.tokens.addressToken,
+            token: tokenDataParams.tokens.token,
+            unaddressToken: tokenDataParams.tokens.unaddressToken,
+          }
+        : responseTokens;
 
     // left for compatibility purposes
     if (resultTokens?.token) {
@@ -215,10 +215,10 @@ export const useTools = () => {
       throw new Error(t(IntlKeys.integration.absentTokensError));
     }
 
-    if (typeof getTokenDataParams?.isAddressShown === "boolean") {
+    if (typeof tokenDataParams?.isAddressShown === "boolean") {
       return {
-        isAddressShown: getTokenDataParams.isAddressShown,
-        token: getTokenDataParams.isAddressShown
+        isAddressShown: tokenDataParams.isAddressShown,
+        token: tokenDataParams.isAddressShown
           ? resultTokens.addressToken
           : resultTokens.unaddressToken,
       };

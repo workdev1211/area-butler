@@ -1,9 +1,9 @@
 import {
-  ArrayNotEmpty,
+  ArrayMinSize,
+  ArrayMaxSize,
   Equals,
   IsNotEmpty,
   IsString,
-  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
@@ -29,10 +29,8 @@ class ApiIntSetPropPubLinksReqDto implements IApiIntSetPropPubLinksReq {
 
   @Expose()
   @Type(() => ApiIntPublicLinkParamsDto)
-  @ArrayNotEmpty()
-  @MaxLength(2, {
-    each: true,
-  })
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
   @ValidateNested({ each: true })
   publicLinkParams: IApiIntPublicLinkParams[];
 }
