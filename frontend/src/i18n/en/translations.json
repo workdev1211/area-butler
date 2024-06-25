@@ -264,6 +264,7 @@
     "userDefined": "User-defined",
     "showQRCode": "Show QR code",
     "crop": "Crop",
+    "cropSuccess": "Map screenshot successfully cropped.",
     "portrait": "portrait",
     "helpAndFeedback": "Help & Feedback",
     "startTour": "Start tour",

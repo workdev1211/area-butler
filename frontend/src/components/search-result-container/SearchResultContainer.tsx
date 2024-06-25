@@ -193,6 +193,7 @@ const SearchResultContainer = forwardRef<
       : user.extraMapboxStyles;
 
     const directLink = createDirectLink();
+    const screenshotName = t(IntlKeys.snapshotEditor.screenshotName);
 
     useEffect(() => {
       if (
@@ -588,9 +589,11 @@ const SearchResultContainer = forwardRef<
         void sendToIntegration({
           base64Image: croppedMapClipping,
           exportType: AreaButlerExportTypesEnum.SCREENSHOT,
+          filename: `${screenshotName}.png`,
+          fileTitle: screenshotName,
         });
       } else {
-        toastSuccess(t(IntlKeys.screenshot.cropSuccessful));
+        toastSuccess(t(IntlKeys.snapshotEditor.cropSuccess));
       }
 
       setMapClipping(undefined);

@@ -153,6 +153,7 @@
     "userDefined": "Benutzerdefinierten",
     "showQRCode": "QR-Code anzeigen",
     "crop": "Zuschneiden",
+    "cropSuccess": "Kartenausschnitt erfolgreich gespeichert.",
     "portrait": "portrait",
     "helpAndFeedback": "Hilfe & Feedback",
     "startTour": "Tour starten",

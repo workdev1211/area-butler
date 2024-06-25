@@ -159,6 +159,7 @@ export const IntlKeys = {
     userDefined: "snapshotEditor.userDefined",
     showQRCode: "snapshotEditor.showQRCode",
     crop: "snapshotEditor.crop",
+    cropSuccess: "snapshotEditor.cropSuccess",
     portrait: "snapshotEditor.portrait",
     helpAndFeedback: "snapshotEditor.helpAndFeedback",
     startTour: "snapshotEditor.startTour",
@@ -403,7 +404,7 @@ export const IntlKeys = {
       contactUs: "snapshotEditor.economicMetric.contactUs",
     },
     notAllowedToUse: "snapshotEditor.notAllowedToUse",
-    screenshotName: "snapshotEditor.screenshotName"
+    screenshotName: "snapshotEditor.screenshotName",
   },
 
   realEstate: {
