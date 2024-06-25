@@ -89,13 +89,13 @@ const PublicLinks: FC = () => {
         )}
       </div>
 
-      <div>
+      {isSentBothAvail && (
         <div>
-          <img src={urlIcon} alt="iframe-url" />
-          <span>{t(IntlKeys.snapshotEditor.exportTab.publicLinks)}</span>
-        </div>
+          <div>
+            <img src={urlIcon} alt="iframe-url" />
+            <span>{t(IntlKeys.snapshotEditor.exportTab.publicLinks)}</span>
+          </div>
 
-        {isSentBothAvail && (
           <div
             onClick={() => {
               void sendToIntegration({
@@ -120,8 +120,8 @@ const PublicLinks: FC = () => {
             <img src={sendToOnOfficeIcon} alt="send-to-integration" />
             <span>{integrationNames[integrationType!]}</span>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 };
