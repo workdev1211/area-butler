@@ -88,7 +88,13 @@ const EmbedContainer: FC = () => {
       const queryParamsAndUrl =
         getQueryParamsAndUrl<IFetchEmbedMapQueryParams>();
 
-      if (!queryParamsAndUrl || !appUrl) {
+      if (!appUrl || !queryParamsAndUrl) {
+        console.debug(
+          `appUrl ${appUrl}`,
+          "queryParamsAndUrl",
+          queryParamsAndUrl
+        );
+
         setLoginStatus({ requestStatus: ResultStatusEnum.FAILURE });
         return;
       }

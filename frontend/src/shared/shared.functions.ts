@@ -575,6 +575,7 @@ export const getQueryParamsAndUrl = <T>():
   const parsedUrl = currentUrl.match(/^(.*)\?(.*)$/);
 
   if (parsedUrl?.length !== 3) {
+    console.debug("parsedUrl", parsedUrl);
     return;
   }
 
