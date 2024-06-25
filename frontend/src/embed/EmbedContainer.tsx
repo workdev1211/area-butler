@@ -47,7 +47,7 @@ const calculateViewHeight = () => {
 
 calculateViewHeight();
 
-const appUrl = process.env.REACT_APP_BASE_URL;
+const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 const EmbedContainer: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -88,13 +88,8 @@ const EmbedContainer: FC = () => {
       const queryParamsAndUrl =
         getQueryParamsAndUrl<IFetchEmbedMapQueryParams>();
 
-      if (!appUrl || !queryParamsAndUrl) {
-        console.debug(
-          `appUrl ${appUrl}`,
-          "queryParamsAndUrl",
-          queryParamsAndUrl
-        );
-
+      if (!queryParamsAndUrl) {
+        console.debug("queryParamsAndUrl", queryParamsAndUrl);
         setLoginStatus({ requestStatus: ResultStatusEnum.FAILURE });
         return;
       }
@@ -110,7 +105,7 @@ const EmbedContainer: FC = () => {
           ? boolStringMapping[isAddressShown]
           : undefined;
 
-        let url = `${appUrl}/api/location/embedded/iframe?token=${token}`;
+        let url = `${baseUrl}/api/location/embedded/iframe?token=${token}`;
 
         if (typeof resIsAddressShown === "boolean") {
           url += `&isAddressShown=${isAddressShown}`;
@@ -149,7 +144,7 @@ const EmbedContainer: FC = () => {
             statusCode !== 402
               ? message
               : t(IntlKeys.common.addressExpired, {
-                  appUrl: encodeURI(appUrl),
+                  appUrl: encodeURI(baseUrl),
                   interpolation: { escapeValue: false },
                 }),
           requestStatus: ResultStatusEnum.FAILURE,
