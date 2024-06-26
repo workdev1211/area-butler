@@ -393,9 +393,6 @@ const MapPage: FC = () => {
       <TourStarter tour={ApiTourNamesEnum.INT_MAP} />
       <SearchResultContainer
         mapboxAccessToken={mapboxAccessToken}
-        searchResponse={searchContextState.searchResponse}
-        searchAddress={searchContextState.placesLocation?.label}
-        location={searchContextState.mapCenter ?? searchContextState.location!}
         mapDisplayMode={MapDisplayModesEnum.EDITOR}
         onPoiAdd={onPoiAdd}
         saveConfig={async () => {

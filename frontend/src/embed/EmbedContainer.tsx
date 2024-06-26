@@ -302,9 +302,6 @@ const EmbedContainer: FC = () => {
     <div onClick={handleClick} onContextMenu={handleContextMenu}>
       <SearchResultContainer
         mapboxAccessToken={embeddedData.snapshotRes.mapboxAccessToken}
-        searchResponse={searchContextState.searchResponse}
-        searchAddress={searchContextState.placesLocation?.label}
-        location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={!!embeddedData.snapshotRes.isTrial}
         userPoiIcons={embeddedData.userPoiIcons}
         mapDisplayMode={mapDisplayMode}

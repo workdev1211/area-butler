@@ -333,9 +333,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
           >
             <SearchResultContainer
               mapboxAccessToken={snapshotResponse.mapboxAccessToken}
-              searchResponse={searchContextState.searchResponse!}
-              searchAddress={searchContextState.placesLocation?.label}
-              location={searchContextState.location!}
               isTrial={
                 user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
               }

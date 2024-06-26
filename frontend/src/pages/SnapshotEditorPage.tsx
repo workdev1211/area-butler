@@ -158,6 +158,11 @@ const SnapshotEditorPage: FC = () => {
         payload: { ...enhancedConfig },
       });
 
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
+        payload: snapshotRes.snapshot.searchResponse,
+      });
+
       if (enhancedConfig.zoomLevel) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
@@ -420,9 +425,6 @@ const SnapshotEditorPage: FC = () => {
       <div className="editor-container flex relative w-full" style={styles}>
         <SearchResultContainer
           mapboxAccessToken={mapboxAccessToken}
-          searchResponse={snapshot.searchResponse}
-          searchAddress={snapshot.placesLocation.label}
-          location={snapshot.location}
           saveConfig={async () => {
             await saveSnapshotConfig(mapRef, snapshotId);
           }}

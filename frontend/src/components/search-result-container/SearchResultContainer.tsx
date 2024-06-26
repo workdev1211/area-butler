@@ -1,5 +1,4 @@
 import {
-  FC,
   forwardRef,
   useContext,
   useEffect,
@@ -17,8 +16,6 @@ import {
 import {
   ApiCoordinates,
   ApiOsmLocation,
-  ApiSearchResponse,
-  ApiSearchResultSnapshotConfig,
   AreaButlerExportTypesEnum,
   IApiUserPoiIcons,
   MapDisplayModesEnum,
@@ -32,11 +29,9 @@ import {
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
 import Map from "../../map/Map";
-import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { useRouting } from "../../hooks/routing";
 import "./SearchResultContainer.scss";
 import MeansToggle from "./components/means-toggle/MeansToggle";
-import MapMenu from "../../map-menu/MapMenu";
 import { defaultColor } from "../../../../shared/constants/constants";
 import PreferredLocationsModal from "../../map-menu/karla-fricke/PreferredLocationsModal";
 import {
@@ -51,8 +46,6 @@ import FilterMenuButton from "./components/FilterMenuButton";
 import {
   EntityGroup,
   ICurrentMapRef,
-  IEditorTabProps,
-  IExportTabProps,
   ResultEntity,
 } from "../../shared/search-result.types";
 import MapMenuButton from "./components/MapMenuButton";
@@ -62,21 +55,14 @@ import { Loading } from "../Loading";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../../shared/types/location";
 import { useGoogleMapsApi } from "../../hooks/google";
 import { ConfigContext } from "../../context/ConfigContext";
-import { IntegrationTypesEnum } from "../../../../shared/types/integration";
-import MyVivendaMapMenu, {
-  TMyVivendaMapMenuProps,
-} from "../../my-vivenda/components/MyVivendaMapMenu";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { IntlKeys } from "../../i18n/keys";
+import MapMenuContainer from "./components/MapMenuContainer";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
-  searchResponse: ApiSearchResponse;
-  searchAddress: string;
-  location: ApiCoordinates;
   mapDisplayMode: MapDisplayModesEnum;
   saveConfig?: () => Promise<void>;
-  mapZoomLevel?: number;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcons;
@@ -93,12 +79,8 @@ const SearchResultContainer = forwardRef<
   (
     {
       mapboxAccessToken,
-      searchResponse,
-      searchAddress,
-      location,
       mapDisplayMode,
       saveConfig,
-      mapZoomLevel,
       onPoiAdd,
       isTrial,
       userPoiIcons,
@@ -106,7 +88,9 @@ const SearchResultContainer = forwardRef<
     },
     parentMapRef
   ) => {
-    const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
+    const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(
+      null
+    );
 
     const mapRef = useRef<ICurrentMapRef | null>(null);
     useImperativeHandle(parentMapRef, () => ({
@@ -130,11 +114,26 @@ const SearchResultContainer = forwardRef<
       },
     }));
 
-    const { integrationType } = useContext(ConfigContext);
-    const { userDispatch } = useContext(UserContext);
-    const { searchContextState, searchContextDispatch } =
-      useContext(SearchContext);
+    const {
+      searchContextState: {
+        gotoMapCenter,
+        highlightId,
+        location,
+        mapCenter,
+        mapZoomLevel,
+        placesLocation,
+        responseConfig,
+        responseActiveMeans,
+        responseGroupedEntities,
+        responseRoutes,
+        responseTransitRoutes,
+        searchResponse,
+        transportationParams,
+      },
+      searchContextDispatch,
+    } = useContext(SearchContext);
 
+    const { integrationType } = useContext(ConfigContext);
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
     const { createDirectLink, getActualUser } = useTools();
     const { sendToIntegration } = useIntegrationTools();
@@ -142,17 +141,15 @@ const SearchResultContainer = forwardRef<
     const { t } = useTranslation();
 
     const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBEDDED;
-    const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+    const isThemeKf = responseConfig?.theme === "KF";
 
     const isMapMenuPresent =
       !isEmbeddedMode ||
-      (searchContextState.responseConfig?.hideMapMenu
-        ? false
-        : isEmbeddedMode && !isThemeKf);
+      (responseConfig?.hideMapMenu ? false : isEmbeddedMode && !isThemeKf);
 
     const initMapboxMapIds = {
       current:
-        searchContextState.responseConfig?.mapBoxMapId ||
+        responseConfig?.mapBoxMapId ||
         defaultMapboxStyles.find(
           ({ label }) => label === MapboxStyleLabelsEnum.CLASSIC
         )!.key,
@@ -162,7 +159,7 @@ const SearchResultContainer = forwardRef<
     };
 
     const [isMapMenuOpen, setIsMapMenuOpen] = useState(
-      isEmbeddedMode && searchContextState.responseConfig?.isMapMenuCollapsed
+      isEmbeddedMode && responseConfig?.isMapMenuCollapsed
         ? false
         : isMapMenuPresent
     );
@@ -174,32 +171,25 @@ const SearchResultContainer = forwardRef<
       EntityGroup[]
     >([]);
     const [hideIsochrones, setHideIsochrones] = useState<boolean>(
-      !!searchContextState.responseConfig?.hideIsochrones
+      !!responseConfig?.hideIsochrones
     );
     const [mapboxMapIds, setMapboxMapIds] = useState(initMapboxMapIds);
     const [preferredLocationsGroup, setPreferredLocationsGroup] =
       useState<EntityGroup>();
     const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
       useState(false);
-    const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
-    const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
     const [mapClipping, setMapClipping] = useState<string>();
     const [primaryColor, setPrimaryColor] = useState<string>();
 
     const user = getActualUser();
     const isIntegrationUser = "integrationUserId" in user;
-    const extraMapboxStyles = isIntegrationUser
-      ? user.config.extraMapboxStyles
-      : user.extraMapboxStyles;
-
     const directLink = createDirectLink();
     const screenshotName = t(IntlKeys.snapshotEditor.screenshotName);
+    const searchAddress = placesLocation?.label;
+    const resultLocation = mapCenter ?? location!;
 
     useEffect(() => {
-      if (
-        containerRef?.offsetWidth &&
-        containerRef?.offsetWidth < 769
-      ) {
+      if (containerRef?.offsetWidth && containerRef?.offsetWidth < 769) {
         setIsMapMenuOpen(false);
       }
     }, [containerRef]);
@@ -207,26 +197,22 @@ const SearchResultContainer = forwardRef<
     useEffect(() => {
       setMapboxMapIds(initMapboxMapIds);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchContextState.responseConfig?.mapBoxMapId]);
+    }, [responseConfig?.mapBoxMapId]);
 
     useEffect(() => {
-      setHideIsochrones(!!searchContextState.responseConfig?.hideIsochrones);
+      setHideIsochrones(!!responseConfig?.hideIsochrones);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchContextState.responseConfig?.hideIsochrones]);
+    }, [responseConfig?.hideIsochrones]);
 
     // Customize primary color
     useEffect(() => {
-      const primaryColor =
-        searchContextState.responseConfig?.primaryColor || defaultColor;
+      const primaryColor = responseConfig?.primaryColor || defaultColor;
+      setPrimaryColor(responseConfig?.primaryColor || defaultColor);
 
-      setPrimaryColor(
-        searchContextState.responseConfig?.primaryColor || defaultColor
-      );
-      
       const r = containerRef;
       r?.style.setProperty("--primary", primaryColor);
       r?.style.setProperty("--custom-primary", primaryColor);
-    }, [searchContextState.responseConfig?.primaryColor, containerRef]);
+    }, [responseConfig?.primaryColor, containerRef]);
 
     // consume search response and set active/available means
     useEffect(() => {
@@ -242,9 +228,9 @@ const SearchResultContainer = forwardRef<
       // 1. Don't remember why we use 'defaultActiveMeans' instead of 'meansFromResponse'
       // 2. 'filter' is added to sort the means which are not actually present in the snapshot
       // (a fix for the first iterations of recent config feature which should be removed later)
-      const activeMeans = searchContextState.responseConfig?.defaultActiveMeans
-        ? searchContextState.responseConfig.defaultActiveMeans.filter(
-            (activeMean) => meansFromResponse.includes(activeMean)
+      const activeMeans = responseConfig?.defaultActiveMeans
+        ? responseConfig.defaultActiveMeans.filter((activeMean) =>
+            meansFromResponse.includes(activeMean)
           )
         : meansFromResponse;
 
@@ -254,15 +240,15 @@ const SearchResultContainer = forwardRef<
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchResponse, searchContextState.responseConfig?.defaultActiveMeans]);
+    }, [searchResponse, responseConfig?.defaultActiveMeans]);
 
     // react to active means change (changes in POIs)
     useEffect(() => {
       setPreferredLocationsGroup(undefined);
 
       const groupsByActMeans = deriveEntityGroupsByActiveMeans(
-        searchContextState.responseGroupedEntities,
-        searchContextState.responseActiveMeans
+        responseGroupedEntities,
+        responseActiveMeans
       );
 
       const foundPrefLocGroup = groupsByActMeans.find(
@@ -273,81 +259,7 @@ const SearchResultContainer = forwardRef<
       setResultGroupEntities(groupsByActMeans);
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-      searchContextState.responseGroupedEntities,
-      searchContextState.responseActiveMeans,
-    ]);
-
-    useEffect(() => {
-      if (
-        mapDisplayMode !== MapDisplayModesEnum.EDITOR ||
-        !searchContextState.availGroupedEntities?.length ||
-        !searchContextState.responseConfig ||
-        !searchContextState.snapshotId
-      ) {
-        return;
-      }
-
-      const handleConfigChange = (
-        config: ApiSearchResultSnapshotConfig
-      ): void => {
-        if (
-          searchContextState.responseConfig?.mapBoxMapId !==
-            config.mapBoxMapId ||
-          searchContextState.responseConfig?.showLocation !==
-            config.showLocation ||
-          searchContextState.responseConfig?.showAddress !== config.showAddress
-        ) {
-          const mapCenter =
-            mapRef.current?.getCenter() || searchContextState.mapCenter;
-          const mapZoomLevel =
-            mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
-
-          if (mapCenter && mapZoomLevel) {
-            searchContextDispatch({
-              type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-              payload: { mapCenter, mapZoomLevel },
-            });
-          }
-        }
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: { ...config },
-        });
-      };
-
-      setEditorTabProps({
-        extraMapboxStyles,
-        availableMeans: deriveAvailableMeansFromResponse(
-          searchContextState.searchResponse
-        ),
-        groupedEntries: searchContextState.availGroupedEntities,
-        config: searchContextState.responseConfig,
-        onConfigChange: handleConfigChange,
-        snapshotId: searchContextState.snapshotId,
-        isNewSnapshot: !!isNewSnapshot,
-      });
-
-      setExportTabProps({
-        searchAddress: searchContextState.placesLocation?.label,
-        snapshotId: searchContextState.snapshotId,
-      });
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-      isNewSnapshot,
-      mapDisplayMode,
-      extraMapboxStyles,
-      searchContextState.availGroupedEntities,
-      searchContextState.mapCenter,
-      searchContextState.mapZoomLevel,
-      searchContextState.placesLocation?.label,
-      searchContextState.responseConfig,
-      searchContextState.responseTokens,
-      searchContextState.searchResponse,
-      searchContextState.snapshotId,
-    ]);
+    }, [responseGroupedEntities, responseActiveMeans]);
 
     const isMapDataNotLoaded =
       !searchResponse ||
@@ -363,7 +275,7 @@ const SearchResultContainer = forwardRef<
       item: ResultEntity,
       mean: MeansOfTransportation
     ): Promise<void> => {
-      const existing = searchContextState.responseRoutes.find(
+      const existing = responseRoutes.find(
         (r) =>
           r.coordinates.lat === item.coordinates.lat &&
           r.coordinates.lng === item.coordinates.lng
@@ -381,7 +293,7 @@ const SearchResultContainer = forwardRef<
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
           payload: [
-            ...searchContextState.responseRoutes.filter(
+            ...responseRoutes.filter(
               (r) =>
                 r.coordinates.lat !== item.coordinates.lat &&
                 r.coordinates.lng !== item.coordinates.lng
@@ -416,7 +328,7 @@ const SearchResultContainer = forwardRef<
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
           payload: [
-            ...searchContextState.responseRoutes,
+            ...responseRoutes,
             {
               routes: routesResult[0].routes,
               title: routesResult[0].title,
@@ -432,7 +344,7 @@ const SearchResultContainer = forwardRef<
       origin: ApiCoordinates,
       item: ResultEntity
     ): Promise<void> => {
-      const existing = searchContextState.responseTransitRoutes.find(
+      const existing = responseTransitRoutes.find(
         (r) =>
           r.coordinates.lat === item.coordinates.lat &&
           r.coordinates.lng === item.coordinates.lng
@@ -440,7 +352,7 @@ const SearchResultContainer = forwardRef<
 
       if (existing) {
         const newTransitRoutes = [
-          ...searchContextState.responseTransitRoutes.filter(
+          ...responseTransitRoutes.filter(
             (r) =>
               r.coordinates.lat !== item.coordinates.lat &&
               r.coordinates.lng !== item.coordinates.lng
@@ -474,7 +386,7 @@ const SearchResultContainer = forwardRef<
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
           payload: [
-            ...searchContextState.responseTransitRoutes,
+            ...responseTransitRoutes,
             {
               route: routesResult[0].route,
               title: routesResult[0].title,
@@ -489,17 +401,14 @@ const SearchResultContainer = forwardRef<
     const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
     const hideEntity = (item: ResultEntity): void => {
-      if (!searchContextState.responseConfig) {
+      if (!responseConfig) {
         return;
       }
 
-      const newEntityVisibility = toggleEntityVisibility(
-        item,
-        searchContextState.responseConfig
-      );
+      const newEntityVisibility = toggleEntityVisibility(item, responseConfig);
 
       const newConfig = {
-        ...searchContextState.responseConfig,
+        ...responseConfig,
         entityVisibility: newEntityVisibility,
       };
 
@@ -513,60 +422,6 @@ const SearchResultContainer = forwardRef<
       setMapboxMapIds({
         current: mapboxMapIds.previous,
         previous: mapboxMapIds.current,
-      });
-    };
-
-    const toggleAllLocalities = (): void => {
-      const oldGroupedEntities =
-        searchContextState.responseGroupedEntities ?? [];
-
-      if (!oldGroupedEntities.length) {
-        return;
-      }
-
-      let responseGroupedEntities: EntityGroup[];
-      const isToggled = oldGroupedEntities.some(({ active }) => active);
-
-      switch (searchContextState.responseConfig?.theme) {
-        case "KF": {
-          if (isToggled) {
-            responseGroupedEntities = oldGroupedEntities.map((entityGroup) => ({
-              ...entityGroup,
-              active: false,
-            }));
-            break;
-          }
-
-          const hasMainKfCategories = oldGroupedEntities.some(({ title }) =>
-            [preferredLocationsTitle, realEstateListingsTitle].includes(title)
-          );
-
-          if (!hasMainKfCategories) {
-            responseGroupedEntities = [...oldGroupedEntities];
-            responseGroupedEntities[0].active = true;
-            break;
-          }
-
-          responseGroupedEntities = oldGroupedEntities.map((entityGroup) => ({
-            ...entityGroup,
-            active: [preferredLocationsTitle, realEstateListingsTitle].includes(
-              entityGroup.title
-            ),
-          }));
-          break;
-        }
-
-        default: {
-          responseGroupedEntities = oldGroupedEntities.map((entityGroup) => ({
-            ...entityGroup,
-            active: !isToggled,
-          }));
-        }
-      }
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-        payload: responseGroupedEntities,
       });
     };
 
@@ -599,64 +454,15 @@ const SearchResultContainer = forwardRef<
       setMapClipping(undefined);
     };
 
-    const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
+    const containerClasses = `search-result-container theme-${responseConfig?.theme}`;
     const resUserPoiIcons =
       userPoiIcons || (!isIntegrationUser ? user.poiIcons : undefined);
 
     const isMapMenuKFPresent =
-      isThemeKf &&
-      (!isEmbeddedMode || !searchContextState.responseConfig?.hideMapMenu);
+      isThemeKf && (!isEmbeddedMode || !responseConfig?.hideMapMenu);
 
     const isMeanTogglesShown =
-      !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
-
-    const myVivendaMapMenuProps: TMyVivendaMapMenuProps = {
-      isMapMenuOpen,
-      searchAddress,
-      groupedEntries: resultGroupEntities ?? [],
-      resetPosition: () => {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_MAP_CENTER,
-          payload: searchResponse?.centerOfInterest?.coordinates!,
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.GOTO_MAP_CENTER,
-          payload: { goto: true },
-        });
-      },
-      routes: searchContextState.responseRoutes,
-      transitRoutes: searchContextState.responseTransitRoutes,
-      toggleRoute: (item, mean) => toggleRoutesToEntity(location, item, mean),
-      toggleTransitRoute: (item) => toggleTransitRoutesToEntity(location, item),
-      toggleAllLocalities,
-      userMenuPoiIcons: resUserPoiIcons?.menuPoiIcons,
-      config: searchContextState.responseConfig,
-    };
-
-    const MapMenuComponent: FC = () =>
-      integrationType === IntegrationTypesEnum.MY_VIVENDA ? (
-        <MyVivendaMapMenu {...myVivendaMapMenuProps} />
-      ) : (
-        <MapMenu
-          editorTabProps={editorTabProps}
-          exportTabProps={exportTabProps}
-          mapDisplayMode={mapDisplayMode}
-          openUpgradeSubscriptionModal={(message) => {
-            userDispatch({
-              type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-              payload: { open: true, message },
-            });
-          }}
-          saveConfig={saveConfig}
-          showInsights={isEditorMode}
-          censusData={searchContextState.censusData}
-          federalElectionData={searchContextState.federalElectionData}
-          particlePollutionData={searchContextState.particlePollutionData}
-          locationIndexData={searchContextState.locationIndexData}
-          {...myVivendaMapMenuProps}
-        />
-      );
+      !isEmbeddedMode || !responseConfig?.hideMeanToggles;
 
     return (
       <div
@@ -705,8 +511,8 @@ const SearchResultContainer = forwardRef<
           >
             {isMeanTogglesShown && (
               <MeansToggle
-                transportationParams={searchContextState.transportationParams}
-                activeMeans={searchContextState.responseActiveMeans}
+                transportationParams={transportationParams}
+                activeMeans={responseActiveMeans}
                 availableMeans={availableMeans}
                 onMeansChange={(newValues: MeansOfTransportation[]) => {
                   searchContextDispatch({
@@ -727,44 +533,35 @@ const SearchResultContainer = forwardRef<
             groupedEntities={resultGroupEntities ?? []}
             directLink={directLink}
             means={{
-              byFoot: searchContextState.responseActiveMeans.includes(
-                MeansOfTransportation.WALK
-              ),
-              byBike: searchContextState.responseActiveMeans.includes(
+              byFoot: responseActiveMeans.includes(MeansOfTransportation.WALK),
+              byBike: responseActiveMeans.includes(
                 MeansOfTransportation.BICYCLE
               ),
-              byCar: searchContextState.responseActiveMeans.includes(
-                MeansOfTransportation.CAR
-              ),
+              byCar: responseActiveMeans.includes(MeansOfTransportation.CAR),
             }}
-            mapCenter={
-              searchContextState.mapCenter ||
-              searchResponse.centerOfInterest.coordinates
-            }
-            mapZoomLevel={
-              mapZoomLevel || searchContextState.mapZoomLevel || defaultMapZoom
-            }
-            highlightId={searchContextState.highlightId}
+            mapCenter={mapCenter || searchResponse.centerOfInterest.coordinates}
+            mapZoomLevel={mapZoomLevel || defaultMapZoom}
+            highlightId={highlightId}
             setHighlightId={(highlightId) =>
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
                 payload: highlightId,
               })
             }
-            routes={searchContextState.responseRoutes}
-            transitRoutes={searchContextState.responseTransitRoutes}
+            routes={responseRoutes}
+            transitRoutes={responseTransitRoutes}
             mapDisplayMode={mapDisplayMode}
-            config={searchContextState.responseConfig}
+            config={responseConfig}
             onPoiAdd={onPoiAdd}
             hideEntity={hideEntity}
-            setMapCenterZoom={(mapCenter, mapZoomLevel) => {
+            setMapCenterZoom={(newMapCenter, newMapZoomLevel) => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
                 payload: {
                   mapCenter: {
-                    ...mapCenter,
+                    ...newMapCenter,
                   },
-                  mapZoomLevel,
+                  mapZoomLevel: newMapZoomLevel,
                 },
               });
             }}
@@ -776,7 +573,7 @@ const SearchResultContainer = forwardRef<
             toggleSatelliteMapMode={toggleSatelliteMapMode}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-            gotoMapCenter={searchContextState.gotoMapCenter}
+            gotoMapCenter={gotoMapCenter}
             setGotoMapCenter={(data: IGotoMapCenter | undefined) => {
               searchContextDispatch({
                 type: SearchContextActionTypes.GOTO_MAP_CENTER,
@@ -801,7 +598,7 @@ const SearchResultContainer = forwardRef<
             setIsMenuOpen={setIsMapMenuOpen}
           />
         )}
-        {searchContextState.responseConfig?.isFilterMenuAvail && (
+        {responseConfig?.isFilterMenuAvail && (
           <FilterMenuButton
             isEditorMode={isEditorMode}
             toggleIsMenuOpen={() => {
@@ -822,8 +619,20 @@ const SearchResultContainer = forwardRef<
             userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
           />
         )}
-        {isMapMenuPresent && <MapMenuComponent />}
-        {searchContextState.responseConfig?.isFilterMenuAvail && (
+        {isMapMenuPresent && (
+          <MapMenuContainer
+            isMapMenuOpen={isMapMenuOpen}
+            isNewSnapshot={!!isNewSnapshot}
+            mapDisplayMode={mapDisplayMode}
+            mapRef={mapRef?.current}
+            resultGroupEntities={resultGroupEntities}
+            saveConfig={saveConfig}
+            toggleRoutesToEntity={toggleRoutesToEntity}
+            toggleTransitRoutesToEntity={toggleTransitRoutesToEntity}
+            userPoiIcons={resUserPoiIcons}
+          />
+        )}
+        {responseConfig?.isFilterMenuAvail && (
           <FilterMenu
             isFilterMenuOpen={isFilterMenuOpen}
             isEditorMode={isEditorMode}
@@ -836,13 +645,13 @@ const SearchResultContainer = forwardRef<
           isShownPreferredLocationsModal && (
             <PreferredLocationsModal
               entityGroup={preferredLocationsGroup}
-              routes={searchContextState.responseRoutes}
+              routes={responseRoutes}
               toggleRoute={(item, mean) =>
-                toggleRoutesToEntity(location, item, mean)
+                toggleRoutesToEntity(resultLocation, item, mean)
               }
-              transitRoutes={searchContextState.responseTransitRoutes}
+              transitRoutes={responseTransitRoutes}
               toggleTransitRoute={(item) =>
-                toggleTransitRoutesToEntity(location, item)
+                toggleTransitRoutesToEntity(resultLocation, item)
               }
               closeModal={setIsShownPreferredLocationsModal}
             />
