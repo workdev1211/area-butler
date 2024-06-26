@@ -198,7 +198,7 @@ export class PropstackService {
       realEstate,
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
-        realEstate.integrationId,
+        realEstate.id,
       ),
     };
   }

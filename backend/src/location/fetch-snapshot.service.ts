@@ -27,11 +27,11 @@ import ApiSearchResultSnapshotResponseDto, {
 } from './dto/api-search-result-snapshot-response.dto';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LocationSearchDocument } from './schema/location-search.schema';
-import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { IFetchEmbedMapQueryParams } from '@area-butler-types/location';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 
 interface IFetchSnapshotMainParams {
   filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
@@ -66,7 +66,7 @@ export class FetchSnapshotService {
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly realEstateListingIntService: RealEstateListingIntService,
+    private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
   ) {}
 
@@ -209,10 +209,10 @@ export class FetchSnapshotService {
 
   async fetchLastSnapshotByIntId(
     integrationUser: TIntegrationUserDocument,
-    integrationId: string,
+    realEstateId: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.fetchSnapshot(integrationUser, {
-      filterQuery: { 'integrationParams.integrationId': integrationId },
+      filterQuery: { 'snapshot.realEstate': realEstateId },
       sortQuery: { createdAt: -1 },
     });
   }
@@ -253,10 +253,10 @@ export class FetchSnapshotService {
   }
 
   async checkIntSnapshotIframeExp(
-    { isSubscriptionActive }: TIntegrationUserDocument,
+    integrationUser: TIntegrationUserDocument,
     snapshotDoc: SearchResultSnapshotDocument,
   ): Promise<void> {
-    if (isSubscriptionActive) {
+    if (integrationUser.isSubscriptionActive) {
       return;
     }
 
@@ -264,8 +264,10 @@ export class FetchSnapshotService {
 
     if (!iframeEndsAt) {
       iframeEndsAt = (
-        await this.realEstateListingIntService.findOneOrFailByIntParams(
-          snapshotDoc.integrationParams,
+        await this.realEstateListingService.fetchById(
+          integrationUser,
+          snapshotDoc.snapshot.realEstate,
+          { 'integrationParams.iframeEndsAt': 1 },
         )
       ).integrationParams.iframeEndsAt;
     }

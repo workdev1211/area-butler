@@ -394,7 +394,7 @@ export class OnOfficeService {
       isChild: !!integrationUser.parentId,
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
-        estateId,
+        realEstate.id,
       ),
       subscription: integrationUser.subscription,
     };
@@ -522,27 +522,29 @@ export class OnOfficeService {
       integrationUser.parentUser = parentUser;
     }
 
+    const realEstate = mapRealEstateListingToApiRealEstateListing(
+      integrationUser,
+      await this.realEstateListingIntService.findOneOrFailByIntParams({
+        integrationId,
+        integrationUserId: integrationUser.integrationUserId,
+        integrationType: this.integrationType,
+      }),
+    );
+
     return {
       accessToken,
-      integrationUserId: integrationUser.integrationUserId,
-      config:
-        this.integrationUserService.getIntUserResultConfig(integrationUser),
-      isChild: !!integrationUser.parentId,
-      realEstate: mapRealEstateListingToApiRealEstateListing(
-        integrationUser,
-        await this.realEstateListingIntService.findOneOrFailByIntParams({
-          integrationId,
-          integrationUserId: integrationUser.integrationUserId,
-          integrationType: this.integrationType,
-        }),
-      ),
+      realEstate,
       availProdContingents:
         await this.contingentIntService.getAvailProdContingents(
           integrationUser,
         ),
+      config:
+        this.integrationUserService.getIntUserResultConfig(integrationUser),
+      integrationUserId: integrationUser.integrationUserId,
+      isChild: !!integrationUser.parentId,
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
-        integrationId,
+        realEstate.id,
       ),
       subscription: integrationUser.subscription,
     };
