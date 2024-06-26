@@ -24,6 +24,15 @@ interface IMapMenuKarlaFrickeProps {
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
   userMenuPoiIcons?: IApiUserPoiIcon[];
+  userPrimaryColor?: string;
+}
+
+interface IMenuProps {
+  groupedEntries: EntityGroup[];
+}
+interface IListItemProps {
+  group: EntityGroup;
+  isDropdownButton?: boolean;
 }
 
 const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
@@ -33,11 +42,6 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
   togglePreferredLocationsModal,
   userMenuPoiIcons,
 }) => {
-  interface IListItemProps {
-    group: EntityGroup;
-    isDropdownButton?: boolean;
-  }
-
   const ListItem: FunctionComponent<IListItemProps> = ({
     group,
     isDropdownButton = false,
@@ -93,10 +97,6 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
     <ListItemMemo key={group.title} group={group} />
   ));
 
-  interface IMenuProps {
-    groupedEntries: EntityGroup[];
-  }
-
   const DesktopMenu: FunctionComponent = () => {
     return <ul className="menu-desktop">{resultingList}</ul>;
   };
@@ -104,6 +104,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const MobileMenu: FunctionComponent<IMenuProps> = ({ groupedEntries }) => {
+    const { t } = useTranslation();
     const activeEntry = groupedEntries.find((ge) => ge.active);
 
     return (
@@ -123,7 +124,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
                   <ListItemMemo group={activeEntry} isDropdownButton={true} />
                 </ul>
               )}
-              {!activeEntry && "Bitte auswählen"}
+              {!activeEntry && t(IntlKeys.snapshotEditor.pleaseSelect)}
             </div>
             <ul
               tabIndex={0}

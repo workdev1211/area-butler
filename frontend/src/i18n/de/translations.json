@@ -165,6 +165,12 @@
     "improvement": "Verbesserung",
     "error": "Fehler",
     "other": "Sonstiges",
+    "pleaseSelect": "Bitte auswählen",
+    "moreInfo": "Mehr Informationen",
+    "objectType": "Objekttyp",
+    "size": "Größe",
+    "directlyToTheObject": "Direkt zum Objekt",
+    "hide": "Ausblenden",
     "exportTab": {
       "mapSection": "Kartenausschnitte",
       "mapSectionDescription": "Für Exposés, Print Medien, Bildergalerien",
@@ -622,5 +628,8 @@
     "absentTokensError": "Es fehlt ein iFrame-Token!",
     "cropAndSend": "Zuschneiden & übertragen",
     "wrongExportTypeGiven": "Falscher Exporttyp wurde angegeben!"
+  },
+  "screenshot": {
+    "cropSuccessfull": "Kartenausschnitt erfolgreich gespeichert!"
   }
 }

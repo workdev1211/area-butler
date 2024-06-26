@@ -171,6 +171,12 @@ export const IntlKeys = {
     improvement: "snapshotEditor.improvement",
     error: "snapshotEditor.error",
     other: "snapshotEditor.other",
+    pleaseSelect: "snapshotEditor.pleaseSelect",
+    moreInfo: "snapshotEditor.moreInfo",
+    objectType: "snapshotEditor.objectType",
+    size: "snapshotEditor.size",
+    directlyToTheObject: "snapshotEditor.directlyToTheObject",
+    hide: "snapshotEditor.hide",
     exportTab: {
       mapSection: "snapshotEditor.exportTab.mapSection",
       mapSectionDescription: "snapshotEditor.exportTab.mapSectionDescription",
@@ -660,4 +666,8 @@ export const IntlKeys = {
     cropAndSend: "integration.cropAndSend",
     wrongExportTypeGiven: "integration.wrongExportTypeGiven",
   },
+  
+  screenshot: {
+    cropSuccessfull: "screenshot.cropSuccessfull",
+  }
 };

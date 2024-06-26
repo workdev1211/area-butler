@@ -121,7 +121,6 @@
     "minimal": "Minimal",
     "preselectedProfile": "Preselected profiles",
     "showIcon": "Show icon",
-    "notAllowedToUse": "Only the Business+ subscription allows the use of the map editor.",
     "showAddress": "Show address",
     "showStreetViewLink": "Show Street View link",
     "groupPOIOnZoom": "Group POIs when zooming out",
@@ -264,7 +263,6 @@
     "userDefined": "User-defined",
     "showQRCode": "Show QR code",
     "crop": "Crop",
-    "cropSuccess": "Map screenshot successfully cropped.",
     "portrait": "portrait",
     "helpAndFeedback": "Help & Feedback",
     "startTour": "Start tour",
@@ -276,7 +274,15 @@
     "improvement": "Improvement",
     "error": "Error",
     "other": "Miscellaneous",
-    "screenshotName": "Map screenshot"
+    "cropSuccess": "Map section successfully saved.",
+    "pleaseSelect": "Please select",
+    "moreInfo": "More information",
+    "objectType": "Object type",
+    "size": "Size",
+    "directlyToTheObject": "Directly to the object",
+    "hide": "Hide",
+    "notAllowedToUse": "Only the Business+ subscription allows the use of the map editor.",
+    "screenshotName": "Site plan"
   },
   "common": {
     "showMore": "Show more",
@@ -323,8 +329,6 @@
       "cycling": "Bicycle",
       "driving": "Car"
     },
-    "userDefined": "Custom",
-    "custom": "Custom",
     "deleteAll": "Delete all",
     "copy": "Copy",
     "unlock": "Unlock",
@@ -339,8 +343,10 @@
       "MINUTES": "minutes"
     },
     "description": "Description",
-    "addressExpired": "Your address has expired. Please visit the {{appUrl}} and renew it.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "userDefined": "User-defined",
+    "custom": "User-defined",
+    "addressExpired": "Your address has expired. Please visit the {{appUrl}} and renew it."
   },
   "environmentalAnalysis": {
     "createBtn": "Create analysis & map",
@@ -617,10 +623,12 @@
       "takePicture": "Here you can save the current view of the map as an image and download it from the menu on the right. The snapshots taken here are then also stored in your exports."
     }
   },
-
   "integration": {
-    "absentTokensError": "iFrame tokens are missing!",
-    "cropAndSend": "Crop and send",
-    "wrongExportTypeGiven": "Incorrect export type was specified!"
+    "absentTokensError": "An iFrame token is missing!",
+    "cropAndSend": "Crop & transfer",
+    "wrongExportTypeGiven": "Wrong export type was specified!"
+  },
+  "screenshot": {
+    "cropSuccessfull": "Map section successfully saved!"
   }
 }

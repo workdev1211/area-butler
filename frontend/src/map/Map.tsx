@@ -12,6 +12,9 @@ import center from "@turf/center";
 import { toPng } from "html-to-image";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 import * as L from "leaflet";
 // LEFT JUST IN CASE - the old touch screen solution
 // import { GestureHandling } from "leaflet-gesture-handling";
@@ -88,8 +91,6 @@ import {
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 
-// import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
-
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
   searchAddress: string;
@@ -152,7 +153,9 @@ export class IdMarker extends L.Marker {
       this.entity.osmName !== OsmName.property
         ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
             searchString
-          )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
+          )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />${i18.t(
+            IntlKeys.snapshotEditor.moreInfo
+          )}</a></h4>`
         : `${entityTitle}`;
 
     const isRealEstateListing = this.entity.osmName === OsmName.property;
@@ -206,7 +209,11 @@ export class IdMarker extends L.Marker {
       if (this.hideEntity) {
         content =
           content +
-          `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`;
+          `<br /><button id="hide-btn-${
+            this.entity.id
+          }" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">${i18.t(
+            IntlKeys.snapshotEditor.hide
+          )}</button>`;
       }
 
       this.bindPopup(content);
@@ -219,13 +226,17 @@ export class IdMarker extends L.Marker {
 
     if (this.config?.showAddress && street) {
       realEstateInfoParts.push(
-        `<span class="font-semibold mt-2">Adresse: </span> ${street}`
+        `<span class="font-semibold mt-2">${i18.t(
+          IntlKeys.common.address
+        )}: </span> ${street}`
       );
     }
 
     if (this.config?.realEstateSettings?.isTypeShown && realEstateData?.type) {
       realEstateInfoParts.push(
-        `<span class="font-semibold mt-2">Objekttyp: </span> ${realEstateData.type}`
+        `<span class="font-semibold mt-2">${i18.t(
+          IntlKeys.snapshotEditor.objectType
+        )}: </span> ${realEstateData.type}`
       );
     }
 
@@ -234,11 +245,15 @@ export class IdMarker extends L.Marker {
       realEstateData?.characteristics?.realEstateSizeInSquareMeters
     ) {
       const startingAt = realEstateData?.characteristics?.startingAt
-        ? "Ab"
+        ? i18.t(IntlKeys.common.from)
         : "";
 
       realEstateInfoParts.push(
-        `<span class="font-semibold mt-2">Größe: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters} &#13217;`
+        `<span class="font-semibold mt-2">${i18.t(
+          IntlKeys.snapshotEditor.size
+        )}: </span> ${startingAt} ${
+          realEstateData?.characteristics?.realEstateSizeInSquareMeters
+        } &#13217;`
       );
     }
 
@@ -247,21 +262,29 @@ export class IdMarker extends L.Marker {
       realEstateData?.costStructure
     ) {
       realEstateInfoParts.push(
-        `<span class="font-semibold mt-2">Preis: </span> ${getRealEstateCost(
-          realEstateData.costStructure
-        )}`
+        `<span class="font-semibold mt-2">${i18.t(
+          IntlKeys.common.price
+        )}: </span> ${getRealEstateCost(realEstateData.costStructure)}`
       );
     }
 
     if (this.entity.externalUrl?.length) {
       realEstateInfoParts.push(
-        `<a target="_blank" href="${this.entity.externalUrl}" class="real-estate-cta">Direkt zum Objekt ></a>`
+        `<a target="_blank" href="${
+          this.entity.externalUrl
+        }" class="real-estate-cta">${i18.t(
+          IntlKeys.snapshotEditor.directlyToTheObject
+        )} ></a>`
       );
     }
 
     if (this.hideEntity) {
       realEstateInfoParts.push(
-        `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`
+        `<br /><button id="hide-btn-${
+          this.entity.id
+        }" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">${i18.t(
+          IntlKeys.snapshotEditor.hide
+        )}</button>`
       );
     }
 
@@ -1145,6 +1168,40 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             ? "bg-transparent"
             : "bg-white";
 
+          let html = `<div class="locality-marker ${backColorClass}" style="border-color: ${
+            markerIcon.color
+          };${
+            entity.isFiltered ? "filter: brightness(75%) grayscale(100%);" : ""
+          }"><img src="${markerIcon.icon}" alt="marker-icon" class="${
+            entity.osmName
+          } locality-icon" style="${iconStyle}" /></div>`;
+
+          if ((config?.mapIcon && isRealEstateListing) || markerIcon.isCustom) {
+            html = `<img src="${
+              markerIcon.icon
+            }" alt="marker-icon-custom" class="${
+              entity.osmName
+            } locality-icon-custom ${backColorClass}" style="${iconStyle}${
+              entity.isFiltered
+                ? "filter: brightness(75%) grayscale(100%);"
+                : ""
+            }" />`;
+          } else if (config?.primaryColor && isRealEstateListing) {
+            html = renderToStaticMarkup(
+              <DefaultMarker
+                fill={config.primaryColor}
+                className="locality-icon"
+                style={{
+                  width: "auto",
+                  height: resultingIconStyleSize,
+                  filter: entity.isFiltered
+                    ? "brightness(75%) grayscale(100%)"
+                    : "",
+                }}
+              />
+            );
+          }
+
           const icon = L.divIcon({
             iconUrl: markerIcon.icon,
             shadowUrl: leafletShadow,
@@ -1155,26 +1212,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 ? "locality-marker-wrapper-custom"
                 : ""
             } icon-${entity.osmName}`,
-            html:
-              (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
-                ? `<img src="${
-                    markerIcon.icon
-                  }" alt="marker-icon-custom" class="${
-                    entity.osmName
-                  } locality-icon-custom ${backColorClass}" style="${iconStyle}${
-                    entity.isFiltered
-                      ? "filter: brightness(75%) grayscale(100%);"
-                      : ""
-                  }" />`
-                : `<div class="locality-marker ${backColorClass}" style="border-color: ${
-                    markerIcon.color
-                  };${
-                    entity.isFiltered
-                      ? "filter: brightness(75%) grayscale(100%);"
-                      : ""
-                  }"><img src="${markerIcon.icon}" alt="marker-icon" class="${
-                    entity.osmName
-                  } locality-icon" style="${iconStyle}" /></div>`,
+            html,
           });
 
           const marker = new IdMarker({
@@ -1272,7 +1310,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           : config?.iconSizes?.poiIconSize!;
 
         icon.options.html = iconHtml.replace(
-          /^(.*locality-icon.*style=").*(".*)$/,
+          /^(.*locality-icon.*style=")[^<]*(".*)$/,
           `$1width: ${resultingSize}px; height: ${resultingSize}px;$2`
         );
 

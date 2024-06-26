@@ -106,7 +106,7 @@ const SearchResultContainer = forwardRef<
     },
     parentMapRef
   ) => {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
 
     const mapRef = useRef<ICurrentMapRef | null>(null);
     useImperativeHandle(parentMapRef, () => ({
@@ -197,8 +197,8 @@ const SearchResultContainer = forwardRef<
 
     useEffect(() => {
       if (
-        containerRef.current?.offsetWidth &&
-        containerRef.current?.offsetWidth < 769
+        containerRef?.offsetWidth &&
+        containerRef?.offsetWidth < 769
       ) {
         setIsMapMenuOpen(false);
       }
@@ -222,11 +222,11 @@ const SearchResultContainer = forwardRef<
       setPrimaryColor(
         searchContextState.responseConfig?.primaryColor || defaultColor
       );
-
-      const r = document.getElementById(searchResContainId);
+      
+      const r = containerRef;
       r?.style.setProperty("--primary", primaryColor);
       r?.style.setProperty("--custom-primary", primaryColor);
-    }, [searchContextState.responseConfig?.primaryColor]);
+    }, [searchContextState.responseConfig?.primaryColor, containerRef]);
 
     // consume search response and set active/available means
     useEffect(() => {
@@ -665,7 +665,7 @@ const SearchResultContainer = forwardRef<
         onContextMenu={(e) => {
           e.preventDefault();
         }}
-        ref={containerRef}
+        ref={(newRef) => setContainerRef(newRef)}
       >
         {/* NOT SURE ABOUT ITS USAGE - HAS BEEN MOVED HERE FROM SNAPSHOT_EDITOR_PAGE AND MAP_PAGE COMPONENTS */}
         {/* Required for the addition of custom POIs */}
