@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post, Req } from '@nestjs/common';
+import { Body, Controller, Logger, Get, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -10,19 +10,19 @@ export class OnOfficeWebhookController {
   @ApiOperation({
     description: 'Process the onOffice webhook on the target group change',
   })
-  @Post('target-group')
+  @Get('target-group')
   handleTargetGroupChange(
     @Body() handleTargetGroupChangeDto: any,
     @Req() request: Request,
   ): void {
     this.logger.log(
-      'Request',
+      'Request:',
       request.originalUrl,
       request.params,
       request.query,
       request.body,
     );
 
-    this.logger.log('Request body', handleTargetGroupChangeDto);
+    this.logger.log('Request body:', handleTargetGroupChangeDto);
   }
 }
