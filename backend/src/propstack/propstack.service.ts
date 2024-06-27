@@ -449,7 +449,7 @@ export class PropstackService {
       email,
       name,
       public_email: publicEmail,
-      shop: { color, logo_url: logoUrl },
+      shop,
     } = await this.propstackApiService
       .fetchBrokerById(
         (integrationUser.parameters as IApiIntUserPropstackParams).apiKey,
@@ -460,11 +460,11 @@ export class PropstackService {
         return {} as Partial<IPropstackBroker>;
       });
 
-    if (logoUrl) {
+    if (shop?.logo_url) {
       const { data: logoData } = await firstValueFrom<{
         data: ArrayBuffer;
       }>(
-        this.httpService.get<ArrayBuffer>(logoUrl, {
+        this.httpService.get<ArrayBuffer>(shop.logo_url, {
           responseType: 'arraybuffer',
         }),
       );
@@ -478,8 +478,8 @@ export class PropstackService {
       }
     }
 
-    if (color) {
-      integrationUser.config.color = color;
+    if (shop?.color) {
+      integrationUser.config.color = shop.color;
       integrationUser.markModified('config.color');
     }
 
