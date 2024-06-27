@@ -271,9 +271,7 @@ export class OpenAiService {
     { realEstateType, ...locDescQueryData }: ILocRealEstDescQueryData,
   ): Promise<string> {
     const {
-      snapshotRes: {
-        snapshot: { realEstate },
-      },
+      snapshotRes: { realEstate },
     } = locDescQueryData;
 
     let queryText =

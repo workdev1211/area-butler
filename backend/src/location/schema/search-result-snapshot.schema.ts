@@ -1,26 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as SchemaType } from 'mongoose';
+import { Document, Schema as SchemaType, Types } from 'mongoose';
 
 import {
+  ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   IIframeTokens,
 } from '@area-butler-types/types';
 import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
-import {
-  ISnapshotDataSchema,
-  SnapshotDataSchema,
-} from './snapshot-data.schema';
+import { SnapshotDataSchema } from './snapshot-data.schema';
 import { User, UserDocument } from '../../user/schema/user.schema';
 import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from '../../user/schema/integration-user.schema';
+import { RealEstateListing } from '../../real-estate-listing/schema/real-estate-listing.schema';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 
 interface ISearchResultSnapshotSchema extends IIframeTokens {
   config: ApiSearchResultSnapshotConfig;
   mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
-  snapshot: ISnapshotDataSchema;
+  snapshot: ApiSearchResultSnapshot;
   createdAt?: Date;
   description?: string;
   endsAt?: Date; // end date of the Pay per Use map
@@ -31,6 +31,8 @@ interface ISearchResultSnapshotSchema extends IIframeTokens {
   integrationUser?: TIntegrationUserDocument;
   isTrial?: boolean;
   lastAccess?: Date;
+  realEstate?: ApiRealEstateListing;
+  realEstateId?: Types.ObjectId;
   updatedAt?: Date;
   user?: UserDocument;
   userId?: string;
@@ -40,11 +42,14 @@ interface ISearchResultSnapshotSchema extends IIframeTokens {
 export type SearchResultSnapshotDocument = ISearchResultSnapshotSchema &
   Document;
 
-export const SNAPSHOT_REAL_EST_PATH = 'snapshot.realEstate';
+export const SNAPSHOT_REAL_EST_PATH = 'realEstate';
 export const SNAPSHOT_USER_PATH = 'user';
 export const SNAPSHOT_INT_USER_PATH = 'integrationUser';
 
-@Schema()
+@Schema({
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+})
 export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   @Prop({
     type: String,
@@ -63,7 +68,7 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   mapboxAccessToken: string;
 
   @Prop({ type: SnapshotDataSchema, required: true })
-  snapshot: ISnapshotDataSchema;
+  snapshot: ApiSearchResultSnapshot;
 
   @Prop({
     type: String,
@@ -100,6 +105,13 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   lastAccess?: Date;
 
   @Prop({
+    type: Types.ObjectId,
+    set: (value: string | Types.ObjectId): Types.ObjectId =>
+      typeof value === 'string' ? new Types.ObjectId(value) : value,
+  })
+  realEstateId?: Types.ObjectId;
+
+  @Prop({
     type: String,
     index: true,
     validate: function (val: string): boolean {
@@ -118,6 +130,7 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   visitAmount?: number;
 
   integrationUser?: TIntegrationUserDocument;
+  realEstate?: ApiRealEstateListing;
   user?: UserDocument;
 }
 
@@ -140,5 +153,12 @@ SearchResultSnapshotSchema.virtual(SNAPSHOT_INT_USER_PATH, {
   match: (doc: SearchResultSnapshotDocument) => ({
     integrationType: doc.integrationParams?.integrationType,
   }),
+  justOne: true,
+});
+
+SearchResultSnapshotSchema.virtual(SNAPSHOT_REAL_EST_PATH, {
+  ref: RealEstateListing.name,
+  localField: 'realEstateId',
+  foreignField: '_id',
   justOne: true,
 });

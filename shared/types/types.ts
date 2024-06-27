@@ -325,7 +325,6 @@ export interface ApiSearchResultSnapshot {
   transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
 
   preferredLocations?: ApiPreferredLocation[]; // important places
-  realEstate?: ApiRealEstateListing;
   routes?: EntityRoute[]; // routes to important places by foot, bicycle or car
   transitRoutes?: EntityTransitRoute[]; // routes to important places by city transport
 }
@@ -424,6 +423,7 @@ export interface ApiSearchResultSnapshotResponse extends IIframeTokens {
   integrationId?: string;
   isTrial?: boolean;
   lastAccess?: Date;
+  realEstate?: ApiRealEstateListing;
   updatedAt?: Date;
   visitAmount?: number;
 }

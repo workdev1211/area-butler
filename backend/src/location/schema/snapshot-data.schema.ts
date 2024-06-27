@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types, PopulatedDoc, Document } from 'mongoose';
 
 import {
   ApiCoordinates,
@@ -11,22 +10,9 @@ import {
 } from '@area-butler-types/types';
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
-import {
-  RealEstateListing,
-  RealEstateListingDocument,
-} from '../../real-estate-listing/schema/real-estate-listing.schema';
-
-type TPopulatedRealEstate = PopulatedDoc<
-  Document<Types.ObjectId> & RealEstateListingDocument
->;
-
-export interface ISnapshotDataSchema
-  extends Omit<ApiSearchResultSnapshot, 'realEstate'> {
-  realEstate?: TPopulatedRealEstate;
-}
 
 @Schema({ _id: false })
-class SnapshotData implements ISnapshotDataSchema {
+class SnapshotData implements ApiSearchResultSnapshot {
   @Prop({ type: Array, required: true })
   localityParams: ApiOsmEntity[]; // selected POI types
 
@@ -44,9 +30,6 @@ class SnapshotData implements ISnapshotDataSchema {
 
   @Prop({ type: Array })
   preferredLocations?: ApiPreferredLocation[]; // important places
-
-  @Prop({ type: Types.ObjectId, ref: RealEstateListing.name })
-  realEstate?: TPopulatedRealEstate;
 
   @Prop({ type: Array })
   routes?: EntityRoute[]; // routes to important places by foot, bicycle or car

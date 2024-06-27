@@ -5,7 +5,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 import {
   ApiCoordinates,
@@ -23,8 +23,6 @@ import ApiTransportationParamDto from '../../../dto/api-transportation-param.dto
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 import { EntityTransitRoute } from '@area-butler-types/routing';
 import EntityTransitRouteDto from '../../../dto/entity-transit-route.dto';
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
-import ApiRealEstateListingDto from '../../../dto/api-real-estate-listing.dto';
 
 @Exclude()
 class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
@@ -67,20 +65,6 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @IsArray()
   @ValidateNested({ each: true })
   preferredLocations?: ApiPreferredLocation[];
-
-  @Expose()
-  @Type(() => ApiRealEstateListingDto)
-  @Transform(
-    ({ value }: { value: ApiRealEstateListing }): ApiRealEstateListing =>
-      value && typeof value === 'object' ? value : undefined,
-    {
-      toClassOnly: true,
-    },
-  )
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  realEstate?: ApiRealEstateListing;
 
   @Expose()
   @Type(() => EntityRouteDto)

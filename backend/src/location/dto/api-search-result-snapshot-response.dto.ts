@@ -2,6 +2,7 @@ import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { LeanDocument } from 'mongoose';
 
 import {
+  ApiCoordinates,
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
@@ -13,6 +14,7 @@ import { randomizeCoordinates } from '../../../../shared/functions/shared.functi
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import ApiSearchResultSnapshotDto from './snapshot/api-search-result-snapshot.dto';
 import ApiSearchResultSnapshotConfigDto from './snapshot/api-search-result-snapshot-config.dto';
+import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
 export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
   isAddressShown?: boolean;
@@ -104,6 +106,33 @@ class ApiSearchResultSnapshotResponseDto
   lastAccess?: Date;
 
   @Expose()
+  @Type(() => ApiRealEstateListingDto)
+  @Transform(
+    ({
+      value,
+      obj: {
+        isAddressShown,
+        isEmbedded = false,
+        config: { showAddress = false },
+      },
+    }: {
+      obj: TSnapshotResDtoData;
+      value: ApiRealEstateListing;
+    }): ApiRealEstateListing =>
+      processAddressVisibility(
+        value,
+        isEmbedded && typeof isAddressShown === 'boolean'
+          ? isAddressShown
+          : showAddress,
+        isEmbedded,
+      ),
+    {
+      toClassOnly: true,
+    },
+  )
+  realEstate?: ApiRealEstateListing;
+
+  @Expose()
   token?: string;
 
   @Expose()
@@ -111,26 +140,45 @@ class ApiSearchResultSnapshotResponseDto
 
   @Expose()
   visitAmount?: number;
+
+  constructor() {
+    randomCoordinates = undefined;
+  }
 }
 
 export default ApiSearchResultSnapshotResponseDto;
 
-const processAddressVisibility = (
-  snapshot: ApiSearchResultSnapshot,
+let randomCoordinates: ApiCoordinates;
+
+const processAddressVisibility = <
+  T extends ApiSearchResultSnapshot | ApiRealEstateListing,
+>(
+  entity: T,
   isAddressShown: boolean,
   isEmbedded: boolean,
-): ApiSearchResultSnapshot => {
-  if (!snapshot || isAddressShown || !isEmbedded) {
-    return snapshot;
+): T => {
+  if (!entity || isAddressShown || !isEmbedded) {
+    return entity;
   }
 
-  const { location, realEstate, searchResponse, ...otherSnapshotData } =
-    snapshot;
+  const isSnapshot = 'searchResponse' in entity;
 
-  const randomCoordinates = randomizeCoordinates(location);
+  if (!randomCoordinates) {
+    randomCoordinates = randomizeCoordinates(
+      isSnapshot ? entity.location : entity.coordinates,
+    );
+  }
 
-  const processedSearchRes: ApiSearchResponse = {
-    ...searchResponse,
+  if (!isSnapshot) {
+    return {
+      ...entity,
+      address: undefined,
+      coordinates: randomCoordinates,
+    };
+  }
+
+  const searchResponse: ApiSearchResponse = {
+    ...entity.searchResponse,
     centerOfInterest: {
       coordinates: randomCoordinates,
       address: undefined,
@@ -139,20 +187,10 @@ const processAddressVisibility = (
     },
   };
 
-  const resultRealEstate: ApiRealEstateListing = realEstate
-    ? { ...realEstate }
-    : undefined;
-
-  if (resultRealEstate) {
-    resultRealEstate.address = undefined;
-    resultRealEstate.coordinates = undefined;
-  }
-
   return {
-    ...otherSnapshotData,
+    ...entity,
+    searchResponse,
     location: randomCoordinates,
     placesLocation: undefined,
-    realEstate: resultRealEstate,
-    searchResponse: processedSearchRes,
   };
 };

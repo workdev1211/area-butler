@@ -212,7 +212,9 @@ export class FetchSnapshotService {
     realEstateId: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.fetchSnapshot(integrationUser, {
-      filterQuery: { 'snapshot.realEstate': realEstateId },
+      filterQuery: {
+        realEstateId: new Types.ObjectId(realEstateId),
+      },
       sortQuery: { createdAt: -1 },
     });
   }
@@ -260,16 +262,19 @@ export class FetchSnapshotService {
       return;
     }
 
-    let iframeEndsAt = snapshotDoc?.iframeEndsAt;
+    let iframeEndsAt: Date | string = snapshotDoc?.iframeEndsAt;
 
     if (!iframeEndsAt) {
       iframeEndsAt = (
-        await this.realEstateListingService.fetchById(
-          integrationUser,
-          snapshotDoc.snapshot.realEstate,
-          { 'integrationParams.iframeEndsAt': 1 },
-        )
-      ).integrationParams.iframeEndsAt;
+        snapshotDoc.realEstate ||
+        (
+          await this.realEstateListingService.fetchById(
+            integrationUser,
+            snapshotDoc.realEstateId,
+            { 'integrationParams.iframeEndsAt': 1 },
+          )
+        )?.integrationParams
+      )?.iframeEndsAt;
     }
 
     const isSnapshotIframeExpired = iframeEndsAt

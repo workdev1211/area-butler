@@ -409,10 +409,10 @@ const SearchParamsPage: FC = () => {
         payload: snapshotRes.snapshot.transportationParams,
       });
 
-      if (snapshotRes.snapshot.realEstate) {
+      if (snapshotRes.realEstate) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-          payload: snapshotRes.snapshot.realEstate,
+          payload: snapshotRes.realEstate,
         });
       }
 

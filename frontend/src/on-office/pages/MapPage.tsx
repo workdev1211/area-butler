@@ -217,7 +217,7 @@ const MapPage: FC = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-      payload: snapshotRes.snapshot.realEstate,
+      payload: snapshotRes.realEstate,
     });
 
     searchContextDispatch({

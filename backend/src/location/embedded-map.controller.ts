@@ -10,7 +10,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Readable } from 'stream';
 import { toBuffer } from 'qrcode';
-import { FilterQuery, Types } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 
 import { IApiFetchedEmbeddedData } from '@area-butler-types/types';
 import { createDirectLink } from '../shared/functions/shared';
@@ -22,6 +22,7 @@ import { UserService } from '../user/user.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import ApiFetchEmbeddedMapReqDto from './dto/api-fetch-embedded-map-req.dto';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')
@@ -103,24 +104,31 @@ export class EmbeddedMapController {
       status2: snapshotRes.config.realEstateStatus2,
     };
 
-    if (snapshotRes.snapshot.realEstate) {
-      filterQuery._id = {
-        $ne: new Types.ObjectId(snapshotRes.snapshot.realEstate.id),
-      };
-    }
-
     const realEstates = (
       await this.realEstateListingService.fetchRealEstateListings(
         resultUser,
         filterQuery,
       )
-    ).map((realEstate) =>
-      mapRealEstateListingToApiRealEstateListing(
+    ).reduce<ApiRealEstateListing[]>((result, realEstateDoc) => {
+      const realEstate = mapRealEstateListingToApiRealEstateListing(
         resultUser,
-        realEstate,
+        realEstateDoc,
         snapshotRes.config.showAddress,
-      ),
-    );
+      );
+
+      if (realEstateDoc.id === snapshotDoc.realEstateId?.toString()) {
+        if (!isAddressShown) {
+          realEstate.address = undefined;
+          realEstate.coordinates = snapshotRes.snapshot.location;
+        }
+
+        snapshotRes.realEstate = realEstate;
+      } else {
+        result.push(realEstate);
+      }
+
+      return result;
+    }, []);
 
     return {
       realEstates,
