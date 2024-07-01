@@ -83,9 +83,11 @@ export class FetchSnapshotService {
       ? {
           path: SNAPSHOT_REAL_EST_PATH,
           transform: (
-            realEstate: RealEstateListingDocument,
+            realEstate: RealEstateListingDocument | null,
           ): ApiRealEstateListing =>
-            mapRealEstateListingToApiRealEstateListing(user, realEstate),
+            realEstate
+              ? mapRealEstateListingToApiRealEstateListing(user, realEstate)
+              : undefined,
         }
       : undefined;
 

@@ -20,7 +20,6 @@ export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
   isAddressShown?: boolean;
   isEmbedded?: boolean;
   isTrial?: boolean;
-  realEstateListing?: ApiRealEstateListing;
   userPoiIcons?: IApiUserPoiIcons;
 };
 
@@ -90,16 +89,6 @@ class ApiSearchResultSnapshotResponseDto
   iframeEndsAt?: Date;
 
   @Expose()
-  @Transform(
-    ({ obj: { integrationParams } }: { obj: TSnapshotResDtoData }): string =>
-      integrationParams?.integrationId,
-    {
-      toClassOnly: true,
-    },
-  )
-  integrationId?: string;
-
-  @Expose()
   isTrial?: boolean;
 
   @Expose()
@@ -119,18 +108,31 @@ class ApiSearchResultSnapshotResponseDto
       obj: TSnapshotResDtoData;
       value: ApiRealEstateListing;
     }): ApiRealEstateListing =>
-      processAddressVisibility(
-        value,
-        isEmbedded && typeof isAddressShown === 'boolean'
-          ? isAddressShown
-          : showAddress,
-        isEmbedded,
-      ),
+      value
+        ? processAddressVisibility(
+            value,
+            isEmbedded && typeof isAddressShown === 'boolean'
+              ? isAddressShown
+              : showAddress,
+            isEmbedded,
+          )
+        : undefined,
     {
       toClassOnly: true,
     },
   )
   realEstate?: ApiRealEstateListing;
+
+  // 'obj' processing is required, the real estate id is changed when using 'value'
+  @Expose()
+  @Transform(
+    ({ obj: { realEstateId } }: { obj: TSnapshotResDtoData }): string =>
+      realEstateId ? `${realEstateId}` : undefined,
+    {
+      toClassOnly: true,
+    },
+  )
+  realEstateId?: string;
 
   @Expose()
   token?: string;

@@ -48,7 +48,7 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
 
   if (isIntegrationUser) {
     embeddableMaps.forEach((snapshotRes) => {
-      if (snapshotRes.integrationId === realEstateListing?.integrationId) {
+      if (snapshotRes.realEstateId === realEstateListing?.id) {
         curEstSnapshots.push(snapshotRes);
       } else {
         otherSnapshots.push(snapshotRes);
@@ -87,7 +87,7 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
         <tbody>
           {curEstSnapshots.map((snapshot) => (
             <SnapshotsTableRow
-              key={`embeddable-map-${snapshot.token}`}
+              key={`embeddable-map-${snapshot.id}`}
               snapshot={snapshot}
               openCodeSnippetModal={openCodeSnippetModal}
               templateSnapshotId={templateSnapshotId}
@@ -104,7 +104,7 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
             )}
           {otherSnapshots.map((snapshot) => (
             <SnapshotsTableRow
-              key={`embeddable-map-${snapshot.token}`}
+              key={`embeddable-map-${snapshot.id}`}
               snapshot={snapshot}
               openCodeSnippetModal={openCodeSnippetModal}
               templateSnapshotId={templateSnapshotId}

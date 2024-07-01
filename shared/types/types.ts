@@ -420,10 +420,10 @@ export interface ApiSearchResultSnapshotResponse extends IIframeTokens {
   endsAt?: Date;
   externalId?: string;
   iframeEndsAt?: Date;
-  integrationId?: string;
   isTrial?: boolean;
   lastAccess?: Date;
   realEstate?: ApiRealEstateListing;
+  realEstateId?: string;
   updatedAt?: Date;
   visitAmount?: number;
 }
