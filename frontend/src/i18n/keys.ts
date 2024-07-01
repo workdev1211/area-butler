@@ -666,8 +666,106 @@ export const IntlKeys = {
     cropAndSend: "integration.cropAndSend",
     wrongExportTypeGiven: "integration.wrongExportTypeGiven",
   },
-  
+
   screenshot: {
     cropSuccessfull: "screenshot.cropSuccessfull",
-  }
+  },
+
+  subscriptions: {
+    aboutMySubscription: "subscriptions.aboutMySubscription",
+    timeForMore: "subscriptions.timeForMore",
+    toActivateSwitchOnSubscription:
+      "subscriptions.toActivateSwitchOnSubscription",
+    subscribe: "subscriptions.subscribe",
+    creditCard: "subscriptions.creditCard",
+    paymentCanceled: "subscriptions.paymentCanceled",
+    selectionTitle: "subscriptions.selectionTitle",
+    perAddressPlusVAT: "subscriptions.perAddressPlusVAT",
+    includes: "subscriptions.includes",
+    oneAddressAndAnalysis: "subscriptions.oneAddressAndAnalysis",
+    targetGroupFilter: "subscriptions.targetGroupFilter",
+    interactiveMapForIframeAndPortal:
+      "subscriptions.interactiveMapForIframeAndPortal",
+    hyperlinkToMap: "subscriptions.hyperlinkToMap",
+    qrCodeToMap: "subscriptions.qrCodeToMap",
+    sitePlan: "subscriptions.sitePlan",
+    licenceCost: "subscriptions.licenceCost",
+    environmentalAnalysisAndReport:
+      "subscriptions.environmentalAnalysisAndReport",
+    overviewOfTheSituation: "subscriptions.overviewOfTheSituation",
+    socioEconomicData: "subscriptions.socioEconomicData",
+    noiseData: "subscriptions.noiseData",
+    keyEconomicFigures: "subscriptions.keyEconomicFigures",
+    dataAtZipCodeLevel: "subscriptions.dataAtZipCodeLevel",
+    locationIndicies: "subscriptions.locationIndicies",
+    preparationForSpecificTargetGroup:
+      "subscriptions.preparationForSpecificTargetGroup",
+    customerQuestionnaireInTheSystem:
+      "subscriptions.customerQuestionnaireInTheSystem",
+    automaticLocationExpose: "subscriptions.automaticLocationExpose",
+    automaticDescription: "subscriptions.automaticDescription",
+    automaticConversation: "subscriptions.automaticConversation",
+    yourColorsLogosIcons: "subscriptions.yourColorsLogosIcons",
+    userAccount: "subscriptions.userAccount",
+    faqs: "subscriptions.faqs",
+    optional: "subscriptions.optional",
+    setupOfIndividualInterface: "subscriptions.setupOfIndividualInterface",
+    perCardStyleFromOurCatalogue: "subscriptions.perCardStyleFromOurCatalogue",
+    personalizedCardStyle: "subscriptions.personalizedCardStyle",
+    allPricesExclusiveOfVAT: "subscriptions.allPricesExclusiveOfVAT",
+    totalInclusiveVat: "subscriptions.totalInclusiveVat",
+    unusedExpiredIn12Months: "subscriptions.unusedExpiredIn12Months",
+    cardStylesSetupOnce: "subscriptions.cardStylesSetupOnce",
+    tenAnalyzeAndPrepareAddress: "subscriptions.tenAnalyzeAndPrepareAddress",
+    increase: "subscriptions.increase",
+    monthlyQuota: "subscriptions.monthlyQuota",
+    type: "subscriptions.type",
+    quantity: "subscriptions.quantity",
+    data: "subscriptions.data",
+    errorWhenIncreaseLimit: "subscriptions.errorWhenIncreaseLimit",
+    planTypes: {
+      PAY_PER_USE: "subscriptions.planTypes.PAY_PER_USE",
+      BUSINESS_PLUS: "subscriptions.planTypes.BUSINESS_PLUS",
+    },
+    payPerUse: {
+      queryContingentTitle: "subscriptions.payPerUse.queryContingentTitle",
+      queryContingentDescription:
+        "subscriptions.payPerUse.queryContingentDescription",
+      queryContingentBigDescription:
+        "subscriptions.payPerUse.queryContingentBigDescription",
+      addressProcessContingentTitle:
+        "subscriptions.payPerUse.addressProcessContingentTitle",
+      addressProcessContingentDescription:
+        "subscriptions.payPerUse.addressProcessContingentDescription",
+      oneAddress: "subscriptions.payPerUse.oneAddress",
+      buySingleQuery: "subscriptions.payPerUse.buySingleQuery",
+      cardOf10: "subscriptions.payPerUse.cardOf10",
+      buyCardOf10: "subscriptions.payPerUse.buyCardOf10",
+      cardOf5: "subscriptions.payPerUse.cardOf5",
+      buyCardOf5: "subscriptions.payPerUse.buyCardOf5",
+    },
+    business: {
+      monthlySubscription: "subscriptions.business.monthlySubscription",
+      businessPlus: "subscriptions.business.businessPlus",
+      addressesAndAnalysisPro: "subscriptions.business.addressesAndAnalysisPro",
+      addressesAndAnalysisProYearly:
+        "subscriptions.business.addressesAndAnalysisProYearly",
+      allFunctionsFromTenCard: "subscriptions.business.allFunctionsFromTenCard",
+      threeUser: "subscriptions.business.threeUser",
+      setupOfIndividualInterface:
+        "subscriptions.business.setupOfIndividualInterface",
+      twoSelectableCardStyles: "subscriptions.business.twoSelectableCardStyles",
+      onboardingAndFaqs: "subscriptions.business.onboardingAndFaqs",
+      perCardStyleFromOurCatalogue:
+        "subscriptions.business.perCardStyleFromOurCatalogue",
+      perUserAssignment: "subscriptions.business.perUserAssignment",
+      industryDataAndMore: "subscriptions.business.industryDataAndMore",
+      totalPerMonth: "subscriptions.business.totalPerMonth",
+      totalPerYear: "subscriptions.business.totalPerYear",
+      minimumTermForMonth: "subscriptions.business.minimumTermForMonth",
+      minimumTermForYear: "subscriptions.business.minimumTermForYear",
+      cardStyles: "subscriptions.business.cardStyles",
+      annualSubscription: "subscriptions.business.annualSubscription",
+    },
+  },
 };

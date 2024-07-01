@@ -1,5 +1,8 @@
 import { FunctionComponent, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import { useEscape } from "../hooks/escape";
 
 interface IConfirmationModalProps {
@@ -13,6 +16,7 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
   onConfirm,
   text,
 }) => {
+  const { t } = useTranslation();
   useEscape(closeModal);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,7 +32,7 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
             className="btn btn-sm"
             style={{ flexBasis: "25%" }} // class basis-1/4 doesn't work for some reason
           >
-            Nein
+            {t(IntlKeys.common.no)}
           </button>
           <button
             className={`btn bg-primary-gradient btn-sm self-end ${
@@ -42,7 +46,7 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
               closeModal();
             }}
           >
-            Ja
+            {t(IntlKeys.common.yes)}
           </button>
         </div>
       </div>

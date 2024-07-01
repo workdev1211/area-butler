@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import "./SubscriptionPlanSelection.scss";
 import { useHttp } from "hooks/http";
 import {
@@ -58,6 +61,7 @@ export const getPlanPriceDescription = (priceId: string): JSX.Element => {
 };
 
 const SubscriptionPlanSelection: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { post } = useHttp();
   const { stripeEnv } = useContext(ConfigContext);
 
@@ -185,7 +189,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
               }}
               className="btn bg-primary-gradient w-56 self-center mt-5"
             >
-              {purchaseButtonLabel || "Abonnieren"}
+              {purchaseButtonLabel || t(IntlKeys.subscriptions.subscribe)}
             </button>
           </div>
         </div>
@@ -221,8 +225,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       )}
       <div>
         <h1 className="font-bold text-xl">
-          Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
-          Abonnement, bitte wählen Sie das Passende für sich aus:
+          {t(IntlKeys.subscriptions.selectionTitle)}
         </h1>
         <div className="p-5 sm:p-20 flex flex-col items-center justify-center">
           <div className="btn-group mt-5">
@@ -245,7 +248,14 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
                       key={subscriptionGroupName}
                       style={{ padding: 0 }}
                     >
-                      {subscriptionGroupName}
+                      {t(
+                        (
+                          IntlKeys.subscriptions.planTypes as Record<
+                            string,
+                            string
+                          >
+                        )[subscriptionGroupName]
+                      )}
                     </button>
                   );
                 }

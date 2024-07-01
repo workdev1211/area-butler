@@ -1,263 +1,263 @@
 import "./SubscriptionDescriptions.scss";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 export const PayPerUse1Description = () => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="card-title w-full">
-        <h2 className="text-center w-full flex flex-col">Eine Adresse</h2>
+        <h2 className="text-center w-full flex flex-col">
+          {t(IntlKeys.subscriptions.payPerUse.oneAddress)}
+        </h2>
       </div>
 
       <div className="flex justify-center items-baseline">
         <span className="text-4xl w-auto">39,-</span>
-        <span className="text-lg ml-2">€ pro Adresse zzgl. MwSt</span>
+        <span className="text-lg ml-2">
+          {t(IntlKeys.subscriptions.perAddressPlusVAT)}
+        </span>
       </div>
 
       <div className="flex flex-col my-10 sm:h-[45rem]">
-        <div>Beinhaltet:</div>
-        <div>1 Adresse & Analyse</div>
+        <div>{t(IntlKeys.subscriptions.includes)}:</div>
+        <div>{t(IntlKeys.subscriptions.oneAddressAndAnalysis)}</div>
 
         <ul className="list-disc pl-4 pt-4">
-          <li>Zielgruppen-Filter</li>
-          <li>Interaktive Karte (iFrame) für Website & Portale</li>
-          <li>Hyperlink zur Online-Karte</li>
-          <li>QR-Code zur Online-Karte</li>
-          <li>Lageplan / Snapshot Print & Digital hochauflösend</li>
-          <li>Lizenzkosten für das Kartenmaterial</li>
+          <li>{t(IntlKeys.subscriptions.targetGroupFilter)}</li>
+          <li>{t(IntlKeys.subscriptions.interactiveMapForIframeAndPortal)}</li>
+          <li>{t(IntlKeys.subscriptions.hyperlinkToMap)}</li>
+          <li>{t(IntlKeys.subscriptions.qrCodeToMap)}</li>
+          <li>{t(IntlKeys.subscriptions.sitePlan)}</li>
+          <li>{t(IntlKeys.subscriptions.licenceCost)}</li>
 
-          <li className="pt-4">Umfeldanalyse & Report</li>
-          <li>Lageüberblick tabellarisch</li>
-          <li>Sozioökonomische Daten</li>
-          <li>Lärmdaten</li>
-          <li>Wirtschaftliche Kennzahlen</li>
-          <li>Daten auf PLZ-Ebene</li>
-          <li>Lage Indizes</li>
-          <li>Zielgruppengenaue Aufbereitung</li>
+          <li className="pt-4">
+            {t(IntlKeys.subscriptions.environmentalAnalysisAndReport)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.overviewOfTheSituation)}</li>
+          <li>{t(IntlKeys.subscriptions.socioEconomicData)}</li>
+          <li>{t(IntlKeys.subscriptions.noiseData)}</li>
+          <li>{t(IntlKeys.subscriptions.keyEconomicFigures)}</li>
+          <li>{t(IntlKeys.subscriptions.dataAtZipCodeLevel)}</li>
+          <li>{t(IntlKeys.subscriptions.locationIndicies)}</li>
+          <li>{t(IntlKeys.subscriptions.preparationForSpecificTargetGroup)}</li>
 
-          <li className="pt-4">Kundenfragebogen im System</li>
-          <li>Automatisches Lage-Exposé</li>
-          <li>Automatische Beschreibung (KI für Lage, Objekt, Exposé)</li>
-          <li>Automatische Wandlung von "Sie" in "Du" -Form</li>
+          <li className="pt-4">
+            {t(IntlKeys.subscriptions.customerQuestionnaireInTheSystem)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.automaticLocationExpose)}</li>
+          <li>{t(IntlKeys.subscriptions.automaticDescription)}</li>
+          <li>{t(IntlKeys.subscriptions.automaticConversation)}</li>
 
-          <li className="pt-4">Ihre Farben, Logos & Icons</li>
-          <li>1 User Account</li>
-          <li>FAQs</li>
+          <li className="pt-4">
+            {t(IntlKeys.subscriptions.yourColorsLogosIcons)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.userAccount)}</li>
+          <li>{t(IntlKeys.subscriptions.faqs)}</li>
         </ul>
 
-        <div className="pt-4">Optional:</div>
+        <div className="pt-4">{t(IntlKeys.subscriptions.optional)}:</div>
         <ul className="star-list">
-          <li>
-            250,- € Einrichtung individuelle Schnittstelle (OpenImmo / API)
-          </li>
-          <li>200,- € pro Kartenstil aus unserem Katalog</li>
-          <li>450,- € für Ihren personalisierten Kartenstil</li>
+          <li>{t(IntlKeys.subscriptions.setupOfIndividualInterface)}</li>
+          <li>{t(IntlKeys.subscriptions.perCardStyleFromOurCatalogue)}</li>
+          <li>{t(IntlKeys.subscriptions.personalizedCardStyle)}</li>
         </ul>
       </div>
 
       <div className="flex flex-col text-sm text-justify gap-2">
-        <div>Alle oben genannten Preise verstehen sich zzgl. MwSt.</div>
-        <div>Total: 46,41 € inkl. MwSt.</div>
-        <div>
-          Ungenutztes Adress-Kontingent verfällt nach 12 Monaten. Die
-          interaktive Karte ist 6 Monate für Sie und Ihre Interessenten online.
-          Danach ist eine Verlängerung der Online-Zeit für 10,- € zzgl. MwSt.
-          pro weitere 6 Monate möglich.
-        </div>
-        <div>
-          Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,
-          sind für beliebig viele Karten nutzbar und für die gesamte
-          Nutzungsdauer verfügbar.
-        </div>
+        <div>{t(IntlKeys.subscriptions.allPricesExclusiveOfVAT)}</div>
+        <div>{t(IntlKeys.subscriptions.totalInclusiveVat)}</div>
+        <div>{t(IntlKeys.subscriptions.unusedExpiredIn12Months)}</div>
+        <div>{t(IntlKeys.subscriptions.cardStylesSetupOnce)}</div>
       </div>
     </>
   );
 };
 
 export const PayPerUse10Description = () => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="card-title w-full">
-        <h2 className="text-center w-full flex flex-col">10er Karte</h2>
+        <h2 className="text-center w-full flex flex-col">
+          {t(IntlKeys.subscriptions.payPerUse.cardOf10)}
+        </h2>
       </div>
 
       <div className="flex justify-center items-baseline">
         <span className="text-4xl w-auto">29,-</span>
-        <span className="text-lg ml-2">€ pro Adresse zzgl. MwSt</span>
+        <span className="text-lg ml-2">
+          {t(IntlKeys.subscriptions.perAddressPlusVAT)}
+        </span>
       </div>
 
       <div className="flex flex-col my-10 sm:h-[45rem]">
-        <div>Beinhaltet:</div>
-        <div>
-          10 Adressen analysieren & aufbereiten (26% Einsparung zu
-          Einzelabfrage)
-        </div>
+        <div>{t(IntlKeys.subscriptions.includes)}:</div>
+        <div>{t(IntlKeys.subscriptions.tenAnalyzeAndPrepareAddress)}</div>
 
         <ul className="list-disc pl-4 pt-4">
-          <li>Zielgruppen-Filter</li>
-          <li>Interaktive Karte (iFrame) für Website & Portale</li>
-          <li>Hyperlink zur Online-Karte</li>
-          <li>QR-Code zur Online-Karte</li>
-          <li>Lageplan / Snapshot Print & Digital hochauflösend</li>
-          <li>Lizenzkosten für das Kartenmaterial</li>
+          <li>{t(IntlKeys.subscriptions.targetGroupFilter)}</li>
+          <li>{t(IntlKeys.subscriptions.interactiveMapForIframeAndPortal)}</li>
+          <li>{t(IntlKeys.subscriptions.hyperlinkToMap)}</li>
+          <li>{t(IntlKeys.subscriptions.qrCodeToMap)}</li>
+          <li>{t(IntlKeys.subscriptions.sitePlan)}</li>
+          <li>{t(IntlKeys.subscriptions.licenceCost)}</li>
 
-          <li className="pt-4">Umfeldanalyse & Report</li>
-          <li>Lageüberblick tabellarisch</li>
-          <li>Sozioökonomische Daten</li>
-          <li>Lärmdaten</li>
-          <li>Wirtschaftliche Kennzahlen</li>
-          <li>Daten auf PLZ-Ebene</li>
-          <li>Lage Indizes</li>
-          <li>Zielgruppengenaue Aufbereitung</li>
+          <li className="pt-4">
+            {t(IntlKeys.subscriptions.environmentalAnalysisAndReport)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.overviewOfTheSituation)}</li>
+          <li>{t(IntlKeys.subscriptions.socioEconomicData)}</li>
+          <li>{t(IntlKeys.subscriptions.noiseData)}</li>
+          <li>{t(IntlKeys.subscriptions.keyEconomicFigures)}</li>
+          <li>{t(IntlKeys.subscriptions.dataAtZipCodeLevel)}</li>
+          <li>{t(IntlKeys.subscriptions.locationIndicies)}</li>
+          <li>{t(IntlKeys.subscriptions.preparationForSpecificTargetGroup)}</li>
 
-          <li className="pt-4">Kundenfragebogen im System</li>
-          <li>Automatisches Lage-Exposé</li>
-          <li>Automatische Beschreibung (KI für Lage, Objekt, Exposé)</li>
-          <li>Automatische Wandlung von "Sie" in "Du" -Form</li>
+          <li className="pt-4">
+            {t(IntlKeys.subscriptions.customerQuestionnaireInTheSystem)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.automaticLocationExpose)}</li>
+          <li>{t(IntlKeys.subscriptions.automaticDescription)}</li>
+          <li>{t(IntlKeys.subscriptions.automaticConversation)}</li>
 
-          <li className="pt-4">Ihre Farben, Logos & Icons</li>
-          <li>1 User Account</li>
-          <li>FAQs</li>
+          <li className="pt-4">
+            {t(IntlKeys.subscriptions.yourColorsLogosIcons)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.userAccount)}</li>
+          <li>{t(IntlKeys.subscriptions.faqs)}</li>
         </ul>
 
-        <div className="pt-4">Optional:</div>
+        <div className="pt-4">{t(IntlKeys.subscriptions.optional)}:</div>
         <ul className="star-list">
-          <li>
-            250,- € Einrichtung individuelle Schnittstelle (OpenImmo / API)
-          </li>
-          <li>200,- € pro Kartenstil aus unserem Katalog</li>
-          <li>450,- € für Ihren personalisierten Kartenstil</li>
+          <li>{t(IntlKeys.subscriptions.setupOfIndividualInterface)}</li>
+          <li>{t(IntlKeys.subscriptions.perCardStyleFromOurCatalogue)}</li>
+          <li>{t(IntlKeys.subscriptions.personalizedCardStyle)}</li>
         </ul>
       </div>
 
       <div className="flex flex-col text-sm text-justify gap-2">
-        <div>Alle oben genannten Preise verstehen sich zzgl. MwSt.</div>
-        <div>Total: 345,1 € inkl. MwSt.</div>
-        <div>
-          Ungenutztes Adress-Kontingent verfällt nach 12 Monaten. Die
-          interaktive Karte ist 6 Monate für Sie und Ihre Interessenten online.
-          Danach ist eine Verlängerung der Online-Zeit für 10,- € zzgl. MwSt.
-          pro weitere 6 Monate möglich.
-        </div>
-        <div>
-          Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,
-          sind für beliebig viele Karten nutzbar und für die gesamte
-          Nutzungsdauer verfügbar.
-        </div>
+        <div>{t(IntlKeys.subscriptions.allPricesExclusiveOfVAT)}</div>
+        <div>{t(IntlKeys.subscriptions.totalInclusiveVat)}</div>
+        <div>{t(IntlKeys.subscriptions.unusedExpiredIn12Months)}</div>
+        <div>{t(IntlKeys.subscriptions.cardStylesSetupOnce)}</div>
       </div>
     </>
   );
 };
 
 export const BusinessPlusMonthlyDescription = () => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="card-title w-full">
         <h2 className="text-center w-full flex flex-col">
-          <div>Monats-Abo</div>
-          <div className="text-xl">Business+</div>
+          <div>{t(IntlKeys.subscriptions.business.monthlySubscription)}</div>
+          <div className="text-xl">
+            {t(IntlKeys.subscriptions.business.businessPlus)}
+          </div>
         </h2>
       </div>
 
       <div className="flex justify-center items-baseline">
         <span className="text-4xl w-auto">7,8</span>
-        <span className="text-lg ml-2">€ pro Adresse zzgl. MwSt</span>
+        <span className="text-lg ml-2">
+          {t(IntlKeys.subscriptions.perAddressPlusVAT)}
+        </span>
       </div>
 
       <div className="flex flex-col my-10 sm:h-[20rem]">
-        <div>Beinhaltet:</div>
-        <div>
-          50 Adressen & Analysen pro Monat (73% Einsparung zu 10er-Karte)
-        </div>
+        <div>{t(IntlKeys.subscriptions.includes)}:</div>
+        <div>{t(IntlKeys.subscriptions.business.addressesAndAnalysisPro)}</div>
 
-        <div className="pt-4">Alle Funktionen aus "10er Karte" inkludiert</div>
+        <div className="pt-4">
+          {t(IntlKeys.subscriptions.business.allFunctionsFromTenCard)}
+        </div>
         <ul className="plus-list">
-          <li>3 User</li>
-          <li>Einrichtung individuelle Schnittstelle (OpenImmo / API)</li>
-          <li>2 wählbare Kartenstile aus unserem Katalog</li>
-          <li>Onboarding & FAQs</li>
+          <li>{t(IntlKeys.subscriptions.business.threeUser)}</li>
+          <li>
+            {t(IntlKeys.subscriptions.business.setupOfIndividualInterface)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.business.twoSelectableCardStyles)}</li>
+          <li>{t(IntlKeys.subscriptions.business.onboardingAndFaqs)}</li>
         </ul>
 
-        <div className="pt-4">Optional:</div>
+        <div className="pt-4">{t(IntlKeys.subscriptions.optional)}:</div>
         <ul className="star-list">
-          <li>100,- € pro Kartenstil aus unserem Katalog</li>
-          <li>450,- € für Ihren personalisierten Kartenstil</li>
-          <li>50,- € für jede weitere Userbelegung (einmalig)</li>
-          <li>Branchendaten pro PLZ u.v.m.</li>
+          <li>
+            {t(IntlKeys.subscriptions.business.perCardStyleFromOurCatalogue)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.personalizedCardStyle)}</li>
+          <li>{t(IntlKeys.subscriptions.business.perUserAssignment)}</li>
+          <li>{t(IntlKeys.subscriptions.business.industryDataAndMore)}</li>
         </ul>
       </div>
 
       <div className="flex flex-col text-sm text-justify gap-2">
-        <div>Alle oben genannten Preise verstehen sich zzgl. MwSt.</div>
-        <div>Total 464,1 € inkl. MwSt. pro Monat</div>
-        <div>
-          Mindestlaufzeit: 3 Monate, danach monatlich kündbar. Nach Ende des
-          aktuellen Abo-Zeitraums verlängert sich die Laufzeit des Vertrags
-          automatisch um einen weiteren Monat, wenn der Nutzer den Vertrag nicht
-          mit einer Frist von 30 Tagen zum Ende des aktuellen Abo-Zeitraums,
-          durch Erklärung in Textform gegenüber KuDiBa, kündigt.
-        </div>
-        <div>
-          Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,
-          sind für beliebig viele Karten nutzbar und für die gesamte
-          Nutzungsdauer verfügbar.
-        </div>
+        <div>{t(IntlKeys.subscriptions.allPricesExclusiveOfVAT)}.</div>
+        <div>{t(IntlKeys.subscriptions.business.totalPerMonth)}</div>
+        <div>{t(IntlKeys.subscriptions.business.minimumTermForMonth)}</div>
+        <div>{t(IntlKeys.subscriptions.business.cardStyles)}</div>
       </div>
     </>
   );
 };
 
 export const BusinessPlusYearlyDescription = () => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="card-title w-full">
         <h2 className="text-center w-full flex flex-col">
-          <div>Jahres-Abo</div>
-          <div className="text-xl">Business+</div>
+          <div>{t(IntlKeys.subscriptions.business.annualSubscription)}</div>
+          <div className="text-xl">
+            {t(IntlKeys.subscriptions.business.businessPlus)}
+          </div>
         </h2>
       </div>
 
       <div className="flex justify-center items-baseline">
         <span className="text-4xl w-auto">6,5</span>
-        <span className="text-lg ml-2">€ pro Adresse zzgl. MwSt</span>
+        <span className="text-lg ml-2">
+          {t(IntlKeys.subscriptions.perAddressPlusVAT)}
+        </span>
       </div>
 
       <div className="flex flex-col my-10 sm:h-[20rem]">
-        <div>Beinhaltet:</div>
+        <div>{t(IntlKeys.subscriptions.includes)}:</div>
         <div>
-          50 Adressen & Analysen pro Monat (17% Einsparung zu Monats-Abo)
+          {t(IntlKeys.subscriptions.business.addressesAndAnalysisProYearly)}
         </div>
 
-        <div className="pt-4">Alle Funktionen aus "10er Karte" inkludiert</div>
+        <div className="pt-4">
+          {t(IntlKeys.subscriptions.business.allFunctionsFromTenCard)}
+        </div>
         <ul className="plus-list">
-          <li>3 User</li>
-          <li>Einrichtung individuelle Schnittstelle (OpenImmo / API)</li>
-          <li>2 wählbare Kartenstile aus unserem Katalog</li>
-          <li>Onboarding & FAQs</li>
+          <li>{t(IntlKeys.subscriptions.business.threeUser)}</li>
+          <li>
+            {t(IntlKeys.subscriptions.business.setupOfIndividualInterface)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.business.twoSelectableCardStyles)}</li>
+          <li>{t(IntlKeys.subscriptions.business.onboardingAndFaqs)}</li>
         </ul>
 
-        <div className="pt-4">Optional:</div>
+        <div className="pt-4">{t(IntlKeys.subscriptions.optional)}:</div>
         <ul className="star-list">
-          <li>100,- € pro Kartenstil aus unserem Katalog</li>
-          <li>450,- € für Ihren personalisierten Kartenstil</li>
-          <li>50,- € für jede weitere Userbelegung (einmalig)</li>
-          <li>Branchendaten pro PLZ u.v.m.</li>
+          <li>
+            {t(IntlKeys.subscriptions.business.perCardStyleFromOurCatalogue)}
+          </li>
+          <li>{t(IntlKeys.subscriptions.personalizedCardStyle)}</li>
+          <li>{t(IntlKeys.subscriptions.business.perUserAssignment)}</li>
+          <li>{t(IntlKeys.subscriptions.business.industryDataAndMore)}</li>
         </ul>
       </div>
 
       <div className="flex flex-col text-sm text-justify gap-2">
-        <div>Alle oben genannten Preise verstehen sich zzgl. MwSt.</div>
-        <div>Total 4.641,- € inkl. MwSt. pro Jahr</div>
-        <div>
-          Mindestlaufzeit: 1 Jahr, danach jährlich kündbar. Nach Ende des
-          aktuellen Abo-Zeitraums verlängert sich die Laufzeit des Vertrags
-          automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht
-          mit einer Frist von 30 Tagen zum Ende des aktuellen Abo-Zeitraums,
-          durch Erklärung in Textform gegenüber KuDiBa, kündigt.
-        </div>
-        <div>
-          Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,
-          sind für beliebig viele Karten nutzbar und für die gesamte
-          Nutzungsdauer verfügbar.
-        </div>
+        <div>{t(IntlKeys.subscriptions.allPricesExclusiveOfVAT)}.</div>
+        <div>{t(IntlKeys.subscriptions.business.totalPerYear)}</div>
+        <div>{t(IntlKeys.subscriptions.business.minimumTermForYear)}</div>
+        <div>{t(IntlKeys.subscriptions.business.cardStyles)}</div>
       </div>
     </>
   );

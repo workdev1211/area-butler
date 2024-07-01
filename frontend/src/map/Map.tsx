@@ -816,6 +816,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       config?.groupItems,
       config?.mapIcon,
       config?.showAddress,
+      config?.primaryColor,
       config?.showLocation,
       config?.showStreetViewLink,
     ]);
@@ -1158,7 +1159,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           );
 
           const resultingIconStyleSize =
-            (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
+            ((config?.mapIcon || config?.primaryColor) && isRealEstateListing) || markerIcon.isCustom
               ? resultingIconSize
               : Math.floor(resultingIconSize / 2);
           const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;
@@ -1190,7 +1191,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             html = renderToStaticMarkup(
               <DefaultMarker
                 fill={config.primaryColor}
-                className="locality-icon"
+                className="locality-icon-custom"
                 style={{
                   width: "auto",
                   height: resultingIconStyleSize,

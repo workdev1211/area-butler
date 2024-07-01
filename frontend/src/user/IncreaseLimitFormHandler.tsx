@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { toastError } from "shared/shared.functions";
@@ -47,6 +50,7 @@ const IncreaseLimitFormHandler: FunctionComponent<
   modelName,
   modelId,
 }) => {
+  const { t } = useTranslation();
   const { post } = useHttp();
 
   const [paymentStripePriceId, setPaymentStripePriceId] = useState("");
@@ -106,7 +110,7 @@ const IncreaseLimitFormHandler: FunctionComponent<
       setIsShownPaymentModal(true);
     } catch (err) {
       console.error(err);
-      toastError("Fehler bei der Erhöhung des Limits");
+      toastError(t(IntlKeys.subscriptions.errorWhenIncreaseLimit));
       postSubmit(false);
     }
   };

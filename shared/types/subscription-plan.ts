@@ -16,8 +16,8 @@ export enum ApiSubscriptionPlanType {
 
 // used as a text description on the paywall (subscription plan selection page)
 export enum ApiSubscriptionPlanTypeGroupEnum {
-  PAY_PER_USE = "Nach Verbrauch",
-  BUSINESS_PLUS = "Im Abo",
+  PAY_PER_USE = "PAY_PER_USE",
+  BUSINESS_PLUS = "BUSINESS_PLUS",
 }
 
 export enum ApiSubscriptionIntervalEnum {

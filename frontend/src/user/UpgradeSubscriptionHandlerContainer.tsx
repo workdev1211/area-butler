@@ -4,13 +4,15 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import UpgradeSubscriptionHandler from "./UpgradeSubscriptionHandler";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
+  const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
 
-  const [
-    upgradeSubscriptionModalOpen,
-    setUpgradeSubcriptionModalOpen
-  ] = useState(false);
+  const [upgradeSubscriptionModalOpen, setUpgradeSubcriptionModalOpen] =
+    useState(false);
 
   const history = useHistory();
 
@@ -23,17 +25,17 @@ const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
 
   const upgradeSubscriptionModalConfig: ModalConfig = {
     modalOpen: upgradeSubscriptionModalOpen,
-    submitButtonTitle: "Zu meinem Abbonement",
-    modalTitle: "Zeit für Mehr!",
+    submitButtonTitle: t(IntlKeys.subscriptions.aboutMySubscription),
+    modalTitle: t(IntlKeys.subscriptions.timeForMore),
     postSubmit: () => {
       userDispatch({
         type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
         payload: {
           open: false,
-          message: ""
-        }
+          message: "",
+        },
       });
-    }
+    },
   };
 
   return upgradeSubscriptionModalOpen ? (
@@ -45,8 +47,8 @@ const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
             type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
             payload: {
               open: false,
-              message: ""
-            }
+              message: "",
+            },
           });
         }}
         message={userState.upgradeSubscriptionModalProps.message}

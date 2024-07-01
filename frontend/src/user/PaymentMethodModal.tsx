@@ -1,4 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import {
   PayPalButtons,
   ScriptReducerAction,
@@ -40,6 +44,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
   stripeCheckoutUrl,
   paymentMetadata,
 }) => {
+  const { t } = useTranslation();
   const { paypalClientId } = useContext(ConfigContext);
   const { post } = useHttp();
   const [paypalScriptSetting, setPaypalScriptSettings] =
@@ -153,7 +158,9 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
           className="flex justify-between px-6 py-3 rounded-t-2xl text-white"
           style={{ background: "var(--primary)" }}
         >
-          <span className="text-lg font-medium">Zahlungsarten</span>
+          <span className="text-lg font-medium">
+            {t(IntlKeys.realEstate.paymentMethods)}
+          </span>
           <img
             className="cursor-pointer invert"
             src={closeIcon}
@@ -172,7 +179,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
               window.location.href = stripeCheckoutUrl;
             }}
           >
-            Kreditkarte
+            {t(IntlKeys.subscriptions.creditCard)}
           </div>
           <PayPalButtons
             className="flex items-center"
@@ -181,11 +188,11 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
             onApprove={paypalHandlers.onApprove}
             onCancel={() => {
               closeModal();
-              toastError("Eine Zahlung wurde storniert.");
+              toastError(t(IntlKeys.subscriptions.paymentCanceled));
             }}
             onError={() => {
               closeModal();
-              toastError("Ein Fehler ist aufgetreten.");
+              toastError(t(IntlKeys.snapshotEditor.exportTab.errorOccurred));
             }}
           />
         </div>
