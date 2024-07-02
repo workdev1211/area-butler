@@ -1,7 +1,7 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./FilterMenu.scss";
 
@@ -10,7 +10,7 @@ import {
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
 import { EntityGroup } from "../shared/search-result.types";
-import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
+import { OsmName } from "../../../shared/types/types";
 
 interface IFilterMenuProps {
   isFilterMenuOpen: boolean;
@@ -40,7 +40,7 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
 
   useEffect(() => {
     const realEstateGroup = groupEntities.find(
-      ({ title }) => title === realEstateListingsTitle
+      ({ title }) => title === OsmName.property
     );
 
     if (!realEstateGroup) {
@@ -99,7 +99,14 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
             style={{ borderBottom: "0.125rem solid darkgray" }}
           >
             <label className="text-lg font-bold">
-              {t((IntlKeys.snapshotEditor.positionIndices as Record<string, string>)[locIndex])}
+              {t(
+                (
+                  IntlKeys.snapshotEditor.positionIndices as Record<
+                    string,
+                    string
+                  >
+                )[locIndex]
+              )}
             </label>
             <div className="flex gap-3">
               <input

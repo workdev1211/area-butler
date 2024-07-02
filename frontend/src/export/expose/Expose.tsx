@@ -1,7 +1,7 @@
 import { ForwardedRef, forwardRef } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { EntityTable } from "export/EntityTable";
 import FederalElectionSummary from "export/FederalElectionSummary";
@@ -12,6 +12,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   MeansOfTransportation,
+  OsmName,
   TransportationParam,
 } from "../../../../shared/types/types";
 import { CensusSummary } from "../CensusSummary";
@@ -21,7 +22,6 @@ import ExposeSummary from "./ExposeSummary";
 import { EntityGroup } from "../../shared/search-result.types";
 import { ILegendItem, Legend } from "../Legend";
 import areaButlerLogo from "../../assets/img/logo.svg";
-import { preferredLocationsTitle } from "../../shared/shared.functions";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
 
@@ -51,7 +51,7 @@ export const Expose = forwardRef(
     const { t } = useTranslation();
     const filteredGroups = props.groupedEntries.filter(
       (group) =>
-        group.title !== preferredLocationsTitle &&
+        group.title !== OsmName.favorite &&
         group.active &&
         group.items.length > 0
     );
@@ -74,7 +74,7 @@ export const Expose = forwardRef(
     );
 
     const importantEntities = props.groupedEntries.find(
-      (group) => group.active && group.title === preferredLocationsTitle
+      (group) => group.active && group.title === OsmName.favorite
     );
 
     const transportationParams = props.transportationParams;
@@ -115,7 +115,9 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysis)}</div>
+              <div className="text-2xl font-bold">
+                {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysis)}
+              </div>
             }
             key={`entity-group-chunk-${i}`}
           >
@@ -136,7 +138,9 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.surroundingsHeader)}</div>
+              <div className="text-2xl font-bold">
+                {t(IntlKeys.snapshotEditor.exportTab.surroundingsHeader)}
+              </div>
             }
           >
             {importantEntities && importantEntities.items.length > 0 && (
@@ -163,7 +167,9 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.cardLegend)}</div>
+              <div className="text-2xl font-bold">
+                {t(IntlKeys.snapshotEditor.exportTab.cardLegend)}
+              </div>
             }
           >
             <div className="m-10">
@@ -180,7 +186,14 @@ export const Expose = forwardRef(
                 logo={props.logo}
                 leftHeaderElement={
                   <div className="text-2xl font-bold">
-                    {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+                    {t(
+                      (
+                        IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                          string,
+                          string
+                        >
+                      )[group.title]
+                    )}
                   </div>
                 }
                 key={group.title}
@@ -200,7 +213,9 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.insights)}</div>
+              <div className="text-2xl font-bold">
+                {t(IntlKeys.snapshotEditor.exportTab.insights)}
+              </div>
             }
           >
             {censusData && censusData.addressData.length > 0 && (
@@ -228,7 +243,10 @@ export const Expose = forwardRef(
             {particlePollutionData && particlePollutionData.length > 0 && (
               <>
                 <h4 className="mx-10 text-xl w-56 font-bold">
-                  {t(IntlKeys.snapshotEditor.environmentInfo.particulateMatterPollution)}
+                  {t(
+                    IntlKeys.snapshotEditor.environmentInfo
+                      .particulateMatterPollution
+                  )}
                 </h4>
                 <ParticlePollutionSummary
                   primaryColor={props.color}

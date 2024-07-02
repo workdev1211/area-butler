@@ -54,7 +54,7 @@ export interface ResultEntity {
 }
 
 export interface EntityGroup {
-  title: string;
+  title: OsmName;
   active: boolean;
   items: ResultEntity[];
 }

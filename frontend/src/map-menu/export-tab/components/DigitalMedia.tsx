@@ -33,13 +33,13 @@ import UnlockProductButton from "../../components/UnlockProductButton";
 import { EntityGroup } from "../../../shared/search-result.types";
 import { getFilteredLegend } from "../../../export/shared/shared.functions";
 import { getRenderedLegend } from "../../../export/RenderedLegend";
-import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { integrationNames } from "../../../../../shared/constants/integration";
 import { useTools } from "../../../hooks/tools";
 import {
   AreaButlerExportTypesEnum,
   FeatureTypeEnum,
+  OsmName,
 } from "../../../../../shared/types/types";
 import { IntlKeys } from "i18n/keys";
 import PublicLinks from "./PublicLinks";
@@ -86,7 +86,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
         responseActiveMeans
       ).filter(
         ({ title, items }: EntityGroup) =>
-          title !== realEstateListingsTitle && items.length > 0
+          title !== OsmName.property && items.length > 0
       );
 
       const legend = getFilteredLegend(entityGroups);

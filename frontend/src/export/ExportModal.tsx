@@ -1,7 +1,7 @@
 import { FC, useContext, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import {
   MapClipping,
@@ -12,7 +12,7 @@ import {
   ApiDataSource,
   ApiSubscriptionPlanType,
 } from "../../../shared/types/subscription-plan";
-import { MeansOfTransportation } from "../../../shared/types/types";
+import { MeansOfTransportation, OsmName } from "../../../shared/types/types";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
 import EntitySelection from "./EntitySelection";
@@ -28,7 +28,6 @@ import areaButlerLogo from "../assets/img/logo.svg";
 import { useTools } from "../hooks/tools";
 import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
 import { TCensusData } from "../../../shared/types/data-provision";
-import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 interface IExportModalProps {
   entities: ResultEntity[];
@@ -50,7 +49,7 @@ const ExportModal: FC<IExportModalProps> = ({
     JSON.stringify(groupedEntries)
   ).filter(
     ({ title, items }: EntityGroup) =>
-      title !== realEstateListingsTitle && items.length > 0
+      title !== OsmName.property && items.length > 0
   );
 
   const { searchContextState, searchContextDispatch } =
@@ -181,7 +180,9 @@ const ExportModal: FC<IExportModalProps> = ({
               )}
 
               <div>
-                <h1 className="my-5 font-bold">{t(IntlKeys.snapshotEditor.exportTab.pictures)}</h1>
+                <h1 className="my-5 font-bold">
+                  {t(IntlKeys.snapshotEditor.exportTab.pictures)}
+                </h1>
 
                 <div className="mb-5">
                   <label
@@ -199,7 +200,9 @@ const ExportModal: FC<IExportModalProps> = ({
                         });
                       }}
                     />
-                    <span className="label-text">{t(IntlKeys.common.qrCode)}</span>
+                    <span className="label-text">
+                      {t(IntlKeys.common.qrCode)}
+                    </span>
                   </label>
                 </div>
 

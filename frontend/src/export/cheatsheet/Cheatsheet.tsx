@@ -1,21 +1,19 @@
 import { forwardRef, useContext } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { EntityList } from "export/EntityList";
 import FederalElectionSummary from "export/FederalElectionSummary";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import {
-  // allFurnishing,
-  allRealEstateCostTypes,
-} from "../../../../shared/constants/real-estate";
+import { allRealEstateCostTypes } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
+  OsmName,
   TransportationParam,
 } from "../../../../shared/types/types";
 import { CensusSummary } from "../CensusSummary";
@@ -26,7 +24,6 @@ import { EntityGroup, ResultEntity } from "../../shared/search-result.types";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
-import { preferredLocationsTitle } from "../../shared/shared.functions";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
 import { SearchContext } from "../../context/SearchContext";
@@ -63,9 +60,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
   const filteredGroups = props.groupedEntries.filter(
     (group: EntityGroup) =>
-      group.title !== preferredLocationsTitle &&
-      group.active &&
-      group.items.length > 0
+      group.title !== OsmName.favorite && group.active && group.items.length > 0
   );
 
   const chunkedGroupes = filteredGroups.reduce<Array<EntityGroup[]>>(
@@ -144,15 +139,20 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               {responseConfig?.isDetailsShown &&
                 props.realEstateListing?.costStructure && (
                   <div>
-                    <strong>{t(IntlKeys.snapshotEditor.exportTab.costs)}:</strong>{" "}
+                    <strong>
+                      {t(IntlKeys.snapshotEditor.exportTab.costs)}:
+                    </strong>{" "}
                     {getRealEstateCost(props.realEstateListing?.costStructure)}{" "}
                     (
-                    {
-                      t((IntlKeys.realEstate.costTypes as Record<string, string>)[allRealEstateCostTypes.find(
-                        (t) =>
-                          t.type === props.realEstateListing.costStructure?.type
-                      )?.type || ''])
-                    }
+                    {t(
+                      (IntlKeys.realEstate.costTypes as Record<string, string>)[
+                        allRealEstateCostTypes.find(
+                          (t) =>
+                            t.type ===
+                            props.realEstateListing.costStructure?.type
+                        )?.type || ""
+                      ]
+                    )}
                     )
                   </div>
                 )}
@@ -273,7 +273,10 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {particlePollutionData && particlePollutionData.length > 0 && (
             <>
               <h4 className="mx-10 text-xl w-56 font-bold">
-                {t(IntlKeys.snapshotEditor.environmentInfo.particulateMatterPollution)}
+                {t(
+                  IntlKeys.snapshotEditor.environmentInfo
+                    .particulateMatterPollution
+                )}
               </h4>
               <ParticlePollutionSummary
                 primaryColor={props.color}

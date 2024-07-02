@@ -20,6 +20,7 @@ import {
   IApiUserPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
+  OsmName,
 } from "../../../../shared/types/types";
 import {
   deriveAvailableMeansFromResponse,
@@ -49,7 +50,6 @@ import {
   ResultEntity,
 } from "../../shared/search-result.types";
 import MapMenuButton from "./components/MapMenuButton";
-import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal";
 import { Loading } from "../Loading";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../../shared/types/location";
@@ -609,9 +609,7 @@ const SearchResultContainer = forwardRef<
         {isMapMenuKFPresent && (
           <MapMenuKarlaFricke
             groupedEntries={(resultGroupEntities ?? [])
-              .filter(
-                (ge) => ge.items.length && ge.title !== realEstateListingsTitle
-              )
+              .filter((ge) => ge.items.length && ge.title !== OsmName.property)
               .sort((a, b) => (a.title > b.title ? 1 : -1))}
             isMapMenuOpen={isMapMenuOpen}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}

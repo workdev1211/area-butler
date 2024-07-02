@@ -19,6 +19,7 @@ import {
   IApiSnapshotIconSizes,
   IApiSnapshotPoiFilter,
   MeansOfTransportation,
+  OsmName,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisibilityDto from '../../../dto/api-snippet-entity-visiblity.dto';
 import ApiSnapshotIconSizesDto from '../../../dto/api-snapshot-icon-sizes.dto';
@@ -30,6 +31,7 @@ import ApiSnapshotConfigRealEstSettingsDto from './api-snapshot-poi-filter.dto';
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
 {
+  // TODO should be changed to the 'OsmName[]'
   @Expose()
   @IsOptional()
   @IsArray()
@@ -57,8 +59,8 @@ class ApiSearchResultSnapshotConfigDto
   @Expose()
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  hiddenGroups?: string[];
+  @IsEnum(OsmName, { each: true })
+  hiddenGroups?: OsmName[];
 
   @Expose()
   @IsOptional()

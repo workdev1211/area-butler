@@ -1,8 +1,8 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { FormikProps } from "formik/dist/types";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./OnePageExportModal.scss";
 
@@ -12,7 +12,7 @@ import {
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import { ApiUser } from "../../../../shared/types/types";
+import { ApiUser, OsmName } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../shared/search-result.types";
 import {
@@ -197,7 +197,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     setResultGroups(
       filteredGroups.reduce<ISortableEntityGroup[]>((result, group) => {
         if (
-          group.title !== preferredLocationsTitle &&
+          group.title !== OsmName.favorite &&
           group.active &&
           group.items.length > 0
         ) {
@@ -250,7 +250,9 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const userLogo = integrationUser ? integrationUser.config.logo : user?.logo;
   const isTrial = user?.subscription?.type === ApiSubscriptionPlanType.TRIAL;
 
-  const buttonTitle = t(IntlKeys.snapshotEditor.exportTab.generateLocationExpose);
+  const buttonTitle = t(
+    IntlKeys.snapshotEditor.exportTab.generateLocationExpose
+  );
   const snapshotConfig = searchContextState.responseConfig!;
   // 'var(--primary-gradient)' is not extracted in the 'OnePagePng' component
   const color =
@@ -311,8 +313,8 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
                 });
               }}
             >
-              1. {t(IntlKeys.snapshotEditor.exportTab.locationDescription)} ({locationDescription.length}/
-              {onePageCharacterLimit})
+              1. {t(IntlKeys.snapshotEditor.exportTab.locationDescription)} (
+              {locationDescription.length}/{onePageCharacterLimit})
             </div>
 
             <div className="collapse-content textarea-content">

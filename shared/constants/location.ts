@@ -10,7 +10,6 @@ import {
   Iso3166_1Alpha2CountriesEnum,
   Iso3166_1Alpha3CountriesEnum,
 } from "../types/location";
-import { realEstateListingsTitle } from "./real-estate";
 
 export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
   showLocation: true,
@@ -22,7 +21,7 @@ export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
     type: PoiFilterTypesEnum.BY_AMOUNT,
     value: 10,
   },
-  hiddenGroups: [realEstateListingsTitle],
+  hiddenGroups: [OsmName.property],
 };
 
 export const defaultTransportParams: TransportationParam[] = [

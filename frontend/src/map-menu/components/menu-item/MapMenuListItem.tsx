@@ -1,13 +1,13 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
+import { EntityGroup, ResultEntity } from "../../../shared/search-result.types";
 import {
-  EntityGroup,
-  ResultEntity,
-} from "../../../shared/search-result.types";
-import { MeansOfTransportation } from "../../../../../shared/types/types";
+  MeansOfTransportation,
+  OsmName,
+} from "../../../../../shared/types/types";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -18,10 +18,7 @@ import {
 } from "../../../context/SearchContext";
 import CategoryContent from "./CategoryContent";
 import { IPoiIcon } from "../../../shared/shared.types";
-import {
-  realEstateListingsTitle,
-  realEstateListingsTitleEmbed,
-} from "../../../../../shared/constants/real-estate";
+import { realEstateListingsTitleEmbed } from "../../../../../shared/constants/real-estate";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;
@@ -87,9 +84,16 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
             >
               <img className={imgClass} src={groupIcon.icon} alt="group-icon" />
             </div>
-            {entityGroup.title === realEstateListingsTitle
+            {entityGroup.title === OsmName.property
               ? realEstateListingsTitleEmbed
-              : t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entityGroup.title])}{" "}
+              : t(
+                  (
+                    IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                      string,
+                      string
+                    >
+                  )[entityGroup.title]
+                )}{" "}
             [{entityGroup.items.length}]
           </div>
           <label className="cursor-pointer label justify-start pl-0">

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./EditorTab.scss";
 
@@ -15,6 +15,7 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   IApiSnapshotConfigRealEstSettings,
   MeansOfTransportation,
+  OsmName,
 } from "../../../../shared/types/types";
 import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
 import ColorPicker from "components/ColorPicker";
@@ -27,7 +28,6 @@ import {
 import { IApiRealEstStatusByUser } from "../../../../shared/types/real-estate";
 import {
   realEstAllTextStatus,
-  realEstateListingsTitle,
   realEstateListingsTitleEmbed,
 } from "../../../../shared/constants/real-estate";
 import configOptionsIcon from "../../assets/icons/map-menu/04-konfiguration.svg";
@@ -318,9 +318,14 @@ const EditorTab: FC<IEditorTabProps> = ({
                         }}
                       />
                       <h4 className="font-medium pl-2 cursor-pointer">
-                        {group.title === realEstateListingsTitle
+                        {group.title === OsmName.property
                           ? realEstateListingsTitleEmbed
-                          : t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}{" "}
+                          : t(
+                              (
+                                IntlKeys.snapshotEditor
+                                  .pointsOfInterest as Record<string, string>
+                              )[group.title]
+                            )}{" "}
                       </h4>
                       <button
                         className="btn-sm btn-link"
@@ -328,7 +333,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                           toggleGroupOpen(group);
                         }}
                       >
-                        {checkIsGroupOpen(group) ? t(IntlKeys.common.close) : t(IntlKeys.common.open)}
+                        {checkIsGroupOpen(group)
+                          ? t(IntlKeys.common.close)
+                          : t(IntlKeys.common.open)}
                       </button>
                     </div>
                     {checkIsGroupOpen(group) && (
@@ -378,7 +385,9 @@ const EditorTab: FC<IEditorTabProps> = ({
           <div className="collapse-title-container">
             <img src={configOptionsIcon} alt="config-options-icon" />
             <div className="collapse-title-text">
-              <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.configuration)}</div>
+              <div className="collapse-title-text-1">
+                {t(IntlKeys.snapshotEditor.configuration)}
+              </div>
               <div className="collapse-title-text-2">
                 {t(IntlKeys.snapshotEditor.configurationDesc)}
               </div>
@@ -390,7 +399,9 @@ const EditorTab: FC<IEditorTabProps> = ({
             {lateSnapConfigs.length > 0 && (
               <li>
                 <div className="flex items-center gap-6 py-1 w-full">
-                  <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.snapshotEditor.templates)}</h4>
+                  <h4 className="w-[6.5rem] font-bold">
+                    {t(IntlKeys.snapshotEditor.templates)}
+                  </h4>
                   <select
                     className="select select-bordered select-sm flex-1 w-full"
                     value={selectedSnippetConfigId}
@@ -417,7 +428,9 @@ const EditorTab: FC<IEditorTabProps> = ({
             )}
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.snapshotEditor.cardStyle)}</h4>
+                <h4 className="w-[6.5rem] font-bold">
+                  {t(IntlKeys.snapshotEditor.cardStyle)}
+                </h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={
@@ -444,7 +457,9 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.common.marketingType)}</h4>
+                <h4 className="w-[6.5rem] font-bold">
+                  {t(IntlKeys.common.marketingType)}
+                </h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus || realEstAllTextStatus}
@@ -470,7 +485,9 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.common.status)}</h4>
+                <h4 className="w-[6.5rem] font-bold">
+                  {t(IntlKeys.common.status)}
+                </h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus2 || realEstAllTextStatus}
@@ -496,7 +513,9 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">{t(IntlKeys.snapshotEditor.menuStyle)}</h4>
+                <h4 className="w-[6.5rem] font-bold">
+                  {t(IntlKeys.snapshotEditor.menuStyle)}
+                </h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -507,7 +526,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="radio radio-sm radio-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.standard)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.standard)}
+                  </span>
                 </label>
                 <label className="cursor-pointer label">
                   <input
@@ -519,7 +540,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="radio radio-sm radio-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.minimal)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.minimal)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -533,7 +556,9 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex flex-col">
-                <h4 className="font-bold">{t(IntlKeys.snapshotEditor.preselectedProfile)}</h4>
+                <h4 className="font-bold">
+                  {t(IntlKeys.snapshotEditor.preselectedProfile)}
+                </h4>
                 <div className="flex items-center gap-6 py-1">
                   {availableMeans.includes(MeansOfTransportation.WALK) && (
                     <label className="cursor-pointer label">
@@ -615,7 +640,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.showIcon)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.showIcon)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -631,7 +658,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.showAddress)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.showAddress)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -650,7 +679,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.showStreetViewLink)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.showStreetViewLink)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -687,7 +718,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.hideIsochrones)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.hideIsochrones)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -743,7 +776,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     onChange={handleSetIsRefMap}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.referenceCard)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.referenceCard)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -826,7 +861,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                 )}
               </div>
             </li>
-            <li className="font-bold">{t(IntlKeys.snapshotEditor.objectTooltip)}</li>
+            <li className="font-bold">
+              {t(IntlKeys.snapshotEditor.objectTooltip)}
+            </li>
             <li>
               <div className="flex items-center gap-6 py-1">
                 <label className="cursor-pointer label">
@@ -844,7 +881,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.hideCost)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.hideCost)}
+                  </span>
                 </label>
               </div>
             </li>
@@ -863,7 +902,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">{t(IntlKeys.snapshotEditor.showObjectType)}</span>
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.showObjectType)}
+                  </span>
                 </label>
               </div>
             </li>

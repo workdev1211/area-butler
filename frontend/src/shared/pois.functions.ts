@@ -31,7 +31,7 @@ interface IDeriveParameters {
 }
 
 const checkIsLocationHidden = (
-  entity: Pick<ApiOsmEntity, "id" | "label">,
+  entity: Pick<ApiOsmEntity, "id" | "name">,
   config?: ApiSearchResultSnapshotConfig,
   ignoreVisibility?: boolean
 ): boolean => {
@@ -53,7 +53,7 @@ const checkIsLocationHidden = (
 
   if (!isLocationHidden && config?.hiddenGroups) {
     isLocationHidden = config.hiddenGroups.some(
-      (groupLabel) => groupLabel === entity.label
+      (groupLabel) => groupLabel === entity.name
     );
   }
 
@@ -172,7 +172,7 @@ const buildEntDataFromPrefLocs = ({
       if (
         !coordinates ||
         checkIsLocationHidden(
-          { label: preferredLocationsTitle },
+          { name: OsmName.favorite },
           config,
           ignoreVisibility
         )
@@ -213,12 +213,11 @@ const buildEntDataFromEstates = ({
 }): ResultEntity[] => {
   return realEstates.reduce<ResultEntity[]>((result, realEstate) => {
     const entityId = realEstate.id;
-    const entityLabel = realEstateListingsTitle;
 
     if (
       !realEstate.coordinates ||
       checkIsLocationHidden(
-        { id: entityId, label: entityLabel },
+        { id: entityId, name: OsmName.property },
         config,
         ignoreVisibility
       )
@@ -243,7 +242,7 @@ const buildEntDataFromEstates = ({
     result.push({
       id: entityId ?? v4(),
       name: realEstate.name,
-      label: entityLabel,
+      label: realEstateListingsTitle,
       osmName: OsmName.property,
       distanceInMeters: distanceInMeters(
         centerOfSearch,
@@ -319,6 +318,7 @@ export const deriveInitialEntityGroups = ({
   searchResponse,
   ignoreVisibility = false,
 }: IDeriveParameters): EntityGroup[] => {
+  // TODO 'title: string' should be changed to 'name: OsmName'
   const deriveActiveState = (title: string, index?: number): boolean => {
     const activeGroups = config?.defaultActiveGroups ?? [];
 
@@ -335,8 +335,8 @@ export const deriveInitialEntityGroups = ({
 
   if (centerOfSearch && preferredLocations?.length) {
     groupedEntities.push({
-      title: preferredLocationsTitle,
-      active: deriveActiveState(preferredLocationsTitle),
+      title: OsmName.favorite,
+      active: deriveActiveState(preferredLocationsTitle), // TODO should be switched to 'groupName'
       items: buildEntDataFromPrefLocs({
         centerOfSearch,
         config,
@@ -348,8 +348,8 @@ export const deriveInitialEntityGroups = ({
 
   if (centerOfSearch && realEstates?.length) {
     groupedEntities.push({
-      title: realEstateListingsTitle,
-      active: deriveActiveState(realEstateListingsTitle),
+      title: OsmName.property,
+      active: deriveActiveState(realEstateListingsTitle), // TODO should be switched to 'groupName'
       items: buildEntDataFromEstates({
         centerOfSearch,
         config,
@@ -372,17 +372,20 @@ export const deriveInitialEntityGroups = ({
 
   const poiGroupedEntities = Object.values(
     poiEntities.reduce<Record<string, EntityGroup>>((result, resultEntity) => {
-      const groupLabel = resultEntity.label;
+      const groupName = resultEntity.osmName;
 
-      if (result[groupLabel]) {
-        const groupItems = result[groupLabel].items;
+      if (result[groupName]) {
+        const groupItems = result[groupName].items;
         groupItems.push(resultEntity);
       }
 
-      if (!result[groupLabel]) {
-        result[groupLabel] = {
-          title: groupLabel,
-          active: deriveActiveState(groupLabel, Object.keys(result).length),
+      if (!result[groupName]) {
+        result[groupName] = {
+          title: groupName,
+          active: deriveActiveState(
+            resultEntity.label,
+            Object.keys(result).length
+          ), // TODO should be switched to 'groupName'
           items: [resultEntity],
         };
       }

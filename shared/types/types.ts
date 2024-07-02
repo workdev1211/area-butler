@@ -371,11 +371,12 @@ export interface IApiSnapshotConfigRealEstSettings {
 }
 
 export interface ApiSearchResultSnapshotConfig {
+  // TODO should be changed to the 'OsmName[]'
   defaultActiveGroups?: string[]; // MapTab Points-of-Interest active categories --> osmEntityTypes.label
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisibility[];
   groupItems?: boolean;
-  hiddenGroups?: string[]; // EditorTab Points-of-Interest active categories --> osmEntityTypes.label
+  hiddenGroups?: OsmName[]; // EditorTab Points-of-Interest active categories --> osmEntityTypes.label
 
   hideIsochrones?: boolean;
   hideMeanToggles?: boolean; // for reference map // 'MeansToggle' component used to turn on and off the isochrones
