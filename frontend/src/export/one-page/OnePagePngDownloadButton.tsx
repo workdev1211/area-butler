@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -16,7 +16,7 @@ import { IOnePagePngDownProps } from "../../shared/one-page.types";
 import { integrationNames } from "../../../../shared/constants/integration";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
 
-export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
+export const OnePagePngDownload: FC<IOnePagePngDownProps> = ({
   addressDescription,
   entityGroups,
   listingAddress,
@@ -153,24 +153,28 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
 
   return (
     <>
-      {integrationType === IntegrationTypesEnum.ON_OFFICE && (
-        <button
-          className="btn btn-primary btn-sm"
-          disabled={downloadButtonDisabled}
-          onClick={async () => {
-            void sendToIntegration({
-              base64Image: await getRenderedPngImage(),
-              exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
-              filename: `${documentTitle}.png`,
-              fileTitle: documentTitle,
-            });
-          }}
-        >
-          {t(IntlKeys.snapshotEditor.exportTab.sendTo, {
-            integrationType: integrationNames[integrationType],
-          })}
-        </button>
-      )}
+      {integrationType &&
+        [
+          IntegrationTypesEnum.ON_OFFICE,
+          IntegrationTypesEnum.PROPSTACK,
+        ].includes(integrationType) && (
+          <button
+            className="btn btn-primary btn-sm"
+            disabled={downloadButtonDisabled}
+            onClick={async () => {
+              void sendToIntegration({
+                base64Image: await getRenderedPngImage(),
+                exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
+                filename: `${documentTitle}.png`,
+                fileTitle: documentTitle,
+              });
+            }}
+          >
+            {t(IntlKeys.snapshotEditor.exportTab.sendTo, {
+              integrationType: integrationNames[integrationType],
+            })}
+          </button>
+        )}
 
       <button
         className="btn btn-primary btn-sm"
