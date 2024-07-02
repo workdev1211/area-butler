@@ -1,50 +1,53 @@
 import { render } from "@testing-library/react";
 
 import LocationIndexTable from "./LocationIndexTable";
-import { TLocationIndexData } from "../../../../hooks/locationindexdata";
+import {
+  LocIndexPropsEnum,
+  TLocationIndexData,
+} from "../../../../../../shared/types/location-index";
 
 const testData: TLocationIndexData = {
-  eveningEntertainment: {
+  [LocIndexPropsEnum.EVENING_ENTERTAINMENT]: {
     name: "Restaurants, Bars & Clubs",
     value: 96,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  health: {
+  [LocIndexPropsEnum.HEALTH]: {
     name: "Medizin & Gesundheit",
     value: 85,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  nearSupply: {
+  [LocIndexPropsEnum.NEAR_SUPPLY]: {
     name: "Einkaufen & Nahversorgung",
     value: 97,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  publicTransport: {
+  [LocIndexPropsEnum.PUBLIC_TRANSPORT]: {
     name: "ÖPNV Anbindung",
     value: 98,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  tourism: {
+  [LocIndexPropsEnum.TOURISM]: {
     name: "Tourismus",
     value: 98,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  kids: {
+  [LocIndexPropsEnum.KIDS]: {
     name: "Spielplätze & Früh-Bildung",
     value: 91,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  culture: {
+  [LocIndexPropsEnum.CULTURE]: {
     name: "Kultur & Universitäten",
     value: 78,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  sports: {
+  [LocIndexPropsEnum.SPORTS]: {
     name: "Sportliche Aktivitäten",
     value: 90,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
-  individualMobility: {
+  [LocIndexPropsEnum.INDIVIDUAL_MOBILITY]: {
     name: "Individualmobilität",
     value: 80,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },

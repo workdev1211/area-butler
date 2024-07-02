@@ -2,10 +2,11 @@ import { render } from "@testing-library/react";
 
 import MapMenuListItem from "./MapMenuListItem";
 import { EntityGroup } from "../../../shared/search-result.types";
+import { OsmName } from "../../../../../shared/types/types";
 
 describe("MapMenuListItem", () => {
   const entityGroup = {
-    title: "Park",
+    title: OsmName.park,
     active: true,
     items: [
       {

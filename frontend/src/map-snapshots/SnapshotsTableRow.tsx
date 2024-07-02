@@ -177,14 +177,7 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
             className="ml-5 rounded btn-xs btn-primary"
             onClick={(e) => {
               e.stopPropagation();
-
-              copyCodeToClipBoard(
-                createDirectLink({
-                  addressToken: snapshot.addressToken,
-                  token: snapshot.token,
-                  unaddressToken: snapshot.unaddressToken,
-                })
-              );
+              copyCodeToClipBoard(createDirectLink());
             }}
           >
             {t(IntlKeys.mapSnapshots.copyLink)}

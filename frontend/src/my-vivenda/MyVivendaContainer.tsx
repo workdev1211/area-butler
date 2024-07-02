@@ -13,7 +13,7 @@ import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { Loading, LoadingMessage } from "../components/Loading";
-import { IIntegrationHandleLogin } from "../../../shared/types/integration";
+import { ILoginStatus } from "../shared/shared.types";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useMyVivendaLogin } from "./hooks/myvivendalogin";
 import { IntlKeys } from "../i18n/keys";
@@ -40,7 +40,7 @@ const MyVivendaContainer: FC = () => {
   const history = useHistory();
   const { handleMyVivendaLogin } = useMyVivendaLogin();
   const { t } = useTranslation();
-  const [loginStatus, setLoginStatus] = useState<IIntegrationHandleLogin>();
+  const [loginStatus, setLoginStatus] = useState<ILoginStatus>();
 
   // performs a login
   useEffect(() => {

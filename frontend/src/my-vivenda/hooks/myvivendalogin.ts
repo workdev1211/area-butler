@@ -5,7 +5,7 @@ import { getQueryParamsAndUrl } from "../../shared/shared.functions";
 import { useHttp } from "../../hooks/http";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { ResultStatusEnum } from "../../../../shared/types/types";
-import { IIntegrationHandleLogin } from "../../../../shared/types/integration";
+import { ILoginStatus } from "../../shared/shared.types";
 import {
   IApiMyVivendaLoginRes,
   IMyVivendaLoginQueryParams,
@@ -25,7 +25,7 @@ export const useMyVivendaLogin = () => {
   const { searchContextDispatch } = useContext(SearchContext);
   const { post } = useHttp();
 
-  const handleMyVivendaLogin = async (): Promise<IIntegrationHandleLogin> => {
+  const handleMyVivendaLogin = async (): Promise<ILoginStatus> => {
     const queryParamsAndUrl =
       getQueryParamsAndUrl<IMyVivendaLoginQueryParams>();
 
@@ -46,8 +46,8 @@ export const useMyVivendaLogin = () => {
 
   const performLogin = async ({
     accessToken,
-  }: IMyVivendaLoginQueryParams): Promise<IIntegrationHandleLogin> => {
-    const response: IIntegrationHandleLogin = {
+  }: IMyVivendaLoginQueryParams): Promise<ILoginStatus> => {
+    const response: ILoginStatus = {
       requestStatus: ResultStatusEnum.SUCCESS,
     };
 

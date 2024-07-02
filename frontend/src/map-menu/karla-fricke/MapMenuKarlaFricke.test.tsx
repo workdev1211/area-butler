@@ -7,7 +7,7 @@ import { OsmName } from "../../../../shared/types/types";
 describe("MapMenuKarlaFricke", () => {
   const groupedEntries: EntityGroup[] = [
     {
-      title: "Park",
+      title: OsmName.park,
       active: true,
       items: [
         {
