@@ -1121,7 +1121,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         parsedEntities?.every((entity) => {
           if (
             !parsedEntityGroups.some(
-              (eg) => eg.title === entity.label && eg.active
+              (eg) => eg.title === entity.osmName && eg.active
             )
           ) {
             return true;
@@ -1159,7 +1159,9 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           );
 
           const resultingIconStyleSize =
-            ((config?.mapIcon || config?.primaryColor) && isRealEstateListing) || markerIcon.isCustom
+            ((config?.mapIcon || config?.primaryColor) &&
+              isRealEstateListing) ||
+            markerIcon.isCustom
               ? resultingIconSize
               : Math.floor(resultingIconSize / 2);
           const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;

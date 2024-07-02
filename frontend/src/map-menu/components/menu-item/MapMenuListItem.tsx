@@ -18,7 +18,6 @@ import {
 } from "../../../context/SearchContext";
 import CategoryContent from "./CategoryContent";
 import { IPoiIcon } from "../../../shared/shared.types";
-import { preferredLocationsTitle } from "../../../shared/shared.functions";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;
@@ -86,7 +85,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
             </div>
             {entityGroup.title === OsmName.property
               ? t(IntlKeys.snapshotEditor.furtherObjects)
-              : entityGroup.title === preferredLocationsTitle
+              : entityGroup.title === OsmName.favorite
               ? t(IntlKeys.potentialCustomers.importantAddresses)
               : t(
                   (

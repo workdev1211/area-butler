@@ -15,10 +15,7 @@ import { UserContext } from "context/UserContext";
 import { ApiUser, OsmName } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../shared/search-result.types";
-import {
-  preferredLocationsTitle,
-  setBackgroundColor,
-} from "../../shared/shared.functions";
+import { setBackgroundColor } from "../../shared/shared.functions";
 import { ILegendItem } from "../Legend";
 import OnePageDownload from "./OnePageDownloadButton";
 import OnePageEntitySelection from "./OnePageEntitySelection";
@@ -43,7 +40,6 @@ import { IPoiIcon } from "../../shared/shared.types";
 import { IQrCodeState } from "../../../../shared/types/export";
 import OnePageMediaFormat from "./components/OnePageMediaFormat";
 import OpenAiGeneralForm from "../../components/open-ai/OpenAiGeneralForm";
-import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 import { getQrCodeBase64 } from "../QrCode";
 import { useTools } from "../../hooks/tools";
 
@@ -58,7 +54,7 @@ export interface IExportFlowState {
 }
 
 export interface ISortableEntityGroup extends EntityGroup {
-  id: string;
+  id: OsmName;
   icon?: IPoiIcon;
 }
 
@@ -112,15 +108,13 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
       a.title.toLowerCase().localeCompare(b.title.toLowerCase())
     )
     .reduce<ISortableEntityGroup[]>((result, group) => {
-      if (
-        [realEstateListingsTitle, preferredLocationsTitle].includes(group.title)
-      ) {
+      if ([OsmName.favorite, OsmName.property].includes(group.title)) {
         return result;
       }
 
       const isGroupActive = cachedOnePage.filteredGroups
         ? cachedOnePage.filteredGroups!.some(
-            ({ id, active }) => id === group.title && active
+            ({ title, active }) => title === group.title && active
           )
         : activeGroupNumber < ENTITY_GROUP_LIMIT;
 

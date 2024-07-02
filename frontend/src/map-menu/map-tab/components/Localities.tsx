@@ -9,6 +9,7 @@ import {
   IApiUserPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
+  OsmName,
 } from "../../../../../shared/types/types";
 import {
   deriveIconForOsmName,
@@ -108,9 +109,7 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
             .filter(
               (ge) =>
                 ge.items.length &&
-                [preferredLocationsTitle, realEstateListingsTitle].includes(
-                  ge.title
-                )
+                [OsmName.favorite, OsmName.property].includes(ge.title)
             )
             .map((ge, geIndex) => {
               const isRealEstateListing =

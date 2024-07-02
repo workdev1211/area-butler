@@ -17,6 +17,7 @@ import {
   IApiUserPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
+  OsmName,
 } from "../../../../../shared/types/types";
 import {
   EntityGroup,
@@ -26,11 +27,7 @@ import {
   ResultEntity,
 } from "../../../shared/search-result.types";
 import { useTools } from "../../../hooks/tools";
-import {
-  deriveAvailableMeansFromResponse,
-  preferredLocationsTitle,
-} from "../../../shared/shared.functions";
-import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
+import { deriveAvailableMeansFromResponse } from "../../../shared/shared.functions";
 
 interface IMapMenuContainerProps {
   isMapMenuOpen: boolean;
@@ -192,7 +189,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
         }
 
         const hasMainKfCategories = oldGroupedEntities.some(({ title }) =>
-          [preferredLocationsTitle, realEstateListingsTitle].includes(title)
+          [OsmName.favorite, OsmName.property].includes(title)
         );
 
         if (!hasMainKfCategories) {
@@ -203,7 +200,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
 
         resRespGroupEntities = oldGroupedEntities.map((entityGroup) => ({
           ...entityGroup,
-          active: [preferredLocationsTitle, realEstateListingsTitle].includes(
+          active: [OsmName.favorite, OsmName.property].includes(
             entityGroup.title
           ),
         }));

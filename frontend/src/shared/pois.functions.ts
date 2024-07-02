@@ -53,7 +53,7 @@ const checkIsLocationHidden = (
 
   if (!isLocationHidden && config?.hiddenGroups) {
     isLocationHidden = config.hiddenGroups.some(
-      (groupLabel) => groupLabel === entity.name
+      (groupName) => groupName === entity.name
     );
   }
 
@@ -336,7 +336,7 @@ export const deriveInitialEntityGroups = ({
   if (centerOfSearch && preferredLocations?.length) {
     groupedEntities.push({
       title: OsmName.favorite,
-      active: deriveActiveState(preferredLocationsTitle), // TODO should be switched to 'groupName'
+      active: deriveActiveState(OsmName.favorite),
       items: buildEntDataFromPrefLocs({
         centerOfSearch,
         config,
@@ -349,7 +349,7 @@ export const deriveInitialEntityGroups = ({
   if (centerOfSearch && realEstates?.length) {
     groupedEntities.push({
       title: OsmName.property,
-      active: deriveActiveState(realEstateListingsTitle), // TODO should be switched to 'groupName'
+      active: deriveActiveState(OsmName.property),
       items: buildEntDataFromEstates({
         centerOfSearch,
         config,
