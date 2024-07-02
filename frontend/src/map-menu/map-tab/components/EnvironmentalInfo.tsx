@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactNode, useState } from "react";
 
-import { IntlKeys } from 'i18n/keys';
-import { useTranslation } from 'react-i18next';
+import { IntlKeys } from "i18n/keys";
+import { useTranslation } from "react-i18next";
 
 import { ApiGeojsonFeature } from "../../../../../shared/types/types";
 import { setBackgroundColor } from "../../../shared/shared.functions";
@@ -29,7 +29,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
   openUpgradeSubscriptionModal,
   particlePollutionData,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const { getActualUser } = useTools();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -61,8 +61,9 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
         <div className="collapse-title-container">
           <img src={environmentalInfoIcon} alt="environmental-info-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.environmentInfo.label)}</div>
-            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.environmentInfo.description)}</div>
+            <div className="collapse-title-text-1">
+              {t(IntlKeys.snapshotEditor.environmentInfo.label)}
+            </div>
           </div>
         </div>
       </div>
@@ -71,7 +72,10 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
           <ul>
             <li className="locality-option-li" key="list-item-zensus-feinstaub">
               <MapMenuCollapsable
-                title={t(IntlKeys.snapshotEditor.environmentInfo.particulateMatterPollution)}
+                title={t(
+                  IntlKeys.snapshotEditor.environmentInfo
+                    .particulateMatterPollution
+                )}
                 icon={particlePollutionIcon}
                 subscriptionCheck={() => hasPollutionData}
                 openUpgradeSubscriptionModal={() => {

@@ -177,6 +177,7 @@ export const IntlKeys = {
     size: "snapshotEditor.size",
     directlyToTheObject: "snapshotEditor.directlyToTheObject",
     hide: "snapshotEditor.hide",
+    furtherObjects: "snapshotEditor.furtherObjects",
     exportTab: {
       mapSection: "snapshotEditor.exportTab.mapSection",
       mapSectionDescription: "snapshotEditor.exportTab.mapSectionDescription",

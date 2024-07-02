@@ -1,7 +1,7 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { IntlKeys } from 'i18n/keys';
-import { useTranslation } from 'react-i18next';
+import { IntlKeys } from "i18n/keys";
+import { useTranslation } from "react-i18next";
 
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import economicMetricsIcon from "../../../assets/icons/map-menu/12-wirtschaftliche-kennzahlen.svg";
@@ -38,9 +38,6 @@ const EconomicMetrics: FunctionComponent = () => {
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
               {t(IntlKeys.snapshotEditor.economicMetric.label)}
-            </div>
-            <div className="collapse-title-text-2">
-              {t(IntlKeys.snapshotEditor.economicMetric.description)}
             </div>
           </div>
         </div>

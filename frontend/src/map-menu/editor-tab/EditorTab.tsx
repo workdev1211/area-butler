@@ -284,9 +284,6 @@ const EditorTab: FC<IEditorTabProps> = ({
               <div className="collapse-title-text-1">
                 {t(IntlKeys.snapshotEditor.POIDetailFilter)}
               </div>
-              <div className="collapse-title-text-2">
-                {t(IntlKeys.snapshotEditor.hideIndividualPOIs)}
-              </div>
             </div>
           </div>
         </div>
@@ -387,9 +384,6 @@ const EditorTab: FC<IEditorTabProps> = ({
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">
                 {t(IntlKeys.snapshotEditor.configuration)}
-              </div>
-              <div className="collapse-title-text-2">
-                {t(IntlKeys.snapshotEditor.configurationDesc)}
               </div>
             </div>
           </div>

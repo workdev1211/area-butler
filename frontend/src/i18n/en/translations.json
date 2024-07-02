@@ -282,7 +282,8 @@
     "directlyToTheObject": "Directly to the object",
     "hide": "Hide",
     "notAllowedToUse": "Only the Business+ subscription allows the use of the map editor.",
-    "screenshotName": "Site plan"
+    "screenshotName": "Site plan",
+    "furtherObjects": "Further objects"
   },
   "common": {
     "showMore": "Show more",

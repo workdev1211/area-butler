@@ -42,9 +42,8 @@ const MapScreenshots: FC<IMapScreenshotsProps> = ({
         <div className="collapse-title-container">
           <img src={mapScreenshotsIcon} alt="map-screenshots-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.mapSection)}</div>
-            <div className="collapse-title-text-2">
-              {t(IntlKeys.snapshotEditor.exportTab.mapSectionDescription)}
+            <div className="collapse-title-text-1">
+              {t(IntlKeys.snapshotEditor.exportTab.mapSection)}
             </div>
           </div>
         </div>

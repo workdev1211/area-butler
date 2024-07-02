@@ -1,12 +1,9 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
-import {
-  EntityGroup,
-  ResultEntity,
-} from "../../../shared/search-result.types";
+import { EntityGroup, ResultEntity } from "../../../shared/search-result.types";
 import {
   ApiOsmEntityCategory,
   IApiUserPoiIcon,
@@ -87,8 +84,9 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
         <div className="collapse-title-container">
           <img src={localitiesIcon} alt="localities-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.pointsOfInterest.label)}</div>
-            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.pointsOfInterest.description)}</div>
+            <div className="collapse-title-text-1">
+              {t(IntlKeys.snapshotEditor.pointsOfInterest.label)}
+            </div>
           </div>
         </div>
         <label className="cursor-pointer label justify-start pl-0">
@@ -160,7 +158,9 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                     )
                 ) && (
                   <li className="locality-option-heading" key={category}>
-                    <h4>{t(IntlKeys.snapshotEditor.pointsOfInterest[category])}</h4>
+                    <h4>
+                      {t(IntlKeys.snapshotEditor.pointsOfInterest[category])}
+                    </h4>
                   </li>
                 )}
                 {groupedEntries

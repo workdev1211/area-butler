@@ -129,11 +129,11 @@ export const openAiQueryTypes: Array<{
     label: "Exposé Text",
     sidebarLabel: "Exposé-Text",
   },
-  {
-    type: OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
-    label: "Transformation Sie-Form in Du-Form",
-    sidebarLabel: "Umwandlung Sie in Du Form",
-  },
+  // {
+  //   type: OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+  //   label: "Transformation Sie-Form in Du-Form",
+  //   sidebarLabel: "Umwandlung Sie in Du Form",
+  // },
   {
     type: OpenAiQueryTypeEnum.GENERAL_QUESTION,
     label: "Generelle Frage an KI stellen",

@@ -61,9 +61,6 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
               <div className="collapse-title-text-1">
                 {t(IntlKeys.snapshotEditor.exportTab.automaticTextsTitle)}
               </div>
-              <div className="collapse-title-text-2">
-                {t(IntlKeys.snapshotEditor.exportTab.automaticTextsDescription)}
-              </div>
             </div>
           </div>
         </div>

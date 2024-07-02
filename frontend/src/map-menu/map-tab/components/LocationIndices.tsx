@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import locationIndicesIcon from "../../../assets/icons/map-menu/11-lageindizes.svg";
@@ -46,16 +46,6 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
           <div className="collapse-title-text">
             <div className="collapse-title-text-1 flex gap-2">
               <span>{t(IntlKeys.snapshotEditor.positionIndices.label)}</span>{" "}
-              <span
-                className={`badge ${
-                  isLocationIndicesOpen ? "badge-accent" : "badge-primary"
-                }`}
-              >
-                {t(IntlKeys.common.new).toUpperCase()}
-              </span>
-            </div>
-            <div className="collapse-title-text-2">
-              {t(IntlKeys.snapshotEditor.positionIndices.description)}
             </div>
           </div>
         </div>

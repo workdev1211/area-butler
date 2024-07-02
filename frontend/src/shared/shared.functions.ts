@@ -233,10 +233,12 @@ export const timeToHumanReadable = (timeInMinutes: number): string => {
   }
 };
 
+const defaultToastTime = 5 * 1000 // 5 sec
+
 export const toastSuccess = (message: string) => {
   toast.success(message, {
     position: "top-right",
-    autoClose: 10000,
+    autoClose: defaultToastTime,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
@@ -248,7 +250,7 @@ export const toastSuccess = (message: string) => {
 export const toastError = (
   message: string,
   onClose = () => {},
-  closeTimeMs: number | false = 10000
+  closeTimeMs: number | false = defaultToastTime
 ) => {
   toast.error(message, {
     onClose,

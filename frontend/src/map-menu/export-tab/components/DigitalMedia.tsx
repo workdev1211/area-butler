@@ -154,9 +154,6 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
             <div className="collapse-title-text-1">
               {t(IntlKeys.snapshotEditor.exportTab.digitalMedia)}
             </div>
-            <div className="collapse-title-text-2">
-              {t(IntlKeys.snapshotEditor.exportTab.digitalMediaDescription)}
-            </div>
           </div>
         </div>
       </div>

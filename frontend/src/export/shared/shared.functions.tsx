@@ -13,7 +13,7 @@ export const getFilteredLegend = (
       .reduce<ILegendItem[]>((result, { title, active }) => {
         const foundOsmEntityType =
           active &&
-          getCombinedOsmEntityTypes().find(({ label }) => title === label);
+          getCombinedOsmEntityTypes().find(({ name }) => title === name);
 
         if (foundOsmEntityType) {
           result.push({

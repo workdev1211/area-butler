@@ -141,7 +141,7 @@ const SubscriptionDescription = (name: string) => {
 
         <div className="flex flex-col gap-5">
           <div>Mit monatlicher oder jährlicher Zahlung.</div>
-          <div>Alles aus P5 mit vielen Vorteilen:</div>
+          <div>Alles aus P2 mit vielen Vorteilen:</div>
 
           <ul className="list-disc pl-5 text-left text-xl font-bold">
             <li>Karten sind immer Online</li>

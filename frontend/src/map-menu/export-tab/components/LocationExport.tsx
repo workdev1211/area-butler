@@ -1,7 +1,7 @@
 import { FC, useContext, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import {
   SearchContext,
@@ -120,7 +120,9 @@ const LocationExport: FC<ILocationExportProps> = ({
         : IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT;
 
       performUnlock(
-        isOnePageExport ? t(IntlKeys.snapshotEditor.exportTab.unlockLocationExpose) : statsExportUnlockText,
+        isOnePageExport
+          ? t(IntlKeys.snapshotEditor.exportTab.unlockLocationExpose)
+          : statsExportUnlockText,
         actionType
       );
     }
@@ -189,17 +191,7 @@ const LocationExport: FC<ILocationExportProps> = ({
             <div className="collapse-title-text-1">
               <div className="collapse-title-text-1">
                 {t(IntlKeys.snapshotEditor.exportTab.reportsAndLocationExpose)}
-                {/*<span*/}
-                {/*  className={`badge ${*/}
-                {/*    isReportsOpen ? "badge-accent" : "badge-primary"*/}
-                {/*  }`}*/}
-                {/*>*/}
-                {/*  NEU*/}
-                {/*</span>*/}
               </div>
-            </div>
-            <div className="collapse-title-text-2">
-              {t(IntlKeys.snapshotEditor.exportTab.reportsAndLocationExposeDescription)}
             </div>
           </div>
         </div>
@@ -220,7 +212,9 @@ const LocationExport: FC<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              <span>{t(IntlKeys.snapshotEditor.exportTab.generateLocationExpose)}</span>
+              <span>
+                {t(IntlKeys.snapshotEditor.exportTab.generateLocationExpose)}
+              </span>
               {/*<span className="badge badge-primary">NEU</span>*/}
             </h3>
           </li>
@@ -238,22 +232,6 @@ const LocationExport: FC<ILocationExportProps> = ({
                 alt="pdf"
               />
               {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisPDF)}
-            </h3>
-          </li>
-          <li>
-            <h3
-              className="max-w-fit items-center cursor-pointer"
-              onClick={() => {
-                setExportType(ExportTypeEnum.EXPOSE_DOCX);
-              }}
-            >
-              <img
-                className="w-6 h-6"
-                style={invertFilter}
-                src={pdfIcon}
-                alt="pdf"
-              />
-              {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisDOC)}
             </h3>
           </li>
           <li>

@@ -57,9 +57,6 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
           <img src={fileIcon} alt="customer-data-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.ownFiles)}</div>
-            <div className="collapse-title-text-2">
-              {t(IntlKeys.snapshotEditor.exportTab.ownFilesDescription)}
-            </div>
           </div>
         </div>
       </div>

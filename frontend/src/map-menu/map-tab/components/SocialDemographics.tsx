@@ -1,7 +1,7 @@
 import { FunctionComponent, ReactNode, useState } from "react";
 
-import { IntlKeys } from 'i18n/keys';
-import { useTranslation } from 'react-i18next';
+import { IntlKeys } from "i18n/keys";
+import { useTranslation } from "react-i18next";
 
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import { ApiDataSource } from "../../../../../shared/types/subscription-plan";
@@ -107,7 +107,6 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
             <div className="collapse-title-text-1">
               {t(IntlKeys.snapshotEditor.socialDemographics.label)}
             </div>
-            <div className="collapse-title-text-2">{t(IntlKeys.snapshotEditor.socialDemographics.description)}</div>
           </div>
         </div>
       </div>
@@ -131,7 +130,9 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
             </li>
             <li className="locality-option-li" key="list-item-btw">
               <MapMenuCollapsable
-                title={t(IntlKeys.snapshotEditor.socialDemographics.federalElections)}
+                title={t(
+                  IntlKeys.snapshotEditor.socialDemographics.federalElections
+                )}
                 icon={federalElectionIcon}
                 subscriptionCheck={() => hasElectionData}
                 openUpgradeSubscriptionModal={() => {
