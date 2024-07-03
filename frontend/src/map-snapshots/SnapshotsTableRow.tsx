@@ -177,7 +177,16 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
             className="ml-5 rounded btn-xs btn-primary"
             onClick={(e) => {
               e.stopPropagation();
-              copyCodeToClipBoard(createDirectLink());
+
+              copyCodeToClipBoard(
+                createDirectLink({
+                  tokens: {
+                    addressToken: snapshot.addressToken,
+                    token: snapshot.token,
+                    unaddressToken: snapshot.unaddressToken,
+                  },
+                })
+              );
             }}
           >
             {t(IntlKeys.mapSnapshots.copyLink)}
