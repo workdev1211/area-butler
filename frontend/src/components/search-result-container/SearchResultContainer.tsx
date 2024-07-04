@@ -25,7 +25,6 @@ import {
 import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
-  preferredLocationsTitle,
   toastSuccess,
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
@@ -252,7 +251,7 @@ const SearchResultContainer = forwardRef<
       );
 
       const foundPrefLocGroup = groupsByActMeans.find(
-        (group) => group.items[0]?.label === preferredLocationsTitle
+        (group) => group.title === OsmName.favorite
       );
 
       setPreferredLocationsGroup(foundPrefLocGroup);

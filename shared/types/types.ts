@@ -371,8 +371,7 @@ export interface IApiSnapshotConfigRealEstSettings {
 }
 
 export interface ApiSearchResultSnapshotConfig {
-  // TODO should be changed to the 'OsmName[]'
-  defaultActiveGroups?: string[]; // MapTab Points-of-Interest active categories --> osmEntityTypes.label
+  defaultActiveGroups?: OsmName[]; // MapTab Points-of-Interest active categories --> osmEntityTypes.label
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisibility[];
   groupItems?: boolean;

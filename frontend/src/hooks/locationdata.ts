@@ -17,6 +17,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
+  OsmName,
 } from "../../../shared/types/types";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { ICurrentMapRef } from "../shared/search-result.types";
@@ -156,7 +157,7 @@ export const useLocationData = () => {
       return;
     }
 
-    const defaultActiveGroups: string[] = [];
+    const defaultActiveGroups: OsmName[] = [];
     const customPoiIds: string[] = [];
 
     searchContextState.responseGroupedEntities?.forEach(

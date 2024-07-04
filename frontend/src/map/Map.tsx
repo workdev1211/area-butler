@@ -129,7 +129,7 @@ export class IdMarker extends L.Marker {
   }
 
   createPopupContent(): void {
-    const entityTitle = this.entity.name || this.entity.label;
+    const entityTitle = this.entity.name;
     let cityFromSearch = "";
 
     if (this.searchAddress) {

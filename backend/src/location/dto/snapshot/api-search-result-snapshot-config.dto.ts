@@ -31,12 +31,11 @@ import ApiSnapshotConfigRealEstSettingsDto from './api-snapshot-poi-filter.dto';
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
 {
-  // TODO should be changed to the 'OsmName[]'
   @Expose()
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  defaultActiveGroups?: string[];
+  @IsEnum(OsmName, { each: true })
+  defaultActiveGroups?: OsmName[];
 
   @Expose()
   @IsOptional()

@@ -13,9 +13,8 @@ import {
 } from "../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "./search-result.types";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { distanceInMeters, preferredLocationsTitle } from "./shared.functions";
+import { distanceInMeters } from "./shared.functions";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
@@ -71,8 +70,7 @@ export const convertLocationToResEntity = (
 
   return {
     id: locationEntity.id,
-    name: locationEntity.title,
-    label: locationEntity.name,
+    name: locationEntity.title || locationEntity.label,
     osmName: Object.values(OsmName).includes(
       locationEntity.type as unknown as OsmName
     )
@@ -183,7 +181,6 @@ const buildEntDataFromPrefLocs = ({
       result.push({
         id: v4(),
         name: `${title} (${address})`,
-        label: preferredLocationsTitle,
         osmName: OsmName.favorite,
         distanceInMeters: distanceInMeters(centerOfSearch, coordinates), // Calc distance
         coordinates: coordinates,
@@ -242,7 +239,6 @@ const buildEntDataFromEstates = ({
     result.push({
       id: entityId ?? v4(),
       name: realEstate.name,
-      label: realEstateListingsTitle,
       osmName: OsmName.property,
       distanceInMeters: distanceInMeters(
         centerOfSearch,
@@ -318,8 +314,7 @@ export const deriveInitialEntityGroups = ({
   searchResponse,
   ignoreVisibility = false,
 }: IDeriveParameters): EntityGroup[] => {
-  // TODO 'title: string' should be changed to 'name: OsmName'
-  const deriveActiveState = (title: string, index?: number): boolean => {
+  const deriveActiveState = (title: OsmName, index?: number): boolean => {
     const activeGroups = config?.defaultActiveGroups ?? [];
 
     if (activeGroups.length) {
@@ -383,7 +378,7 @@ export const deriveInitialEntityGroups = ({
         result[groupName] = {
           title: groupName,
           active: deriveActiveState(
-            resultEntity.label,
+            resultEntity.osmName,
             Object.keys(result).length
           ), // TODO should be switched to 'groupName'
           items: [resultEntity],

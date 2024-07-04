@@ -13,7 +13,7 @@ describe("MapMenuKarlaFricke", () => {
         {
           id: "test-id",
           osmName: OsmName.bus_stop,
-          label: "Park-Item",
+          name: "Park-Item",
           address: {
             city: "TestCity",
           },

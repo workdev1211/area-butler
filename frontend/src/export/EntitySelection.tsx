@@ -1,7 +1,7 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 
@@ -89,7 +89,15 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
               }}
             />
             <span>
-              {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])} ({group.items.length})
+              {t(
+                (
+                  IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                    string,
+                    string
+                  >
+                )[group.title]
+              )}{" "}
+              ({group.items.length})
             </span>
           </div>
 
@@ -99,7 +107,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
               .map((item: ResultEntity, index: number) => (
                 <div
                   className="flex gap-5 my-3 overflow-y-scroll items-center"
-                  key={`${group.title}-${item.label}-${item.name}-${index}`}
+                  key={`${group.title}-${item.name}-${index}`}
                 >
                   <input
                     type="checkbox"
@@ -110,8 +118,16 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text text-sm">
-                    {item.name ?? t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[item.label])} (
-                    {Math.round(item.distanceInMeters)} m)
+                    {item.name ??
+                      t(
+                        (
+                          IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                            string,
+                            string
+                          >
+                        )[item.osmName]
+                      )}{" "}
+                    ({Math.round(item.distanceInMeters)} m)
                   </span>
                 </div>
               ))}

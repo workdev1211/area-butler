@@ -11,7 +11,7 @@ describe("MapMenuListItem", () => {
     items: [
       {
         id: "test-id",
-        label: "Park-Item",
+        name: "Park-Item",
         address: {
           city: "TestCity",
         },

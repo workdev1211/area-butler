@@ -401,8 +401,8 @@ export class OpenAiService {
     meanOfTransportation: MeansOfTransportation,
   ): Partial<Record<OsmName, { name: string; distance: number }[]>> {
     const selectedPoiCategories = osmEntityTypes.reduce<OsmName[]>(
-      (result, { label, name }) => {
-        if (snapshotConfig.defaultActiveGroups?.includes(label)) {
+      (result, { name }) => {
+        if (snapshotConfig.defaultActiveGroups?.includes(name)) {
           result.push(name);
         }
 

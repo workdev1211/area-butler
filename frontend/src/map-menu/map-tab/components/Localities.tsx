@@ -15,7 +15,6 @@ import {
   deriveIconForOsmName,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
-  preferredLocationsTitle,
   setBackgroundColor,
 } from "../../../shared/shared.functions";
 import {
@@ -28,7 +27,6 @@ import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
 import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
 import { SearchContext } from "../../../context/SearchContext";
 import { UserContext } from "../../../context/UserContext";
-import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
 
 interface ILocalitiesProps {
   groupedEntries: EntityGroup[];
@@ -112,11 +110,8 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                 [OsmName.favorite, OsmName.property].includes(ge.title)
             )
             .map((ge, geIndex) => {
-              const isRealEstateListing =
-                ge.items[0].label === realEstateListingsTitle;
-
-              const isPreferredLocation =
-                ge.items[0].label === preferredLocationsTitle;
+              const isRealEstateListing = ge.title === OsmName.property;
+              const isPreferredLocation = ge.title === OsmName.favorite;
 
               const groupIconInfo: IPoiIcon = isRealEstateListing
                 ? !!config?.mapIcon
@@ -172,11 +167,8 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                       )
                   )
                   .map((ge, geIndex) => {
-                    const isRealEstateListing =
-                      ge.items[0].label === realEstateListingsTitle;
-
-                    const isPreferredLocation =
-                      ge.items[0].label === preferredLocationsTitle;
+                    const isRealEstateListing = ge.title === OsmName.property;
+                    const isPreferredLocation = ge.title === OsmName.favorite;
 
                     const groupIconInfo: IPoiIcon = isRealEstateListing
                       ? getRealEstateListingsIcon(resultingPoiIcons)

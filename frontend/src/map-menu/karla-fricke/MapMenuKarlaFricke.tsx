@@ -1,22 +1,20 @@
 import { FunctionComponent, memo, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { EntityGroup } from "../../shared/search-result.types";
 import "./MapMenuKarlaFricke.scss";
 import {
   deriveIconForOsmName,
   getPreferredLocationsIcon,
-  preferredLocationsTitle,
   getRealEstateListingsIcon,
 } from "../../shared/shared.functions";
-import { IApiUserPoiIcon } from "../../../../shared/types/types";
+import { IApiUserPoiIcon, OsmName } from "../../../../shared/types/types";
 import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../context/SearchContext";
-import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 
 interface IMapMenuKarlaFrickeProps {
   isMapMenuOpen: boolean;
@@ -49,11 +47,8 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
     const { t } = useTranslation();
     const { searchContextDispatch } = useContext(SearchContext);
 
-    const isRealEstateListing =
-      group.items[0].label === realEstateListingsTitle;
-
-    const isPreferredLocation =
-      group.items[0].label === preferredLocationsTitle;
+    const isRealEstateListing = group.title === OsmName.property;
+    const isPreferredLocation = group.title === OsmName.favorite;
 
     const groupIconInfo = isRealEstateListing
       ? getRealEstateListingsIcon(userMenuPoiIcons)
@@ -80,7 +75,11 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
-        {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+        {t(
+          (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+            group.title
+          ]
+        )}
         {isDropdownButton && <span className="dropdown-triangle">&#9660;</span>}
       </li>
     );

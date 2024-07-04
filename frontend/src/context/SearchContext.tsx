@@ -151,8 +151,8 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES]: EntityGroup[];
   [SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES]: EntityGroup[];
   [SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS]: MeansOfTransportation[];
-  [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: string;
-  [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: string;
+  [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: OsmName;
+  [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: OsmName;
   [SearchContextActionTypes.SET_RESPONSE_ROUTES]: EntityRoute[];
   [SearchContextActionTypes.SET_RESPONSE_TOKENS]: Partial<IIframeTokens>;
   [SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES]: EntityTransitRoute[];

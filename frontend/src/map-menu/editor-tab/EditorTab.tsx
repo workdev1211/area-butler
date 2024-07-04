@@ -349,7 +349,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                                     handleEntityVisibility(item);
                                   }}
                                 />{" "}
-                                <span>{item.name ?? item.label}</span>
+                                <span>{item.name}</span>
                               </div>
                               <LocalityItemContent item={item} />
                             </li>

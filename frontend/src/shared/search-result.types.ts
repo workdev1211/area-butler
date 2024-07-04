@@ -29,16 +29,19 @@ export interface ICurrentMapRef {
 }
 
 export interface ResultEntity {
-  name?: string;
-  osmName: OsmName;
-  label: string;
-  id: string;
-  coordinates: ApiCoordinates;
   address: ApiAddress;
   byFoot: boolean;
   byBike: boolean;
   byCar: boolean;
+  coordinates: ApiCoordinates;
   distanceInMeters: number;
+  id: string;
+  osmName: OsmName;
+
+  externalUrl?: string;
+  isCustom?: boolean; // for a custom added POI
+  isFiltered?: boolean;
+  name: string;
   // 'realEstateData' property is set in the following shared function:
   // 'deriveInitialEntityGroups' --> 'buildEntDataFromRealEstates'
   realEstateData?: {
@@ -48,9 +51,6 @@ export interface ResultEntity {
     type?: string;
   };
   selected?: boolean;
-  externalUrl?: string;
-  isFiltered?: boolean;
-  isCustom?: boolean; // for a custom added POI
 }
 
 export interface EntityGroup {
