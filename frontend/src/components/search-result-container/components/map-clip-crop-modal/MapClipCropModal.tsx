@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import {
   centerCrop,
   convertToPixelCrop,
@@ -64,7 +64,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   color,
   directLink,
 }) => {
-  const imgRef = useRef<HTMLImageElement>(null);
+  const [imgRef, setImgRef] = useState<HTMLImageElement | null>(null);
 
   const { integrationType } = useContext(ConfigContext);
   const { t } = useTranslation();
@@ -94,33 +94,28 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     },
   ];
 
-  const [initMapClipping, setInitMapClipping] = useState<string>(mapClipping);
-  const [resultMapClipping, setResultMapClipping] = useState<string>();
-  const [qrCodeImage, setQrCodeImage] = useState<HTMLImageElement>();
+  const [qrCode, setQrCode] = useState<string>();
   const [cropState, setCropState] = useState<PercentCrop>();
   const [cropParams, setCropParams] = useState<ICropParams>(
     fourToThreeCropParams
   );
-  const [isShownQrCode, setIsShownQrCode] = useState(false);
+  const [isShownQrCode, setIsShownQrCode] = useState(true);
 
-  const handleCropComplete = async (
-    completedCropState: PercentCrop
-  ): Promise<void> => {
-    setResultMapClipping(undefined);
-    const image = imgRef?.current;
+  const handleCropComplete = async (): Promise<void> => {
+    const image = imgRef;
 
-    if (!image || !completedCropState) {
+    if (!image || !cropState) {
       toastDefaultError();
       console.error("Crop canvas does not exist!");
       return;
     }
 
-    if (completedCropState.width < 1 || completedCropState.height < 1) {
+    if (cropState.width < 1 || cropState.height < 1) {
       return;
     }
 
     const pixelCropState = convertToPixelCrop(
-      completedCropState,
+      cropState,
       image.naturalWidth,
       image.naturalHeight
     );
@@ -149,111 +144,69 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       pixelCropState.height
     );
 
+    if (isShownQrCode) {
+      const resQrCodeImage = await generateQrCodeImage();
+
+      ctx.drawImage(
+        resQrCodeImage,
+        15,
+        pixelCropState.height - resQrCodeImage.height
+      );
+    }
+
     const blob = await offscreen.convertToBlob({
       type: "image/png",
     });
 
     try {
-      setResultMapClipping(await convertBlobToBase64(blob));
+      const blobFile = await convertBlobToBase64(blob);
+      closeModal(blobFile);
     } catch (e) {
       toastDefaultError();
       console.error(`Error: ${e}`);
     }
   };
 
-  const generateQrCodeImage = async (): Promise<HTMLImageElement> => {
+  const setQrCodeFunc = useCallback(async () => {
     const rawQrCodeImage = await getQrCodeBase64(directLink!, color);
-    const renderedQrCode = renderToStaticMarkup(
-      <MapClipQrCode qrCodeImage={rawQrCodeImage} color={color} />
-    );
-    const qrCodeElement = document.createElement("div");
-    qrCodeElement.innerHTML = renderedQrCode;
+    setQrCode(rawQrCodeImage);
+  }, [directLink, color]);
 
-    const renderedQrCodeImage = await toPng(qrCodeElement, {
-      pixelRatio: 1,
-      width: 300,
-      height: 300,
-    });
-
-    qrCodeElement.remove();
-
-    const resQrCodeImage = new Image();
-    resQrCodeImage.src = renderedQrCodeImage;
-    await resQrCodeImage.decode();
-    setQrCodeImage(resQrCodeImage);
-
-    return resQrCodeImage;
-  };
-
-  const drawQrCode = async (): Promise<void> => {
-    const isDrawnQrCode = !isShownQrCode;
-    setIsShownQrCode(isDrawnQrCode);
-    const image = imgRef?.current;
-
-    if (!image || !cropState) {
-      return;
-    }
-
-    if (!isDrawnQrCode) {
-      setInitMapClipping(mapClipping);
-      return;
-    }
-
-    const offscreen = new OffscreenCanvas(
-      image.naturalWidth,
-      image.naturalHeight
-    );
-    const ctx = offscreen.getContext("2d");
-
-    if (!ctx) {
-      toastDefaultError();
-      console.error("No 2d context!");
-      return;
-    }
-
-    ctx.drawImage(image, 0, 0);
-    const resQrCodeImage = qrCodeImage || (await generateQrCodeImage());
-
-    const pixelCropState = convertToPixelCrop(
-      cropState,
-      image.naturalWidth,
-      image.naturalHeight
-    );
-
-    ctx.drawImage(
-      resQrCodeImage,
-      pixelCropState.x + 15,
-      pixelCropState.y + pixelCropState.height - resQrCodeImage.height
-    );
-
-    const blob = await offscreen.convertToBlob({
-      type: "image/png",
-    });
-
-    try {
-      setInitMapClipping(await convertBlobToBase64(blob));
-    } catch (e) {
-      setInitMapClipping(mapClipping);
-      toastDefaultError();
-      console.error(`Error: ${e}`);
-    }
-  };
-
-  // handles the image redrawing
   useEffect(() => {
-    const image = imgRef?.current;
+    setQrCodeFunc();
+  }, [setQrCodeFunc]);
 
-    if (!image || !cropState) {
-      return;
-    }
+  const generateQrCodeImage =
+    useCallback(async (): Promise<HTMLImageElement> => {
+      const rawQrCodeImage = await getQrCodeBase64(directLink!, color);
+      const renderedQrCode = renderToStaticMarkup(
+        <MapClipQrCode qrCodeImage={rawQrCodeImage} color={color} />
+      );
+      const qrCodeElement = document.createElement("div");
+      qrCodeElement.innerHTML = renderedQrCode;
 
-    void handleCropComplete(cropState);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initMapClipping]);
+      const renderedQrCodeImage = await toPng(qrCodeElement, {
+        pixelRatio: 1,
+        width: 300,
+        height: 300,
+      });
+
+      qrCodeElement.remove();
+
+      const resQrCodeImage = new Image();
+      resQrCodeImage.src = renderedQrCodeImage;
+      await resQrCodeImage.decode();
+
+      return resQrCodeImage;
+    }, [color, directLink]);
+
+  const toggleDrawQrCode = async (): Promise<void> => {
+    setIsShownQrCode(!isShownQrCode);
+  };
 
   // handles the initial image load and the change of the aspect ratio
   useEffect(() => {
-    const image = imgRef?.current;
+    const image = imgRef;
 
     if (!image || !cropParams) {
       return;
@@ -271,9 +224,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
           };
 
     setCropState(crop);
-    void handleCropComplete(crop);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cropParams]);
+  }, [cropParams, imgRef, imgRef?.width]);
 
   return (
     <div className="map-clip-crop-modal modal modal-open z-9999">
@@ -285,11 +236,28 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
           onChange={(crop, percentCrop) => {
             setCropState(percentCrop);
           }}
-          onComplete={async (crop, percentCrop) => {
-            void handleCropComplete(percentCrop);
-          }}
+          renderSelectionAddon={() =>
+            qrCode && isShownQrCode ? (
+              <div
+                style={{
+                  bottom: -59,
+                  position: "absolute",
+                  transform: "scale(0.5)",
+                  left: -55,
+                }}
+              >
+                <MapClipQrCode qrCodeImage={qrCode} color={color} />
+              </div>
+            ) : (
+              <></>
+            )
+          }
         >
-          <img ref={imgRef} src={initMapClipping} alt="To be croppped" />
+          <img
+            ref={(ref) => setImgRef(ref)}
+            src={mapClipping}
+            alt="To be croppped"
+          />
         </ReactCrop>
 
         <div className="modal-action mt-0 items-end justify-between">
@@ -342,7 +310,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                   type="checkbox"
                   name="showQrCode"
                   checked={isShownQrCode}
-                  onChange={drawQrCode}
+                  onChange={toggleDrawQrCode}
                   className="checkbox checkbox-xs checkbox-primary mr-2"
                 />
                 <span className="label-text">
@@ -364,10 +332,8 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
 
             <button
               className="btn btn-primary"
-              disabled={!resultMapClipping}
-              onClick={() => {
-                closeModal(resultMapClipping);
-              }}
+              onClick={handleCropComplete}
+              disabled={!cropState?.width}
             >
               {t(
                 integrationType
