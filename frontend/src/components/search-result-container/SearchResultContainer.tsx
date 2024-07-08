@@ -24,9 +24,7 @@ import {
 } from "../../../../shared/types/types";
 import {
   deriveAvailableMeansFromResponse,
-  deriveEntityGroupsByActiveMeans,
   toastSuccess,
-  toggleEntityVisibility,
 } from "../../shared/shared.functions";
 import Map from "../../map/Map";
 import { useRouting } from "../../hooks/routing";
@@ -57,6 +55,10 @@ import { ConfigContext } from "../../context/ConfigContext";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { IntlKeys } from "../../i18n/keys";
 import MapMenuContainer from "./components/MapMenuContainer";
+import {
+  deriveEntGroupsByActMeans,
+  toggleEntityVisibility,
+} from "../../shared/pois.functions";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -115,6 +117,7 @@ const SearchResultContainer = forwardRef<
 
     const {
       searchContextState: {
+        entityGroupsByActMeans,
         gotoMapCenter,
         highlightId,
         location,
@@ -165,9 +168,6 @@ const SearchResultContainer = forwardRef<
     const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
-    >([]);
-    const [resultGroupEntities, setResultGroupEntities] = useState<
-      EntityGroup[]
     >([]);
     const [hideIsochrones, setHideIsochrones] = useState<boolean>(
       !!responseConfig?.hideIsochrones
@@ -245,17 +245,21 @@ const SearchResultContainer = forwardRef<
     useEffect(() => {
       setPreferredLocationsGroup(undefined);
 
-      const groupsByActMeans = deriveEntityGroupsByActiveMeans(
+      const groupsByActMeans = deriveEntGroupsByActMeans(
         responseGroupedEntities,
         responseActiveMeans
       );
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_ENT_GROUPS_BY_ACT_MEANS,
+        payload: groupsByActMeans,
+      });
 
       const foundPrefLocGroup = groupsByActMeans.find(
         (group) => group.title === OsmName.favorite
       );
 
       setPreferredLocationsGroup(foundPrefLocGroup);
-      setResultGroupEntities(groupsByActMeans);
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [responseGroupedEntities, responseActiveMeans]);
@@ -535,7 +539,7 @@ const SearchResultContainer = forwardRef<
             mapboxMapId={mapboxMapIds.current}
             searchResponse={searchResponse}
             searchAddress={searchAddress}
-            groupedEntities={resultGroupEntities ?? []}
+            groupedEntities={entityGroupsByActMeans}
             directLink={directLink}
             means={{
               byFoot: responseActiveMeans.includes(MeansOfTransportation.WALK),
@@ -613,9 +617,6 @@ const SearchResultContainer = forwardRef<
         )}
         {isMapMenuKFPresent && (
           <MapMenuKarlaFricke
-            groupedEntries={(resultGroupEntities ?? [])
-              .filter((ge) => ge.items.length && ge.title !== OsmName.property)
-              .sort((a, b) => (a.title > b.title ? 1 : -1))}
             isMapMenuOpen={isMapMenuOpen}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
@@ -628,7 +629,6 @@ const SearchResultContainer = forwardRef<
             isNewSnapshot={!!isNewSnapshot}
             mapDisplayMode={mapDisplayMode}
             mapRef={mapRef?.current}
-            resultGroupEntities={resultGroupEntities}
             saveConfig={saveConfig}
             toggleRoutesToEntity={toggleRoutesToEntity}
             toggleTransitRoutesToEntity={toggleTransitRoutesToEntity}
@@ -639,8 +639,6 @@ const SearchResultContainer = forwardRef<
           <FilterMenu
             isFilterMenuOpen={isFilterMenuOpen}
             isEditorMode={isEditorMode}
-            groupEntities={resultGroupEntities}
-            setGroupEntities={setResultGroupEntities}
           />
         )}
         {isThemeKf &&

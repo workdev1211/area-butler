@@ -1,4 +1,4 @@
-import { FunctionComponent, memo, useContext, useState } from "react";
+import { FC, memo, useContext, useMemo, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -18,7 +18,6 @@ import {
 
 interface IMapMenuKarlaFrickeProps {
   isMapMenuOpen: boolean;
-  groupedEntries: EntityGroup[];
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
   userMenuPoiIcons?: IApiUserPoiIcon[];
@@ -33,14 +32,25 @@ interface IListItemProps {
   isDropdownButton?: boolean;
 }
 
-const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
+const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
   isMapMenuOpen,
-  groupedEntries,
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
   userMenuPoiIcons,
 }) => {
-  const ListItem: FunctionComponent<IListItemProps> = ({
+  const {
+    searchContextState: { entityGroupsByActMeans },
+  } = useContext(SearchContext);
+
+  const groupedEntries = useMemo(
+    () =>
+      entityGroupsByActMeans
+        .filter((ge) => ge.items.length && ge.title !== OsmName.property)
+        .sort((a, b) => (a.title > b.title ? 1 : -1)),
+    [entityGroupsByActMeans]
+  );
+
+  const ListItem: FC<IListItemProps> = ({
     group,
     isDropdownButton = false,
   }) => {
@@ -96,13 +106,13 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
     <ListItemMemo key={group.title} group={group} />
   ));
 
-  const DesktopMenu: FunctionComponent = () => {
+  const DesktopMenu: FC = () => {
     return <ul className="menu-desktop">{resultingList}</ul>;
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const MobileMenu: FunctionComponent<IMenuProps> = ({ groupedEntries }) => {
+  const MobileMenu: FC<IMenuProps> = ({ groupedEntries }) => {
     const { t } = useTranslation();
     const activeEntry = groupedEntries.find((ge) => ge.active);
 

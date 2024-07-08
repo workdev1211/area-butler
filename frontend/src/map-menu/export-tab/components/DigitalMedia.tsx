@@ -18,7 +18,6 @@ import legendIcon from "../../../assets/icons/map-menu/editor-tab/legend-icons.s
 import iframeIcon from "../../../assets/icons/map-menu/editor-tab/iframe.svg";
 import {
   copyTextToClipboard,
-  deriveEntityGroupsByActiveMeans,
   sanitizeFilename,
   setBackgroundColor,
 } from "../../../shared/shared.functions";
@@ -61,9 +60,10 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
   } = useContext(UserContext);
   const {
     searchContextState: {
+      entityGroupsByActMeans,
+      printingZipActive,
       responseGroupedEntities,
       responseActiveMeans,
-      printingZipActive,
     },
     searchContextDispatch,
   } = useContext(SearchContext);
@@ -80,11 +80,8 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
       return;
     }
 
-    const downloadZipArchive = async () => {
-      const entityGroups = deriveEntityGroupsByActiveMeans(
-        responseGroupedEntities,
-        responseActiveMeans
-      ).filter(
+    const downloadZipArchive = async (): Promise<void> => {
+      const entityGroups = entityGroupsByActMeans.filter(
         ({ title, items }: EntityGroup) =>
           title !== OsmName.property && items.length > 0
       );

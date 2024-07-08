@@ -63,8 +63,6 @@ export const poiSearchContainerId = "poi-search-container";
 
 export interface IEditorTabProps {
   availableMeans: MeansOfTransportation[];
-  groupedEntries?: EntityGroup[];
-  config: ApiSearchResultSnapshotConfig;
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
   snapshotId: string;
   extraMapboxStyles?: IApiMapboxStyle[];

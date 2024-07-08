@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -31,7 +31,6 @@ import { TCensusData } from "../../../shared/types/data-provision";
 
 interface IExportModalProps {
   entities: ResultEntity[];
-  groupedEntries: any;
   censusData?: TCensusData;
   activeMeans: MeansOfTransportation[];
   exportType: ExportTypeEnum;
@@ -39,22 +38,14 @@ interface IExportModalProps {
 
 const ExportModal: FC<IExportModalProps> = ({
   entities,
-  groupedEntries,
   censusData,
   activeMeans,
   exportType,
 }) => {
-  const { t } = useTranslation();
-  const groupCopy: EntityGroup[] = JSON.parse(
-    JSON.stringify(groupedEntries)
-  ).filter(
-    ({ title, items }: EntityGroup) =>
-      title !== OsmName.property && items.length > 0
-  );
-
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 
+  const { t } = useTranslation();
   const { getActualUser } = useTools();
 
   const user = getActualUser();
@@ -77,9 +68,9 @@ const ExportModal: FC<IExportModalProps> = ({
       ApiDataSource.PARTICLE_POLLUTION
     );
 
-  const initialSelectableMapClippings = (
-    searchContextState.mapClippings || []
-  ).map((c: MapClipping, i) => ({ ...c, id: i, isSelected: true }));
+  const initialSelectableMapClippings = searchContextState.mapClippings.map(
+    (c: MapClipping, i) => ({ ...c, id: i, isSelected: true })
+  );
 
   const onClose = (): void => {
     searchContextDispatch({
@@ -96,10 +87,19 @@ const ExportModal: FC<IExportModalProps> = ({
     });
   };
 
+  const entityGroups: EntityGroup[] = useMemo(
+    () =>
+      searchContextState.entityGroupsByActMeans.filter(
+        ({ title, items }: EntityGroup) =>
+          title !== OsmName.property && items.length > 0
+      ),
+    [searchContextState.entityGroupsByActMeans]
+  );
+
   const [filteredEntities, setFilteredEntities] =
-    useState<EntityGroup[]>(groupCopy);
+    useState<EntityGroup[]>(entityGroups);
   const [legend, setLegend] = useState<ILegendItem[]>(
-    getFilteredLegend(groupCopy)
+    getFilteredLegend(entityGroups)
   );
   const [selectableMapClippings, setSelectableMapClippings] = useState<
     ISelectableMapClipping[]

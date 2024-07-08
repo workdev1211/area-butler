@@ -2,11 +2,10 @@ import { FC, ReactNode, useState } from "react";
 
 import "./MapMenu.scss";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import {
-  EntityGroup,
   IEditorTabProps,
   IExportTabProps,
   ResultEntity,
@@ -45,7 +44,6 @@ enum TabsEnum {
 }
 
 export interface IMapMenuProps {
-  groupedEntries: EntityGroup[];
   isMapMenuOpen: boolean;
   mapDisplayMode: MapDisplayModesEnum;
   resetPosition: () => void;
@@ -73,7 +71,6 @@ export interface IMapMenuProps {
 }
 
 const MapMenu: FC<IMapMenuProps> = ({
-  groupedEntries,
   toggleAllLocalities,
   toggleRoute,
   routes,
@@ -223,7 +220,6 @@ const MapMenu: FC<IMapMenuProps> = ({
       >
         {isMapTab && (
           <MapTab
-            groupedEntries={groupedEntries}
             toggleAllLocalities={toggleAllLocalities}
             toggleRoute={toggleRoute}
             routes={routes}

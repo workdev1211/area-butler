@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -20,11 +20,7 @@ import {
 import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
 import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
-import {
-  checkIsEntityHidden,
-  setBackgroundColor,
-  toggleEntityVisibility,
-} from "../../shared/shared.functions";
+import { setBackgroundColor } from "../../shared/shared.functions";
 import { IApiRealEstStatusByUser } from "../../../../shared/types/real-estate";
 import {
   realEstAllTextStatus,
@@ -44,28 +40,40 @@ import { truncateText } from "../../../../shared/functions/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../../shared/types/location";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { useTools } from "../../hooks/tools";
+import {
+  checkIsEntityHidden,
+  toggleEntityVisibility,
+} from "../../shared/pois.functions";
+import { SearchContext } from "../../context/SearchContext";
 
 const EditorTab: FC<IEditorTabProps> = ({
   availableMeans = [],
-  groupedEntries = [],
-  config,
   onConfigChange,
   snapshotId,
   extraMapboxStyles = [],
   isNewSnapshot = false,
 }) => {
+  const {
+    searchContextState: {
+      availGroupedEntities: groupedEntries = [],
+      responseConfig,
+    },
+  } = useContext(SearchContext);
+
   const { t } = useTranslation();
   const { getActualUser } = useTools();
   const { fetchLateSnapConfigs } = useLocationData();
   const { fetchRealEstStatuses } = useRealEstateData();
+
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
+  const config = responseConfig!;
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
-  const [color, setColor] = useState(config?.primaryColor);
-  const [mapIcon, setMapIcon] = useState(config?.mapIcon);
+  const [color, setColor] = useState(config.primaryColor);
+  const [mapIcon, setMapIcon] = useState(config.mapIcon);
   const [lateSnapConfigs, setLateSnapConfigs] = useState<
     IApiLateSnapConfigOption[]
   >([]);
@@ -83,7 +91,7 @@ const EditorTab: FC<IEditorTabProps> = ({
     if (!config.defaultActiveGroups && groupedEntries?.length) {
       onConfigChange({
         ...config,
-        defaultActiveGroups: groupedEntries.map((g) => g.title),
+        defaultActiveGroups: groupedEntries.map(({ title }) => title),
       });
     }
 
@@ -259,7 +267,7 @@ const EditorTab: FC<IEditorTabProps> = ({
     setIsReferenceMap(!isReferenceMap);
   };
 
-  const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
+  const backgroundColor = config.primaryColor || "var(--primary-gradient)";
 
   return (
     <div className="editor-tab z-9000" data-tour="editor-map-menu">
@@ -428,7 +436,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={
-                    config?.mapBoxMapId ||
+                    config.mapBoxMapId ||
                     defaultMapboxStyles.find(
                       ({ label }) => label === MapboxStyleLabelsEnum.CLASSIC
                     )?.key
@@ -456,7 +464,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                 </h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
-                  value={config?.realEstateStatus || realEstAllTextStatus}
+                  value={config.realEstateStatus || realEstAllTextStatus}
                   onChange={(event) => {
                     changeConfigParam(
                       "realEstateStatus",
@@ -484,7 +492,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                 </h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
-                  value={config?.realEstateStatus2 || realEstAllTextStatus}
+                  value={config.realEstateStatus2 || realEstAllTextStatus}
                   onChange={(event) => {
                     changeConfigParam(
                       "realEstateStatus2",
@@ -514,7 +522,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="radio"
                     name="theme"
-                    checked={!config?.theme || config?.theme === "DEFAULT"}
+                    checked={!config.theme || config.theme === "DEFAULT"}
                     onChange={() => {
                       changeTheme("DEFAULT");
                     }}
@@ -528,7 +536,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="radio"
                     name="theme"
-                    checked={config?.theme === "KF"}
+                    checked={config.theme === "KF"}
                     onChange={() => {
                       changeTheme("KF");
                     }}
@@ -542,7 +550,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <IconSizes
-                iconSizes={config?.iconSizes}
+                iconSizes={config.iconSizes}
                 onChange={(resultingIconSizes) => {
                   changeConfigParam("iconSizes", { ...resultingIconSizes });
                 }}
@@ -560,7 +568,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                         type="checkbox"
                         name="defaultActiveMeansWalk"
                         checked={
-                          !config?.defaultActiveMeans ||
+                          !config.defaultActiveMeans ||
                           config.defaultActiveMeans.includes(
                             MeansOfTransportation.WALK
                           )
@@ -581,7 +589,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                         type="checkbox"
                         name="defaultActiveMeansBike"
                         checked={
-                          !config?.defaultActiveMeans ||
+                          !config.defaultActiveMeans ||
                           config.defaultActiveMeans.includes(
                             MeansOfTransportation.BICYCLE
                           )
@@ -604,7 +612,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                         type="checkbox"
                         name="defaultActiveMeansCar"
                         checked={
-                          !config?.defaultActiveMeans ||
+                          !config.defaultActiveMeans ||
                           config.defaultActiveMeans.includes(
                             MeansOfTransportation.CAR
                           )
@@ -628,9 +636,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="showLocation"
-                    checked={!!config?.showLocation}
+                    checked={!!config.showLocation}
                     onChange={() => {
-                      changeConfigParam("showLocation", !config?.showLocation);
+                      changeConfigParam("showLocation", !config.showLocation);
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -646,9 +654,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="showAddress"
-                    checked={!!config?.showAddress}
+                    checked={!!config.showAddress}
                     onChange={() => {
-                      changeConfigParam("showAddress", !config?.showAddress);
+                      changeConfigParam("showAddress", !config.showAddress);
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -664,11 +672,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="showStreetViewLink"
-                    checked={!!config?.showStreetViewLink}
+                    checked={!!config.showStreetViewLink}
                     onChange={() => {
                       changeConfigParam(
                         "showStreetViewLink",
-                        !config?.showStreetViewLink
+                        !config.showStreetViewLink
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -685,9 +693,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="groupItems"
-                    checked={!!config?.groupItems}
+                    checked={!!config.groupItems}
                     onChange={() => {
-                      changeConfigParam("groupItems", !config?.groupItems);
+                      changeConfigParam("groupItems", !config.groupItems);
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -703,11 +711,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="hideIsochrones"
-                    checked={!!config?.hideIsochrones}
+                    checked={!!config.hideIsochrones}
                     onChange={() => {
                       changeConfigParam(
                         "hideIsochrones",
-                        !config?.hideIsochrones
+                        !config.hideIsochrones
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -724,11 +732,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="isDetailsShown"
-                    checked={!!config?.isDetailsShown}
+                    checked={!!config.isDetailsShown}
                     onChange={() => {
                       changeConfigParam(
                         "isDetailsShown",
-                        !config?.isDetailsShown
+                        !config.isDetailsShown
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -745,11 +753,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="isMapMenuCollapsed"
-                    checked={!!config?.isMapMenuCollapsed}
+                    checked={!!config.isMapMenuCollapsed}
                     onChange={() => {
                       changeConfigParam(
                         "isMapMenuCollapsed",
-                        !config?.isMapMenuCollapsed
+                        !config.isMapMenuCollapsed
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -792,11 +800,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                         <input
                           type="checkbox"
                           name="isFilterMenuAvail"
-                          checked={!!config?.isFilterMenuAvail}
+                          checked={!!config.isFilterMenuAvail}
                           onChange={() => {
                             changeConfigParam(
                               "isFilterMenuAvail",
-                              !config?.isFilterMenuAvail
+                              !config.isFilterMenuAvail
                             );
                           }}
                           className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -819,7 +827,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     changeColor(color);
                   }}
                 />
-                {config?.primaryColor && (
+                {config.primaryColor && (
                   <button
                     className="text-sm"
                     onClick={() => {
@@ -843,7 +851,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     changeMapIcon(newMapIcon);
                   }}
                 />
-                {config?.mapIcon && (
+                {config.mapIcon && (
                   <button
                     className="text-sm"
                     onClick={() => {
@@ -864,13 +872,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="isCostStructureHidden"
-                    checked={
-                      !!config?.realEstateSettings?.isCostStructureHidden
-                    }
+                    checked={!!config.realEstateSettings?.isCostStructureHidden}
                     onChange={() => {
                       changeRealEstateSetting(
                         "isCostStructureHidden",
-                        !config?.realEstateSettings?.isCostStructureHidden
+                        !config.realEstateSettings?.isCostStructureHidden
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -887,11 +893,11 @@ const EditorTab: FC<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="isTypeShown"
-                    checked={!!config?.realEstateSettings?.isTypeShown}
+                    checked={!!config.realEstateSettings?.isTypeShown}
                     onChange={() => {
                       changeRealEstateSetting(
                         "isTypeShown",
-                        !config?.realEstateSettings?.isTypeShown
+                        !config.realEstateSettings?.isTypeShown
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -909,12 +915,12 @@ const EditorTab: FC<IEditorTabProps> = ({
                     type="checkbox"
                     name="isCharacteristicsHidden"
                     checked={
-                      !!config?.realEstateSettings?.isCharacteristicsHidden
+                      !!config.realEstateSettings?.isCharacteristicsHidden
                     }
                     onChange={() => {
                       changeRealEstateSetting(
                         "isCharacteristicsHidden",
-                        !config?.realEstateSettings?.isCharacteristicsHidden
+                        !config.realEstateSettings?.isCharacteristicsHidden
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"

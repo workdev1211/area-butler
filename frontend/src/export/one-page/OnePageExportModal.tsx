@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FormikProps } from "formik/dist/types";
 
 import { useTranslation } from "react-i18next";
@@ -59,7 +59,6 @@ export interface ISortableEntityGroup extends EntityGroup {
 }
 
 interface IOnePageExportModalProps {
-  entityGroups: EntityGroup[];
   snapshotId: string;
   hasOpenAiFeature?: boolean;
 }
@@ -71,11 +70,9 @@ export const initialExportFlowState: IExportFlowState = {
 };
 
 const OnePageExportModal: FC<IOnePageExportModalProps> = ({
-  entityGroups,
   snapshotId,
   hasOpenAiFeature = false,
 }) => {
-  const { t } = useTranslation();
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
@@ -87,6 +84,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
   const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
 
+  const { t } = useTranslation();
   const { fetchOpenAiResponse } = useOpenAi();
   const { createDirectLink } = useTools();
 
@@ -101,45 +99,47 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
       }))
     : cachedOnePage.selectableMapClippings || [];
 
-  let activeGroupNumber = 0;
+  const sortableGroups: ISortableEntityGroup[] = useMemo(() => {
+    let activeGroupNumber = 0;
 
-  const sortableGroups = entityGroups
-    .sort((a: EntityGroup, b: EntityGroup) =>
-      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-    )
-    .reduce<ISortableEntityGroup[]>((result, group) => {
-      if ([OsmName.favorite, OsmName.property].includes(group.title)) {
+    return searchContextState.entityGroupsByActMeans
+      .sort((a: EntityGroup, b: EntityGroup) =>
+        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+      )
+      .reduce<ISortableEntityGroup[]>((result, group) => {
+        if ([OsmName.favorite, OsmName.property].includes(group.title)) {
+          return result;
+        }
+
+        const isGroupActive = cachedOnePage.filteredGroups
+          ? cachedOnePage.filteredGroups!.some(
+              ({ title, active }) => title === group.title && active
+            )
+          : activeGroupNumber < ENTITY_GROUP_LIMIT;
+
+        const sortableGroup = {
+          ...group,
+          active: isGroupActive,
+          id: group.title,
+        };
+
+        sortableGroup.items = sortableGroup.items.map((item, i) => {
+          item.distanceInMeters = Math.round(item.distanceInMeters);
+          item.selected = i < GROUP_ITEM_LIMIT;
+
+          return item;
+        });
+
+        sortableGroup.items.sort(
+          (a, b) => a.distanceInMeters - b.distanceInMeters
+        );
+
+        result.push(sortableGroup);
+        activeGroupNumber += 1;
+
         return result;
-      }
-
-      const isGroupActive = cachedOnePage.filteredGroups
-        ? cachedOnePage.filteredGroups!.some(
-            ({ title, active }) => title === group.title && active
-          )
-        : activeGroupNumber < ENTITY_GROUP_LIMIT;
-
-      const sortableGroup = {
-        ...group,
-        active: isGroupActive,
-        id: group.title,
-      };
-
-      sortableGroup.items = sortableGroup.items.map((item, i) => {
-        item.distanceInMeters = Math.round(item.distanceInMeters);
-        item.selected = i < GROUP_ITEM_LIMIT;
-
-        return item;
-      });
-
-      sortableGroup.items.sort(
-        (a, b) => a.distanceInMeters - b.distanceInMeters
-      );
-
-      result.push(sortableGroup);
-      activeGroupNumber += 1;
-
-      return result;
-    }, []);
+      }, []);
+  }, [cachedOnePage.filteredGroups, searchContextState.entityGroupsByActMeans]);
 
   const [isOpen, setIsOpen] = useState<IExportFlowState>(
     cachedOnePage.exportFlowState || initialExportFlowState

@@ -60,6 +60,7 @@ export interface SearchContextState {
   realEstateListing?: ApiRealEstateListing;
   responseGroupedEntities?: EntityGroup[];
   availGroupedEntities?: EntityGroup[];
+  entityGroupsByActMeans: EntityGroup[];
   responseConfig?: ApiSearchResultSnapshotConfig;
   responseActiveMeans: MeansOfTransportation[];
   responseRoutes: EntityRoute[];
@@ -91,7 +92,17 @@ export const initialState: SearchContextState = {
   responseActiveMeans: [],
   responseRoutes: [],
   responseTransitRoutes: [],
+  entityGroupsByActMeans: [],
 };
+
+// TODO should be grouped and optimized
+/*
+  SET_AVAIL_GROUPED_ENTITIES // from the snapshot record
+  SET_RESPONSE_GROUPED_ENTITIES // from the snapshot record filtered by visibility
+  SET_ENT_GROUPS_BY_ACT_MEANS // from the snapshot record filtered by active transportation params (means)
+  TOGGLE_SINGLE_RESPONSE_GROUP
+  TOGGLE_RESPONSE_GROUP
+ */
 
 export enum SearchContextActionTypes {
   SET_PLACES_LOCATION = "SET_PLACES_LOCATION",
@@ -103,6 +114,7 @@ export enum SearchContextActionTypes {
   SET_SEARCH_RESPONSE = "SET_SEARCH_RESPONSE",
   SET_RESPONSE_GROUPED_ENTITIES = "SET_RESPONSE_GROUPED_ENTITIES",
   SET_AVAIL_GROUPED_ENTITIES = "SET_AVAIL_GROUPED_ENTITIES",
+  SET_ENT_GROUPS_BY_ACT_MEANS = "SET_ENT_GROUPS_BY_ACT_MEANS",
   SET_RESPONSE_ACTIVE_MEANS = "SET_RESPONSE_ACTIVE_MEANS",
   SET_RESPONSE_ROUTES = "SET_RESPONSE_ROUTES",
   SET_RESPONSE_TRANSIT_ROUTES = "SET_RESPONSE_TRANSIT_ROUTES",
@@ -150,6 +162,7 @@ type SearchContextActionsPayload = {
     | undefined;
   [SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES]: EntityGroup[];
   [SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES]: EntityGroup[];
+  [SearchContextActionTypes.SET_ENT_GROUPS_BY_ACT_MEANS]: EntityGroup[];
   [SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS]: MeansOfTransportation[];
   [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: OsmName;
   [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: OsmName;
@@ -274,6 +287,12 @@ export const searchContextReducer = (
       return {
         ...state,
         availGroupedEntities: [...action.payload],
+      };
+    }
+    case SearchContextActionTypes.SET_ENT_GROUPS_BY_ACT_MEANS: {
+      return {
+        ...state,
+        entityGroupsByActMeans: [...action.payload],
       };
     }
     case SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP: {

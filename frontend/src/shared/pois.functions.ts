@@ -6,6 +6,7 @@ import {
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
+  ApiSnippetEntityVisibility,
   IApiSnapshotPoiFilter,
   MeansOfTransportation,
   OsmName,
@@ -396,4 +397,53 @@ export const deriveInitialEntityGroups = ({
   );
 
   return groupedEntities;
+};
+
+export const deriveEntGroupsByActMeans = (
+  entityGroups: EntityGroup[] = [],
+  activeMeans: MeansOfTransportation[] = []
+): EntityGroup[] => {
+  const filterByMeans = (
+    entityGroup: EntityGroup,
+    activeMeans: MeansOfTransportation[]
+  ): EntityGroup => {
+    return {
+      ...entityGroup,
+      items: entityGroup.items.filter(
+        (i) =>
+          (activeMeans.includes(MeansOfTransportation.WALK) && i.byFoot) ||
+          (activeMeans.includes(MeansOfTransportation.BICYCLE) && i.byBike) ||
+          (activeMeans.includes(MeansOfTransportation.CAR) && i.byCar)
+      ),
+    };
+  };
+
+  return entityGroups.map((group) => filterByMeans(group, activeMeans));
+};
+
+export const checkIsEntityHidden = (
+  entity: ResultEntity,
+  config: ApiSearchResultSnapshotConfig
+): boolean =>
+  !config.entityVisibility
+    ? false
+    : config.entityVisibility.some((ev) => ev.id === entity.id && ev.excluded);
+
+export const toggleEntityVisibility = (
+  entity: ResultEntity,
+  config: ApiSearchResultSnapshotConfig
+): ApiSnippetEntityVisibility[] => {
+  const entityVisibility = [...(config.entityVisibility || [])];
+  const foundEntity = entityVisibility.find((ev) => ev.id === entity.id);
+
+  if (foundEntity) {
+    foundEntity.excluded = !foundEntity.excluded;
+  } else {
+    entityVisibility.push({
+      id: entity.id,
+      excluded: true,
+    });
+  }
+
+  return entityVisibility;
 };

@@ -34,7 +34,6 @@ interface IMapMenuContainerProps {
   isNewSnapshot: boolean;
   mapDisplayMode: MapDisplayModesEnum;
   mapRef: ICurrentMapRef | null;
-  resultGroupEntities: EntityGroup[];
   toggleRoutesToEntity: (
     origin: ApiCoordinates,
     item: ResultEntity,
@@ -54,7 +53,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   isNewSnapshot,
   mapDisplayMode,
   mapRef,
-  resultGroupEntities,
   saveConfig,
   toggleRoutesToEntity,
   toggleTransitRoutesToEntity,
@@ -63,7 +61,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   const {
     searchContextDispatch,
     searchContextState: {
-      availGroupedEntities,
       censusData,
       federalElectionData,
       location,
@@ -101,7 +98,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   useEffect(() => {
     if (
       mapDisplayMode !== MapDisplayModesEnum.EDITOR ||
-      !availGroupedEntities?.length ||
       !responseConfig ||
       !snapshotId ||
       !mapRef
@@ -142,8 +138,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
       isNewSnapshot,
       snapshotId,
       availableMeans: deriveAvailableMeansFromResponse(searchResponse),
-      config: responseConfig,
-      groupedEntries: availGroupedEntities,
       onConfigChange: handleConfigChange,
     });
 
@@ -154,7 +148,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    availGroupedEntities,
     extraMapboxStyles,
     isNewSnapshot,
     mapCenter,
@@ -225,7 +218,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
     isMapMenuOpen,
     searchAddress,
     config: responseConfig,
-    groupedEntries: resultGroupEntities ?? [],
     resetPosition: () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_MAP_CENTER,

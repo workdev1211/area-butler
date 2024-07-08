@@ -12,7 +12,6 @@ import { IntlKeys } from "../../i18n/keys";
 
 export type TMyVivendaMapMenuProps = Pick<
   IMapMenuProps,
-  | "groupedEntries"
   | "isMapMenuOpen"
   | "resetPosition"
   | "searchAddress"
@@ -27,7 +26,6 @@ export type TMyVivendaMapMenuProps = Pick<
 
 const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
   config,
-  groupedEntries,
   isMapMenuOpen,
   resetPosition,
   searchAddress,
@@ -84,7 +82,6 @@ const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
       >
         <Localities
           backgroundColor={backgroundColor}
-          groupedEntries={groupedEntries}
           mapDisplayMode={MapDisplayModesEnum.EMBEDDED}
           routes={routes}
           transitRoutes={transitRoutes}

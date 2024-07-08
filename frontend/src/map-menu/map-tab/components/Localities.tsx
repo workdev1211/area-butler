@@ -3,7 +3,7 @@ import { FunctionComponent, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
-import { EntityGroup, ResultEntity } from "../../../shared/search-result.types";
+import { ResultEntity } from "../../../shared/search-result.types";
 import {
   ApiOsmEntityCategory,
   IApiUserPoiIcon,
@@ -29,7 +29,6 @@ import { SearchContext } from "../../../context/SearchContext";
 import { UserContext } from "../../../context/UserContext";
 
 interface ILocalitiesProps {
-  groupedEntries: EntityGroup[];
   toggleAllLocalities: () => void;
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   routes: EntityRoute[];
@@ -41,7 +40,6 @@ interface ILocalitiesProps {
 }
 
 const Localities: FunctionComponent<ILocalitiesProps> = ({
-  groupedEntries,
   toggleAllLocalities,
   toggleRoute,
   routes,
@@ -56,7 +54,10 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
     userState: { user },
   } = useContext(UserContext);
   const {
-    searchContextState: { responseConfig: config },
+    searchContextState: {
+      entityGroupsByActMeans: groupedEntries,
+      responseConfig: config,
+    },
   } = useContext(SearchContext);
 
   const resultingPoiIcons = userMenuPoiIcons || user?.poiIcons?.menuPoiIcons;

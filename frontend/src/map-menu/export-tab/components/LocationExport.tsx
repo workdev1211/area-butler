@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useMemo, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -13,10 +13,7 @@ import { invertFilter } from "../../../shared/shared.constants";
 import pdfIcon from "../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import ExportModal from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
-import {
-  deriveEntityGroupsByActiveMeans,
-  setBackgroundColor,
-} from "../../../shared/shared.functions";
+import { setBackgroundColor } from "../../../shared/shared.functions";
 import { ExportTypeEnum } from "../../../../../shared/types/export";
 import { statsExportUnlockText } from "../../../../../shared/constants/on-office/on-office-products";
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
@@ -26,6 +23,7 @@ import {
 } from "../../../../../shared/types/integration";
 import { useTools } from "../../../hooks/tools";
 import { FeatureTypeEnum } from "../../../../../shared/types/types";
+import { deriveEntGroupsByActMeans } from "../../../shared/pois.functions";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -159,15 +157,17 @@ const LocationExport: FC<ILocationExportProps> = ({
     searchContextState.printingOnePageActive,
   ]);
 
-  const entityGroups = deriveEntityGroupsByActiveMeans(
-    searchContextState.responseGroupedEntities,
-    searchContextState.responseActiveMeans
+  const resultingGroups = useMemo(
+    () =>
+      deriveEntGroupsByActMeans(
+        searchContextState.availGroupedEntities,
+        searchContextState.responseActiveMeans
+      ).flatMap((g) => g.items),
+    [
+      searchContextState.availGroupedEntities,
+      searchContextState.responseActiveMeans,
+    ]
   );
-
-  const resultingGroups = deriveEntityGroupsByActiveMeans(
-    searchContextState.availGroupedEntities,
-    searchContextState.responseActiveMeans
-  ).flatMap((g) => g.items);
 
   return (
     <div
@@ -258,7 +258,6 @@ const LocationExport: FC<ILocationExportProps> = ({
             <ExportModal
               activeMeans={searchContextState.responseActiveMeans}
               entities={resultingGroups}
-              groupedEntries={entityGroups}
               censusData={searchContextState.censusData!}
               exportType={exportType}
             />
@@ -266,7 +265,6 @@ const LocationExport: FC<ILocationExportProps> = ({
 
         {isExportAvailable && exportType === ExportTypeEnum.ONE_PAGE && (
           <OnePageExportModal
-            entityGroups={entityGroups}
             snapshotId={snapshotId}
             hasOpenAiFeature={hasOpenAiFeature}
           />

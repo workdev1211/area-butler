@@ -12,8 +12,6 @@ import { LatLng } from "react-google-places-autocomplete/build/GooglePlacesAutoc
 import {
   ApiCoordinates,
   ApiSearchResponse,
-  ApiSearchResultSnapshotConfig,
-  ApiSnippetEntityVisibility,
   ApiUser,
   IApiUserPoiIcon,
   MeansOfTransportation,
@@ -48,7 +46,6 @@ import windTurbineIcon from "../assets/icons/pois/wind_turbine.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import { meansOfTransportations } from "../../../shared/constants/constants";
-import { EntityGroup, ResultEntity } from "./search-result.types";
 import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
@@ -194,17 +191,6 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
   );
 };
 
-export const entityIncludesMean = (
-  entity: ResultEntity,
-  means: MeansOfTransportation[]
-) => {
-  return (
-    (entity.byCar && means.includes(MeansOfTransportation.CAR)) ||
-    (entity.byBike && means.includes(MeansOfTransportation.BICYCLE)) ||
-    (entity.byFoot && means.includes(MeansOfTransportation.WALK))
-  );
-};
-
 export const distanceToHumanReadable = (distanceInMeters: number): string => {
   if (distanceInMeters < 1000) {
     return `${Math.floor(distanceInMeters)}m`;
@@ -233,7 +219,7 @@ export const timeToHumanReadable = (timeInMinutes: number): string => {
   }
 };
 
-const defaultToastTime = 5 * 1000 // 5 sec
+const defaultToastTime = 5 * 1000; // 5 sec
 
 export const toastSuccess = (message: string) => {
   toast.success(message, {
@@ -485,33 +471,6 @@ export const deriveAvailableMeansFromResponse = (
   );
 };
 
-export const checkIsEntityHidden = (
-  entity: ResultEntity,
-  config: ApiSearchResultSnapshotConfig
-): boolean =>
-  !config.entityVisibility
-    ? false
-    : config.entityVisibility.some((ev) => ev.id === entity.id && ev.excluded);
-
-export const toggleEntityVisibility = (
-  entity: ResultEntity,
-  config: ApiSearchResultSnapshotConfig
-): ApiSnippetEntityVisibility[] => {
-  const entityVisibility = [...(config.entityVisibility || [])];
-  const foundEntity = entityVisibility.find((ev) => ev.id === entity.id);
-
-  if (foundEntity) {
-    foundEntity.excluded = !foundEntity.excluded;
-  } else {
-    entityVisibility.push({
-      id: entity.id,
-      excluded: true,
-    });
-  }
-
-  return entityVisibility;
-};
-
 // IMPORTANT - please, use the appropriate methods from the 'useTools' hook
 // export const createDirectLink = (token: string): string =>
 //   `${window.location.origin}/embed?token=${token}`;
@@ -527,28 +486,6 @@ export const toggleEntityVisibility = (
 // ></iframe>
 //   `;
 // };
-
-export const deriveEntityGroupsByActiveMeans = (
-  entityGroups: EntityGroup[] = [],
-  activeMeans: MeansOfTransportation[] = []
-): EntityGroup[] => {
-  const filterByMeans = (
-    entityGroup: EntityGroup,
-    activeMeans: MeansOfTransportation[]
-  ): EntityGroup => {
-    return {
-      ...entityGroup,
-      items: entityGroup.items.filter(
-        (i) =>
-          (activeMeans.includes(MeansOfTransportation.WALK) && i.byFoot) ||
-          (activeMeans.includes(MeansOfTransportation.BICYCLE) && i.byBike) ||
-          (activeMeans.includes(MeansOfTransportation.CAR) && i.byCar)
-      ),
-    };
-  };
-
-  return entityGroups.map((group) => filterByMeans(group, activeMeans));
-};
 
 export const sanitizeFilename = (filename: string): string =>
   filename.replace(/[/\\?%*:|"<>]/g, "-");

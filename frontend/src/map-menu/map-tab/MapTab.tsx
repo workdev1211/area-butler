@@ -1,6 +1,6 @@
 import { FunctionComponent, ReactNode, useContext } from "react";
 
-import { EntityGroup, ResultEntity } from "../../shared/search-result.types";
+import { ResultEntity } from "../../shared/search-result.types";
 import {
   ApiGeojsonFeature,
   FeatureTypeEnum,
@@ -25,7 +25,6 @@ import { TLocationIndexData } from "../../../../shared/types/location-index";
 import { useTools } from "../../hooks/tools";
 
 interface IMapTabProps {
-  groupedEntries: EntityGroup[];
   toggleAllLocalities: () => void;
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   routes: EntityRoute[];
@@ -43,7 +42,6 @@ interface IMapTabProps {
 }
 
 const MapTab: FunctionComponent<IMapTabProps> = ({
-  groupedEntries,
   toggleAllLocalities,
   toggleRoute,
   routes,
@@ -73,7 +71,6 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   return (
     <div className="map-tab z-9000">
       <Localities
-        groupedEntries={groupedEntries}
         toggleAllLocalities={toggleAllLocalities}
         toggleRoute={toggleRoute}
         routes={routes}

@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -9,14 +9,15 @@ import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
-import { EntityGroup } from "../shared/search-result.types";
 import { OsmName } from "../../../shared/types/types";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../context/SearchContext";
 
 interface IFilterMenuProps {
   isFilterMenuOpen: boolean;
   isEditorMode: boolean;
-  groupEntities: EntityGroup[];
-  setGroupEntities: (groupEntities: EntityGroup[]) => void;
 }
 
 const locIndexProps = Object.values(LocIndexPropsEnum);
@@ -29,17 +30,20 @@ const initLocIndexValues = locIndexProps.reduce<TApiLocIndexProps>(
   {} as TApiLocIndexProps
 );
 
-const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
+const FilterMenu: FC<IFilterMenuProps> = ({
   isFilterMenuOpen,
   isEditorMode,
-  groupEntities,
-  setGroupEntities,
 }) => {
+  const {
+    searchContextDispatch,
+    searchContextState: { entityGroupsByActMeans },
+  } = useContext(SearchContext);
+
   const { t } = useTranslation();
   const [locIndexValues, setLocIndexValues] = useState(initLocIndexValues);
 
   useEffect(() => {
-    const realEstateGroup = groupEntities.find(
+    const realEstateGroup = entityGroupsByActMeans.find(
       ({ title }) => title === OsmName.property
     );
 
@@ -66,7 +70,10 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
       return item;
     });
 
-    setGroupEntities(JSON.parse(JSON.stringify(groupEntities)));
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_ENT_GROUPS_BY_ACT_MEANS,
+      payload: entityGroupsByActMeans,
+    });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locIndexValues]);
