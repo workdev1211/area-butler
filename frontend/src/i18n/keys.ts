@@ -59,7 +59,7 @@ export const IntlKeys = {
     png: "common.png",
     transportationUnits: {
       KILOMETERS: "common.transportationUnits.KILOMETERS",
-      MINUTES: "common.transportationUnits.KILOMETERS",
+      MINUTES: "common.transportationUnits.MINUTES",
     },
     description: "common.description",
     addressExpired: "common.addressExpired",
@@ -158,6 +158,7 @@ export const IntlKeys = {
     selectRatioTooltip: "snapshotEditor.selectRatioTooltip",
     userDefined: "snapshotEditor.userDefined",
     showQRCode: "snapshotEditor.showQRCode",
+    showLegend: "snapshotEditor.showLegend",
     crop: "snapshotEditor.crop",
     cropSuccess: "snapshotEditor.cropSuccess",
     portrait: "snapshotEditor.portrait",

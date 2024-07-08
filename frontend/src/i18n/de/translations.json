@@ -152,6 +152,7 @@
     "selectRatioTooltip": "Wähle den Kartenausschnitt und das Seitenverhältnis (1:1, 4:3, 16:9 oder ein eigenes Format). Tipp für dein Lage-Exposé: Erstelle zwei Bilder: ein großes in 16:9 der Mikrolage und ein kleineres in 1:1 der Makrolage, das in die untere linke Ecke des großen Bildes kommt. Mehr dazu in unseren FAQs unter areabutler.de.",
     "userDefined": "Benutzerdefinierten",
     "showQRCode": "QR-Code anzeigen",
+    "showLegend": "Legende anzeigen",
     "crop": "Zuschneiden",
     "cropSuccess": "Kartenausschnitt erfolgreich gespeichert.",
     "portrait": "portrait",

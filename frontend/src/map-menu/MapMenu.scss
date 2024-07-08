@@ -143,6 +143,46 @@
             }
           }
         }
+
+        .checkbox {
+          border-color: white;
+
+          &:checked {
+            background-image: linear-gradient(-45deg, transparent 65%, #ffffff 0),
+            linear-gradient(45deg, transparent 75%, #ffffff 0),
+            linear-gradient(-45deg, #ffffff 40%, transparent 0),
+            linear-gradient(
+                            44deg,
+                            #ffffff 30%,
+                            var(--primary) 0,
+                            var(--primary) 40%,
+                            transparent 0
+            ),
+            linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+          }
+        }
+      }
+
+      &.collapse-closed > .collapse-title .checkbox {
+        border-color: var(--custom-primary) !important;
+
+        &:checked {
+          background-image: linear-gradient(
+                          -45deg,
+                          transparent 65%,
+                          var(--custom-primary) 0
+          ),
+          linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
+          linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
+          linear-gradient(
+                          44deg,
+                          var(--custom-primary) 30%,
+                          #ffffff 0,
+                          #ffffff 40%,
+                          transparent 0
+          ),
+          linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
+        }
       }
 
       & > .collapse-content {

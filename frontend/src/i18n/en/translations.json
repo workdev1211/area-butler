@@ -262,6 +262,7 @@
     "selectRatioTooltip": "Select the map section and the aspect ratio (1:1, 4:3, 16:9 or your own format). Tip for your location exposé: Create two images: a large one in 16:9 of the micro location and a smaller one in 1:1 of the macro location, which is placed in the bottom left corner of the large image. Find out more in our FAQs at areabutler.de.",
     "userDefined": "User-defined",
     "showQRCode": "Show QR code",
+    "showLegend": "Show legend",
     "crop": "Crop",
     "portrait": "portrait",
     "helpAndFeedback": "Help & Feedback",
@@ -341,7 +342,7 @@
     "png": "PNG",
     "transportationUnits": {
       "KILOMETERS": "Kilometers",
-      "MINUTES": "minutes"
+      "MINUTES": "Minutes"
     },
     "description": "Description",
     "cancel": "Cancel",
