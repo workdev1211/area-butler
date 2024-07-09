@@ -43,7 +43,7 @@ interface ICropParams {
 // calculated manually
 const defaultImgSize = 2000;
 const defaultImgPixelRatio = 2.27;
-const minHeight = 430;
+const minHeight = 440;
 
 interface IMeansBlockProps {
   means: MeansOfTransportation[];

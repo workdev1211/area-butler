@@ -1392,7 +1392,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       }
 
       const kfMapMenuContainer = document.querySelector(
-        ".map-menu-KF.map-menu-open"
+        ".map-menu-KF"
       ) as HTMLElement;
       if (kfMapMenuContainer) {
         kfMapMenuContainer.style.display = "none";

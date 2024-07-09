@@ -84,6 +84,14 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
   const particlePollutionData = props.particlePollutionData;
+  const translatedLegend = props.legend.map(({ title, ...rest }) => ({
+    ...rest,
+    title: t(
+      (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+        title
+      ]
+    ),
+  }));
 
   let page = 0;
   const nextPageNumber = (): string => {
@@ -234,7 +242,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           leftHeaderElement={qrCodeElement}
         >
           <div className="ml-10 mt-3">
-            <Legend legend={props.legend} />
+            <Legend legend={translatedLegend} />
           </div>
         </PdfPage>
       )}

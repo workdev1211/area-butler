@@ -83,6 +83,14 @@ export const Expose = forwardRef(
     const federalElectionData = props.federalElectionData;
     const particlePollutionData = props.particlePollutionData;
     const activeMeans = props.activeMeans;
+    const translatedLegend = props.legend.map(({ title, ...rest }) => ({
+      ...rest,
+      title: t(
+        (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+          title
+        ]
+      ),
+    }));
 
     let page = 0;
     const nextPageNumber = (): string => {
@@ -173,7 +181,7 @@ export const Expose = forwardRef(
             }
           >
             <div className="m-10">
-              <Legend legend={props.legend} />
+              <Legend legend={translatedLegend} />
             </div>
           </PdfPage>
         )}
