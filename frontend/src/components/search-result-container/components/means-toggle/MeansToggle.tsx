@@ -75,8 +75,8 @@ const MeansToggle: FunctionComponent<MapNavBarProps> = ({
               {mean === MeansOfTransportation.CAR && (
                 <img src={carIcon} alt="iconcar" />
               )}
-              ({param?.amount}{" "}
-              {param?.unit === UnitsOfTransportation.KILOMETERS ? "km" : "min"})
+              {param?.amount}{" "}
+              {param?.unit === UnitsOfTransportation.KILOMETERS ? "km" : "min"}
             </button>
           );
         })}

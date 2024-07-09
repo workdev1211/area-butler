@@ -6,29 +6,103 @@ import {
   PercentCrop,
   ReactCrop,
 } from "react-image-crop";
-import { renderToStaticMarkup } from "react-dom/server";
 import { toPng } from "html-to-image";
 import { useTranslation } from "react-i18next";
 
 import "react-image-crop/src/ReactCrop.scss";
 import "./MapClipCropModal.scss";
 
-import { toastDefaultError } from "../../../../shared/shared.functions";
+import {
+  deriveIconForOsmName,
+  getPreferredLocationsIcon,
+  getRealEstateListingsIcon,
+  preferredLocationsTitle,
+  toastDefaultError,
+} from "../../../../shared/shared.functions";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import { MapClipQrCode } from "./MapClipQrCode";
 import { ConfigContext } from "../../../../context/ConfigContext";
 import { IntlKeys } from "../../../../i18n/keys";
+import { EntityGroup } from "../../../../shared/search-result.types";
+import { realEstateListingsTitle } from "../../../../../../shared/constants/real-estate";
+import {
+  IApiUserPoiIcon,
+  MeansOfTransportation,
+  TransportationParam,
+  UnitsOfTransportation,
+} from "../../../../../../shared/types/types";
+import walkIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bicycleIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 
 interface ICropParams {
   name: string;
   aspect: number;
 }
 
+// calculated manually
+const defaultImgSize = 2000;
+const defaultImgPixelRatio = 2.27;
+const minHeight = 430;
+
+interface IMeansBlockProps {
+  means: MeansOfTransportation[];
+  transportationParams: TransportationParam[];
+}
+
+const MeansBlock = ({ means, transportationParams }: IMeansBlockProps) => {
+  const deriveBackgroundClass = (mean: MeansOfTransportation) => {
+    switch (mean) {
+      case MeansOfTransportation.WALK:
+        return "bg-primary";
+      case MeansOfTransportation.BICYCLE:
+        return "bg-accent";
+      case MeansOfTransportation.CAR:
+        return "bg-base-content";
+    }
+  };
+
+  return (
+    <div className="map-nav-bar" data-tour="map-navbar">
+      <div className="flex flex-col sm:flex-row gap-4 items-center">
+        {means.map((mean) => {
+          const param = transportationParams.find((tp) => tp.type === mean);
+
+          return (
+            <button
+              className="btn"
+              key={`mean-${mean}`}
+              data-testid={`means-toggle-${mean}`}
+            >
+              <span className={deriveBackgroundClass(mean)} />
+              {mean === MeansOfTransportation.WALK && (
+                <img src={walkIcon} alt="iconwalk" />
+              )}
+              {mean === MeansOfTransportation.BICYCLE && (
+                <img src={bicycleIcon} alt="iconbycicle" />
+              )}
+              {mean === MeansOfTransportation.CAR && (
+                <img src={carIcon} alt="iconcar" />
+              )}
+              {param?.amount}{" "}
+              {param?.unit === UnitsOfTransportation.KILOMETERS ? "km" : "min"}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 interface IMapClipCropModalProps {
   mapClipping: string;
   closeModal: (croppedMapClipping?: string) => void;
+  groupedEntries: EntityGroup[];
   color?: string;
   directLink?: string;
+  userMenuPoiIcons?: IApiUserPoiIcon[];
+  transportationParams?: TransportationParam[];
+  activeMeans?: MeansOfTransportation[];
 }
 
 const getAspectCrop = (
@@ -60,11 +134,16 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> =>
 
 const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   mapClipping,
+  groupedEntries,
   closeModal,
   color,
   directLink,
+  userMenuPoiIcons,
+  activeMeans,
+  transportationParams,
 }) => {
   const [imgRef, setImgRef] = useState<HTMLImageElement | null>(null);
+  const [overlayRef, setOverlayRef] = useState<HTMLDivElement | null>(null);
 
   const { integrationType } = useContext(ConfigContext);
   const { t } = useTranslation();
@@ -100,6 +179,35 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     fourToThreeCropParams
   );
   const [isShownQrCode, setIsShownQrCode] = useState(true);
+  const [isShownLegend, setIsShownLegend] = useState(true);
+  const [isShownIsochrones, setIsShownIsochrones] = useState(true);
+
+  const ListItem: FC<EntityGroup> = (group) => {
+    const { t } = useTranslation();
+
+    const isRealEstateListing = group.items[0].name === realEstateListingsTitle;
+
+    const isPreferredLocation = group.items[0].name === preferredLocationsTitle;
+
+    const groupIconInfo = isRealEstateListing
+      ? getRealEstateListingsIcon(userMenuPoiIcons)
+      : isPreferredLocation
+      ? getPreferredLocationsIcon(userMenuPoiIcons)
+      : deriveIconForOsmName(group.items[0].osmName, userMenuPoiIcons);
+
+    return (
+      <li className={"active"} key={group.title}>
+        <div className="img-container">
+          <img src={groupIconInfo.icon} alt="group-icon" />
+        </div>
+        {t(
+          (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+            group.title
+          ]
+        )}
+      </li>
+    );
+  };
 
   const handleCropComplete = async (): Promise<void> => {
     const image = imgRef;
@@ -144,14 +252,10 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       pixelCropState.height
     );
 
-    if (isShownQrCode) {
-      const resQrCodeImage = await generateQrCodeImage();
+    if (overlayRef) {
+      const resLegendImage = await generateOverlayImage();
 
-      ctx.drawImage(
-        resQrCodeImage,
-        15,
-        pixelCropState.height - resQrCodeImage.height
-      );
+      ctx.drawImage(resLegendImage, 0, 0);
     }
 
     const blob = await offscreen.convertToBlob({
@@ -176,32 +280,30 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     setQrCodeFunc();
   }, [setQrCodeFunc]);
 
-  const generateQrCodeImage =
-    useCallback(async (): Promise<HTMLImageElement> => {
-      const rawQrCodeImage = await getQrCodeBase64(directLink!, color);
-      const renderedQrCode = renderToStaticMarkup(
-        <MapClipQrCode qrCodeImage={rawQrCodeImage} color={color} />
-      );
-      const qrCodeElement = document.createElement("div");
-      qrCodeElement.innerHTML = renderedQrCode;
+  const generateOverlayImage = async () => {
+    const renderedImage = await toPng(overlayRef!, {
+      width: defaultImgSize,
+      height: defaultImgSize,
+      pixelRatio: defaultImgPixelRatio,
+    });
 
-      const renderedQrCodeImage = await toPng(qrCodeElement, {
-        pixelRatio: 1,
-        width: 300,
-        height: 300,
-      });
+    const resImage = new Image();
+    resImage.src = renderedImage;
+    await resImage.decode();
 
-      qrCodeElement.remove();
-
-      const resQrCodeImage = new Image();
-      resQrCodeImage.src = renderedQrCodeImage;
-      await resQrCodeImage.decode();
-
-      return resQrCodeImage;
-    }, [color, directLink]);
+    return resImage;
+  };
 
   const toggleDrawQrCode = async (): Promise<void> => {
     setIsShownQrCode(!isShownQrCode);
+  };
+
+  const toggleDrawLegend = async (): Promise<void> => {
+    setIsShownLegend(!isShownLegend);
+  };
+
+  const toggleDrawIsochrones = async (): Promise<void> => {
+    setIsShownIsochrones(!isShownIsochrones);
   };
 
   // handles the initial image load and the change of the aspect ratio
@@ -231,27 +333,47 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       <div className="modal-box">
         <ReactCrop
           className="react-image-crop"
+          minHeight={minHeight}
           crop={cropState}
           aspect={cropParams.aspect}
           onChange={(crop, percentCrop) => {
             setCropState(percentCrop);
           }}
-          renderSelectionAddon={() =>
-            qrCode && isShownQrCode ? (
-              <div
-                style={{
-                  bottom: -59,
-                  position: "absolute",
-                  transform: "scale(0.5)",
-                  left: -55,
-                }}
-              >
-                <MapClipQrCode qrCodeImage={qrCode} color={color} />
-              </div>
-            ) : (
-              <></>
-            )
-          }
+          renderSelectionAddon={() => (
+            <div ref={(ref) => setOverlayRef(ref)}>
+              {qrCode && isShownQrCode && (
+                <div
+                  style={{
+                    bottom: -59,
+                    position: "absolute",
+                    transform: "scale(0.5)",
+                    left: -55,
+                  }}
+                >
+                  <MapClipQrCode qrCodeImage={qrCode} color={color} />
+                </div>
+              )}
+              {isShownLegend && (
+                <div className="mapMenu">
+                  <ul className="menu-desktop">
+                    {groupedEntries.map((ge) => (
+                      <ListItem key={ge.title} {...ge} />
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {isShownIsochrones &&
+                activeMeans?.length &&
+                transportationParams && (
+                  <div className="means-block">
+                    <MeansBlock
+                      means={activeMeans}
+                      transportationParams={transportationParams}
+                    />
+                  </div>
+                )}
+            </div>
+          )}
         >
           <img
             ref={(ref) => setImgRef(ref)}
@@ -315,6 +437,32 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                 />
                 <span className="label-text">
                   {t(IntlKeys.snapshotEditor.showQRCode)}
+                </span>
+              </label>
+            )}
+            <label className="cursor-pointer label">
+              <input
+                type="checkbox"
+                name="showLegend"
+                checked={isShownLegend}
+                onChange={toggleDrawLegend}
+                className="checkbox checkbox-xs checkbox-primary mr-2"
+              />
+              <span className="label-text">
+                {t(IntlKeys.snapshotEditor.showLegend)}
+              </span>
+            </label>
+            {activeMeans?.length && transportationParams && (
+              <label className="cursor-pointer label">
+                <input
+                  type="checkbox"
+                  name="showIsochrones"
+                  checked={isShownIsochrones}
+                  onChange={toggleDrawIsochrones}
+                  className="checkbox checkbox-xs checkbox-primary mr-2"
+                />
+                <span className="label-text">
+                  {t(IntlKeys.snapshotEditor.showIsochrones)}
                 </span>
               </label>
             )}

@@ -1395,22 +1395,14 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         ".map-menu-KF.map-menu-open"
       ) as HTMLElement;
       if (kfMapMenuContainer) {
-        kfMapMenuContainer.style.transition = "none";
-        kfMapMenuContainer.className = kfMapMenuContainer.className
-          .replace("map-menu-open", "")
-          .trim();
+        kfMapMenuContainer.style.display = "none";
       }
 
       const meansContainer = document.querySelector(
         ".map-nav-bar-container"
       ) as HTMLElement;
-      if (meansContainer && hideIsochrones) {
+      if (meansContainer) {
         meansContainer.style.display = "none";
-      }
-      if (meansContainer && !hideIsochrones) {
-        meansContainer.className = meansContainer.className
-          .replace("map-menu-open", "")
-          .trim();
       }
 
       const poiSearchContainer = document.querySelector(
@@ -1449,15 +1441,11 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       }
 
       if (kfMapMenuContainer) {
-        kfMapMenuContainer.style.transition = "right 0.2s";
-        kfMapMenuContainer.className = `${kfMapMenuContainer.className} map-menu-open`;
+        kfMapMenuContainer.style.display = "";
       }
 
-      if (meansContainer && hideIsochrones) {
+      if (meansContainer) {
         meansContainer.style.display = "";
-      }
-      if (meansContainer && !hideIsochrones) {
-        meansContainer.className = `${meansContainer.className} map-menu-open`;
       }
 
       if (poiSearchContainer) {

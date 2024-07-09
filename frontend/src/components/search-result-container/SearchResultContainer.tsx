@@ -495,10 +495,16 @@ const SearchResultContainer = forwardRef<
         {/*)}*/}
         {mapClipping && (
           <MapClipCropModal
+            groupedEntries={(resultGroupEntities ?? [])
+              .filter((ge) => ge.items.length && ge.title !== OsmName.property && ge.active)
+              .sort((a, b) => (a.title > b.title ? 1 : -1))}
             mapClipping={mapClipping}
             closeModal={handleMapClipCrop}
             color={primaryColor?.slice(1)}
             directLink={directLink}
+            userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
+            transportationParams={transportationParams}
+            activeMeans={hideIsochrones ? [] : responseActiveMeans}
           />
         )}
 

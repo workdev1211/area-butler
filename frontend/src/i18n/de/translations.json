@@ -153,6 +153,7 @@
     "userDefined": "Benutzerdefinierten",
     "showQRCode": "QR-Code anzeigen",
     "showLegend": "Legende anzeigen",
+    "showIsochrones": "Isochronen anzeigen",
     "crop": "Zuschneiden",
     "cropSuccess": "Kartenausschnitt erfolgreich gespeichert.",
     "portrait": "portrait",
