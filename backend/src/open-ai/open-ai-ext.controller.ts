@@ -182,7 +182,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,
-        ApiUsageStatsTypesEnum.POI_DATA,
+        ApiUsageStatsTypesEnum.OPEN_AI,
         requestStatus,
       );
     }
