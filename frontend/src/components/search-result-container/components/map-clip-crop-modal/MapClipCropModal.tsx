@@ -40,9 +40,6 @@ interface ICropParams {
   aspect: number;
 }
 
-// calculated manually
-const defaultImgSize = 2000;
-const defaultImgPixelRatio = 2.27;
 const minHeight = 440;
 
 interface IMeansBlockProps {
@@ -253,7 +250,10 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     );
 
     if (overlayRef) {
-      const resLegendImage = await generateOverlayImage();
+      const resLegendImage = await generateOverlayImage(
+        pixelCropState.width,
+        pixelCropState.height
+      );
 
       ctx.drawImage(resLegendImage, 0, 0);
     }
@@ -280,11 +280,14 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     setQrCodeFunc();
   }, [setQrCodeFunc]);
 
-  const generateOverlayImage = async () => {
+  const generateOverlayImage = async (
+    cropWidth: number,
+    cropHeight: number
+  ) => {
     const renderedImage = await toPng(overlayRef!, {
-      width: defaultImgSize,
-      height: defaultImgSize,
-      pixelRatio: defaultImgPixelRatio,
+      width: cropWidth,
+      height: cropHeight,
+      pixelRatio: cropWidth / overlayRef!.clientWidth,
     });
 
     const resImage = new Image();
@@ -344,10 +347,10 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
               {qrCode && isShownQrCode && (
                 <div
                   style={{
-                    bottom: -59,
+                    bottom: -54,
                     position: "absolute",
                     transform: "scale(0.5)",
-                    left: -55,
+                    left: -50,
                   }}
                 >
                   <MapClipQrCode qrCodeImage={qrCode} color={color} />
