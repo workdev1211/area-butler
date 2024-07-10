@@ -159,6 +159,7 @@ export const IntlKeys = {
     userDefined: "snapshotEditor.userDefined",
     showQRCode: "snapshotEditor.showQRCode",
     showLegend: "snapshotEditor.showLegend",
+    showLegendTooltip: "snapshotEditor.showLegendTooltip",
     showIsochrones: "snapshotEditor.showIsochrones",
     crop: "snapshotEditor.crop",
     cropSuccess: "snapshotEditor.cropSuccess",

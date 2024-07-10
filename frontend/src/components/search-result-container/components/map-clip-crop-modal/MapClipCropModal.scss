@@ -5,6 +5,10 @@
 
     .react-image-crop {
       max-height: calc(98vh - var(--nav-height) * 2.5);
+
+      .ReactCrop__selection-addon {
+        height: 100%;
+      }
     }
 
     .modal-action {
@@ -86,6 +90,21 @@
       -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGZpbGw9IiMwMDAiIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwMCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+);
       mask-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGZpbGw9IiMwMDAiIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjEwMCIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+);
     }
+  }
+}
+
+.qrCodeContainer {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+
+  img {
+    width: 120px;
+  }
+
+  div {
+    font-size: 10px;
+    line-height: normal;
   }
 }
 

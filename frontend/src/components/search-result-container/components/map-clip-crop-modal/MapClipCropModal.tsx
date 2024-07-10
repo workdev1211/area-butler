@@ -343,16 +343,12 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
             setCropState(percentCrop);
           }}
           renderSelectionAddon={() => (
-            <div ref={(ref) => setOverlayRef(ref)}>
+            <div
+              ref={(ref) => setOverlayRef(ref)}
+              style={{ position: "relative", height: "100%" }}
+            >
               {qrCode && isShownQrCode && (
-                <div
-                  style={{
-                    bottom: -54,
-                    position: "absolute",
-                    transform: "scale(0.5)",
-                    left: -50,
-                  }}
-                >
+                <div className="qrCodeContainer">
                   <MapClipQrCode qrCodeImage={qrCode} color={color} />
                 </div>
               )}
@@ -451,8 +447,28 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                 onChange={toggleDrawLegend}
                 className="checkbox checkbox-xs checkbox-primary mr-2"
               />
-              <span className="label-text">
+              <span className="label-text" style={{ position: "relative" }}>
                 {t(IntlKeys.snapshotEditor.showLegend)}
+                <div
+                  className="indicator-item badge w-4 h-4 text-white"
+                  style={{
+                    fontSize: 9,
+                    padding: 0,
+                    position: "absolute",
+                    bottom: "100%",
+                    left: "100%",
+                    border: "1px solid var(--primary)",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--primary)",
+                  }}
+                >
+                  <div
+                    className="tooltip tooltip-right tooltip-accent text-justify font-medium"
+                    data-tip={t(IntlKeys.snapshotEditor.showLegendTooltip)}
+                  >
+                    i
+                  </div>
+                </div>
               </span>
             </label>
             {activeMeans?.length && transportationParams && (
