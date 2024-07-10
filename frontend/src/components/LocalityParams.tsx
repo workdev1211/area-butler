@@ -1,23 +1,20 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
 } from "../../../shared/types/types";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
-export interface LocalityParamsProps {
+interface ILocalityParamsProps {
   values: ApiOsmEntity[];
   onChange: (newValues: ApiOsmEntity[]) => void;
 }
 
-const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
-  values,
-  onChange,
-}) => {
+const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
   const { t } = useTranslation();
   const handleEntityChange = (entity: ApiOsmEntity) => {
     const updatedEntities: ApiOsmEntity[] = values.some(
@@ -36,9 +33,7 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
       ? values.filter((value) => value.category !== category)
       : [
           ...values,
-          ...getCombinedOsmEntityTypes().filter(
-            (type) => type.category === category
-          ),
+          ...osmEntityTypes.filter((type) => type.category === category),
         ];
 
     onChange(updatedEntities);
@@ -72,7 +67,8 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
               </h3>
             </label>
           </div>
-          {getCombinedOsmEntityTypes()
+          {/* TODO convert to reduce */}
+          {osmEntityTypes
             .filter((entityType) => entityType.category === category)
             .map((entity) => (
               <label
@@ -88,7 +84,14 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
                   }}
                 />
                 <span className="label-text ml-2">
-                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entity.name])}
+                  {t(
+                    (
+                      IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                        string,
+                        string
+                      >
+                    )[entity.name]
+                  )}
                 </span>
               </label>
             ))}

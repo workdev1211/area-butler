@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FC, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -6,16 +6,16 @@ import Input from "components/inputs/formik/Input";
 import LocationAutocomplete from "components/LocationAutocomplete";
 import Select from "components/inputs/formik/Select";
 import { ApiCoordinates, OsmName } from "../../../../../shared/types/types";
-import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
+import { osmEntityTypes } from "../../../../../shared/constants/constants";
 
-export interface AddPoiFormProps {
+interface IAddPoiFormProps {
   formId: string;
   onSubmit: (values: any) => any;
   coordinates?: ApiCoordinates;
   address?: string;
 }
 
-const AddPoiForm: FunctionComponent<AddPoiFormProps> = ({
+const AddPoiForm: FC<IAddPoiFormProps> = ({
   formId,
   coordinates,
   address,
@@ -67,7 +67,8 @@ const AddPoiForm: FunctionComponent<AddPoiFormProps> = ({
               name="name"
               placeholder="Objekttype angeben"
             >
-              {getCombinedOsmEntityTypes()
+              {/* TODO translation required */}
+              {osmEntityTypes
                 .sort((e1, e2) => e1.label.localeCompare(e2.label))
                 .map((entityType) => (
                   <option value={entityType.name} key={entityType.name}>

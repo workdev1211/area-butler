@@ -9,7 +9,6 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../context/SearchContext";
-import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../../shared/shared.constants";
 import { deriveAvailableMeansFromResponse } from "../../shared/shared.functions";
 import {
@@ -172,7 +171,7 @@ const MapPage: FC = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: getCombinedOsmEntityTypes(localityParams),
+      payload: localityParams,
     });
 
     searchContextDispatch({

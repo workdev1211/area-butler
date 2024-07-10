@@ -3,6 +3,7 @@ import { v4 } from "uuid";
 import {
   ApiCoordinates,
   ApiOsmEntity,
+  ApiOsmEntityCategory,
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
@@ -20,6 +21,7 @@ import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 interface IDeriveParameters {
   searchResponse: ApiSearchResponse;
@@ -331,7 +333,6 @@ export const deriveInitialEntityGroups = ({
 
   if (centerOfSearch && preferredLocations?.length) {
     groupedEntities.push({
-      title: OsmName.favorite,
       active: deriveActiveState(OsmName.favorite),
       items: buildEntDataFromPrefLocs({
         centerOfSearch,
@@ -339,12 +340,12 @@ export const deriveInitialEntityGroups = ({
         ignoreVisibility,
         preferredLocations,
       }),
+      title: OsmName.favorite,
     });
   }
 
   if (centerOfSearch && realEstates?.length) {
     groupedEntities.push({
-      title: OsmName.property,
       active: deriveActiveState(OsmName.property),
       items: buildEntDataFromEstates({
         centerOfSearch,
@@ -352,6 +353,7 @@ export const deriveInitialEntityGroups = ({
         ignoreVisibility,
         realEstates,
       }),
+      title: OsmName.property,
     });
   }
 
@@ -377,12 +379,13 @@ export const deriveInitialEntityGroups = ({
 
       if (!result[groupName]) {
         result[groupName] = {
-          title: groupName,
           active: deriveActiveState(
             resultEntity.osmName,
             Object.keys(result).length
           ), // TODO should be switched to 'groupName'
+          category: getOsmCategoryByName(resultEntity.osmName),
           items: [resultEntity],
+          title: groupName,
         };
       }
 
@@ -447,3 +450,8 @@ export const toggleEntityVisibility = (
 
   return entityVisibility;
 };
+
+export const getOsmCategoryByName = (
+  osmName: OsmName
+): ApiOsmEntityCategory | undefined =>
+  osmEntityTypes.find(({ name }) => name === osmName)?.category;

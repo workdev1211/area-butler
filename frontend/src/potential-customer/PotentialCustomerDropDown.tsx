@@ -1,21 +1,19 @@
-import { FunctionComponent, useContext, useRef, useState } from "react";
+import { FC, useContext, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import useOnClickOutside from "hooks/onclickoutside";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
-export interface PotentialCustomerDropDownProps {
+interface IPotentialCustomerDropDownProps {
   buttonStyles?: string;
 }
 
-export const PotentialCustomerDropDown: FunctionComponent<
-  PotentialCustomerDropDownProps
-> = ({
+export const PotentialCustomerDropDown: FC<IPotentialCustomerDropDownProps> = ({
   buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
   const { t } = useTranslation();
@@ -27,7 +25,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
     routingProfiles,
     preferredLocations,
   }: ApiPotentialCustomer) => {
-    const localityParams = getCombinedOsmEntityTypes().filter((entity) =>
+    const localityParams = osmEntityTypes.filter((entity) =>
       preferredAmenities?.includes(entity.name)
     );
 
@@ -56,7 +54,11 @@ export const PotentialCustomerDropDown: FunctionComponent<
     ? "p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll"
     : "p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll";
 
-  return potentialCustomerState.customers?.length > 0 ? (
+  if (!potentialCustomerState.customers?.length) {
+    return null;
+  }
+
+  return (
     <div ref={dropDownRef} className="dropdown mt-5 w-full sm:w-auto">
       <div
         className={buttonStyles}
@@ -93,7 +95,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
         </ul>
       )}
     </div>
-  ) : null;
+  );
 };
 
 export default PotentialCustomerDropDown;

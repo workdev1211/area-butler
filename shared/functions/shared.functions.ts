@@ -1,13 +1,5 @@
-import {
-  minutesToMetersMultipliers,
-  osmEntityTypes,
-  umlautMap,
-} from "../constants/constants";
-import {
-  ApiCoordinates,
-  ApiOsmEntity,
-  MeansOfTransportation,
-} from "../types/types";
+import { minutesToMetersMultipliers, umlautMap } from "../constants/constants";
+import { ApiCoordinates, MeansOfTransportation } from "../types/types";
 
 export const groupBy = (xs: any, f: any): Record<string, any> =>
   xs.reduce(
@@ -20,52 +12,15 @@ export const groupBy = (xs: any, f: any): Record<string, any> =>
 
 export const getBidirectionalMapping = <R, T>(
   mapping: Map<R, T>
-): Map<R | T, T | R> => {
-  return new Map(
-    [...mapping].reduce((result, [key, value]) => {
-      result.push([key, value], [value, key]);
-
-      return result;
-    }, [])
-  );
-};
+): Map<R | T, T | R> =>
+  Array.from(mapping).reduce((result, [key, value]) => {
+    result.set(key, value);
+    result.set(value, key);
+    return result;
+  }, new Map());
 
 export const camelize = (str: string): string =>
   str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
-
-export const getCombinedOsmEntityTypes = (
-  osmEntities = [...osmEntityTypes]
-): ApiOsmEntity[] => {
-  return osmEntities.reduce<ApiOsmEntity[]>((result, entity) => {
-    const hasEntity = result.some(({ label }) => label === entity.label);
-
-    if (!hasEntity) {
-      result.push(entity);
-    }
-
-    return result;
-  }, []);
-};
-
-export const getUncombinedOsmEntityTypes = (
-  osmEntities: ApiOsmEntity[]
-): ApiOsmEntity[] => {
-  return osmEntities.reduce<ApiOsmEntity[]>((result, entity) => {
-    const hasEntity = result.some(({ label }) => label === entity.label);
-
-    const filteredEntities = osmEntityTypes.filter(
-      ({ label }) => label === entity.label
-    );
-
-    if (hasEntity) {
-      return result;
-    }
-
-    result.push(...filteredEntities);
-
-    return result;
-  }, []);
-};
 
 export const createChunks = <T = unknown>(arr: T[], size: number): Array<T[]> =>
   arr.reduce<Array<T[]>>((result, curVal, i) => {

@@ -32,7 +32,6 @@ import FormModal, { ModalConfig } from "components/FormModal";
 import { IGotoMapCenter } from "context/SearchContext";
 import {
   convertMetersToMinutes,
-  getCombinedOsmEntityTypes,
   groupBy,
   randomizeCoordinates,
 } from "../../../shared/functions/shared.functions";
@@ -90,6 +89,7 @@ import {
 } from "../shared/shared.constants";
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -138,8 +138,7 @@ export class IdMarker extends L.Marker {
     }
 
     const searchString = [
-      getCombinedOsmEntityTypes().find((t) => t.name === this.entity.osmName)
-        ?.label,
+      osmEntityTypes.find((t) => t.name === this.entity.osmName)?.label,
       entityTitle,
       this.entity?.address?.street !== "undefined"
         ? this.entity.address?.street

@@ -17,11 +17,11 @@ import {
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { EntityGroup } from "../shared/search-result.types";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
 import { defaultTransportParams } from "../../../shared/constants/location";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 // TODO should be refactored in the future, it seems to be that 'zoomLevel' is not needed anymore
 export interface MapClipping {
@@ -81,7 +81,7 @@ export interface IGotoMapCenter {
 
 export const initialState: SearchContextState = {
   transportationParams: [...defaultTransportParams],
-  localityParams: getCombinedOsmEntityTypes(),
+  localityParams: osmEntityTypes,
   searchBusy: false,
   printingActive: false,
   printingCheatsheetActive: false,

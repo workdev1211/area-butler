@@ -1,7 +1,7 @@
-import { FunctionComponent, useContext, useRef, useState } from "react";
+import { FC, useContext, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { RealEstateContext } from "context/RealEstateContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
@@ -9,17 +9,21 @@ import { UserContext } from "context/UserContext";
 import useOnClickOutside from "hooks/onclickoutside";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
-const LatestUserRequestsDropDown: FunctionComponent = () => {
-  const { t } = useTranslation();
+const LatestUserRequestsDropDown: FC = () => {
+  const dropDownRef = useRef(null);
+
   const { userState } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
-  const requests = userState.latestUserRequests?.requests || [];
-  const dropDownRef = useRef(null);
+
   const [showMenu, setShowMenu] = useState(false);
+
+  const { t } = useTranslation();
   useOnClickOutside(dropDownRef, () => showMenu && setShowMenu(false));
+
+  const requests = userState.latestUserRequests?.requests || [];
 
   const buttonStyles =
     "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto";
@@ -68,11 +72,20 @@ const LatestUserRequestsDropDown: FunctionComponent = () => {
       payload: request.preferredLocations || [],
     });
 
-    const localityParams = request.preferredAmenities
-      .map((name) =>
-        getCombinedOsmEntityTypes().find((entity) => entity.name === name)
-      )
-      .filter(Boolean) as ApiOsmEntity[];
+    const localityParams = request.preferredAmenities.reduce<ApiOsmEntity[]>(
+      (result, osmName) => {
+        const osmEntity = osmEntityTypes.find(
+          (entity) => entity.name === osmName
+        );
+
+        if (osmEntity) {
+          result.push(osmEntity);
+        }
+
+        return result;
+      },
+      []
+    );
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,

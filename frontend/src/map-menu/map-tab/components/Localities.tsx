@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -24,7 +24,6 @@ import {
 import MapMenuListItem from "../../components/menu-item/MapMenuListItem";
 import { IPoiIcon } from "../../../shared/shared.types";
 import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
-import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
 import { SearchContext } from "../../../context/SearchContext";
 import { UserContext } from "../../../context/UserContext";
 
@@ -39,7 +38,7 @@ interface ILocalitiesProps {
   userMenuPoiIcons?: IApiUserPoiIcon[];
 }
 
-const Localities: FunctionComponent<ILocalitiesProps> = ({
+const Localities: FC<ILocalitiesProps> = ({
   toggleAllLocalities,
   toggleRoute,
   routes,
@@ -141,16 +140,12 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
             })}
 
           {/* POIs */}
-          {Object.entries(ApiOsmEntityCategory).map(([_, category]) => {
+          {Object.values(ApiOsmEntityCategory).map((category) => {
             return (
               <div key={`container-${category}`}>
                 {groupedEntries.some(
-                  (ge) =>
-                    ge.items.length &&
-                    getCombinedOsmEntityTypes().some(
-                      (oet) =>
-                        oet.name === ge.title && oet.category === category
-                    )
+                  ({ category: groupCategory, items }) =>
+                    groupCategory === category && items.length
                 ) && (
                   <li className="locality-option-heading" key={category}>
                     <h4>
@@ -160,12 +155,8 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                 )}
                 {groupedEntries
                   .filter(
-                    (ge) =>
-                      ge.items.length &&
-                      getCombinedOsmEntityTypes().some(
-                        (oet) =>
-                          oet.name === ge.title && oet.category === category
-                      )
+                    ({ category: groupCategory, items }) =>
+                      groupCategory === category && items.length
                   )
                   .map((ge, geIndex) => {
                     const isRealEstateListing = ge.title === OsmName.property;

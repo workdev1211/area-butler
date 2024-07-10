@@ -9,8 +9,8 @@ import {
 import { Form, Formik } from "formik";
 import dayjs from "dayjs";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./SearchParamsPage.scss";
 
@@ -39,7 +39,6 @@ import {
 } from "../../../shared/types/subscription-plan";
 import {
   ApiCoordinates,
-  ApiOsmEntity,
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
@@ -63,10 +62,6 @@ import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useLocationData } from "../hooks/locationdata";
-import {
-  getCombinedOsmEntityTypes,
-  getUncombinedOsmEntityTypes,
-} from "../../../shared/functions/shared.functions";
 import { ISearchParamsHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import { useRealEstateData } from "../hooks/realestatedata";
@@ -78,6 +73,7 @@ import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 import { searchUnlockText } from "../../../shared/constants/on-office/on-office-products";
 import { deriveInitialEntityGroups } from "../shared/pois.functions";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -134,7 +130,7 @@ const SearchParamsPage: FC = () => {
   const clearPotentialCustomerParams = (): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: getCombinedOsmEntityTypes(),
+      payload: osmEntityTypes,
     });
 
     searchContextDispatch({
@@ -311,9 +307,9 @@ const SearchParamsPage: FC = () => {
       searchTitle: searchContextState?.placesLocation?.label || "Mein Standort",
       coordinates: searchContextState.location!,
       meansOfTransportation: searchContextState.transportationParams,
-      preferredAmenities: getUncombinedOsmEntityTypes(
-        searchContextState.localityParams
-      ).map((l: ApiOsmEntity) => l.name),
+      preferredAmenities: searchContextState.localityParams.map(
+        ({ name }) => name
+      ),
       integrationId: searchContextState.realEstateListing?.integrationId,
     };
 
@@ -566,7 +562,9 @@ const SearchParamsPage: FC = () => {
     <DefaultLayout
       title={
         isIntegrationUser
-          ? `${t(IntlKeys.common.address)}: ${searchContextState.placesLocation?.label}`
+          ? `${t(IntlKeys.common.address)}: ${
+              searchContextState.placesLocation?.label
+            }`
           : t(IntlKeys.nav.environmentalAnalysis)
       }
       withHorizontalPadding={true}

@@ -20,7 +20,6 @@ import {
   RealEstateActionTypeEnum,
   RealEstateContext,
 } from "../context/RealEstateContext";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../shared/shared.constants";
 import { deriveInitialEntityGroups } from "../shared/pois.functions";
 import { getQueryParamsAndUrl } from "../shared/shared.functions";
@@ -193,7 +192,7 @@ const EmbedContainer: FC = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: getCombinedOsmEntityTypes(localityParams),
+      payload: localityParams,
     });
 
     searchContextDispatch({

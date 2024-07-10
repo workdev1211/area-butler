@@ -19,7 +19,6 @@ import {
   ApiUpdateSearchResultSnapshot,
   OsmName,
 } from "../../../shared/types/types";
-import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { ICurrentMapRef } from "../shared/search-result.types";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../shared/types/location";
@@ -123,9 +122,7 @@ export const useLocationData = () => {
           snapshot: {
             searchResponse,
             location: searchContextState.location!,
-            localityParams: getUncombinedOsmEntityTypes(
-              searchContextState.localityParams
-            ),
+            localityParams: searchContextState.localityParams,
             placesLocation: searchContextState.placesLocation,
             preferredLocations: searchContextState.preferredLocations,
             transportationParams: searchContextState.transportationParams,

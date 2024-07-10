@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 import { v4 as uuid } from "uuid";
 
 import { FormModalData } from "components/FormModal";
@@ -7,18 +7,21 @@ import {
   toastError,
   toastSuccess,
 } from "shared/shared.functions";
-import { ApiCoordinates, ApiOsmLocation } from "../../../../../shared/types/types";
+import {
+  ApiCoordinates,
+  ApiOsmLocation,
+} from "../../../../../shared/types/types";
 import AddPoiForm from "./AddPoiForm";
-import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
+import { osmEntityTypes } from "../../../../../shared/constants/constants";
 
-export interface AddPoiFormHandlerProps extends FormModalData {
+interface IAddPoiFormHandlerProps extends FormModalData {
   centerCoordinates: ApiCoordinates;
   coordinates?: ApiCoordinates;
   address?: string;
   onPoiAdd: (poi: ApiOsmLocation) => void;
 }
 
-const AddPoiFormHandler: FunctionComponent<AddPoiFormHandlerProps> = ({
+const AddPoiFormHandler: FC<IAddPoiFormHandlerProps> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
@@ -33,11 +36,9 @@ const AddPoiFormHandler: FunctionComponent<AddPoiFormHandlerProps> = ({
 
       const coordinates = values.coordinates;
       const distanceInMeter = distanceInMeters(centerCoordinates, coordinates);
+      const osmEntity = osmEntityTypes.find((e) => e.name === values.name)!;
 
-      const entityType = getCombinedOsmEntityTypes().find(
-        (e) => e.name === values.name
-      )!;
-      const poi: ApiOsmLocation = {
+      const osmLocation: ApiOsmLocation = {
         address: { street: values.address.label },
         coordinates: values.coordinates,
         distanceInMeters: distanceInMeter,
@@ -45,13 +46,13 @@ const AddPoiFormHandler: FunctionComponent<AddPoiFormHandlerProps> = ({
           id: uuid(),
           title: values.title,
           name: values.name,
-          type: entityType.type,
-          label: entityType.label,
-          category: entityType.category,
+          type: osmEntity.type,
+          label: osmEntity.label,
+          category: osmEntity.category,
         },
       };
 
-      onPoiAdd(poi);
+      onPoiAdd(osmLocation);
       postSubmit(true);
       toastSuccess("Objekt erfolgreich hinzugefügt!");
     } catch (err) {

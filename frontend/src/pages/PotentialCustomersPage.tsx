@@ -1,8 +1,8 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import DefaultLayout from "../layout/defaultLayout";
 import {
@@ -25,10 +25,10 @@ import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiTourNamesEnum } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { IPotentialCustomersHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import PotentialCustomerFormDeleteHandler from "../potential-customer/PotentialCustomerFormDeleteHandler";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 const subscriptionUpgradeSendCustomerRequestMessage = (
   <div>
@@ -48,7 +48,7 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
   </div>
 );
 
-const PotentialCustomersPage: FunctionComponent = () => {
+const PotentialCustomersPage: FC = () => {
   const { t } = useTranslation();
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
@@ -90,7 +90,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
     routingProfiles,
     preferredLocations,
   }: ApiPotentialCustomer) => {
-    const localityParams = getCombinedOsmEntityTypes().filter((entity) =>
+    const localityParams = osmEntityTypes.filter((entity) =>
       preferredAmenities?.includes(entity.name)
     );
 
@@ -112,12 +112,13 @@ const PotentialCustomersPage: FunctionComponent = () => {
     history.push("/search", { isFromPotentialCustomers: true });
   };
 
-  const ActionsTop: FunctionComponent = () => {
+  const ActionsTop: FC = () => {
     return (
       <>
         <li>
           <Link to="/potential-customers/new" className="btn btn-link">
-            <img src={plusIcon} alt="pdf-icon" /> {t(IntlKeys.potentialCustomers.createTargetGroup)}
+            <img src={plusIcon} alt="pdf-icon" />{" "}
+            {t(IntlKeys.potentialCustomers.createTargetGroup)}
           </Link>
         </li>
         {!isIntegrationUser && (
@@ -137,7 +138,8 @@ const PotentialCustomersPage: FunctionComponent = () => {
                     })
               }
             >
-              <img src={plusIcon} alt="pdf-icon" /> {t(IntlKeys.potentialCustomers.sendQuestionnaire)}
+              <img src={plusIcon} alt="pdf-icon" />{" "}
+              {t(IntlKeys.potentialCustomers.sendQuestionnaire)}
             </button>
           </li>
         )}
@@ -249,7 +251,9 @@ const PotentialCustomersPage: FunctionComponent = () => {
                           />
                           <FormModal
                             modalConfig={{
-                              modalTitle: t(IntlKeys.potentialCustomers.customerDeleteTitle),
+                              modalTitle: t(
+                                IntlKeys.potentialCustomers.customerDeleteTitle
+                              ),
                               submitButtonTitle: t(IntlKeys.common.delete),
                               modalButton: (
                                 <img

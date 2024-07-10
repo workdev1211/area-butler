@@ -1,9 +1,9 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import Input from "../components/inputs/formik/Input";
@@ -12,16 +12,16 @@ import LocalityParams from "../components/LocalityParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 // import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
 // import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
-export interface PotentialCustomerFormProps {
+interface IPotentialCustomerFormProps {
   formId: string;
   inputCustomer: Partial<ApiPotentialCustomer>;
   onSubmit: (newValues: Partial<ApiPotentialCustomer>) => void;
   questionnaire?: boolean;
 }
 
-const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
+const PotentialCustomerForm: FC<IPotentialCustomerFormProps> = ({
   formId,
   inputCustomer,
   onSubmit,
@@ -85,7 +85,9 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
           </div>
           <div className="my-6 flex flex-col gap-6">
             <strong>
-              {questionnaire ? t(IntlKeys.potentialCustomers.myFavorite) : t(IntlKeys.potentialCustomers.preferred)}{" "}
+              {questionnaire
+                ? t(IntlKeys.potentialCustomers.myFavorite)
+                : t(IntlKeys.potentialCustomers.preferred)}{" "}
               {t(IntlKeys.potentialCustomers.typesOfTransportations)}
             </strong>
             <TransportationParams
@@ -100,12 +102,13 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
           </div>
           <div className="my-6">
             <strong>
-              {questionnaire ?
-                t(IntlKeys.potentialCustomers.myFavorite) :
-                t(IntlKeys.potentialCustomers.preferred)} {t(IntlKeys.potentialCustomers.localities)}
+              {questionnaire
+                ? t(IntlKeys.potentialCustomers.myFavorite)
+                : t(IntlKeys.potentialCustomers.preferred)}{" "}
+              {t(IntlKeys.potentialCustomers.localities)}
             </strong>
             <LocalityParams
-              values={getCombinedOsmEntityTypes().filter((oet) =>
+              values={osmEntityTypes.filter((oet) =>
                 (customer.preferredAmenities ?? []).includes(oet.name)
               )}
               onChange={(newValues) => {

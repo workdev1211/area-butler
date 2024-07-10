@@ -2,7 +2,7 @@ import { EntityGroup } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
 import { deriveIconForOsmName } from "../../shared/shared.functions";
 import { IApiUserPoiIcon } from "../../../../shared/types/types";
-import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
+import { getOsmCategoryByName } from "../../shared/pois.functions";
 
 export const getFilteredLegend = (
   entityGroups: EntityGroup[],
@@ -11,14 +11,14 @@ export const getFilteredLegend = (
   return (
     entityGroups
       .reduce<ILegendItem[]>((result, { title, active }) => {
-        const foundOsmEntityType =
-          active &&
-          getCombinedOsmEntityTypes().find(({ name }) => title === name);
+        const foundOsmCategory = active
+          ? getOsmCategoryByName(title)
+          : undefined;
 
-        if (foundOsmEntityType) {
+        if (foundOsmCategory) {
           result.push({
             title,
-            icon: deriveIconForOsmName(foundOsmEntityType.name, poiIcons),
+            icon: deriveIconForOsmName(title, poiIcons),
           });
         }
 
