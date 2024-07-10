@@ -345,7 +345,6 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
           renderSelectionAddon={() => (
             <div
               ref={(ref) => setOverlayRef(ref)}
-              style={{ position: "relative", height: "100%" }}
             >
               {qrCode && isShownQrCode && (
                 <div className="qrCodeContainer">

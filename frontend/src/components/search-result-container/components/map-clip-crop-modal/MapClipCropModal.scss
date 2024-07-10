@@ -5,10 +5,6 @@
 
     .react-image-crop {
       max-height: calc(98vh - var(--nav-height) * 2.5);
-
-      .ReactCrop__selection-addon {
-        height: 100%;
-      }
     }
 
     .modal-action {
