@@ -28,7 +28,7 @@ import { getRealEstateCost } from "../shared/real-estate.functions";
 import { IPotentialCustomersHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import PotentialCustomerFormDeleteHandler from "../potential-customer/PotentialCustomerFormDeleteHandler";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
 const subscriptionUpgradeSendCustomerRequestMessage = (
   <div>

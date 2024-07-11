@@ -1,9 +1,9 @@
-import { OsmName, PoiGroupEnum, TPoiGroupName } from "../types/types";
+import { OsmName, PoiGroupEnum, TPoiGroupName } from "./types";
 
 // TODO should be memoized in the poi hook
 // TODO single source of truth
 
-export class OsmNameAndPoiGroupMapper {
+export class OsmEntityMapper {
   private readonly initialMapping: [OsmName, TPoiGroupName][] = [
     [OsmName.station, OsmName.station],
     [OsmName.bus_stop, OsmName.bus_stop],
@@ -32,11 +32,11 @@ export class OsmNameAndPoiGroupMapper {
     [OsmName.clinic, OsmName.clinic],
     [OsmName.hospital, OsmName.hospital],
     [OsmName.surface, OsmName.surface],
-    [OsmName["multi-storey"], OsmName["multi-storey"]],
-    [OsmName.underground, OsmName.underground],
+    [OsmName["multi-storey"], PoiGroupEnum.parking_garage],
+    [OsmName.underground, PoiGroupEnum.parking_garage],
     [OsmName.wind_turbine, OsmName.wind_turbine],
-    [OsmName.tower, OsmName.tower],
-    [OsmName.pole, OsmName.pole],
+    [OsmName.tower, PoiGroupEnum.power_pole],
+    [OsmName.pole, PoiGroupEnum.power_pole],
     [OsmName.hotel, OsmName.hotel],
     [OsmName.museum, OsmName.museum],
     [OsmName.attraction, OsmName.attraction],

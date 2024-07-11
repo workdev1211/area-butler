@@ -185,16 +185,18 @@ export enum ApiOsmEntityCategory {
 }
 
 export interface ApiOsmEntity {
-  id?: string;
-  type: OsmType;
-  name: OsmName;
-  label: string; // TODO remove in the future after BE translation
-  title?: string;
   category: ApiOsmEntityCategory;
+  groupName: TPoiGroupName;
+  label: string; // TODO remove in the future after BE translation
+  name: OsmName;
+  type: OsmType;
+
+  additionalQuery?: string; // Probably is also a hack
+  id?: string;
+  replacementQuery?: string; // Used in a hack which prevents the addition the third Osm parameter
+  title?: string;
   uniqueRadius?: number;
   uniqueThreshold?: number;
-  replacementQuery?: string; // Used in a hack which prevents the addition the third Osm parameter
-  additionalQuery?: string;
 }
 
 export interface ApiAddress {
@@ -303,12 +305,43 @@ export enum OsmName {
 export enum PoiGroupEnum {
   bar_pub = "bar_pub",
   kiosk_post_office = "kiosk_post_office",
+  parking_garage = "parking_garage",
+  power_pole = "power_pole",
 }
 
+// 'Extract' is used instead of 'Include' because of 'OsmName["multi-storey"]' value
 export type TPoiGroupName =
-  | Exclude<
+  | Extract<
       OsmName,
-      OsmName.bar | OsmName.pub | OsmName.kiosk | OsmName.post_office
+      | OsmName.station
+      | OsmName.bus_stop
+      | OsmName.motorway_link
+      | OsmName.charging_station
+      | OsmName.fuel
+      | OsmName.supermarket
+      | OsmName.chemist
+      | OsmName.kindergarten
+      | OsmName.school
+      | OsmName.university
+      | OsmName.playground
+      | OsmName.park
+      | OsmName.restaurant
+      | OsmName.theatre
+      | OsmName.fitness_centre
+      | OsmName.sports_centre
+      | OsmName.sports_hall
+      | OsmName.pharmacy
+      | OsmName.doctors
+      | OsmName.dentist
+      | OsmName.clinic
+      | OsmName.hospital
+      | OsmName.surface
+      | OsmName.wind_turbine
+      | OsmName.hotel
+      | OsmName.museum
+      | OsmName.attraction
+      | OsmName.favorite
+      | OsmName.property
     >
   | PoiGroupEnum;
 

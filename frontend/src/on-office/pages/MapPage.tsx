@@ -38,7 +38,7 @@ import {
   setTransportParamForResEntity,
 } from "../../shared/pois.functions";
 import { IntlKeys } from "../../i18n/keys";
-import { OsmNameAndPoiGroupMapper } from "../../../../shared/constants/osm-name-and-poi-group-mapper";
+import { OsmEntityMapper } from "../../../../shared/types/osm-entity-mapper";
 
 const MapPage: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -322,7 +322,7 @@ const MapPage: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
-  const osmNameAndPoiGroupMapper = new OsmNameAndPoiGroupMapper();
+  const osmEntityMapper = new OsmEntityMapper();
 
   const onPoiAdd = (poiLocation: ApiOsmLocation): void => {
     if (!snapshotRes) {
@@ -354,9 +354,7 @@ const MapPage: FC = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        !osmNameAndPoiGroupMapper
-          .revGet(ge.name)
-          .includes(poiLocation.entity.name)
+        !osmEntityMapper.revGet(ge.name).includes(poiLocation.entity.name)
           ? ge
           : {
               ...ge,
@@ -373,9 +371,7 @@ const MapPage: FC = () => {
     // update dedicated entity groups for editor
     setEditorGroups(
       editorGroups.map((ge) =>
-        !osmNameAndPoiGroupMapper
-          .revGet(ge.name)
-          .includes(poiLocation.entity.name)
+        !osmEntityMapper.revGet(ge.name).includes(poiLocation.entity.name)
           ? ge
           : { ...ge, items: [...ge.items, newEntity] }
       )

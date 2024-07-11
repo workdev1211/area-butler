@@ -89,8 +89,8 @@ import {
 } from "../shared/shared.constants";
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { OsmNameAndPoiGroupMapper } from "../../../shared/constants/osm-name-and-poi-group-mapper";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
+import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -1117,16 +1117,14 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         //   }));
         // }
 
-        const osmNameAndPoiGroupMapper = new OsmNameAndPoiGroupMapper();
+        const osmEntityMapper = new OsmEntityMapper();
 
         // Add each POI to the marker cluster group
         parsedEntities?.every((entity) => {
           if (
             !parsedEntityGroups.some(
               ({ active, name }) =>
-                osmNameAndPoiGroupMapper
-                  .revGet(name)
-                  .includes(entity.osmName) && active
+                osmEntityMapper.revGet(name).includes(entity.osmName) && active
             )
           ) {
             return true;
@@ -1163,7 +1161,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           // @ts-ignore
           if (!markerIcon) {
             markerIcon = deriveIconForPoiGroup(
-              osmNameAndPoiGroupMapper.get(entity.osmName),
+              osmEntityMapper.get(entity.osmName),
               userMapPoiIcons
             );
           }

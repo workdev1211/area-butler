@@ -21,8 +21,8 @@ import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { OsmNameAndPoiGroupMapper } from "../../../shared/constants/osm-name-and-poi-group-mapper";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
+import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
 
 interface IDeriveParameters {
   searchResponse: ApiSearchResponse;
@@ -376,7 +376,7 @@ export const deriveInitialEntityGroups = ({
 
   const poiGroups = Object.values(
     poiItems.reduce<Record<string, EntityGroup>>((result, resultEntity) => {
-      const groupName = new OsmNameAndPoiGroupMapper().get(
+      const groupName = new OsmEntityMapper().get(
         resultEntity.osmName
       );
 

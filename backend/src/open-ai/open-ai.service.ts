@@ -33,7 +33,7 @@ import {
   cleanCensusProperties,
   processCensusData,
 } from '../../../shared/functions/census.functions';
-import { osmEntityTypes } from '../../../shared/constants/constants';
+import { osmEntityTypes } from '../../../shared/constants/osm-entity-types';
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 

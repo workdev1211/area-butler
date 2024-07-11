@@ -9,7 +9,7 @@ import { UserContext } from "context/UserContext";
 import useOnClickOutside from "hooks/onclickoutside";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
 const LatestUserRequestsDropDown: FC = () => {
   const dropDownRef = useRef(null);

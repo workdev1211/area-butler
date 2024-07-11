@@ -7,7 +7,7 @@ import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
 } from "../../../shared/types/types";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
 interface ILocalityParamsProps {
   values: ApiOsmEntity[];

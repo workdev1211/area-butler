@@ -7,7 +7,7 @@ import {
   OverpassData,
   OverpassDataDocument,
 } from '../schemas/overpass-data.schema';
-import { osmEntityTypes } from '../../../../shared/constants/constants';
+import { osmEntityTypes } from '../../../../shared/constants/osm-entity-types';
 import { OverpassService } from '../../client/overpass/overpass.service';
 import { ApiOsmLocation } from '@area-butler-types/types';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';

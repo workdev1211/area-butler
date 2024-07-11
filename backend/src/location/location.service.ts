@@ -281,6 +281,7 @@ export class LocationService {
           name: OsmName.doctors,
           type: OsmType.amenity,
           category: ApiOsmEntityCategory.LEISURE,
+          groupName: OsmName.doctors,
         },
         coordinates,
         distanceInMeters: 0,

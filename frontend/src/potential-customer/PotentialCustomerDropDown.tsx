@@ -7,7 +7,7 @@ import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import useOnClickOutside from "hooks/onclickoutside";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
 interface IPotentialCustomerDropDownProps {
   buttonStyles?: string;

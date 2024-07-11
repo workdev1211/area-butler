@@ -12,7 +12,7 @@ import LocalityParams from "../components/LocalityParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 // import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
 // import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
 interface IPotentialCustomerFormProps {
   formId: string;

@@ -12,7 +12,7 @@ import {
   ApiOsmLocation,
 } from "../../../../../shared/types/types";
 import AddPoiForm from "./AddPoiForm";
-import { osmEntityTypes } from "../../../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../../../shared/constants/osm-entity-types";
 
 interface IAddPoiFormHandlerProps extends FormModalData {
   centerCoordinates: ApiCoordinates;
@@ -49,6 +49,7 @@ const AddPoiFormHandler: FC<IAddPoiFormHandlerProps> = ({
           type: osmEntity.type,
           label: osmEntity.label,
           category: osmEntity.category,
+          groupName: osmEntity.groupName,
         },
       };
 

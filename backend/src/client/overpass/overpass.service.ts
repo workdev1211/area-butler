@@ -6,7 +6,7 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
-import { osmEntityTypes } from '../../../../shared/constants/constants';
+import { osmEntityTypes } from '../../../../shared/constants/osm-entity-types';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
 import {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 
-import { osmEntityTypes } from '../../../shared/constants/constants';
+import { osmEntityTypes } from '../../../shared/constants/osm-entity-types';
 import {
   ApiCoordinates,
   ApiOsmEntity,
@@ -107,15 +107,15 @@ export class SnapshotExtService {
       snapshotConfig = config;
     }
 
-    return this.snapshotService.createSnapshot(
-      user,
-      {
-        snapshotReq: { integrationId: realEstateListing?.integrationId, snapshot },
-        config: snapshotConfig,
-        externalId,
-        primaryColor
-      }
-    );
+    return this.snapshotService.createSnapshot(user, {
+      snapshotReq: {
+        integrationId: realEstateListing?.integrationId,
+        snapshot,
+      },
+      config: snapshotConfig,
+      externalId,
+      primaryColor,
+    });
   }
 
   async createSnapshot({
@@ -126,7 +126,7 @@ export class SnapshotExtService {
     transportParams,
     poiTypes,
     primaryColor,
-    externalId
+    externalId,
   }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
     const place = await this.placeService.fetchPlaceOrFail({ user, location });
 
@@ -138,7 +138,7 @@ export class SnapshotExtService {
       transportParams,
       poiTypes,
       externalId,
-      primaryColor
+      primaryColor,
     });
   }
 
@@ -212,13 +212,10 @@ export class SnapshotExtService {
       });
     }
 
-    return this.snapshotService.createSnapshot(
-      user,
-      {
-        snapshotReq: { snapshot },
-        config,
-        isCheckAllowedCountries: false
-      },
-    );
+    return this.snapshotService.createSnapshot(user, {
+      snapshotReq: { snapshot },
+      config,
+      isCheckAllowedCountries: false,
+    });
   }
 }

@@ -22,7 +22,7 @@ import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
 import { defaultTransportParams } from "../../../shared/constants/location";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
 // TODO should be refactored in the future, it seems to be that 'zoomLevel' is not needed anymore
 export interface MapClipping {

@@ -6,7 +6,7 @@ import Input from "components/inputs/formik/Input";
 import LocationAutocomplete from "components/LocationAutocomplete";
 import Select from "components/inputs/formik/Select";
 import { ApiCoordinates, OsmName } from "../../../../../shared/types/types";
-import { osmEntityTypes } from "../../../../../shared/constants/constants";
+import { osmEntityTypes } from "../../../../../shared/constants/osm-entity-types";
 
 interface IAddPoiFormProps {
   formId: string;
