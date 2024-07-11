@@ -17,7 +17,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
-  OsmName,
+  TPoiGroupName,
 } from "../../../shared/types/types";
 import { ICurrentMapRef } from "../shared/search-result.types";
 import { toastError, toastSuccess } from "../shared/shared.functions";
@@ -50,7 +50,6 @@ export const useLocationData = () => {
     snapshotId: string
   ): Promise<ApiSearchResultSnapshotResponse> => {
     let url: string;
-    let additionalHeaders;
 
     if (isIntegration) {
       url =
@@ -61,8 +60,7 @@ export const useLocationData = () => {
       url = `/api/location/snapshot/${snapshotId}`;
     }
 
-    return (await get<ApiSearchResultSnapshotResponse>(url, additionalHeaders))
-      .data;
+    return (await get<ApiSearchResultSnapshotResponse>(url)).data;
   };
 
   const fetchSnapshots = async (
@@ -154,13 +152,13 @@ export const useLocationData = () => {
       return;
     }
 
-    const defaultActiveGroups: OsmName[] = [];
+    const defaultActiveGroups: TPoiGroupName[] = [];
     const customPoiIds: string[] = [];
 
     searchContextState.responseGroupedEntities?.forEach(
-      ({ title, active, items }) => {
+      ({ active, items, name }) => {
         if (active) {
-          defaultActiveGroups.push(title);
+          defaultActiveGroups.push(name);
         }
 
         items.forEach(({ id, isCustom }) => {

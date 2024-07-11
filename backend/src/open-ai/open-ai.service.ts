@@ -9,6 +9,7 @@ import {
   ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
   OsmName,
+  TPoiGroupName,
 } from '@area-butler-types/types';
 import {
   openAiTextLengthOptions,
@@ -402,7 +403,11 @@ export class OpenAiService {
   ): Partial<Record<OsmName, { name: string; distance: number }[]>> {
     const selectedPoiCategories = osmEntityTypes.reduce<OsmName[]>(
       (result, { name }) => {
-        if (snapshotConfig.defaultActiveGroups?.includes(name)) {
+        // TODO single source of truth
+        // use either the new class or the osmEntityTypes as the source of truth
+        if (
+          snapshotConfig.defaultActiveGroups?.includes(name as TPoiGroupName)
+        ) {
           result.push(name);
         }
 

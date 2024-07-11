@@ -1,24 +1,28 @@
 import { EntityGroup } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
-import { deriveIconForOsmName } from "../../shared/shared.functions";
 import { IApiUserPoiIcon } from "../../../../shared/types/types";
-import { getOsmCategoryByName } from "../../shared/pois.functions";
+import { OsmNameAndPoiGroupMapper } from "../../../../shared/constants/osm-name-and-poi-group-mapper";
+import { deriveIconForPoiGroup } from "../../shared/shared.functions";
+import { getOsmEntityByName } from "../../shared/pois.functions";
 
 export const getFilteredLegend = (
   entityGroups: EntityGroup[],
   poiIcons?: IApiUserPoiIcon[]
 ): ILegendItem[] => {
+  const osmNameAndPoiGroupMapper = new OsmNameAndPoiGroupMapper();
+
+  // TODO translation required
   return (
     entityGroups
-      .reduce<ILegendItem[]>((result, { title, active }) => {
-        const foundOsmCategory = active
-          ? getOsmCategoryByName(title)
+      .reduce<ILegendItem[]>((result, { active, name }) => {
+        const foundOsmEntity = active
+          ? getOsmEntityByName(osmNameAndPoiGroupMapper.revGet(name)[0])
           : undefined;
 
-        if (foundOsmCategory) {
+        if (foundOsmEntity) {
           result.push({
-            title,
-            icon: deriveIconForOsmName(title, poiIcons),
+            title: foundOsmEntity.label,
+            icon: deriveIconForPoiGroup(name, poiIcons),
           });
         }
 

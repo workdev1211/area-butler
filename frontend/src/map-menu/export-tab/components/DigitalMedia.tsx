@@ -82,8 +82,8 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
 
     const downloadZipArchive = async (): Promise<void> => {
       const entityGroups = entityGroupsByActMeans.filter(
-        ({ title, items }: EntityGroup) =>
-          title !== OsmName.property && items.length > 0
+        ({ items, name }: EntityGroup) =>
+          name !== OsmName.property && items.length > 0
       );
 
       const legend = getFilteredLegend(entityGroups);

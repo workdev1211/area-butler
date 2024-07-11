@@ -162,7 +162,8 @@ export const mapTableDataFromEntityGroup = (
         .map((item) => {
           const values = [];
 
-          values.push(item.name || group.title);
+          // TODO translation required
+          values.push(item.name || group.name);
           values.push(
             item.distanceInMeters
               ? distanceToHumanReadable(Math.trunc(item.distanceInMeters))
@@ -346,12 +347,14 @@ export const mapTableDataFromEntityGrid = (
   return {
     data: {
       header,
+      // TODO refactor to 'reduce'
       body: groupedEntries
         .filter((g) => g.active)
         .map((g) => {
           const data: string[] = [];
 
-          data.push(g.title);
+          // TODO translation required
+          data.push(g.name);
           data.push(
             distanceToHumanReadable(
               Math.round(Math.min(...g.items.map((d) => d.distanceInMeters)))

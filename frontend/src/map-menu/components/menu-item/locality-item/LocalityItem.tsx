@@ -1,7 +1,7 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./LocalityItem.scss";
 
@@ -33,7 +33,7 @@ interface ILocalityItemProps {
   transitRoute?: EntityTransitRoute;
 }
 
-const LocalityItem: FunctionComponent<ILocalityItemProps> = ({
+const LocalityItem: FC<ILocalityItemProps> = ({
   item,
   group,
   onClickTitle,
@@ -42,16 +42,26 @@ const LocalityItem: FunctionComponent<ILocalityItemProps> = ({
   onToggleTransitRoute,
   transitRoute,
 }) => {
+  const { t } = useTranslation();
+
+  const itemName =
+    item.name ??
+    t(
+      (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+        group.name
+      ]
+    );
+
   return (
     <div
       className="locality-item"
-      key={`locality-item-${group.title}-${item.id}`}
+      key={`locality-item-${group.name}-${item.id}`}
     >
       <h4
         className="locality-item-title cursor-pointer"
         onClick={() => onClickTitle(item)}
       >
-        {item.name ?? group.title}
+        {itemName}
       </h4>
       {item.osmName === OsmName.favorite ? (
         <PreferredLocationItemContent
@@ -68,7 +78,7 @@ const LocalityItem: FunctionComponent<ILocalityItemProps> = ({
   );
 };
 
-export const PreferredLocationItemContent: FunctionComponent<{
+export const PreferredLocationItemContent: FC<{
   item: ResultEntity;
   onToggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   route?: EntityRoute;
@@ -93,6 +103,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
       ?.sections.map((s) => s.duration)
       .reduce((p, c) => p + c) ?? "-";
 
+  // TODO refactor to 'reduce'
   const transitDuration =
     transitRoute?.route.sections
       .map((s) => s.duration)
@@ -101,16 +112,18 @@ export const PreferredLocationItemContent: FunctionComponent<{
   return (
     <>
       <div className="locality-item-content">
+        {/* TODO translation required */}
         <div className="col-span-full font-bold pl-2 pb-2">Routen & Zeiten</div>
         <label key="foot-checkbox-selection">
           <input
             type="checkbox"
             checked={route?.show.includes(MeansOfTransportation.WALK) || false}
-            onChange={(event) =>
-              onToggleRoute(item, MeansOfTransportation.WALK)
-            }
+            onChange={() => {
+              onToggleRoute(item, MeansOfTransportation.WALK);
+            }}
             className="checkbox checkbox-primary checkbox-xs"
           />{" "}
+          {/* TODO translation required */}
           <span className="label-text">Zu Fuß</span>
         </label>
         <label key="bike-checkbox-selection">
@@ -119,18 +132,21 @@ export const PreferredLocationItemContent: FunctionComponent<{
             checked={
               route?.show.includes(MeansOfTransportation.BICYCLE) || false
             }
-            onChange={(event) =>
-              onToggleRoute(item, MeansOfTransportation.BICYCLE)
-            }
+            onChange={() => {
+              onToggleRoute(item, MeansOfTransportation.BICYCLE);
+            }}
             className="checkbox checkbox-accent checkbox-xs"
           />{" "}
+          {/* TODO translation required */}
           <span className="label-text">Fahrrad</span>
         </label>
         <label key="car-checkbox-selection">
           <input
             type="checkbox"
             checked={route?.show.includes(MeansOfTransportation.CAR) || false}
-            onChange={(event) => onToggleRoute(item, MeansOfTransportation.CAR)}
+            onChange={() => {
+              onToggleRoute(item, MeansOfTransportation.CAR);
+            }}
             className="checkbox checkbox-xs"
           />{" "}
           <span className="label-text">Auto</span>
@@ -139,9 +155,12 @@ export const PreferredLocationItemContent: FunctionComponent<{
           <input
             type="checkbox"
             checked={transitRoute?.show || false}
-            onChange={(event) => onToggleTransitRoute(item)}
+            onChange={() => {
+              onToggleTransitRoute(item);
+            }}
             className="checkbox checkbox-secondary checkbox-xs"
           />{" "}
+          {/* TODO translation required */}
           <span className="label-text">ÖPNV</span>
         </label>
       </div>
@@ -151,11 +170,13 @@ export const PreferredLocationItemContent: FunctionComponent<{
           {(route?.show.length || []) > 0 && (
             <>
               <div className="locality-item-cell">
+                {/* TODO translation required */}
                 <span className="locality-item-cell-label">Luftlinie</span>
                 <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
               </div>
               {route?.show.includes(MeansOfTransportation.WALK) && (
                 <div className="locality-item-cell">
+                  {/* TODO translation required */}
                   <span className="locality-item-cell-label">Fußweg</span>
                   <span>
                     {Number.isNaN(Number(byFootDuration))
@@ -166,6 +187,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
               )}
               {route?.show.includes(MeansOfTransportation.BICYCLE) && (
                 <div className="locality-item-cell">
+                  {/* TODO translation required */}
                   <span className="locality-item-cell-label">Fahrrad</span>
                   <span>
                     {Number.isNaN(Number(byBicycleDuration))
@@ -176,6 +198,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
               )}
               {route?.show.includes(MeansOfTransportation.CAR) && (
                 <div className="locality-item-cell">
+                  {/* TODO translation required */}
                   <span className="locality-item-cell-label">Auto</span>
                   <span>
                     {Number.isNaN(Number(byCarDuration))
@@ -188,6 +211,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
           )}
           {transitRoute?.show && (
             <div className="locality-item-cell">
+              {/* TODO translation required */}
               <span className="locality-item-cell-label">ÖPNV</span>
               <span>
                 {Number.isNaN(Number(transitDuration))
@@ -202,18 +226,23 @@ export const PreferredLocationItemContent: FunctionComponent<{
   );
 };
 
-export const LocalityItemContent: FunctionComponent<{
+export const LocalityItemContent: FC<{
   item: ResultEntity;
 }> = ({ item }) => {
   const { t } = useTranslation();
+
   return (
     <div className="locality-item-content">
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.distance)}</span>
+        <span className="locality-item-cell-label">
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.distance)}
+        </span>
         <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
       </div>
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.footpath)}</span>
+        <span className="locality-item-cell-label">
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.footpath)}
+        </span>
         <span>
           {timeToHumanReadable(
             convertMetersToMinutes(
@@ -224,7 +253,9 @@ export const LocalityItemContent: FunctionComponent<{
         </span>
       </div>
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.bicycle)}</span>
+        <span className="locality-item-cell-label">
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.bicycle)}
+        </span>
         <span>
           {timeToHumanReadable(
             convertMetersToMinutes(
@@ -235,7 +266,9 @@ export const LocalityItemContent: FunctionComponent<{
         </span>
       </div>
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">{t(IntlKeys.snapshotEditor.pointsOfInterest.auto)}</span>
+        <span className="locality-item-cell-label">
+          {t(IntlKeys.snapshotEditor.pointsOfInterest.auto)}
+        </span>
         <span>
           {timeToHumanReadable(
             convertMetersToMinutes(

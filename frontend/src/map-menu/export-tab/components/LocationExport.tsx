@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -23,7 +23,6 @@ import {
 } from "../../../../../shared/types/integration";
 import { useTools } from "../../../hooks/tools";
 import { FeatureTypeEnum } from "../../../../../shared/types/types";
-import { deriveEntGroupsByActMeans } from "../../../shared/pois.functions";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -157,18 +156,6 @@ const LocationExport: FC<ILocationExportProps> = ({
     searchContextState.printingOnePageActive,
   ]);
 
-  const resultingGroups = useMemo(
-    () =>
-      deriveEntGroupsByActMeans(
-        searchContextState.availGroupedEntities,
-        searchContextState.responseActiveMeans
-      ).flatMap((g) => g.items),
-    [
-      searchContextState.availGroupedEntities,
-      searchContextState.responseActiveMeans,
-    ]
-  );
-
   return (
     <div
       className={
@@ -257,7 +244,6 @@ const LocationExport: FC<ILocationExportProps> = ({
           exportType !== ExportTypeEnum.ONE_PAGE && (
             <ExportModal
               activeMeans={searchContextState.responseActiveMeans}
-              entities={resultingGroups}
               censusData={searchContextState.censusData!}
               exportType={exportType}
             />

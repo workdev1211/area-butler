@@ -44,7 +44,7 @@ const FilterMenu: FC<IFilterMenuProps> = ({
 
   useEffect(() => {
     const realEstateGroup = entityGroupsByActMeans.find(
-      ({ title }) => title === OsmName.property
+      ({ name }) => name === OsmName.property
     );
 
     if (!realEstateGroup) {

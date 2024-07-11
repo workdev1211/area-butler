@@ -16,6 +16,7 @@ import {
   IApiSnapshotConfigRealEstSettings,
   MeansOfTransportation,
   OsmName,
+  TPoiGroupName,
 } from "../../../../shared/types/types";
 import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
 import ColorPicker from "components/ColorPicker";
@@ -71,7 +72,7 @@ const EditorTab: FC<IEditorTabProps> = ({
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
-  const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
+  const [poiGroupsOpen, setPoiGroupsOpen] = useState<TPoiGroupName[]>([]);
   const [color, setColor] = useState(config.primaryColor);
   const [mapIcon, setMapIcon] = useState(config.mapIcon);
   const [lateSnapConfigs, setLateSnapConfigs] = useState<
@@ -91,7 +92,7 @@ const EditorTab: FC<IEditorTabProps> = ({
     if (!config.defaultActiveGroups && groupedEntries?.length) {
       onConfigChange({
         ...config,
-        defaultActiveGroups: groupedEntries.map(({ title }) => title),
+        defaultActiveGroups: groupedEntries.map(({ name }) => name),
       });
     }
 
@@ -222,28 +223,30 @@ const EditorTab: FC<IEditorTabProps> = ({
   };
 
   const checkIsGroupOpen = (group: EntityGroup): boolean =>
-    poiGroupsOpen.includes(group.title);
+    poiGroupsOpen.includes(group.name);
 
   const toggleGroupOpen = (group: EntityGroup): void => {
     if (checkIsGroupOpen(group)) {
-      setPoiGroupsOpen(poiGroupsOpen.filter((g) => g !== group.title));
+      setPoiGroupsOpen(
+        poiGroupsOpen.filter((groupName) => groupName !== group.name)
+      );
     } else {
-      setPoiGroupsOpen([...poiGroupsOpen, group.title]);
+      setPoiGroupsOpen([...poiGroupsOpen, group.name]);
     }
   };
 
   const checkIsGroupHidden = (group: EntityGroup): boolean =>
-    !!config.hiddenGroups?.some((groupName) => groupName === group.title);
+    !!config.hiddenGroups?.some((groupName) => groupName === group.name);
 
   const toggleGroupVisibility = (group: EntityGroup): void => {
     let hiddenGroups = config.hiddenGroups ? [...config.hiddenGroups] : [];
 
     if (checkIsGroupHidden(group)) {
       hiddenGroups = hiddenGroups.filter(
-        (groupName) => groupName !== group.title
+        (groupName) => groupName !== group.name
       );
     } else {
-      hiddenGroups.push(group.title);
+      hiddenGroups.push(group.name);
     }
 
     changeConfigParam("hiddenGroups", hiddenGroups);
@@ -307,11 +310,14 @@ const EditorTab: FC<IEditorTabProps> = ({
                 />
               </li>
             )}
+            {/* TODO the new property 'title' should be added to the 'EntityGroup' which contains the translation */}
+            {/* TODO in order for the 'localeCompare' to work. Should be implemented after moving the POI functions */}
+            {/* TODO to a separate hook. */}
             {groupedEntries
               .filter((ge) => ge.items.length)
-              .sort((a, b) => a.title.localeCompare(b.title))
+              .sort((a, b) => a.name.localeCompare(b.name))
               .map((group) => (
-                <li key={group.title}>
+                <li key={group.name}>
                   <div className="flex flex-col">
                     <div className="flex items-center py-4">
                       <input
@@ -323,13 +329,14 @@ const EditorTab: FC<IEditorTabProps> = ({
                         }}
                       />
                       <h4 className="font-medium pl-2 cursor-pointer">
-                        {group.title === OsmName.property
+                        {/* TODO move translation to the poi hook */}
+                        {group.name === OsmName.property
                           ? realEstateListingsTitleEmbed
                           : t(
                               (
                                 IntlKeys.snapshotEditor
                                   .pointsOfInterest as Record<string, string>
-                              )[group.title]
+                              )[group.name]
                             )}{" "}
                       </h4>
                       <button

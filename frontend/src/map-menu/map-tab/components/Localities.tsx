@@ -12,7 +12,7 @@ import {
   OsmName,
 } from "../../../../../shared/types/types";
 import {
-  deriveIconForOsmName,
+  deriveIconForPoiGroup,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
   setBackgroundColor,
@@ -107,11 +107,13 @@ const Localities: FC<ILocalitiesProps> = ({
             .filter(
               (ge) =>
                 ge.items.length &&
-                [OsmName.favorite, OsmName.property].includes(ge.title)
+                [OsmName.favorite, OsmName.property].includes(
+                  ge.name as OsmName
+                )
             )
             .map((ge, geIndex) => {
-              const isRealEstateListing = ge.title === OsmName.property;
-              const isPreferredLocation = ge.title === OsmName.favorite;
+              const isRealEstateListing = ge.name === OsmName.property;
+              const isPreferredLocation = ge.name === OsmName.favorite;
 
               const groupIconInfo: IPoiIcon = isRealEstateListing
                 ? !!config?.mapIcon
@@ -119,7 +121,7 @@ const Localities: FC<ILocalitiesProps> = ({
                   : getRealEstateListingsIcon(resultingPoiIcons)
                 : isPreferredLocation
                 ? getPreferredLocationsIcon(resultingPoiIcons)
-                : deriveIconForOsmName(ge.items[0].osmName, resultingPoiIcons);
+                : deriveIconForPoiGroup(ge.name, resultingPoiIcons);
 
               return (
                 <MapMenuListItem
@@ -134,7 +136,7 @@ const Localities: FC<ILocalitiesProps> = ({
                   toggleRoute={toggleRoute}
                   transitRoutes={transitRoutes}
                   toggleTransitRoute={toggleTransitRoute}
-                  key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
+                  key={`${ge.name}-${geIndex}-map-menu-list-item-top`}
                 />
               );
             })}
@@ -159,17 +161,14 @@ const Localities: FC<ILocalitiesProps> = ({
                       groupCategory === category && items.length
                   )
                   .map((ge, geIndex) => {
-                    const isRealEstateListing = ge.title === OsmName.property;
-                    const isPreferredLocation = ge.title === OsmName.favorite;
+                    const isRealEstateListing = ge.name === OsmName.property;
+                    const isPreferredLocation = ge.name === OsmName.favorite;
 
                     const groupIconInfo: IPoiIcon = isRealEstateListing
                       ? getRealEstateListingsIcon(resultingPoiIcons)
                       : isPreferredLocation
                       ? getPreferredLocationsIcon(resultingPoiIcons)
-                      : deriveIconForOsmName(
-                          ge.items[0].osmName,
-                          resultingPoiIcons
-                        );
+                      : deriveIconForPoiGroup(ge.name, resultingPoiIcons);
 
                     return (
                       <MapMenuListItem
@@ -181,7 +180,7 @@ const Localities: FC<ILocalitiesProps> = ({
                         toggleRoute={toggleRoute}
                         transitRoutes={transitRoutes}
                         toggleTransitRoute={toggleTransitRoute}
-                        key={`${ge.title}-${geIndex}-map-menu-list-item`}
+                        key={`${ge.name}-${geIndex}-map-menu-list-item`}
                       />
                     );
                   })}

@@ -1,52 +1,54 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
 import { EntityGroup, ResultEntity } from "../shared/search-result.types";
+import { TPoiGroupName } from "../../../shared/types/types";
 
 interface IEntitySelectionProps {
-  groupedEntries: EntityGroup[];
-  setGroupedEntries: (groups: EntityGroup[]) => void;
+  filteredEntities: EntityGroup[];
+  setFilteredEntities: (groups: EntityGroup[]) => void;
   limit?: number;
 }
 
-const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
-  groupedEntries,
-  setGroupedEntries,
+const EntitySelection: FC<IEntitySelectionProps> = ({
+  filteredEntities,
+  setFilteredEntities,
   limit = 10,
 }) => {
   const { t } = useTranslation();
+
   useEffect(() => {
-    groupedEntries.forEach((group) =>
-      group.items.forEach((item: ResultEntity, i: number) => {
+    filteredEntities.forEach(({ items }) =>
+      items.forEach((item: ResultEntity, i: number) => {
         if (i < limit) {
           item.selected = true;
         }
       })
     );
 
-    setGroupedEntries([...groupedEntries]);
+    setFilteredEntities([...filteredEntities]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit]);
 
   const onGroupSelectionChange = (group: EntityGroup): void => {
     group.active = !group.active;
-    setGroupedEntries([...groupedEntries]);
+    setFilteredEntities([...filteredEntities]);
   };
 
   const onLocationSelectionChange = (entity: ResultEntity): void => {
     entity.selected = !entity.selected;
-    setGroupedEntries([...groupedEntries]);
+    setFilteredEntities([...filteredEntities]);
   };
 
-  const [localityOpen, setLocalityOpen] = useState<string[]>([]);
+  const [localityOpen, setLocalityOpen] = useState<TPoiGroupName[]>([]);
 
-  const toggleLocality = (title: string, open: boolean): void => {
-    const filtered = [...localityOpen.filter((l) => l !== title)];
+  const toggleLocality = (groupName: TPoiGroupName, open: boolean): void => {
+    const filtered = [...localityOpen.filter((l) => l !== groupName)];
 
     if (open) {
-      filtered.push(title);
+      filtered.push(groupName);
     }
 
     setLocalityOpen(filtered);
@@ -56,26 +58,26 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
     <div>
       <h1 className="my-5 font-bold">
         {t(IntlKeys.snapshotEditor.exportTab.selectedLocalities)} (
-        {groupedEntries.filter((group) => group.active).length} /{" "}
-        {groupedEntries.length})
+        {filteredEntities.filter((group) => group.active).length} /{" "}
+        {filteredEntities.length})
       </h1>
 
-      {groupedEntries.map((group) => (
+      {filteredEntities.map((group) => (
         <div
           className={
             "collapse border collapse-arrow" +
-            (localityOpen.includes(group.title)
+            (localityOpen.includes(group.name)
               ? " collapse-open"
               : " collapse-closed")
           }
-          key={`collapsable-${group.title}`}
+          key={`collapsable-${group.name}`}
         >
           <div
             className="collapse-title font-medium flex items-center gap-6"
             onClick={() => {
-              toggleLocality(group.title, !localityOpen.includes(group.title));
+              toggleLocality(group.name, !localityOpen.includes(group.name));
             }}
-            key={`collapsable-title-${group.title}`}
+            key={`collapsable-title-${group.name}`}
           >
             <input
               className="checkbox checkbox-primary"
@@ -89,13 +91,14 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
               }}
             />
             <span>
+              {/* TODO move translation to the poi hook */}
               {t(
                 (
                   IntlKeys.snapshotEditor.pointsOfInterest as Record<
                     string,
                     string
                   >
-                )[group.title]
+                )[group.name]
               )}{" "}
               ({group.items.length})
             </span>
@@ -107,7 +110,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
               .map((item: ResultEntity, index: number) => (
                 <div
                   className="flex gap-5 my-3 overflow-y-scroll items-center"
-                  key={`${group.title}-${item.name}-${index}`}
+                  key={`${group.name}-${item.name}-${index}`}
                 >
                   <input
                     type="checkbox"
@@ -118,6 +121,7 @@ const EntitySelection: FunctionComponent<IEntitySelectionProps> = ({
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text text-sm">
+                    {/* TODO move translation to the poi hook */}
                     {item.name ??
                       t(
                         (

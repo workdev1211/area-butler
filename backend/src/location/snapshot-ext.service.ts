@@ -77,7 +77,7 @@ export class SnapshotExtService {
       realEstateListing,
     );
 
-    // TODO refactor to reduce only
+    // TODO refactor to 'reduce'
     const localityParams = searchData.preferredAmenities
       .map((name) => osmEntityTypes.find((entity) => entity.name === name))
       .filter(Boolean) as ApiOsmEntity[];

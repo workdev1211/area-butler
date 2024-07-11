@@ -12,6 +12,7 @@ import {
   IIframeTokens,
   MeansOfTransportation,
   OsmName,
+  TPoiGroupName,
   TransportationParam,
 } from "../../../shared/types/types";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -164,8 +165,8 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES]: EntityGroup[];
   [SearchContextActionTypes.SET_ENT_GROUPS_BY_ACT_MEANS]: EntityGroup[];
   [SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS]: MeansOfTransportation[];
-  [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: OsmName;
-  [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: OsmName;
+  [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: TPoiGroupName;
+  [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: TPoiGroupName;
   [SearchContextActionTypes.SET_RESPONSE_ROUTES]: EntityRoute[];
   [SearchContextActionTypes.SET_RESPONSE_TOKENS]: Partial<IIframeTokens>;
   [SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES]: EntityTransitRoute[];
@@ -300,7 +301,7 @@ export const searchContextReducer = (
         ...state,
         responseGroupedEntities: (state.responseGroupedEntities ?? []).map(
           (g) =>
-            g.title === action.payload
+            g.name === action.payload
               ? { ...g, active: true }
               : { ...g, active: false }
         ),
@@ -310,7 +311,7 @@ export const searchContextReducer = (
       return {
         ...state,
         responseGroupedEntities: (state.responseGroupedEntities ?? []).map(
-          (g) => (g.title === action.payload ? { ...g, active: !g.active } : g)
+          (g) => (g.name === action.payload ? { ...g, active: !g.active } : g)
         ),
       };
     }

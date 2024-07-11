@@ -181,8 +181,8 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
           break;
         }
 
-        const hasMainKfCategories = oldGroupedEntities.some(({ title }) =>
-          [OsmName.favorite, OsmName.property].includes(title)
+        const hasMainKfCategories = oldGroupedEntities.some(({ name }) =>
+          [OsmName.favorite, OsmName.property].includes(name as OsmName)
         );
 
         if (!hasMainKfCategories) {
@@ -194,7 +194,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
         resRespGroupEntities = oldGroupedEntities.map((entityGroup) => ({
           ...entityGroup,
           active: [OsmName.favorite, OsmName.property].includes(
-            entityGroup.title
+            entityGroup.name as OsmName
           ),
         }));
         break;

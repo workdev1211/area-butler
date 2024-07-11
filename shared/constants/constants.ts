@@ -54,6 +54,7 @@ export const meansOfTransportations = [
   { label: "Auto", type: MeansOfTransportation.CAR, mode: "driving" },
 ];
 
+// TODO single source of truth
 export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.public_transport,

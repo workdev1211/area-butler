@@ -6,6 +6,7 @@ import {
   IApiMapboxStyle,
   MeansOfTransportation,
   OsmName,
+  TPoiGroupName,
 } from "../../../shared/types/types";
 import {
   ApiRealEstateCharacteristics,
@@ -57,8 +58,8 @@ export interface ResultEntity {
 export interface EntityGroup {
   active: boolean;
   items: ResultEntity[];
-  title: OsmName;
-  category?: ApiOsmEntityCategory;
+  name: TPoiGroupName;
+  category?: ApiOsmEntityCategory; // TODO single source of truth
 }
 
 export const poiSearchContainerId = "poi-search-container";

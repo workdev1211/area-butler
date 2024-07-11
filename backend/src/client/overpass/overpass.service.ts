@@ -123,11 +123,12 @@ export class OverpassService {
             return result;
           }
 
+          // TODO translation required
           // Adds the highway number to its title
           const processedTitle =
             entity.name === OsmName.motorway_link &&
             elementTags['destination:ref']
-              ? `${entity.label} ${elementTags['destination:ref']}`
+              ? `Autobahnauffahrt ${elementTags['destination:ref']}`
               : elementTags.name;
 
           result.push({
@@ -155,13 +156,16 @@ export class OverpassService {
 
     const CIRCLE_OPTIONS: Properties = { units: 'meters' };
 
-    const findDuplicates = (elements, elementToInspect) => {
+    const findDuplicates = (
+      elements: ApiOsmLocation[],
+      elementToInspect: ApiOsmLocation,
+    ): ApiOsmLocation[] => {
       const searchAroundDistance =
-        osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
+        osmEntityTypes.find((e) => e.name === elementToInspect.entity.name)
           ?.uniqueRadius || 20;
 
       const similarityThreshold =
-        osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
+        osmEntityTypes.find((e) => e.name === elementToInspect.entity.name)
           ?.uniqueThreshold || 0.8;
 
       const polygon = circle(
@@ -173,7 +177,7 @@ export class OverpassService {
         CIRCLE_OPTIONS,
       );
 
-      return elements.reduce((result, element) => {
+      return elements.reduce<ApiOsmLocation[]>((result, element) => {
         if (
           !(
             element.entity.id !== elementToInspect.entity.id &&

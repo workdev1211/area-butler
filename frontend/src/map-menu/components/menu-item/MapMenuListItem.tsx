@@ -55,7 +55,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
   return (
     <li
       className="locality-option-li"
-      key={`grouped-entry-${entityGroup.title}-${entityGroupIndex}`}
+      key={`grouped-entry-${entityGroup.name}-${entityGroupIndex}`}
     >
       <div
         className={
@@ -83,9 +83,10 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
             >
               <img className={imgClass} src={groupIcon.icon} alt="group-icon" />
             </div>
-            {entityGroup.title === OsmName.property
+            {/* TODO move translation to the poi hook */}
+            {entityGroup.name === OsmName.property
               ? t(IntlKeys.snapshotEditor.furtherObjects)
-              : entityGroup.title === OsmName.favorite
+              : entityGroup.name === OsmName.favorite
               ? t(IntlKeys.potentialCustomers.importantAddresses)
               : t(
                   (
@@ -93,7 +94,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
                       string,
                       string
                     >
-                  )[entityGroup.title]
+                  )[entityGroup.name]
                 )}{" "}
             [{entityGroup.items.length}]
           </div>
@@ -105,22 +106,22 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
               onChange={() => {
                 if (config?.defaultActiveGroups?.length) {
                   const isGroupFound = config.defaultActiveGroups.some(
-                    (groupName) => groupName === entityGroup.title
+                    (groupName) => groupName === entityGroup.name
                   );
 
                   if (isGroupFound) {
                     config.defaultActiveGroups =
                       config.defaultActiveGroups.filter(
-                        (groupName) => groupName !== entityGroup.title
+                        (groupName) => groupName !== entityGroup.name
                       );
                   } else {
-                    config.defaultActiveGroups.push(entityGroup.title);
+                    config.defaultActiveGroups.push(entityGroup.name);
                   }
                 }
 
                 searchContextDispatch({
                   type: SearchContextActionTypes.TOGGLE_RESPONSE_GROUP,
-                  payload: entityGroup.title,
+                  payload: entityGroup.name,
                 });
 
                 searchContextDispatch({

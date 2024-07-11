@@ -71,7 +71,7 @@ import {
 } from "../shared/search-result.types";
 import {
   deriveAddressFromCoordinates,
-  deriveIconForOsmName,
+  deriveIconForPoiGroup,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
   timeToHumanReadable,
@@ -90,6 +90,7 @@ import {
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { osmEntityTypes } from "../../../shared/constants/constants";
+import { OsmNameAndPoiGroupMapper } from "../../../shared/constants/osm-name-and-poi-group-mapper";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -1046,7 +1047,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     ]);
 
     const entitiesStringified = JSON.stringify(
-      groupedEntities.map((g) => g.items).flat()
+      groupedEntities.flatMap((g) => g.items)
     );
 
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
@@ -1116,11 +1117,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         //   }));
         // }
 
+        const osmNameAndPoiGroupMapper = new OsmNameAndPoiGroupMapper();
+
         // Add each POI to the marker cluster group
         parsedEntities?.every((entity) => {
           if (
             !parsedEntityGroups.some(
-              (eg) => eg.title === entity.osmName && eg.active
+              ({ active, name }) =>
+                osmNameAndPoiGroupMapper
+                  .revGet(name)
+                  .includes(entity.osmName) && active
             )
           ) {
             return true;
@@ -1137,18 +1143,30 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             return true;
           }
 
-          const markerIcon: IPoiIcon = isRealEstateListing
-            ? config?.mapIcon
+          let markerIcon: IPoiIcon;
+
+          if (isRealEstateListing) {
+            markerIcon = config?.mapIcon
               ? {
                   icon: config?.mapIcon,
                   color:
                     config.primaryColor ?? getRealEstateListingsIcon().color,
                   isCustom: true,
                 }
-              : getRealEstateListingsIcon(userMapPoiIcons)
-            : isPreferredLocation
-            ? getPreferredLocationsIcon(userMapPoiIcons)
-            : deriveIconForOsmName(entity.osmName, userMapPoiIcons);
+              : getRealEstateListingsIcon(userMapPoiIcons);
+          }
+
+          if (isPreferredLocation) {
+            markerIcon = getPreferredLocationsIcon(userMapPoiIcons);
+          }
+
+          // @ts-ignore
+          if (!markerIcon) {
+            markerIcon = deriveIconForPoiGroup(
+              osmNameAndPoiGroupMapper.get(entity.osmName),
+              userMapPoiIcons
+            );
+          }
 
           const resultingIconSize =
             config?.iconSizes?.poiIconSize || defaultAmenityIconSize;

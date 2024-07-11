@@ -60,7 +60,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
   const filteredGroups = props.groupedEntries.filter(
     (group: EntityGroup) =>
-      group.title !== OsmName.favorite && group.active && group.items.length > 0
+      group.name !== OsmName.favorite && group.active && group.items.length > 0
   );
 
   const chunkedGroupes = filteredGroups.reduce<Array<EntityGroup[]>>(
@@ -188,7 +188,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
             <div>{t(IntlKeys.snapshotEditor.exportTab.noLocationSelected)}</div>
           ) : (
             chunkedGroupes[0].map((group) => (
-              <div className="text-xs" key={`tab-content-${group.title}`}>
+              <div className="text-xs" key={`tab-content-${group.name}`}>
                 <EntityList
                   entityGroup={group}
                   limit={3}
@@ -212,7 +212,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
             <div className="mx-5 flex gap-2 flex-wrap pt-3">
               {chunk.map((group) => {
                 return (
-                  <div className="text-xs" key={`tab-content-${group.title}`}>
+                  <div className="text-xs" key={`tab-content-${group.name}`}>
                     <EntityList
                       entityGroup={group}
                       limit={3}

@@ -80,7 +80,9 @@ const DocxExpose: FC<IDocxExposeProps> = ({
   const { createDirectLink } = useTools();
 
   const colorPalette = deriveColorPalette(color);
-  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(
+    IntlKeys.snapshotEditor.exportTab.myLocation
+  )}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -114,7 +116,12 @@ const DocxExpose: FC<IDocxExposeProps> = ({
     const tables = groupedEntries.map((group) =>
       createTable(
         {
-          title: group.title,
+          // TODO move translation to the poi hook
+          title: t(
+            (
+              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+            )[group.name]
+          ),
           columnWidths: [5000, 2000, 1500, 1500, 1500],
           headerColor: colorPalette.primaryColor,
           headerTextColor: colorPalette.textColor,
@@ -152,7 +159,9 @@ const DocxExpose: FC<IDocxExposeProps> = ({
       particlePollutionData && particlePollutionData.length > 0
         ? createTable({
             pageBreak: false,
-            title: t(IntlKeys.snapshotEditor.exportTab.particularMatterPollution),
+            title: t(
+              IntlKeys.snapshotEditor.exportTab.particularMatterPollution
+            ),
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,

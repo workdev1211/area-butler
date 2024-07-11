@@ -85,7 +85,7 @@ const CategoryContent: FunctionComponent<ICategoryContentProps> = ({
       {isListOpen &&
         entityGroup.items.slice(0, localityPagination).map((item, i) => (
           <LocalityItem
-            key={`${entityGroup.title}-${i}`}
+            key={`${entityGroup.name}-${i}`}
             item={item}
             group={entityGroup}
             onClickTitle={(item) => {

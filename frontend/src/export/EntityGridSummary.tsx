@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
@@ -31,7 +31,7 @@ export const routingProfileOrder = [
   MeansOfTransportation.CAR,
 ];
 
-export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
+export const EntityGridSummary: FC<IEntityGridSummaryProps> = ({
   groupedEntries,
   transportationParams,
   primaryColor = "#aa0c54",
@@ -98,10 +98,11 @@ export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
         </thead>
         <tbody>
           {groupedEntries.map((group) => (
-            <tr key={`entity-grid-item-${group.title}`}>
+            <tr key={`entity-grid-item-${group.name}`}>
               <td>
                 <h5 className="font-bold">
-                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+                  {/* TODO move translation to the poi hook */}
+                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.name])}
                 </h5>
               </td>
               <td>

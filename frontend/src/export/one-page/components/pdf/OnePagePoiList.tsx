@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import OnePageLegendIcon from "../../OnePageLegendIcon";
 import { distanceToHumanReadable } from "../../../../shared/shared.functions";
@@ -19,19 +19,29 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.overview)}</div>
+      <div className="text-2xl font-bold">
+        {t(IntlKeys.snapshotEditor.exportTab.overview)}
+      </div>
       <div className="flex gap-3 flex-wrap">
         {filteredGroups.map((group) => {
           return (
             <div
               className="flex flex-col gap-1.5 flex-wrap"
-              key={`one-page-group-${group.title}`}
+              key={`one-page-group-${group.name}`}
               style={{ flex: "0 0 21vw" }}
             >
               <div className="flex items-center gap-1.5">
                 {group.icon && <OnePageLegendIcon icon={group.icon} />}
                 <div className="text-base font-bold">
-                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])}
+                  {/* TODO move translation to the poi hook */}
+                  {t(
+                    (
+                      IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                        string,
+                        string
+                      >
+                    )[group.name]
+                  )}
                 </div>
               </div>
               <div
@@ -43,15 +53,22 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
                     <div
                       className="text-xs"
                       key={`one-page-group-item-${i}-${
-                        item.name || group.title
+                        item.name || group.name
                       }`}
                     >
                       {/* Test string */}
                       {/*(750m) Lorem ipsum dolor sit amet, consect*/}
+                      {/* TODO move translation to the poi hook */}
                       {`(${distanceToHumanReadable(
                         item.distanceInMeters
                       )}) ${truncateText(
-                        item.name || t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title]),
+                        item.name ||
+                          t(
+                            (
+                              IntlKeys.snapshotEditor
+                                .pointsOfInterest as Record<string, string>
+                            )[group.name]
+                          ),
                         poiNameMaxLength
                       )}`}
                     </div>

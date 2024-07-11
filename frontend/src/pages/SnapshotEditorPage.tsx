@@ -50,6 +50,7 @@ import {
 } from "../shared/pois.functions";
 import { IntegrationTypesEnum } from "../../../shared/types/integration";
 import { IntlKeys } from "../i18n/keys";
+import { OsmNameAndPoiGroupMapper } from "../../../shared/constants/osm-name-and-poi-group-mapper";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -381,11 +382,14 @@ const SnapshotEditorPage: FC = () => {
     );
 
     newEntity.isCustom = true;
+    const osmNameAndPoiGroupMapper = new OsmNameAndPoiGroupMapper();
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        ge.title !== poiLocation.entity.label
+        !osmNameAndPoiGroupMapper
+          .revGet(ge.name)
+          .includes(poiLocation.entity.name)
           ? ge
           : {
               ...ge,

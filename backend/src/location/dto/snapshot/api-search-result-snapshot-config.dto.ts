@@ -20,6 +20,8 @@ import {
   IApiSnapshotPoiFilter,
   MeansOfTransportation,
   OsmName,
+  PoiGroupEnum,
+  TPoiGroupName,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisibilityDto from '../../../dto/api-snippet-entity-visiblity.dto';
 import ApiSnapshotIconSizesDto from '../../../dto/api-snapshot-icon-sizes.dto';
@@ -34,8 +36,10 @@ class ApiSearchResultSnapshotConfigDto
   @Expose()
   @IsOptional()
   @IsArray()
-  @IsEnum(OsmName, { each: true })
-  defaultActiveGroups?: OsmName[];
+  @IsIn([...Object.values(OsmName), ...Object.values(PoiGroupEnum)], {
+    each: true,
+  })
+  defaultActiveGroups?: TPoiGroupName[];
 
   @Expose()
   @IsOptional()
@@ -58,8 +62,10 @@ class ApiSearchResultSnapshotConfigDto
   @Expose()
   @IsOptional()
   @IsArray()
-  @IsEnum(OsmName, { each: true })
-  hiddenGroups?: OsmName[];
+  @IsIn([...Object.values(OsmName), ...Object.values(PoiGroupEnum)], {
+    each: true,
+  })
+  hiddenGroups?: TPoiGroupName[];
 
   @Expose()
   @IsOptional()

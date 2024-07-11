@@ -67,7 +67,6 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
               </h3>
             </label>
           </div>
-          {/* TODO convert to reduce */}
           {osmEntityTypes
             .filter((entityType) => entityType.category === category)
             .map((entity) => (
@@ -84,6 +83,7 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
                   }}
                 />
                 <span className="label-text ml-2">
+                  {/* TODO move translation to the poi hook */}
                   {t(
                     (
                       IntlKeys.snapshotEditor.pointsOfInterest as Record<

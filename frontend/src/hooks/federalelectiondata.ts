@@ -70,7 +70,7 @@ export const useFederalElectionData = () => {
           data.Prozent > 5
       );
 
-    // TODO refactor to reduce and sort
+    // TODO refactor to 'reduce' and 'sort'
     const results: FederalElectionResult[] = partiesWithFivePercent
       .filter(
         (party) =>

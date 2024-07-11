@@ -16,6 +16,8 @@ import {
   IApiUserPoiIcon,
   MeansOfTransportation,
   OsmName,
+  PoiGroupEnum,
+  TPoiGroupName,
 } from "../../../shared/types/types";
 import parkIcon from "../assets/icons/pois/park.svg";
 import fuelIcon from "../assets/icons/pois/fuel.svg";
@@ -294,17 +296,17 @@ export const deriveColorPalette = (hexColor: string): IColorPalette => {
   };
 };
 
-export const deriveIconForOsmName = (
-  osmName: OsmName,
+export const deriveIconForPoiGroup = (
+  groupName?: TPoiGroupName,
   userPoiIcons?: IApiUserPoiIcon[]
 ): IPoiIcon => {
-  const customIcon = userPoiIcons?.find(({ name }) => name === osmName)?.file;
+  const customIcon = userPoiIcons?.find(({ name }) => name === groupName)?.file;
 
   if (customIcon) {
     return { icon: customIcon, color: "transparent", isCustom: true };
   }
 
-  switch (osmName) {
+  switch (groupName) {
     case OsmName.fuel:
       return {
         icon: fuelIcon,
@@ -316,8 +318,7 @@ export const deriveIconForOsmName = (
         icon: chemistIcon,
         color: "#267F9D",
       };
-    case OsmName.kiosk:
-    case OsmName.post_office:
+    case PoiGroupEnum.kiosk_post_office:
       return {
         icon: kioskIcon,
         color: "#8F72EB",
@@ -332,8 +333,7 @@ export const deriveIconForOsmName = (
         icon: busStopIcon,
         color: "#C71362",
       };
-    case OsmName.bar:
-    case OsmName.pub:
+    case PoiGroupEnum.bar_pub:
       return {
         icon: barIcon,
         color: "#E3BB3F",

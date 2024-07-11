@@ -1,7 +1,7 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./EntityTable.scss";
 
@@ -14,7 +14,7 @@ import {
 import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 import { convertMetersToMinutes } from "../../../shared/functions/shared.functions";
 
-export interface EntityTableProps {
+export interface IEntityTableProps {
   entityGroup: EntityGroup;
   activeMeans: MeansOfTransportation[];
   limit?: number;
@@ -22,7 +22,7 @@ export interface EntityTableProps {
   primaryColor?: string;
 }
 
-export const EntityTable: FunctionComponent<EntityTableProps> = ({
+export const EntityTable: FC<IEntityTableProps> = ({
   entityGroup,
   limit = 10,
   activeMeans,
@@ -30,13 +30,13 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
   primaryColor = "#aa0c54",
 }) => {
   const { t } = useTranslation();
+
   const items = [...entityGroup.items].slice(0, limit);
   const hasNames =
-    items.some((item) => item.name && item.name.length) || entityGroup.title;
+    items.some((item) => item.name && item.name.length) || entityGroup.name;
   const byFoot = items.some((item) => item.byFoot);
   const byBike = items.some((item) => item.byBike);
   const byCar = items.some((item) => item.byCar);
-
   const colorPalette = deriveColorPalette(primaryColor);
 
   const tableHeaderStyle = {
@@ -63,7 +63,9 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
               )}
             {showRoutingColumns &&
               byCar &&
-              activeMeans.includes(MeansOfTransportation.CAR) && <th>{t(IntlKeys.common.transportationTypes.driving)}</th>}
+              activeMeans.includes(MeansOfTransportation.CAR) && (
+                <th>{t(IntlKeys.common.transportationTypes.driving)}</th>
+              )}
           </tr>
         </thead>
         <tbody>
@@ -73,15 +75,26 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
               <tr
                 key={
                   "result-table-" +
-                  entityGroup.title +
+                  entityGroup.name +
                   "-" +
                   item.name +
                   item.distanceInMeters
                 }
               >
-                {hasNames && <td>
-                  {item.name || t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[entityGroup.title])}
-                </td>}
+                {hasNames && (
+                  <td>
+                    {/* TODO move translation to the poi hook */}
+                    {item.name ||
+                      t(
+                        (
+                          IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                            string,
+                            string
+                          >
+                        )[entityGroup.name]
+                      )}
+                  </td>
+                )}
                 <td>
                   {item.distanceInMeters
                     ? distanceToHumanReadable(item.distanceInMeters)

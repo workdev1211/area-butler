@@ -70,7 +70,8 @@ const OnePageEntitySelection: FunctionComponent<
                 onChange={() => {}}
               />
               <div className="select-none">
-                {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.title])} ({group.items.length})
+                {/* TODO move translation to the poi hook */}
+                {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.name])} ({group.items.length})
               </div>
             </div>
           ))}

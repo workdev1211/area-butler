@@ -3,7 +3,6 @@ import { v4 } from "uuid";
 import {
   ApiCoordinates,
   ApiOsmEntity,
-  ApiOsmEntityCategory,
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
@@ -12,6 +11,7 @@ import {
   MeansOfTransportation,
   OsmName,
   PoiFilterTypesEnum,
+  TPoiGroupName,
 } from "../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "./search-result.types";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -22,6 +22,7 @@ import {
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
 import { osmEntityTypes } from "../../../shared/constants/constants";
+import { OsmNameAndPoiGroupMapper } from "../../../shared/constants/osm-name-and-poi-group-mapper";
 
 interface IDeriveParameters {
   searchResponse: ApiSearchResponse;
@@ -31,6 +32,8 @@ interface IDeriveParameters {
   preferredLocations?: ApiPreferredLocation[];
   realEstates?: ApiRealEstateListing[];
 }
+
+// TODO refactor to a poi hook
 
 const checkIsLocationHidden = (
   entity: Pick<ApiOsmEntity, "id" | "name">,
@@ -317,22 +320,25 @@ export const deriveInitialEntityGroups = ({
   searchResponse,
   ignoreVisibility = false,
 }: IDeriveParameters): EntityGroup[] => {
-  const deriveActiveState = (title: OsmName, index?: number): boolean => {
+  const deriveActiveState = (
+    groupName: TPoiGroupName,
+    index?: number
+  ): boolean => {
     const activeGroups = config?.defaultActiveGroups ?? [];
 
     if (activeGroups.length) {
-      return activeGroups.includes(title);
+      return activeGroups.includes(groupName);
     }
 
     // For the 'KF' theme only a single category should be active if it's not defined in 'defaultActiveGroups'
     return config?.theme === "KF" ? index === 0 : true;
   };
 
-  const groupedEntities: EntityGroup[] = [];
+  const entityGroups: EntityGroup[] = [];
   const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
 
   if (centerOfSearch && preferredLocations?.length) {
-    groupedEntities.push({
+    entityGroups.push({
       active: deriveActiveState(OsmName.favorite),
       items: buildEntDataFromPrefLocs({
         centerOfSearch,
@@ -340,12 +346,12 @@ export const deriveInitialEntityGroups = ({
         ignoreVisibility,
         preferredLocations,
       }),
-      title: OsmName.favorite,
+      name: OsmName.favorite,
     });
   }
 
   if (centerOfSearch && realEstates?.length) {
-    groupedEntities.push({
+    entityGroups.push({
       active: deriveActiveState(OsmName.property),
       items: buildEntDataFromEstates({
         centerOfSearch,
@@ -353,11 +359,11 @@ export const deriveInitialEntityGroups = ({
         ignoreVisibility,
         realEstates,
       }),
-      title: OsmName.property,
+      name: OsmName.property,
     });
   }
 
-  const poiEntities = buildEntityData(
+  const poiItems = buildEntityData(
     searchResponse,
     config,
     ignoreVisibility
@@ -368,9 +374,15 @@ export const deriveInitialEntityGroups = ({
     ) => distanceInMeters1 - distanceInMeters2
   );
 
-  const poiGroupedEntities = Object.values(
-    poiEntities.reduce<Record<string, EntityGroup>>((result, resultEntity) => {
-      const groupName = resultEntity.osmName;
+  const poiGroups = Object.values(
+    poiItems.reduce<Record<string, EntityGroup>>((result, resultEntity) => {
+      const groupName = new OsmNameAndPoiGroupMapper().get(
+        resultEntity.osmName
+      );
+
+      if (!groupName) {
+        return result;
+      }
 
       if (result[groupName]) {
         const groupItems = result[groupName].items;
@@ -379,13 +391,10 @@ export const deriveInitialEntityGroups = ({
 
       if (!result[groupName]) {
         result[groupName] = {
-          active: deriveActiveState(
-            resultEntity.osmName,
-            Object.keys(result).length
-          ), // TODO should be switched to 'groupName'
-          category: getOsmCategoryByName(resultEntity.osmName),
+          active: deriveActiveState(groupName, Object.keys(result).length),
+          category: getOsmEntityByName(resultEntity.osmName)?.category, // TODO single source of truth
           items: [resultEntity],
-          title: groupName,
+          name: groupName,
         };
       }
 
@@ -393,16 +402,16 @@ export const deriveInitialEntityGroups = ({
     }, {})
   );
 
-  groupedEntities.push(
+  entityGroups.push(
     ...(!ignorePoiFilter && config?.poiFilter?.value
-      ? applyPoiFilter(poiGroupedEntities, config.poiFilter)
-      : poiGroupedEntities)
+      ? applyPoiFilter(poiGroups, config.poiFilter)
+      : poiGroups)
   );
 
-  return groupedEntities;
+  return entityGroups;
 };
 
-export const deriveEntGroupsByActMeans = (
+export const derivePoiGroupsByActMeans = (
   entityGroups: EntityGroup[] = [],
   activeMeans: MeansOfTransportation[] = []
 ): EntityGroup[] => {
@@ -451,7 +460,7 @@ export const toggleEntityVisibility = (
   return entityVisibility;
 };
 
-export const getOsmCategoryByName = (
-  osmName: OsmName
-): ApiOsmEntityCategory | undefined =>
-  osmEntityTypes.find(({ name }) => name === osmName)?.category;
+export const getOsmEntityByName = (
+  osmName: OsmName | undefined
+): ApiOsmEntity | undefined =>
+  osmName ? osmEntityTypes.find(({ name }) => name === osmName) : undefined;

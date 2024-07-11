@@ -12,7 +12,11 @@ import {
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import { ApiUser, OsmName } from "../../../../shared/types/types";
+import {
+  ApiUser,
+  OsmName,
+  TPoiGroupName,
+} from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../shared/search-result.types";
 import { setBackgroundColor } from "../../shared/shared.functions";
@@ -54,7 +58,7 @@ export interface IExportFlowState {
 }
 
 export interface ISortableEntityGroup extends EntityGroup {
-  id: OsmName;
+  id: TPoiGroupName;
   icon?: IPoiIcon;
 }
 
@@ -102,25 +106,28 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const sortableGroups: ISortableEntityGroup[] = useMemo(() => {
     let activeGroupNumber = 0;
 
+    // TODO translation required
     return searchContextState.entityGroupsByActMeans
       .sort((a: EntityGroup, b: EntityGroup) =>
-        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       )
       .reduce<ISortableEntityGroup[]>((result, group) => {
-        if ([OsmName.favorite, OsmName.property].includes(group.title)) {
+        if (
+          [OsmName.favorite, OsmName.property].includes(group.name as OsmName)
+        ) {
           return result;
         }
 
         const isGroupActive = cachedOnePage.filteredGroups
           ? cachedOnePage.filteredGroups!.some(
-              ({ title, active }) => title === group.title && active
+              ({ active, name }) => active && name === group.name
             )
           : activeGroupNumber < ENTITY_GROUP_LIMIT;
 
         const sortableGroup = {
           ...group,
           active: isGroupActive,
-          id: group.title,
+          id: group.name,
         };
 
         sortableGroup.items = sortableGroup.items.map((item, i) => {
@@ -191,16 +198,15 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     setResultGroups(
       filteredGroups.reduce<ISortableEntityGroup[]>((result, group) => {
         if (
-          group.title !== OsmName.favorite &&
+          group.name !== OsmName.favorite &&
           group.active &&
           group.items.length > 0
         ) {
           const groupIcon = legend.find(
-            ({ title }) => title === group.title
+            ({ title }) => title === group.name
           )?.icon;
 
           const items = [...group.items].slice(0, 3);
-
           result.push({ ...group, items, icon: groupIcon });
         }
 

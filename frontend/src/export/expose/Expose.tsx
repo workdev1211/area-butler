@@ -49,9 +49,10 @@ const chunkSize = 24;
 export const Expose = forwardRef(
   (props: IExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
     const { t } = useTranslation();
+
     const filteredGroups = props.groupedEntries.filter(
       (group) =>
-        group.title !== OsmName.favorite &&
+        group.name !== OsmName.favorite &&
         group.active &&
         group.items.length > 0
     );
@@ -74,7 +75,7 @@ export const Expose = forwardRef(
     );
 
     const importantEntities = props.groupedEntries.find(
-      (group) => group.active && group.title === OsmName.favorite
+      (group) => group.active && group.name === OsmName.favorite
     );
 
     const transportationParams = props.transportationParams;
@@ -194,19 +195,20 @@ export const Expose = forwardRef(
                 logo={props.logo}
                 leftHeaderElement={
                   <div className="text-2xl font-bold">
+                    {/* TODO move translation to the poi hook */}
                     {t(
                       (
                         IntlKeys.snapshotEditor.pointsOfInterest as Record<
                           string,
                           string
                         >
-                      )[group.title]
+                      )[group.name]
                     )}
                   </div>
                 }
-                key={group.title}
+                key={group.name}
               >
-                <div className="m-10" key={`tab-content-${group.title}`}>
+                <div className="m-10" key={`tab-content-${group.name}`}>
                   <EntityTable
                     activeMeans={activeMeans}
                     entityGroup={group}

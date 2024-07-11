@@ -13,7 +13,7 @@ import "react-image-crop/src/ReactCrop.scss";
 import "./MapClipCropModal.scss";
 
 import {
-  deriveIconForOsmName,
+  deriveIconForPoiGroup,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
   preferredLocationsTitle,
@@ -92,14 +92,14 @@ const MeansBlock = ({ means, transportationParams }: IMeansBlockProps) => {
 };
 
 interface IMapClipCropModalProps {
-  mapClipping: string;
   closeModal: (croppedMapClipping?: string) => void;
-  groupedEntries: EntityGroup[];
+  entityGroups: EntityGroup[];
+  mapClipping: string;
+  activeMeans?: MeansOfTransportation[];
   color?: string;
   directLink?: string;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
   transportationParams?: TransportationParam[];
-  activeMeans?: MeansOfTransportation[];
+  userMenuPoiIcons?: IApiUserPoiIcon[];
 }
 
 const getAspectCrop = (
@@ -131,7 +131,7 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> =>
 
 const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   mapClipping,
-  groupedEntries,
+  entityGroups,
   closeModal,
   color,
   directLink,
@@ -190,16 +190,17 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       ? getRealEstateListingsIcon(userMenuPoiIcons)
       : isPreferredLocation
       ? getPreferredLocationsIcon(userMenuPoiIcons)
-      : deriveIconForOsmName(group.items[0].osmName, userMenuPoiIcons);
+      : deriveIconForPoiGroup(group.name, userMenuPoiIcons);
 
     return (
-      <li className={"active"} key={group.title}>
+      <li className={"active"} key={group.name}>
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
+        {/* TODO move translation to the poi hook */}
         {t(
           (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-            group.title
+            group.name
           ]
         )}
       </li>
@@ -277,7 +278,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   }, [directLink, color]);
 
   useEffect(() => {
-    setQrCodeFunc();
+    void setQrCodeFunc();
   }, [setQrCodeFunc]);
 
   const generateOverlayImage = async (
@@ -343,9 +344,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
             setCropState(percentCrop);
           }}
           renderSelectionAddon={() => (
-            <div
-              ref={(ref) => setOverlayRef(ref)}
-            >
+            <div ref={(ref) => setOverlayRef(ref)}>
               {qrCode && isShownQrCode && (
                 <div className="qrCodeContainer">
                   <MapClipQrCode qrCodeImage={qrCode} color={color} />
@@ -354,8 +353,8 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
               {isShownLegend && (
                 <div className="mapMenu">
                   <ul className="menu-desktop">
-                    {groupedEntries.map((ge) => (
-                      <ListItem key={ge.title} {...ge} />
+                    {entityGroups.map((ge) => (
+                      <ListItem key={ge.name} {...ge} />
                     ))}
                   </ul>
                 </div>

@@ -56,7 +56,7 @@ import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { IntlKeys } from "../../i18n/keys";
 import MapMenuContainer from "./components/MapMenuContainer";
 import {
-  deriveEntGroupsByActMeans,
+  derivePoiGroupsByActMeans,
   toggleEntityVisibility,
 } from "../../shared/pois.functions";
 
@@ -245,7 +245,7 @@ const SearchResultContainer = forwardRef<
     useEffect(() => {
       setPreferredLocationsGroup(undefined);
 
-      const groupsByActMeans = deriveEntGroupsByActMeans(
+      const groupsByActMeans = derivePoiGroupsByActMeans(
         responseGroupedEntities,
         responseActiveMeans
       );
@@ -256,7 +256,7 @@ const SearchResultContainer = forwardRef<
       });
 
       const foundPrefLocGroup = groupsByActMeans.find(
-        (group) => group.title === OsmName.favorite
+        (group) => group.name === OsmName.favorite
       );
 
       setPreferredLocationsGroup(foundPrefLocGroup);
@@ -498,10 +498,14 @@ const SearchResultContainer = forwardRef<
         {/*  </div>*/}
         {/*)}*/}
         {mapClipping && (
+          // TODO translation required and 'localeCompare' for sorting
           <MapClipCropModal
-            groupedEntries={(resultGroupEntities ?? [])
-              .filter((ge) => ge.items.length && ge.title !== OsmName.property && ge.active)
-              .sort((a, b) => (a.title > b.title ? 1 : -1))}
+            entityGroups={(entityGroupsByActMeans ?? [])
+              .filter(
+                (ge) =>
+                  ge.items.length && ge.name !== OsmName.property && ge.active
+              )
+              .sort((a, b) => (a.name > b.name ? 1 : -1))}
             mapClipping={mapClipping}
             closeModal={handleMapClipCrop}
             color={primaryColor?.slice(1)}

@@ -21,23 +21,22 @@ import InsightsSelection from "./InsightsSelection";
 import MapClippingSelection, {
   ISelectableMapClipping,
 } from "./MapClippingSelection";
-import { EntityGroup, ResultEntity } from "../shared/search-result.types";
+import { EntityGroup } from "../shared/search-result.types";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
 import areaButlerLogo from "../assets/img/logo.svg";
 import { useTools } from "../hooks/tools";
 import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
 import { TCensusData } from "../../../shared/types/data-provision";
+import { derivePoiGroupsByActMeans } from "../shared/pois.functions";
 
 interface IExportModalProps {
-  entities: ResultEntity[];
   censusData?: TCensusData;
   activeMeans: MeansOfTransportation[];
   exportType: ExportTypeEnum;
 }
 
 const ExportModal: FC<IExportModalProps> = ({
-  entities,
   censusData,
   activeMeans,
   exportType,
@@ -87,11 +86,23 @@ const ExportModal: FC<IExportModalProps> = ({
     });
   };
 
+  const poiItems = useMemo(
+    () =>
+      derivePoiGroupsByActMeans(
+        searchContextState.availGroupedEntities,
+        searchContextState.responseActiveMeans
+      ).flatMap(({ items }) => items),
+    [
+      searchContextState.availGroupedEntities,
+      searchContextState.responseActiveMeans,
+    ]
+  );
+
   const entityGroups: EntityGroup[] = useMemo(
     () =>
       searchContextState.entityGroupsByActMeans.filter(
-        ({ title, items }: EntityGroup) =>
-          title !== OsmName.property && items.length > 0
+        ({ name, items }: EntityGroup) =>
+          name !== OsmName.property && items.length > 0
       ),
     [searchContextState.entityGroupsByActMeans]
   );
@@ -213,8 +224,8 @@ const ExportModal: FC<IExportModalProps> = ({
               </div>
 
               <EntitySelection
-                groupedEntries={filteredEntities}
-                setGroupedEntries={setFilteredEntities}
+                filteredEntities={filteredEntities}
+                setFilteredEntities={setFilteredEntities}
                 limit={exportType !== ExportTypeEnum.CHEATSHEET ? 10 : 3}
               />
             </div>
@@ -255,7 +266,7 @@ const ExportModal: FC<IExportModalProps> = ({
 
               {exportType === ExportTypeEnum.CHEATSHEET && (
                 <CheatsheetDownload
-                  entities={entities}
+                  entities={poiItems}
                   groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : undefined}
                   searchResponse={searchContextState.searchResponse!}

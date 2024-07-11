@@ -188,8 +188,7 @@ export interface ApiOsmEntity {
   id?: string;
   type: OsmType;
   name: OsmName;
-  // TODO change to an enum
-  label: string;
+  label: string; // TODO remove in the future after BE translation
   title?: string;
   category: ApiOsmEntityCategory;
   uniqueRadius?: number;
@@ -301,6 +300,18 @@ export enum OsmName {
   pub = "pub",
 }
 
+export enum PoiGroupEnum {
+  bar_pub = "bar_pub",
+  kiosk_post_office = "kiosk_post_office",
+}
+
+export type TPoiGroupName =
+  | Exclude<
+      OsmName,
+      OsmName.bar | OsmName.pub | OsmName.kiosk | OsmName.post_office
+    >
+  | PoiGroupEnum;
+
 export interface ApiUpdateSearchResultSnapshot {
   config?: ApiSearchResultSnapshotConfig;
   customPois?: ApiOsmLocation[];
@@ -371,11 +382,13 @@ export interface IApiSnapshotConfigRealEstSettings {
 }
 
 export interface ApiSearchResultSnapshotConfig {
-  defaultActiveGroups?: OsmName[]; // MapTab Points-of-Interest active categories --> osmEntityTypes.label
+  // TODO create a DB migration
+  defaultActiveGroups?: TPoiGroupName[]; // MapTab Points-of-Interest active categories --> osmEntityTypes.label
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisibility[];
   groupItems?: boolean;
-  hiddenGroups?: OsmName[]; // EditorTab Points-of-Interest active categories --> osmEntityTypes.label
+  // TODO create a DB migration
+  hiddenGroups?: TPoiGroupName[]; // EditorTab Points-of-Interest active categories --> osmEntityTypes.label
 
   hideIsochrones?: boolean;
   hideMeanToggles?: boolean; // for reference map // 'MeansToggle' component used to turn on and off the isochrones
@@ -455,7 +468,7 @@ export enum CsvFileFormatEnum {
 }
 
 export interface IApiUserPoiIcon {
-  name: OsmName;
+  name: TPoiGroupName;
   file: string;
 }
 

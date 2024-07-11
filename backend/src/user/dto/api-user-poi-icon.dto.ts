@@ -1,14 +1,19 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 import { Expose, Exclude } from 'class-transformer';
 
-import { IApiUserPoiIcon, OsmName } from '@area-butler-types/types';
+import {
+  IApiUserPoiIcon,
+  OsmName,
+  PoiGroupEnum,
+  TPoiGroupName,
+} from '@area-butler-types/types';
 
 @Exclude()
 class ApiUserPoiIconDto implements IApiUserPoiIcon {
   @Expose()
   @IsNotEmpty()
-  @IsEnum(OsmName)
-  name: OsmName;
+  @IsIn([...Object.values(OsmName), ...Object.values(PoiGroupEnum)])
+  name: TPoiGroupName;
 
   @Expose()
   @IsNotEmpty()

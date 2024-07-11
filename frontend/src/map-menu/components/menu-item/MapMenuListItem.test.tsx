@@ -6,7 +6,6 @@ import { OsmName } from "../../../../../shared/types/types";
 
 describe("MapMenuListItem", () => {
   const entityGroup = {
-    title: OsmName.park,
     active: true,
     items: [
       {
@@ -26,6 +25,7 @@ describe("MapMenuListItem", () => {
         distanceInMeters: 5,
       },
     ],
+    name: OsmName.park,
   } as EntityGroup;
 
   test("should render", async () => {

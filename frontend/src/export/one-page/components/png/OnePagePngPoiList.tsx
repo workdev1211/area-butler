@@ -38,7 +38,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
         {entityGroups.map((group) => (
           <div
-            key={`one-page-group-${group.title}`}
+            key={`one-page-group-${group.name}`}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -62,13 +62,14 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                   fontWeight: 700,
                 }}
               >
+                {/* TODO move translation to the poi hook */}
                 {t(
                   (
                     IntlKeys.snapshotEditor.pointsOfInterest as Record<
                       string,
                       string
                     >
-                  )[group.title]
+                  )[group.name]
                 )}
               </div>
             </div>
@@ -87,10 +88,11 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                     fontSize: "0.75rem",
                     lineHeight: "1rem",
                   }}
-                  key={`one-page-group-item-${i}-${item.name || group.title}`}
+                  key={`one-page-group-item-${i}-${item.name || group.name}`}
                 >
                   {/* Test string */}
                   {/*(750m) Lorem ipsum dolor sit amet, consect*/}
+                  {/* TODO move translation to the poi hook */}
                   {`(${distanceToHumanReadable(
                     item.distanceInMeters
                   )}) ${truncateText(
@@ -101,7 +103,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                             string,
                             string
                           >
-                        )[group.title]
+                        )[group.name]
                       ),
                     poiNameMaxLength
                   )}`}

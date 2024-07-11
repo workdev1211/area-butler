@@ -6,7 +6,7 @@ import { IntlKeys } from "i18n/keys";
 import { EntityGroup } from "../../shared/search-result.types";
 import "./MapMenuKarlaFricke.scss";
 import {
-  deriveIconForOsmName,
+  deriveIconForPoiGroup,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
 } from "../../shared/shared.functions";
@@ -42,11 +42,12 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
     searchContextState: { entityGroupsByActMeans },
   } = useContext(SearchContext);
 
+  // TODO translation required and 'localeCompare' for sorting
   const groupedEntries = useMemo(
     () =>
       entityGroupsByActMeans
-        .filter((ge) => ge.items.length && ge.title !== OsmName.property)
-        .sort((a, b) => (a.title > b.title ? 1 : -1)),
+        .filter((ge) => ge.items.length && ge.name !== OsmName.property)
+        .sort((a, b) => (a.name > b.name ? 1 : -1)),
     [entityGroupsByActMeans]
   );
 
@@ -57,14 +58,14 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
     const { t } = useTranslation();
     const { searchContextDispatch } = useContext(SearchContext);
 
-    const isRealEstateListing = group.title === OsmName.property;
-    const isPreferredLocation = group.title === OsmName.favorite;
+    const isRealEstateListing = group.name === OsmName.property;
+    const isPreferredLocation = group.name === OsmName.favorite;
 
     const groupIconInfo = isRealEstateListing
       ? getRealEstateListingsIcon(userMenuPoiIcons)
       : isPreferredLocation
       ? getPreferredLocationsIcon(userMenuPoiIcons)
-      : deriveIconForOsmName(group.items[0].osmName, userMenuPoiIcons);
+      : deriveIconForPoiGroup(group.name, userMenuPoiIcons);
 
     return (
       <li
@@ -78,16 +79,17 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
 
           searchContextDispatch({
             type: SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP,
-            payload: group.title,
+            payload: group.name,
           });
         }}
       >
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
+        {/* TODO move translation to the poi hook */}
         {t(
           (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-            group.title
+            group.name
           ]
         )}
         {isDropdownButton && <span className="dropdown-triangle">&#9660;</span>}
@@ -103,7 +105,7 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
   const ListItemMemo = memo(ListItem, listItemPropsAreEqual);
 
   const resultingList = groupedEntries.map((group) => (
-    <ListItemMemo key={group.title} group={group} />
+    <ListItemMemo key={group.name} group={group} />
   ));
 
   const DesktopMenu: FC = () => {
