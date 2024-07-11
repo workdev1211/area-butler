@@ -55,11 +55,11 @@ export class OverpassService {
     }
   }
 
-  async mapResponse(
+  mapResponse(
     response,
     centerCoordinates: ApiCoordinates,
     preferredAmenities: OsmName[],
-  ): Promise<ApiOsmLocation[]> {
+  ): ApiOsmLocation[] {
     const elements = Array.isArray(response)
       ? response
       : response?.data?.elements;

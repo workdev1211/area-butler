@@ -26,6 +26,7 @@ import { IPoiIcon } from "../../../shared/shared.types";
 import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
 import { SearchContext } from "../../../context/SearchContext";
 import { UserContext } from "../../../context/UserContext";
+import { OsmEntityMapper } from "../../../../../shared/types/osm-entity-mapper";
 
 interface ILocalitiesProps {
   toggleAllLocalities: () => void;
@@ -63,6 +64,8 @@ const Localities: FC<ILocalitiesProps> = ({
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!isEditorMode);
+
+  const osmEntityMapper = new OsmEntityMapper();
 
   return (
     <div
@@ -146,8 +149,9 @@ const Localities: FC<ILocalitiesProps> = ({
             return (
               <div key={`container-${category}`}>
                 {groupedEntries.some(
-                  ({ category: groupCategory, items }) =>
-                    groupCategory === category && items.length
+                  ({ items, name }) =>
+                    osmEntityMapper.getByGroupName(name)[0]?.category ===
+                      category && items.length
                 ) && (
                   <li className="locality-option-heading" key={category}>
                     <h4>
@@ -157,8 +161,9 @@ const Localities: FC<ILocalitiesProps> = ({
                 )}
                 {groupedEntries
                   .filter(
-                    ({ category: groupCategory, items }) =>
-                      groupCategory === category && items.length
+                    ({ items, name }) =>
+                      osmEntityMapper.getByGroupName(name)[0]?.category ===
+                        category && items.length
                   )
                   .map((ge, geIndex) => {
                     const isRealEstateListing = ge.name === OsmName.property;

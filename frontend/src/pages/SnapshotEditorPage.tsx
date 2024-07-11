@@ -387,7 +387,9 @@ const SnapshotEditorPage: FC = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        !osmEntityMapper.revGet(ge.name).includes(poiLocation.entity.name)
+        !osmEntityMapper
+          .getByGroupName(ge.name)
+          ?.some(({ name }) => name === poiLocation.entity.name)
           ? ge
           : {
               ...ge,

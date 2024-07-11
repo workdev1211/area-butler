@@ -2,6 +2,9 @@ import { FC, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import Input from "components/inputs/formik/Input";
 import LocationAutocomplete from "components/LocationAutocomplete";
 import Select from "components/inputs/formik/Select";
@@ -21,6 +24,8 @@ const AddPoiForm: FC<IAddPoiFormProps> = ({
   address,
   onSubmit,
 }) => {
+  const { t } = useTranslation();
+
   const [localCoordinates, setLocalCoordinates] = useState(coordinates);
   const [localAddress, setLocalAddress] = useState(address);
 
@@ -67,12 +72,37 @@ const AddPoiForm: FC<IAddPoiFormProps> = ({
               name="name"
               placeholder="Objekttype angeben"
             >
-              {/* TODO translation required */}
+              {/* TODO move translation to the poi hook */}
               {osmEntityTypes
-                .sort((e1, e2) => e1.label.localeCompare(e2.label))
-                .map((entityType) => (
-                  <option value={entityType.name} key={entityType.name}>
-                    {entityType.label}
+                .sort((a, b) =>
+                  t(
+                    (
+                      IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                        string,
+                        string
+                      >
+                    )[a.name]
+                  ).localeCompare(
+                    t(
+                      (
+                        IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                          string,
+                          string
+                        >
+                      )[b.name]
+                    )
+                  )
+                )
+                .map(({ name }) => (
+                  <option value={name} key={name}>
+                    {t(
+                      (
+                        IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                          string,
+                          string
+                        >
+                      )[name]
+                    )}
                   </option>
                 ))}
             </Select>

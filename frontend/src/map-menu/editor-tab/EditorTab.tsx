@@ -331,13 +331,15 @@ const EditorTab: FC<IEditorTabProps> = ({
                       <h4 className="font-medium pl-2 cursor-pointer">
                         {/* TODO move translation to the poi hook */}
                         {group.name === OsmName.property
-                          ? realEstateListingsTitleEmbed
+                          ? t(IntlKeys.snapshotEditor.furtherObjects)
+                          : group.name === OsmName.favorite
+                          ? t(IntlKeys.potentialCustomers.importantAddresses)
                           : t(
                               (
                                 IntlKeys.snapshotEditor
                                   .pointsOfInterest as Record<string, string>
                               )[group.name]
-                            )}{" "}
+                            )}
                       </h4>
                       <button
                         className="btn-sm btn-link"

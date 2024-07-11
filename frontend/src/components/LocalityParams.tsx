@@ -6,8 +6,10 @@ import { IntlKeys } from "i18n/keys";
 import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
+  TPoiGroupName,
 } from "../../../shared/types/types";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
+import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
 
 interface ILocalityParamsProps {
   values: ApiOsmEntity[];
@@ -16,14 +18,40 @@ interface ILocalityParamsProps {
 
 const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
   const { t } = useTranslation();
-  const handleEntityChange = (entity: ApiOsmEntity) => {
-    const updatedEntities: ApiOsmEntity[] = values.some(
-      (value) => value.name === entity.name
-    )
-      ? values.filter((value) => value.name !== entity.name)
-      : [...values, entity];
+  const osmEntityMapper = new OsmEntityMapper();
 
+  const saveLocalityParams = (updatedEntities: ApiOsmEntity[]) => {
     onChange(updatedEntities);
+  };
+
+  // TODO a hack - 'label' should not be used
+  const handleEntityGroupChange = (groupName: TPoiGroupName): void => {
+    let updatedEntities!: ApiOsmEntity[];
+
+    if (
+      values.some(
+        ({ groupName: locParamsGrpName, label }) =>
+          locParamsGrpName === groupName ||
+          osmEntityMapper.getByGroupName(groupName)[0]?.label === label
+      )
+    ) {
+      updatedEntities = values.filter(
+        ({ groupName: locParamsGrpName, label }) =>
+          locParamsGrpName
+            ? locParamsGrpName !== groupName
+            : osmEntityMapper.getByGroupName(groupName)[0]?.label !== label
+      );
+    }
+
+    if (!updatedEntities) {
+      const foundOet = osmEntityTypes.filter(
+        ({ groupName: oetGroupName }) => oetGroupName === groupName
+      );
+
+      updatedEntities = foundOet.length ? [...values, ...foundOet] : values;
+    }
+
+    saveLocalityParams(updatedEntities);
   };
 
   const handleEntityCategoryChange = (category: ApiOsmEntityCategory) => {
@@ -36,7 +64,7 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
           ...osmEntityTypes.filter((type) => type.category === category),
         ];
 
-    onChange(updatedEntities);
+    saveLocalityParams(updatedEntities);
   };
 
   return (
@@ -67,34 +95,49 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
               </h3>
             </label>
           </div>
-          {osmEntityTypes
-            .filter((entityType) => entityType.category === category)
-            .map((entity) => (
-              <label
-                className="cursor-pointer label justify-start mt-2 pl-0"
-                key={`locality-${entity.name}-${entity.label}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={values.includes(entity)}
-                  className="checkbox checkbox-primary checkbox-sm"
-                  onChange={() => {
-                    handleEntityChange(entity);
-                  }}
-                />
-                <span className="label-text ml-2">
-                  {/* TODO move translation to the poi hook */}
-                  {t(
-                    (
-                      IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                        string,
-                        string
-                      >
-                    )[entity.name]
-                  )}
-                </span>
-              </label>
-            ))}
+          {/* TODO a hack - 'label' should not be used */}
+          {Array.from(osmEntityMapper.getGroupNameMapping())
+            .filter(
+              ([, osmEntities]) =>
+                Array.from(osmEntities)[0]?.category === category
+            )
+            .map(([groupName, osmEntities]) => {
+              const label = Array.from(osmEntities)[0]?.label;
+
+              return (
+                <label
+                  className="cursor-pointer label justify-start mt-2 pl-0"
+                  key={`locality-${groupName}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={values.some(
+                      ({
+                        groupName: locParamsGrpName,
+                        label: locParamsLabel,
+                      }) =>
+                        locParamsGrpName === groupName ||
+                        locParamsLabel === label
+                    )}
+                    className="checkbox checkbox-primary checkbox-sm"
+                    onChange={() => {
+                      handleEntityGroupChange(groupName);
+                    }}
+                  />
+                  <span className="label-text ml-2">
+                    {/* TODO move translation to the poi hook */}
+                    {t(
+                      (
+                        IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                          string,
+                          string
+                        >
+                      )[groupName]
+                    )}
+                  </span>
+                </label>
+              );
+            })}
         </div>
       ))}
     </div>

@@ -21,7 +21,6 @@ import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
-import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
 
 interface IDeriveParameters {
@@ -34,6 +33,8 @@ interface IDeriveParameters {
 }
 
 // TODO refactor to a poi hook
+
+const osmEntityMapper = new OsmEntityMapper();
 
 const checkIsLocationHidden = (
   entity: Pick<ApiOsmEntity, "id" | "name">,
@@ -58,7 +59,8 @@ const checkIsLocationHidden = (
 
   if (!isLocationHidden && config?.hiddenGroups) {
     isLocationHidden = config.hiddenGroups.some(
-      (groupName) => groupName === entity.name
+      (groupName) =>
+        groupName === osmEntityMapper.getByOsmName(entity.name)?.groupName
     );
   }
 
@@ -376,9 +378,9 @@ export const deriveInitialEntityGroups = ({
 
   const poiGroups = Object.values(
     poiItems.reduce<Record<string, EntityGroup>>((result, resultEntity) => {
-      const groupName = new OsmEntityMapper().get(
+      const groupName = osmEntityMapper.getByOsmName(
         resultEntity.osmName
-      );
+      )?.groupName;
 
       if (!groupName) {
         return result;
@@ -392,7 +394,6 @@ export const deriveInitialEntityGroups = ({
       if (!result[groupName]) {
         result[groupName] = {
           active: deriveActiveState(groupName, Object.keys(result).length),
-          category: getOsmEntityByName(resultEntity.osmName)?.category, // TODO single source of truth
           items: [resultEntity],
           name: groupName,
         };
@@ -459,8 +460,3 @@ export const toggleEntityVisibility = (
 
   return entityVisibility;
 };
-
-export const getOsmEntityByName = (
-  osmName: OsmName | undefined
-): ApiOsmEntity | undefined =>
-  osmName ? osmEntityTypes.find(({ name }) => name === osmName) : undefined;

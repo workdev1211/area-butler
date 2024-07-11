@@ -1,76 +1,41 @@
-import { OsmName, PoiGroupEnum, TPoiGroupName } from "./types";
+import { ApiOsmEntity, OsmName, TPoiGroupName } from "./types";
+import { osmEntityTypes } from "../constants/osm-entity-types";
+
+type TGroupNameMapping = Map<TPoiGroupName, Set<ApiOsmEntity>>;
+type TOsmNameMapping = Map<OsmName, ApiOsmEntity>;
 
 // TODO should be memoized in the poi hook
-// TODO single source of truth
-
 export class OsmEntityMapper {
-  private readonly initialMapping: [OsmName, TPoiGroupName][] = [
-    [OsmName.station, OsmName.station],
-    [OsmName.bus_stop, OsmName.bus_stop],
-    [OsmName.motorway_link, OsmName.motorway_link],
-    [OsmName.charging_station, OsmName.charging_station],
-    [OsmName.fuel, OsmName.fuel],
-    [OsmName.supermarket, OsmName.supermarket],
-    [OsmName.chemist, OsmName.chemist],
-    [OsmName.kiosk, PoiGroupEnum.kiosk_post_office],
-    [OsmName.post_office, PoiGroupEnum.kiosk_post_office],
-    [OsmName.kindergarten, OsmName.kindergarten],
-    [OsmName.school, OsmName.school],
-    [OsmName.university, OsmName.university],
-    [OsmName.playground, OsmName.playground],
-    [OsmName.park, OsmName.park],
-    [OsmName.restaurant, OsmName.restaurant],
-    [OsmName.bar, PoiGroupEnum.bar_pub],
-    [OsmName.pub, PoiGroupEnum.bar_pub],
-    [OsmName.theatre, OsmName.theatre],
-    [OsmName.fitness_centre, OsmName.fitness_centre],
-    [OsmName.sports_centre, OsmName.sports_centre],
-    [OsmName.sports_hall, OsmName.sports_hall],
-    [OsmName.pharmacy, OsmName.pharmacy],
-    [OsmName.doctors, OsmName.doctors],
-    [OsmName.dentist, OsmName.dentist],
-    [OsmName.clinic, OsmName.clinic],
-    [OsmName.hospital, OsmName.hospital],
-    [OsmName.surface, OsmName.surface],
-    [OsmName["multi-storey"], PoiGroupEnum.parking_garage],
-    [OsmName.underground, PoiGroupEnum.parking_garage],
-    [OsmName.wind_turbine, OsmName.wind_turbine],
-    [OsmName.tower, PoiGroupEnum.power_pole],
-    [OsmName.pole, PoiGroupEnum.power_pole],
-    [OsmName.hotel, OsmName.hotel],
-    [OsmName.museum, OsmName.museum],
-    [OsmName.attraction, OsmName.attraction],
-    [OsmName.favorite, OsmName.favorite],
-    [OsmName.property, OsmName.property],
-  ];
-
-  private readonly directMapping: Map<OsmName, TPoiGroupName>;
-  private readonly reverseMapping: Map<TPoiGroupName, Set<OsmName>>;
+  private readonly groupNameMapping: TGroupNameMapping = new Map();
+  private readonly osmNameMapping: TOsmNameMapping = new Map();
 
   constructor() {
-    this.directMapping = new Map(this.initialMapping);
+    osmEntityTypes.forEach((osmEntity) => {
+      this.osmNameMapping.set(osmEntity.name, osmEntity);
+      const existGroupMapping = this.groupNameMapping.get(osmEntity.groupName);
 
-    this.reverseMapping = this.initialMapping.reduce<
-      Map<TPoiGroupName, Set<OsmName>>
-    >((result, [osmName, groupName]) => {
-      const existingMapping = result.get(groupName);
-
-      if (existingMapping) {
-        result.set(groupName, existingMapping.add(osmName));
+      if (existGroupMapping) {
+        existGroupMapping.add(osmEntity);
       } else {
-        result.set(groupName, new Set([osmName]));
+        this.groupNameMapping.set(osmEntity.groupName, new Set([osmEntity]));
       }
-
-      return result;
-    }, new Map());
+    });
   }
 
-  get(osmName: OsmName): TPoiGroupName | undefined {
-    return this.directMapping.get(osmName);
+  getByGroupName(groupName: TPoiGroupName): ApiOsmEntity[] {
+    const osmEntities = this.groupNameMapping.get(groupName);
+    return osmEntities?.size ? Array.from(osmEntities) : [];
   }
 
-  revGet(groupName: TPoiGroupName): OsmName[] {
-    const osmNames = this.reverseMapping.get(groupName);
-    return osmNames ? Array.from(osmNames) : [];
+  getByOsmName(osmName: OsmName): ApiOsmEntity | undefined {
+    return this.osmNameMapping.get(osmName);
+  }
+
+  getGroupNameMapping(): TGroupNameMapping {
+    return this.groupNameMapping;
+  }
+
+  getOsmNameMapping(): TOsmNameMapping {
+    return this.osmNameMapping;
   }
 }

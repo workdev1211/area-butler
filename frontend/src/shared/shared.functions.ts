@@ -385,9 +385,9 @@ export const deriveIconForPoiGroup = (
         icon: motorwayLinkIcon,
         color: "#579BE4",
       };
+    // case OsmName.swimming_pool:
     case OsmName.sports_centre:
     case OsmName.sports_hall:
-    case OsmName.swimming_pool:
     case OsmName.fitness_centre:
       return {
         icon: sportIcon,
@@ -398,14 +398,12 @@ export const deriveIconForPoiGroup = (
         icon: hotelIcon,
         color: "#E4BC40",
       };
-    case OsmName.tower:
-    case OsmName.pole:
+    case PoiGroupEnum.power_pole:
       return {
         icon: towerIcon,
         color: "#165B4E",
       };
-    case OsmName["multi-storey"]:
-    case OsmName.underground:
+    case PoiGroupEnum.parking_garage:
       return {
         icon: parkingGarageIcon,
         color: "#6563FF",

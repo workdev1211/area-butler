@@ -1,7 +1,6 @@
 import {
   ApiAddress,
   ApiCoordinates,
-  ApiOsmEntityCategory,
   ApiSearchResultSnapshotConfig,
   IApiMapboxStyle,
   MeansOfTransportation,
@@ -59,7 +58,6 @@ export interface EntityGroup {
   active: boolean;
   items: ResultEntity[];
   name: TPoiGroupName;
-  category?: ApiOsmEntityCategory; // TODO single source of truth
 }
 
 export const poiSearchContainerId = "poi-search-container";

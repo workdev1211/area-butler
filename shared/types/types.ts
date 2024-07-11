@@ -139,7 +139,7 @@ export interface ApiSearch {
   coordinates: ApiCoordinates;
   preferredLocations?: ApiPreferredLocation[];
   meansOfTransportation: TransportationParam[];
-  preferredAmenities: OsmName[];
+  preferredAmenities: OsmName[]; // TODO single source of truth for pois
   endsAt?: Date;
   integrationId?: string;
 }
@@ -362,7 +362,7 @@ export interface ApiUpdateSearchResultSnapshot {
   2. 'searchResponse.centerOfInterest.address' - could be redundant / should be checked if it's used anywhere
 */
 export interface ApiSearchResultSnapshot {
-  localityParams: ApiOsmEntity[]; // selected POI types
+  localityParams: ApiOsmEntity[]; // selected POI types // TODO single source of truth for pois
   location: ApiCoordinates; // coordinates
   placesLocation: any | IApiPlacesLocation; // Google Places id or an address
   searchResponse: ApiSearchResponse; // POIs
@@ -415,12 +415,10 @@ export interface IApiSnapshotConfigRealEstSettings {
 }
 
 export interface ApiSearchResultSnapshotConfig {
-  // TODO create a DB migration
   defaultActiveGroups?: TPoiGroupName[]; // MapTab Points-of-Interest active categories --> osmEntityTypes.label
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisibility[];
   groupItems?: boolean;
-  // TODO create a DB migration
   hiddenGroups?: TPoiGroupName[]; // EditorTab Points-of-Interest active categories --> osmEntityTypes.label
 
   hideIsochrones?: boolean;

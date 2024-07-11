@@ -89,8 +89,9 @@ import {
 } from "../shared/shared.constants";
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
-import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
+
+const osmEntityMapper = new OsmEntityMapper();
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -138,8 +139,18 @@ export class IdMarker extends L.Marker {
       cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
     }
 
+    const groupName = osmEntityMapper.getByOsmName(
+      this.entity.osmName
+    )?.groupName;
+
     const searchString = [
-      osmEntityTypes.find((t) => t.name === this.entity.osmName)?.label,
+      groupName
+        ? i18.t(
+            (
+              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+            )[groupName]
+          )
+        : "",
       entityTitle,
       this.entity?.address?.street !== "undefined"
         ? this.entity.address?.street
@@ -1117,14 +1128,14 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         //   }));
         // }
 
-        const osmEntityMapper = new OsmEntityMapper();
-
         // Add each POI to the marker cluster group
         parsedEntities?.every((entity) => {
           if (
             !parsedEntityGroups.some(
               ({ active, name }) =>
-                osmEntityMapper.revGet(name).includes(entity.osmName) && active
+                osmEntityMapper
+                  .getByGroupName(name)
+                  ?.some(({ name }) => name === entity.osmName) && active
             )
           ) {
             return true;
@@ -1141,7 +1152,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             return true;
           }
 
-          let markerIcon: IPoiIcon;
+          let markerIcon!: IPoiIcon;
 
           if (isRealEstateListing) {
             markerIcon = config?.mapIcon
@@ -1158,10 +1169,9 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             markerIcon = getPreferredLocationsIcon(userMapPoiIcons);
           }
 
-          // @ts-ignore
           if (!markerIcon) {
             markerIcon = deriveIconForPoiGroup(
-              osmEntityMapper.get(entity.osmName),
+              osmEntityMapper.getByOsmName(entity.osmName)?.groupName,
               userMapPoiIcons
             );
           }

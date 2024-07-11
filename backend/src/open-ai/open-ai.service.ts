@@ -9,7 +9,6 @@ import {
   ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
   OsmName,
-  TPoiGroupName,
 } from '@area-butler-types/types';
 import {
   openAiTextLengthOptions,
@@ -33,9 +32,9 @@ import {
   cleanCensusProperties,
   processCensusData,
 } from '../../../shared/functions/census.functions';
-import { osmEntityTypes } from '../../../shared/constants/osm-entity-types';
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
+import { OsmEntityMapper } from '@area-butler-types/osm-entity-mapper';
 
 // TODO remove similar interfaces like for the frontend part
 interface IGeneralQueryData {
@@ -401,19 +400,17 @@ export class OpenAiService {
     snapshotConfig: ApiSearchResultSnapshotConfig,
     meanOfTransportation: MeansOfTransportation,
   ): Partial<Record<OsmName, { name: string; distance: number }[]>> {
-    const selectedPoiCategories = osmEntityTypes.reduce<OsmName[]>(
-      (result, { name }) => {
-        // TODO single source of truth
-        // use either the new class or the osmEntityTypes as the source of truth
-        if (
-          snapshotConfig.defaultActiveGroups?.includes(name as TPoiGroupName)
-        ) {
-          result.push(name);
+    const osmEntityMapping = [...new OsmEntityMapper().getGroupNameMapping()];
+
+    const selectedPoiCategories = osmEntityMapping.reduce<Set<OsmName>>(
+      (result, [groupName, [...osmEntities]]) => {
+        if (snapshotConfig.defaultActiveGroups?.includes(groupName)) {
+          osmEntities.forEach(({ name }) => result.add(name));
         }
 
         return result;
       },
-      [],
+      new Set(),
     );
 
     return snapshot.searchResponse.routingProfiles[
@@ -430,10 +427,7 @@ export class OpenAiService {
         ? (type as unknown as OsmName)
         : name;
 
-      if (
-        selectedPoiCategories.length &&
-        !selectedPoiCategories.includes(osmName)
-      ) {
+      if (selectedPoiCategories.size && !selectedPoiCategories.has(osmName)) {
         return result;
       }
 

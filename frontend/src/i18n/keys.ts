@@ -1,3 +1,4 @@
+// TODO think about creating an interface for 'IntlKeys' as an additional failsafe
 export const IntlKeys = {
   common: {
     showMore: "common.showMore",
@@ -344,6 +345,7 @@ export const IntlKeys = {
       fuel: "snapshotEditor.pointsOfInterest.fuel",
       supermarket: "snapshotEditor.pointsOfInterest.supermarket",
       chemist: "snapshotEditor.pointsOfInterest.chemist",
+      kiosk_post_office: "snapshotEditor.pointsOfInterest.kiosk_post_office",
       kiosk: "snapshotEditor.pointsOfInterest.kiosk",
       post_office: "snapshotEditor.pointsOfInterest.post_office",
       kindergarten: "snapshotEditor.pointsOfInterest.kindergarten",
@@ -352,6 +354,7 @@ export const IntlKeys = {
       playground: "snapshotEditor.pointsOfInterest.playground",
       park: "snapshotEditor.pointsOfInterest.park",
       restaurant: "snapshotEditor.pointsOfInterest.restaurant",
+      bar_pub: "snapshotEditor.pointsOfInterest.bar_pub",
       bar: "snapshotEditor.pointsOfInterest.bar",
       pub: "snapshotEditor.pointsOfInterest.pub",
       theatre: "snapshotEditor.pointsOfInterest.theatre",
@@ -365,14 +368,16 @@ export const IntlKeys = {
       clinic: "snapshotEditor.pointsOfInterest.clinic",
       hospital: "snapshotEditor.pointsOfInterest.hospital",
       surface: "snapshotEditor.pointsOfInterest.surface",
+      parking_garage: "snapshotEditor.pointsOfInterest.parking_garage",
+      "multi-storey": "snapshotEditor.pointsOfInterest.multi-storey",
       underground: "snapshotEditor.pointsOfInterest.underground",
       wind_turbine: "snapshotEditor.pointsOfInterest.wind_turbine",
+      power_pole: "snapshotEditor.pointsOfInterest.power_pole",
       tower: "snapshotEditor.pointsOfInterest.tower",
       pole: "snapshotEditor.pointsOfInterest.pole",
       hotel: "snapshotEditor.pointsOfInterest.hotel",
       museum: "snapshotEditor.pointsOfInterest.museum",
       attraction: "snapshotEditor.pointsOfInterest.attraction",
-      "multi-storey": "snapshotEditor.pointsOfInterest.multi-storey",
       distance: "snapshotEditor.pointsOfInterest.distance",
       footpath: "snapshotEditor.pointsOfInterest.footpath",
       bicycle: "snapshotEditor.pointsOfInterest.bicycle",

@@ -3,7 +3,6 @@ import { ILegendItem } from "../Legend";
 import { IApiUserPoiIcon } from "../../../../shared/types/types";
 import { OsmEntityMapper } from "../../../../shared/types/osm-entity-mapper";
 import { deriveIconForPoiGroup } from "../../shared/shared.functions";
-import { getOsmEntityByName } from "../../shared/pois.functions";
 
 export const getFilteredLegend = (
   entityGroups: EntityGroup[],
@@ -15,13 +14,13 @@ export const getFilteredLegend = (
   return (
     entityGroups
       .reduce<ILegendItem[]>((result, { active, name }) => {
-        const foundOsmEntity = active
-          ? getOsmEntityByName(osmEntityMapper.revGet(name)[0])
+        const osmEntityLabel = active
+          ? osmEntityMapper.getByGroupName(name)[0]?.label
           : undefined;
 
-        if (foundOsmEntity) {
+        if (osmEntityLabel) {
           result.push({
-            title: foundOsmEntity.label,
+            title: osmEntityLabel,
             icon: deriveIconForPoiGroup(name, poiIcons),
           });
         }
