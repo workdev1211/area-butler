@@ -936,6 +936,7 @@ export class OnOfficeService {
           });
         }
 
+        // TODO the field ids should be moved to a specific DB collection or config file
         return this.updateEstateTextField(integrationUser, {
           exportType,
           integrationId,

@@ -29,7 +29,7 @@ class ApiIntSetPropPubLinksReqDto implements IApiIntSetPropPubLinksReq {
 
   @Expose()
   @Type(() => ApiIntPublicLinkParamsDto)
-  @ArrayMinSize(2)
+  @ArrayMinSize(1)
   @ArrayMaxSize(2)
   @ValidateNested({ each: true })
   publicLinkParams: IApiIntPublicLinkParams[];
