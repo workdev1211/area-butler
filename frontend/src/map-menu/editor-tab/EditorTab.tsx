@@ -23,10 +23,7 @@ import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import { setBackgroundColor } from "../../shared/shared.functions";
 import { IApiRealEstStatusByUser } from "../../../../shared/types/real-estate";
-import {
-  realEstAllTextStatus,
-  realEstateListingsTitleEmbed,
-} from "../../../../shared/constants/real-estate";
+import { realEstAllTextStatus } from "../../../../shared/constants/real-estate";
 import configOptionsIcon from "../../assets/icons/map-menu/04-konfiguration.svg";
 import poiVisibilityIcon from "../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
 import {

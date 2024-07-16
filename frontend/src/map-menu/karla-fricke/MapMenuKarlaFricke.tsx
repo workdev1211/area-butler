@@ -67,6 +67,17 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
       ? getPreferredLocationsIcon(userMenuPoiIcons)
       : deriveIconForPoiGroup(group.name, userMenuPoiIcons);
 
+    // TODO move translation to the poi hook
+    const groupName = t(
+      isRealEstateListing
+        ? IntlKeys.snapshotEditor.furtherObjects
+        : isPreferredLocation
+        ? IntlKeys.potentialCustomers.importantAddresses
+        : (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+            group.name
+          ]
+    );
+
     return (
       <li
         className={group.active ? "active" : ""}
@@ -87,11 +98,7 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
         {/* TODO move translation to the poi hook */}
-        {t(
-          (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-            group.name
-          ]
-        )}
+        {groupName}
         {isDropdownButton && <span className="dropdown-triangle">&#9660;</span>}
       </li>
     );
