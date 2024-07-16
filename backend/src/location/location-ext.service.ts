@@ -4,10 +4,13 @@ import { OverpassDataService } from '../data-provision/overpass-data/overpass-da
 import { configService } from '../config/config.service';
 import {
   ApiCoordinates,
+  ApiOsmEntity,
   ApiOsmLocation,
   ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
   OsmName,
+  PoiGroupEnum,
+  TPoiGroupName,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
 import { OverpassService } from '../client/overpass/overpass.service';
@@ -25,9 +28,15 @@ import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { UserDocument } from '../user/schema/user.schema';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { defaultPoiTypes } from '../../../shared/constants/location';
-import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
+import {
+  SearchResultSnapshot,
+  SearchResultSnapshotDocument,
+} from './schema/search-result-snapshot.schema';
 import { createDirectLink } from '../shared/functions/shared';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model, ProjectionFields } from 'mongoose';
+import { OsmEntityMapper } from '@area-butler-types/osm-entity-mapper';
 
 interface IFetchPoiDataArgs {
   coordinates: ApiCoordinates;
@@ -43,6 +52,9 @@ const MAX_DISTANCE_IN_METERS = 2000;
 @Injectable()
 export class LocationExtService {
   constructor(
+    // TODO to be removed after poi migration
+    @InjectModel(SearchResultSnapshot.name)
+    private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly overpassService: OverpassService,
     private readonly overpassDataService: OverpassDataService,
@@ -203,6 +215,122 @@ export class LocationExtService {
 
         return responseData;
       }
+    }
+  }
+
+  async updatePoiData(): Promise<void> {
+    const legacyPoiGroups = new Map([
+      [OsmName.kiosk, PoiGroupEnum.kiosk_post_office],
+      [OsmName.post_office, PoiGroupEnum.kiosk_post_office],
+      [OsmName['multi-storey'], PoiGroupEnum.parking_garage],
+      [OsmName.underground, PoiGroupEnum.parking_garage],
+      [OsmName.tower, PoiGroupEnum.power_pole],
+      [OsmName.pole, PoiGroupEnum.power_pole],
+      [OsmName.bar, PoiGroupEnum.bar_pub],
+      [OsmName.pub, PoiGroupEnum.bar_pub],
+    ]);
+
+    const osmNameMapping = new OsmEntityMapper().getOsmNameMapping();
+
+    const legacyCondition = {
+      $in: Array.from(legacyPoiGroups.keys()),
+    };
+
+    const filterQuery: FilterQuery<SearchResultSnapshotDocument> = {
+      $or: [
+        {
+          ['config.defaultActiveGroups']: legacyCondition,
+        },
+        {
+          ['config.hiddenGroups']: legacyCondition,
+        },
+        {
+          ['snapshot.localityParams']: {
+            $elemMatch: { groupName: { $exists: false } },
+          },
+        },
+      ],
+    };
+
+    const projectQuery: ProjectionFields<SearchResultSnapshotDocument> = {
+      ['config.defaultActiveGroups']: 1,
+      ['config.hiddenGroups']: 1,
+      ['snapshot.localityParams']: 1,
+    };
+
+    const processPoiGroup = (poiGroup: Set<TPoiGroupName>): TPoiGroupName[] => {
+      for (const groupName of poiGroup) {
+        if (legacyPoiGroups.has(groupName as OsmName)) {
+          poiGroup.delete(groupName);
+          const newGroupName = legacyPoiGroups.get(groupName as OsmName);
+
+          if (!poiGroup.has(newGroupName)) {
+            poiGroup.add(newGroupName);
+          }
+        }
+      }
+
+      return [...poiGroup];
+    };
+
+    const limit = 100;
+    const snapshotCount = await this.searchResultSnapshotModel.count();
+
+    for (let skip = 0; skip < snapshotCount; skip += limit) {
+      const snapshots = await this.searchResultSnapshotModel
+        .find(filterQuery, projectQuery)
+        .limit(limit)
+        .skip(skip);
+
+      if (!snapshots.length) {
+        continue;
+      }
+
+      await Promise.all(
+        snapshots.map((snapshot) => {
+          const {
+            config: { defaultActiveGroups, hiddenGroups },
+            snapshot: { localityParams },
+          } = snapshot;
+
+          if (defaultActiveGroups?.length) {
+            const processedGroup = processPoiGroup(
+              new Set(defaultActiveGroups),
+            );
+
+            snapshot.set('config.defaultActiveGroups', processedGroup);
+            snapshot.markModified('config.defaultActiveGroups');
+          }
+
+          if (hiddenGroups?.length) {
+            const processedGroup = processPoiGroup(new Set(hiddenGroups));
+            snapshot.set('config.hiddenGroups', processedGroup);
+            snapshot.markModified('config.hiddenGroups');
+          }
+
+          if (localityParams?.length) {
+            const processLocalParams = localityParams.reduce<ApiOsmEntity[]>(
+              (result, localityParam) => {
+                if (!localityParam.groupName) {
+                  localityParam.groupName = osmNameMapping.get(
+                    localityParam.name,
+                  )?.groupName;
+                }
+
+                result.push(localityParam);
+
+                return result;
+              },
+              [],
+            );
+
+            snapshot.set('snapshot.localityParams', processLocalParams);
+            snapshot.markModified('snapshot.localityParams');
+          }
+
+          return snapshot.save();
+        }),
+      );
     }
   }
 }

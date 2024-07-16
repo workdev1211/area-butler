@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpException,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -245,5 +246,13 @@ export class LocationExtController extends ApiKeyAuthController {
         requestStatus,
       );
     }
+  }
+
+  @ApiOperation({
+    description: 'Updates POI data',
+  })
+  @Patch('poi-data')
+  updatePoiData(): void {
+    void this.locationExtService.updatePoiData();
   }
 }

@@ -20,7 +20,6 @@ import {
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import { PARENT_USER_PATH, UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IntegrationUserService } from '../user/integration-user.service';
 import { TApiMongoSortQuery } from '../shared/types/shared';
 import ApiSearchResultSnapshotResponseDto, {
   TSnapshotResDtoData,
@@ -65,7 +64,6 @@ export class FetchSnapshotService {
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
-    private readonly integrationUserService: IntegrationUserService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
   ) {}
