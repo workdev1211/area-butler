@@ -58,6 +58,7 @@ export interface EntityGroup {
   active: boolean;
   items: ResultEntity[];
   name: TPoiGroupName;
+  title: string;
 }
 
 export const poiSearchContainerId = "poi-search-container";

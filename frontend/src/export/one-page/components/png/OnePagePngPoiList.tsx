@@ -17,6 +17,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
   entityGroups,
 }) => {
   const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -62,15 +63,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                   fontWeight: 700,
                 }}
               >
-                {/* TODO move translation to the poi hook */}
-                {t(
-                  (
-                    IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                      string,
-                      string
-                    >
-                  )[group.name]
-                )}
+                {group.title}
               </div>
             </div>
 
@@ -92,19 +85,10 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                 >
                   {/* Test string */}
                   {/*(750m) Lorem ipsum dolor sit amet, consect*/}
-                  {/* TODO move translation to the poi hook */}
                   {`(${distanceToHumanReadable(
                     item.distanceInMeters
                   )}) ${truncateText(
-                    item.name ||
-                      t(
-                        (
-                          IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                            string,
-                            string
-                          >
-                        )[group.name]
-                      ),
+                    item.name || group.title,
                     poiNameMaxLength
                   )}`}
                 </div>

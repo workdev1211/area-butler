@@ -162,8 +162,8 @@ export const mapTableDataFromEntityGroup = (
         .map((item) => {
           const values = [];
 
+          values.push(item.name || group.title);
           // TODO translation required
-          values.push(item.name || group.name);
           values.push(
             item.distanceInMeters
               ? distanceToHumanReadable(Math.trunc(item.distanceInMeters))
@@ -347,38 +347,39 @@ export const mapTableDataFromEntityGrid = (
   return {
     data: {
       header,
-      // TODO refactor to 'reduce'
-      body: groupedEntries
-        .filter((g) => g.active)
-        .map((g) => {
+      body: groupedEntries.reduce<string[][]>(
+        (result, { active, items, title }) => {
+          if (!active) {
+            return result;
+          }
+
           const data: string[] = [];
 
-          // TODO translation required
-          data.push(g.name);
+          data.push(title);
           data.push(
             distanceToHumanReadable(
-              Math.round(Math.min(...g.items.map((d) => d.distanceInMeters)))
+              Math.round(Math.min(...items.map((d) => d.distanceInMeters)))
             )
           );
 
           if (byFootAvailable) {
-            data.push(
-              g.items.filter((d: ResultEntity) => d.byFoot).length + ""
-            );
+            data.push(items.filter((d: ResultEntity) => d.byFoot).length + "");
           }
 
           if (byBikeAvailable) {
-            data.push(
-              g.items.filter((d: ResultEntity) => d.byBike).length + ""
-            );
+            data.push(items.filter((d: ResultEntity) => d.byBike).length + "");
           }
 
           if (byCarAvailable) {
-            data.push(g.items.filter((d: ResultEntity) => d.byCar).length + "");
+            data.push(items.filter((d: ResultEntity) => d.byCar).length + "");
           }
 
-          return data;
-        }),
+          result.push(data);
+
+          return result;
+        },
+        []
+      ),
     },
   };
 };

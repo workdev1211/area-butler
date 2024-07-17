@@ -1,7 +1,7 @@
 import { FC } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./EntityTable.scss";
 import {
@@ -38,6 +38,7 @@ export const EntityGridSummary: FC<IEntityGridSummaryProps> = ({
   activeMeans,
 }) => {
   const { t } = useTranslation();
+
   const byFootAvailable = transportationParams.some(
     (param) =>
       param.type === MeansOfTransportation.WALK &&
@@ -79,17 +80,31 @@ export const EntityGridSummary: FC<IEntityGridSummaryProps> = ({
               .map((routingProfile: TransportationParam) => (
                 <th key={`entity-grid-header-item-${routingProfile.type}`}>
                   <span>
-                    {
-                      t((IntlKeys.common.transportationTypes as Record<string, string>)[meansOfTransportations.find(
-                        (means) => means.type === routingProfile.type
-                      )?.type || ''])
-                    }{" "}
+                    {t(
+                      (
+                        IntlKeys.common.transportationTypes as Record<
+                          string,
+                          string
+                        >
+                      )[
+                        meansOfTransportations.find(
+                          (means) => means.type === routingProfile.type
+                        )?.type || ""
+                      ]
+                    )}{" "}
                     ({routingProfile.amount}{" "}
-                    {
-                      t((IntlKeys.common.transportationUnits as Record<string, string>)[unitsOfTransportation.find(
-                        (unit) => unit.type === routingProfile.unit
-                      )?.type || ''])
-                    }
+                    {t(
+                      (
+                        IntlKeys.common.transportationUnits as Record<
+                          string,
+                          string
+                        >
+                      )[
+                        unitsOfTransportation.find(
+                          (unit) => unit.type === routingProfile.unit
+                        )?.type || ""
+                      ]
+                    )}
                     )
                   </span>
                 </th>
@@ -100,10 +115,7 @@ export const EntityGridSummary: FC<IEntityGridSummaryProps> = ({
           {groupedEntries.map((group) => (
             <tr key={`entity-grid-item-${group.name}`}>
               <td>
-                <h5 className="font-bold">
-                  {/* TODO move translation to the poi hook */}
-                  {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.name])}
-                </h5>
+                <h5 className="font-bold">{group.title}</h5>
               </td>
               <td>
                 {distanceToHumanReadable(

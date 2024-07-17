@@ -77,10 +77,18 @@ export class SnapshotExtService {
       realEstateListing,
     );
 
-    // TODO refactor to 'reduce'
-    const localityParams = searchData.preferredAmenities
-      .map((name) => osmEntityTypes.find((entity) => entity.name === name))
-      .filter(Boolean) as ApiOsmEntity[];
+    const localityParams = searchData.preferredAmenities.reduce<ApiOsmEntity[]>(
+      (result, osmName) => {
+        const osmEntity = osmEntityTypes.find(({ name }) => name === osmName);
+
+        if (osmEntity) {
+          result.push(osmEntity);
+        }
+
+        return result;
+      },
+      [],
+    );
 
     const placesLocation: IApiPlacesLocation = {
       label: place.formatted_address || 'Mein Standort',

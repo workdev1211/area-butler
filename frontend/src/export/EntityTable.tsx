@@ -81,20 +81,7 @@ export const EntityTable: FC<IEntityTableProps> = ({
                   item.distanceInMeters
                 }
               >
-                {hasNames && (
-                  <td>
-                    {/* TODO move translation to the poi hook */}
-                    {item.name ||
-                      t(
-                        (
-                          IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                            string,
-                            string
-                          >
-                        )[entityGroup.name]
-                      )}
-                  </td>
-                )}
+                {hasNames && <td>{item.name || entityGroup.title}</td>}
                 <td>
                   {item.distanceInMeters
                     ? distanceToHumanReadable(item.distanceInMeters)

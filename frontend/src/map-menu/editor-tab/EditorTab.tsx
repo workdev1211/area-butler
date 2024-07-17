@@ -15,7 +15,6 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   IApiSnapshotConfigRealEstSettings,
   MeansOfTransportation,
-  OsmName,
   TPoiGroupName,
 } from "../../../../shared/types/types";
 import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
@@ -307,12 +306,9 @@ const EditorTab: FC<IEditorTabProps> = ({
                 />
               </li>
             )}
-            {/* TODO the new property 'title' should be added to the 'EntityGroup' which contains the translation */}
-            {/* TODO in order for the 'localeCompare' to work. Should be implemented after moving the POI functions */}
-            {/* TODO to a separate hook. */}
             {groupedEntries
               .filter((ge) => ge.items.length)
-              .sort((a, b) => a.name.localeCompare(b.name))
+              .sort((a, b) => a.title.localeCompare(b.title))
               .map((group) => (
                 <li key={group.name}>
                   <div className="flex flex-col">
@@ -326,17 +322,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                         }}
                       />
                       <h4 className="font-medium pl-2 cursor-pointer">
-                        {/* TODO move translation to the poi hook */}
-                        {group.name === OsmName.property
-                          ? t(IntlKeys.snapshotEditor.furtherObjects)
-                          : group.name === OsmName.favorite
-                          ? t(IntlKeys.potentialCustomers.importantAddresses)
-                          : t(
-                              (
-                                IntlKeys.snapshotEditor
-                                  .pointsOfInterest as Record<string, string>
-                              )[group.name]
-                            )}
+                        {group.title}
                       </h4>
                       <button
                         className="btn-sm btn-link"

@@ -116,12 +116,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
     const tables = groupedEntries.map((group) =>
       createTable(
         {
-          // TODO move translation to the poi hook
-          title: t(
-            (
-              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
-            )[group.name]
-          ),
+          title: group.title,
           columnWidths: [5000, 2000, 1500, 1500, 1500],
           headerColor: colorPalette.primaryColor,
           headerTextColor: colorPalette.textColor,

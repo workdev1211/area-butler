@@ -1,5 +1,8 @@
 import { v4 } from "uuid";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 import {
   ApiCoordinates,
   ApiOsmEntity,
@@ -349,6 +352,7 @@ export const deriveInitialEntityGroups = ({
         preferredLocations,
       }),
       name: OsmName.favorite,
+      title: i18.t(IntlKeys.potentialCustomers.importantAddresses),
     });
   }
 
@@ -362,6 +366,7 @@ export const deriveInitialEntityGroups = ({
         realEstates,
       }),
       name: OsmName.property,
+      title: i18.t(IntlKeys.snapshotEditor.furtherObjects),
     });
   }
 
@@ -396,6 +401,11 @@ export const deriveInitialEntityGroups = ({
           active: deriveActiveState(groupName, Object.keys(result).length),
           items: [resultEntity],
           name: groupName,
+          title: i18.t(
+            (
+              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+            )[groupName]
+          ),
         };
       }
 

@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -13,10 +13,9 @@ interface IOnePagePoiListProps {
   filteredGroups: ISortableEntityGroup[];
 }
 
-const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
-  filteredGroups,
-}) => {
+const OnePagePoiList: FC<IOnePagePoiListProps> = ({ filteredGroups }) => {
   const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-1.5">
       <div className="text-2xl font-bold">
@@ -32,17 +31,7 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
             >
               <div className="flex items-center gap-1.5">
                 {group.icon && <OnePageLegendIcon icon={group.icon} />}
-                <div className="text-base font-bold">
-                  {/* TODO move translation to the poi hook */}
-                  {t(
-                    (
-                      IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                        string,
-                        string
-                      >
-                    )[group.name]
-                  )}
-                </div>
+                <div className="text-base font-bold">{group.title}</div>
               </div>
               <div
                 className="flex flex-col gap-1.5"
@@ -58,17 +47,10 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
                     >
                       {/* Test string */}
                       {/*(750m) Lorem ipsum dolor sit amet, consect*/}
-                      {/* TODO move translation to the poi hook */}
                       {`(${distanceToHumanReadable(
                         item.distanceInMeters
                       )}) ${truncateText(
-                        item.name ||
-                          t(
-                            (
-                              IntlKeys.snapshotEditor
-                                .pointsOfInterest as Record<string, string>
-                            )[group.name]
-                          ),
+                        item.name || group.title,
                         poiNameMaxLength
                       )}`}
                     </div>

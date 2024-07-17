@@ -1,13 +1,7 @@
-import { FunctionComponent, useContext, useState } from "react";
-
-import { useTranslation } from "react-i18next";
-import { IntlKeys } from "i18n/keys";
+import { FC, useContext, useState } from "react";
 
 import { EntityGroup, ResultEntity } from "../../../shared/search-result.types";
-import {
-  MeansOfTransportation,
-  OsmName,
-} from "../../../../../shared/types/types";
+import { MeansOfTransportation } from "../../../../../shared/types/types";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -30,7 +24,7 @@ export interface MapMenuListItemProps {
   toggleTransitRoute: (item: ResultEntity) => void;
 }
 
-const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
+const MapMenuListItem: FC<MapMenuListItemProps> = ({
   entityGroup,
   groupIcon,
   isCustomIcon,
@@ -40,12 +34,12 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
   transitRoutes,
   toggleTransitRoute,
 }) => {
-  const { t } = useTranslation();
-  const [isListOpen, setIsListOpen] = useState(false);
   const {
     searchContextState: { responseConfig: config },
     searchContextDispatch,
   } = useContext(SearchContext);
+  const [isListOpen, setIsListOpen] = useState(false);
+
   const imgClass = isCustomIcon ? "item-custom" : "item";
 
   const checkboxPrimaryClasses = !!config?.primaryColor
@@ -83,20 +77,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
             >
               <img className={imgClass} src={groupIcon.icon} alt="group-icon" />
             </div>
-            {/* TODO move translation to the poi hook */}
-            {entityGroup.name === OsmName.property
-              ? t(IntlKeys.snapshotEditor.furtherObjects)
-              : entityGroup.name === OsmName.favorite
-              ? t(IntlKeys.potentialCustomers.importantAddresses)
-              : t(
-                  (
-                    IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                      string,
-                      string
-                    >
-                  )[entityGroup.name]
-                )}{" "}
-            [{entityGroup.items.length}]
+            {entityGroup.title} [{entityGroup.items.length}]
           </div>
           <label className="cursor-pointer label justify-start pl-0">
             <input

@@ -8,7 +8,6 @@ import {
   ApiOsmEntityCategory,
   TPoiGroupName,
 } from "../../../shared/types/types";
-import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
 
 interface ILocalityParamsProps {
@@ -24,31 +23,24 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
     onChange(updatedEntities);
   };
 
-  // TODO a hack - 'label' should not be used
   const handleEntityGroupChange = (groupName: TPoiGroupName): void => {
+    const entitiesByGroupName = osmEntityMapper.getByGroupName(groupName);
     let updatedEntities!: ApiOsmEntity[];
 
     if (
       values.some(
-        ({ groupName: locParamsGrpName, label }) =>
-          locParamsGrpName === groupName ||
-          osmEntityMapper.getByGroupName(groupName)[0]?.label === label
+        ({ groupName: locParamsGroupName }) => locParamsGroupName === groupName
       )
     ) {
       updatedEntities = values.filter(
-        ({ groupName: locParamsGrpName, label }) =>
-          locParamsGrpName
-            ? locParamsGrpName !== groupName
-            : osmEntityMapper.getByGroupName(groupName)[0]?.label !== label
+        ({ groupName: locParamsGroupName }) => locParamsGroupName !== groupName
       );
     }
 
     if (!updatedEntities) {
-      const foundOet = osmEntityTypes.filter(
-        ({ groupName: oetGroupName }) => oetGroupName === groupName
-      );
-
-      updatedEntities = foundOet.length ? [...values, ...foundOet] : values;
+      updatedEntities = entitiesByGroupName.length
+        ? [...values, ...entitiesByGroupName]
+        : values;
     }
 
     saveLocalityParams(updatedEntities);
@@ -59,10 +51,7 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
       (value) => value.category === category
     )
       ? values.filter((value) => value.category !== category)
-      : [
-          ...values,
-          ...osmEntityTypes.filter((type) => type.category === category),
-        ];
+      : [...values, ...osmEntityMapper.getByCategory(category)];
 
     saveLocalityParams(updatedEntities);
   };
@@ -95,15 +84,13 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
               </h3>
             </label>
           </div>
-          {/* TODO a hack - 'label' should not be used */}
           {Array.from(osmEntityMapper.getGroupNameMapping())
-            .filter(
-              ([, osmEntities]) =>
-                Array.from(osmEntities)[0]?.category === category
+            .filter(([, osmEntities]) =>
+              Array.from(osmEntities).every(
+                ({ category: entityCategory }) => entityCategory === category
+              )
             )
-            .map(([groupName, osmEntities]) => {
-              const label = Array.from(osmEntities)[0]?.label;
-
+            .map(([groupName]) => {
               return (
                 <label
                   className="cursor-pointer label justify-start mt-2 pl-0"
@@ -112,12 +99,8 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
                   <input
                     type="checkbox"
                     checked={values.some(
-                      ({
-                        groupName: locParamsGrpName,
-                        label: locParamsLabel,
-                      }) =>
-                        locParamsGrpName === groupName ||
-                        locParamsLabel === label
+                      ({ groupName: locParamsGroupName }) =>
+                        locParamsGroupName === groupName
                     )}
                     className="checkbox checkbox-primary checkbox-sm"
                     onChange={() => {
@@ -125,7 +108,6 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
                     }}
                   />
                   <span className="label-text ml-2">
-                    {/* TODO move translation to the poi hook */}
                     {t(
                       (
                         IntlKeys.snapshotEditor.pointsOfInterest as Record<

@@ -106,11 +106,8 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const sortableGroups: ISortableEntityGroup[] = useMemo(() => {
     let activeGroupNumber = 0;
 
-    // TODO translation required
     return searchContextState.entityGroupsByActMeans
-      .sort((a: EntityGroup, b: EntityGroup) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      )
+      .sort((a: EntityGroup, b: EntityGroup) => a.title.localeCompare(b.title))
       .reduce<ISortableEntityGroup[]>((result, group) => {
         if (
           [OsmName.favorite, OsmName.property].includes(group.name as OsmName)

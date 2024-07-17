@@ -1,7 +1,7 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { ReactSortable } from "react-sortablejs";
 
@@ -17,10 +17,14 @@ interface IOnePageEntitySelectionProps {
   itemNumberLimit?: number;
 }
 
-const OnePageEntitySelection: FunctionComponent<
-  IOnePageEntitySelectionProps
-> = ({ entityGroups, setEntityGroups, closeCollapsable, color }) => {
+const OnePageEntitySelection: FC<IOnePageEntitySelectionProps> = ({
+  entityGroups,
+  setEntityGroups,
+  closeCollapsable,
+  color,
+}) => {
   const { t } = useTranslation();
+
   const onGroupSelectionChange = (group: ISortableEntityGroup): void => {
     const activeGroupNumber = entityGroups.reduce(
       (result, group) => (group.active ? result + 1 : result),
@@ -49,7 +53,8 @@ const OnePageEntitySelection: FunctionComponent<
         }}
         onClick={closeCollapsable}
       >
-        2. {t(IntlKeys.snapshotEditor.exportTab.POITable)} ({entityGroups.filter((group) => group.active).length}/
+        2. {t(IntlKeys.snapshotEditor.exportTab.POITable)} (
+        {entityGroups.filter((group) => group.active).length}/
         {ENTITY_GROUP_LIMIT || entityGroups.length})
       </div>
       <div className="collapse-content">
@@ -70,8 +75,7 @@ const OnePageEntitySelection: FunctionComponent<
                 onChange={() => {}}
               />
               <div className="select-none">
-                {/* TODO move translation to the poi hook */}
-                {t((IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[group.name])} ({group.items.length})
+                {group.title} ({group.items.length})
               </div>
             </div>
           ))}

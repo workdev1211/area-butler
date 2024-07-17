@@ -72,7 +72,6 @@ const AddPoiForm: FC<IAddPoiFormProps> = ({
               name="name"
               placeholder="Objekttype angeben"
             >
-              {/* TODO move translation to the poi hook */}
               {osmEntityTypes
                 .sort((a, b) =>
                   t(

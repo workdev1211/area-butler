@@ -180,10 +180,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   const [isShownIsochrones, setIsShownIsochrones] = useState(true);
 
   const ListItem: FC<EntityGroup> = (group) => {
-    const { t } = useTranslation();
-
     const isRealEstateListing = group.items[0].name === realEstateListingsTitle;
-
     const isPreferredLocation = group.items[0].name === preferredLocationsTitle;
 
     const groupIconInfo = isRealEstateListing
@@ -197,12 +194,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
-        {/* TODO move translation to the poi hook */}
-        {t(
-          (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-            group.name
-          ]
-        )}
+        {group.title}
       </li>
     );
   };

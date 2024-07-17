@@ -84,14 +84,6 @@ export const Expose = forwardRef(
     const federalElectionData = props.federalElectionData;
     const particlePollutionData = props.particlePollutionData;
     const activeMeans = props.activeMeans;
-    const translatedLegend = props.legend.map(({ title, ...rest }) => ({
-      ...rest,
-      title: t(
-        (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-          title
-        ]
-      ),
-    }));
 
     let page = 0;
     const nextPageNumber = (): string => {
@@ -182,7 +174,7 @@ export const Expose = forwardRef(
             }
           >
             <div className="m-10">
-              <Legend legend={translatedLegend} />
+              <Legend legend={props.legend} />
             </div>
           </PdfPage>
         )}
@@ -194,17 +186,7 @@ export const Expose = forwardRef(
                 nextPageNumber={nextPageNumber}
                 logo={props.logo}
                 leftHeaderElement={
-                  <div className="text-2xl font-bold">
-                    {/* TODO move translation to the poi hook */}
-                    {t(
-                      (
-                        IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                          string,
-                          string
-                        >
-                      )[group.name]
-                    )}
-                  </div>
+                  <div className="text-2xl font-bold">{group.title}</div>
                 }
                 key={group.name}
               >

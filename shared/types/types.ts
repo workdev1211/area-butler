@@ -185,8 +185,8 @@ export enum ApiOsmEntityCategory {
 }
 
 export interface ApiOsmEntity {
-  category: ApiOsmEntityCategory;
-  groupName: TPoiGroupName;
+  category: ApiOsmEntityCategory; // TODO FE only, think about making optional or moving to another type
+  groupName: TPoiGroupName; // TODO FE only, think about making optional or moving to another type
   label: string; // TODO remove in the future after BE translation
   name: OsmName;
   type: OsmType;

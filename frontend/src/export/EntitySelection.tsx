@@ -90,18 +90,7 @@ const EntitySelection: FC<IEntitySelectionProps> = ({
                 e.stopPropagation();
               }}
             />
-            <span>
-              {/* TODO move translation to the poi hook */}
-              {t(
-                (
-                  IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                    string,
-                    string
-                  >
-                )[group.name]
-              )}{" "}
-              ({group.items.length})
-            </span>
+            <span>{`${group.title} (${group.items.length})`}</span>
           </div>
 
           <div className="collapse-content bg-white">
@@ -121,17 +110,8 @@ const EntitySelection: FC<IEntitySelectionProps> = ({
                     className="checkbox checkbox-primary"
                   />
                   <span className="label-text text-sm">
-                    {/* TODO move translation to the poi hook */}
-                    {item.name ??
-                      t(
-                        (
-                          IntlKeys.snapshotEditor.pointsOfInterest as Record<
-                            string,
-                            string
-                          >
-                        )[item.osmName]
-                      )}{" "}
-                    ({Math.round(item.distanceInMeters)} m)
+                    {item.name || group.title} (
+                    {Math.round(item.distanceInMeters)} m)
                   </span>
                 </div>
               ))}

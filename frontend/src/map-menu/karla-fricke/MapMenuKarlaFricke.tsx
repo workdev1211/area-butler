@@ -42,12 +42,11 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
     searchContextState: { entityGroupsByActMeans },
   } = useContext(SearchContext);
 
-  // TODO translation required and 'localeCompare' for sorting
   const groupedEntries = useMemo(
     () =>
       entityGroupsByActMeans
         .filter((ge) => ge.items.length && ge.name !== OsmName.property)
-        .sort((a, b) => (a.name > b.name ? 1 : -1)),
+        .sort((a, b) => a.title.localeCompare(b.title)),
     [entityGroupsByActMeans]
   );
 
@@ -55,7 +54,6 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
     group,
     isDropdownButton = false,
   }) => {
-    const { t } = useTranslation();
     const { searchContextDispatch } = useContext(SearchContext);
 
     const isRealEstateListing = group.name === OsmName.property;
@@ -66,17 +64,6 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
       : isPreferredLocation
       ? getPreferredLocationsIcon(userMenuPoiIcons)
       : deriveIconForPoiGroup(group.name, userMenuPoiIcons);
-
-    // TODO move translation to the poi hook
-    const groupName = t(
-      isRealEstateListing
-        ? IntlKeys.snapshotEditor.furtherObjects
-        : isPreferredLocation
-        ? IntlKeys.potentialCustomers.importantAddresses
-        : (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-            group.name
-          ]
-    );
 
     return (
       <li
@@ -97,8 +84,7 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
-        {/* TODO move translation to the poi hook */}
-        {groupName}
+        {group.title}
         {isDropdownButton && <span className="dropdown-triangle">&#9660;</span>}
       </li>
     );
