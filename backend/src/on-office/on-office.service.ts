@@ -58,7 +58,10 @@ import {
   IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
 } from '@area-butler-types/integration-user';
-import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/on-office-constants';
+import {
+  onOfficeUrlFieldsMapper,
+  openAiQueryTypeToOnOfficeEstateFieldMapping
+} from '../../../shared/constants/on-office/on-office-constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
@@ -936,15 +939,14 @@ export class OnOfficeService {
           });
         }
 
-        // TODO the field ids should be moved to a specific DB collection or config file
         return this.updateEstateTextField(integrationUser, {
           exportType,
           integrationId,
           text: url,
           exportMatchParams: {
             fieldId: isAddressShown
-              ? 'MPAreaButlerUrlWithAddress'
-              : 'MPAreaButlerUrlNoAddress',
+              ? onOfficeUrlFieldsMapper.WITH_ADDRESS
+              : onOfficeUrlFieldsMapper.WITHOUT_ADDRESS,
           },
         });
       }),

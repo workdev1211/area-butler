@@ -8,4 +8,9 @@ export const openAiQueryTypeToOnOfficeEstateFieldMapping: Partial<
   [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: "sonstige_angaben",
 };
 
+export const onOfficeUrlFieldsMapper = {
+  "WITH_ADDRESS": "MPAreaButlerUrlWithAddress",
+  "WITHOUT_ADDRESS": "MPAreaButlerUrlNoAddress"
+}
+
 export const onOfficeOpenAiCharacterLimit = 2000;

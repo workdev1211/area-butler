@@ -34,14 +34,19 @@ export const propstackExportTypeMapper: Partial<
   [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: "other_note",
 };
 
+export const propstackUrlFieldsMapper = {
+  "WITH_ADDRESS": "areabutler_link_with_address",
+  "WITHOUT_ADDRESS": "areabutler_link_without_address"
+}
+
 export const propstackOpenAiFieldMapper: Record<
   PropstackTextFieldTypeEnum,
   OpenAiQueryTypeEnum
 > = {
   [PropstackTextFieldTypeEnum.LOCATION_NOTE]:
-    OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+  OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
   [PropstackTextFieldTypeEnum.DESCRIPTION_NOTE]:
-    OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+  OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
   [PropstackTextFieldTypeEnum.OTHER_NOTE]:
-    OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+  OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
 };

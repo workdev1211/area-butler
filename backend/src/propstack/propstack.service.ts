@@ -46,6 +46,7 @@ import {
   propstackExportTypeMapper,
   propstackOpenAiFieldMapper,
   propstackPropertyMarketTypeNames,
+  propstackUrlFieldsMapper,
 } from '../../../shared/constants/propstack/propstack-constants';
 import { configService } from '../config/config.service';
 import { PlaceService } from '../place/place.service';
@@ -56,7 +57,10 @@ import {
 import { LocationService } from '../location/location.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
-import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
+import {
+  OpenAiQueryTypeEnum,
+  OpenAiTonalityEnum,
+} from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { UserDocument } from '../user/schema/user.schema';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
@@ -126,12 +130,13 @@ export class PropstackService {
   }
 
   async setPropPublicLinks(
-    { parameters }: TIntegrationUserDocument,
-    { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
+    integrationUser: TIntegrationUserDocument,
+    { integrationId, publicLinkParams, exportType }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
-    await Promise.all(
-      publicLinkParams.map(({ title, url }) =>
-        this.propstackApiService.createPropertyLink(
+    const { parameters } = integrationUser;
+    publicLinkParams.map(({ title, url, isLinkEntity, isAddressShown }) => {
+      if (isLinkEntity) {
+        return this.propstackApiService.createPropertyLink(
           (parameters as IApiIntUserPropstackParams).apiKey,
           {
             title,
@@ -140,9 +145,19 @@ export class PropstackService {
             on_landing_page: true,
             property_id: parseInt(integrationId, 10),
           },
-        ),
-      ),
-    );
+        );
+      }
+      this.updatePropertyTextField(integrationUser, {
+        exportType,
+        exportMatchParams: {
+          fieldId: isAddressShown
+            ? propstackUrlFieldsMapper.WITH_ADDRESS
+            : propstackUrlFieldsMapper.WITHOUT_ADDRESS,
+        },
+        integrationId,
+        text: url,
+      });
+    });
   }
 
   private async getSnapshotRealEstate(
@@ -262,19 +277,55 @@ export class PropstackService {
   // }
 
   async updatePropertyTextField(
-    { parameters }: TIntegrationUserDocument,
-    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
+    {
+      parameters,
+      parentUser,
+      config: { exportMatching },
+    }: TIntegrationUserDocument,
+    {
+      exportType,
+      exportMatchParams,
+      integrationId,
+      text,
+    }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
-    const paramName = propstackExportTypeMapper[exportType];
+    const resExpMatching = exportMatching || parentUser?.config.exportMatching;
+    let resExportMatchParams =
+      exportMatchParams || (resExpMatching && resExpMatching[exportType]);
+    const defaultMaxTextLength = 2000;
 
-    if (!paramName) {
-      throw new UnprocessableEntityException();
+    if (
+      !resExportMatchParams &&
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+      ].includes(exportType as OpenAiQueryTypeEnum)
+    ) {
+      resExportMatchParams = {
+        fieldId: propstackExportTypeMapper[exportType],
+        maxTextLength: defaultMaxTextLength,
+      };
     }
+
+    if (!resExportMatchParams) {
+      throw new UnprocessableEntityException(
+        'Could not determine the field id!',
+      );
+    }
+
+    const processedText =
+      resExportMatchParams.maxTextLength === 0
+        ? text
+        : text.slice(
+            0,
+            resExportMatchParams.maxTextLength || defaultMaxTextLength,
+          );
 
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
       parseInt(integrationId, 10),
-      { [paramName]: text },
+      { [exportMatchParams.fieldId]: processedText },
     );
   }
 
