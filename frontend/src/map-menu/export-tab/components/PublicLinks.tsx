@@ -36,9 +36,7 @@ const PublicLinks: FC = () => {
   const unaddressLinkTitle = "Anonym - AreaButler Link ohne Adresse";
 
   const directLink = createDirectLink();
-  const isLinkEntity =
-    integrationType === IntegrationTypesEnum.PROPSTACK ||
-    integrationUser?.config.isSpecialLink;
+  const isLinkEntity = integrationUser?.config.isSpecialLink;
   const isSentBothAvail = !!(
     integrationType &&
     responseTokens?.addressToken &&
