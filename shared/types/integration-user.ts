@@ -2,7 +2,7 @@ import { IntegrationTypesEnum } from "./integration";
 import {
   ApiSearchResultSnapshotResponse,
   ApiShowTour,
-  IApiMapboxStyle,
+  IApiMapboxStyle, IApiUserPoiIcons,
   LanguageTypeEnum,
   TAreaButlerExportTypes,
 } from "./types";
@@ -153,4 +153,5 @@ export interface IApiIntUserLoginRes {
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   openAiQueryType?: OpenAiQueryTypeEnum;
   subscription?: IIntUserSubscription;
+  poiIcons?: IApiUserPoiIcons;
 }

@@ -400,6 +400,7 @@ export class OnOfficeService {
         realEstate.id,
       ),
       subscription: integrationUser.subscription,
+      poiIcons: integrationUser.poiIcons,
     };
   }
 

@@ -92,11 +92,13 @@ export class User {
   @Prop({ type: String })
   parentId: string;
 
+  @Prop({ type: Object })
+  poiIcons?: IApiUserPoiIcons;
+
   @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
   language: LanguageTypeEnum;
 
   parentUser?: UserDocument;
-  poiIcons?: IApiUserPoiIcons;
   subscription?: SubscriptionDocument;
 }
 
@@ -123,7 +125,6 @@ UserSchema.virtual(PARENT_USER_PATH, {
   justOne: true,
 });
 
-UserSchema.virtual('poiIcons');
 UserSchema.virtual('subscription');
 
 // Left as an example

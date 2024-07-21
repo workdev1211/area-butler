@@ -15,6 +15,7 @@ import {
 } from '@area-butler-types/integration-user';
 import { IntUserSubscriptionSchema } from './int-user-subscription.schema';
 import { PARENT_USER_PATH } from './user.schema';
+import { IApiUserPoiIcons } from '@area-butler-types/types';
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
@@ -60,6 +61,9 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
     },
   })
   subscription?: IIntUserSubscription;
+  
+  @Prop({ type: Object })
+  poiIcons?: IApiUserPoiIcons;
 
   isSubscriptionActive?: boolean;
   parentUser?: TIntegrationUserDocument;

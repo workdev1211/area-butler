@@ -222,7 +222,7 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { propertyId, target, fieldName }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
-    const { accessToken, integrationUserId, parentId, subscription } =
+    const { accessToken, integrationUserId, parentId, subscription, poiIcons } =
       integrationUser;
 
     const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
@@ -236,6 +236,7 @@ export class PropstackService {
       latestSnapshot,
       realEstate,
       subscription,
+      poiIcons,
       availProdContingents:
         await this.contingentIntService.getAvailProdContingents(
           integrationUser,

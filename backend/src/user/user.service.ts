@@ -53,7 +53,7 @@ export class UserService {
         return existingUser;
       }
 
-      const { poiIcons } = await this.fetchUserAssets(existingUser.email);
+      const poiIcons = existingUser.poiIcons;
 
       if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
         existingUser.poiIcons = poiIcons;
@@ -203,7 +203,7 @@ export class UserService {
     }
 
     if (withAssets) {
-      const { poiIcons } = await this.fetchUserAssets(user.email);
+      const poiIcons = user.poiIcons;
 
       if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
         user.poiIcons = poiIcons;
