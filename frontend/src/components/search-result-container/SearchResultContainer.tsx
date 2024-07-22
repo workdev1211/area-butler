@@ -499,12 +499,10 @@ const SearchResultContainer = forwardRef<
         {/*)}*/}
         {mapClipping && (
           <MapClipCropModal
-            entityGroups={(entityGroupsByActMeans ?? [])
-              .filter(
-                (ge) =>
-                  ge.items.length && ge.name !== OsmName.property && ge.active
-              )
-              .sort((a, b) => a.title.localeCompare(b.title))}
+            entityGroups={(entityGroupsByActMeans ?? []).filter(
+              (ge) =>
+                ge.items.length && ge.name !== OsmName.property && ge.active
+            )}
             mapClipping={mapClipping}
             closeModal={handleMapClipCrop}
             color={primaryColor?.slice(1)}

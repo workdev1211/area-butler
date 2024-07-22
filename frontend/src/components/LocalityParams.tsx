@@ -9,6 +9,7 @@ import {
   TPoiGroupName,
 } from "../../../shared/types/types";
 import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
+import { getOsmCategories } from "../shared/pois.functions";
 
 interface ILocalityParamsProps {
   values: ApiOsmEntity[];
@@ -61,7 +62,7 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
       className="flex flex-wrap gap-12 lg:gap-24 w-full"
       data-tour="locality-params"
     >
-      {Object.values(ApiOsmEntityCategory).map((category) => (
+      {getOsmCategories().map(({ category, title }) => (
         <div className="flex flex-col" key={`category-${category}`}>
           <div>
             <label
@@ -80,7 +81,7 @@ const LocalityParams: FC<ILocalityParamsProps> = ({ values, onChange }) => {
                 className="label-text ml-2"
                 style={{ padding: "16px 0 16px 0" }}
               >
-                {t(IntlKeys.snapshotEditor.pointsOfInterest[category])}
+                {title}
               </h3>
             </label>
           </div>

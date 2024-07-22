@@ -28,7 +28,6 @@ import areaButlerLogo from "../assets/img/logo.svg";
 import { useTools } from "../hooks/tools";
 import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
 import { TCensusData } from "../../../shared/types/data-provision";
-import { derivePoiGroupsByActMeans } from "../shared/pois.functions";
 
 interface IExportModalProps {
   censusData?: TCensusData;
@@ -85,18 +84,6 @@ const ExportModal: FC<IExportModalProps> = ({
       payload: false,
     });
   };
-
-  const poiItems = useMemo(
-    () =>
-      derivePoiGroupsByActMeans(
-        searchContextState.availGroupedEntities,
-        searchContextState.responseActiveMeans
-      ).flatMap(({ items }) => items),
-    [
-      searchContextState.availGroupedEntities,
-      searchContextState.responseActiveMeans,
-    ]
-  );
 
   const entityGroups: EntityGroup[] = useMemo(
     () =>
@@ -266,7 +253,6 @@ const ExportModal: FC<IExportModalProps> = ({
 
               {exportType === ExportTypeEnum.CHEATSHEET && (
                 <CheatsheetDownload
-                  entities={poiItems}
                   groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : undefined}
                   searchResponse={searchContextState.searchResponse!}

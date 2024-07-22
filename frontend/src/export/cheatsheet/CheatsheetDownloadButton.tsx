@@ -1,7 +1,7 @@
-import { FunctionComponent, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import ReactToPrint from "react-to-print";
 
@@ -14,14 +14,12 @@ import {
 import Cheatsheet from "./Cheatsheet";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
-import { ResultEntity } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
 
 interface ICheatsheetDownloadProps {
-  entities: ResultEntity[];
   searchResponse: ApiSearchResponse;
   groupedEntries: any;
   transportationParams: TransportationParam[];
@@ -40,14 +38,11 @@ interface ICheatsheetDownloadProps {
   qrCode: IQrCodeState;
 }
 
-export const CheatsheetDownload: FunctionComponent<
-  ICheatsheetDownloadProps
-> = ({
+export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
   groupedEntries,
   transportationParams,
   listingAddress,
   realEstateListing,
-  entities,
   searchResponse,
   downloadButtonDisabled,
   mapClippings,
@@ -69,7 +64,9 @@ export const CheatsheetDownload: FunctionComponent<
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 
-  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(
+    IntlKeys.snapshotEditor.exportTab.myLocation
+  )}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -118,9 +115,9 @@ export const CheatsheetDownload: FunctionComponent<
         content={() => componentRef.current!}
         bodyClass="font-serif"
       />
+
       <Cheatsheet
         searchResponse={searchResponse}
-        entities={entities}
         activePrinting={activePrinting}
         ref={componentRef}
         groupedEntries={groupedEntries}

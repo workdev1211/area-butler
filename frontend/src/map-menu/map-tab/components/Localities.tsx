@@ -5,7 +5,6 @@ import { IntlKeys } from "i18n/keys";
 
 import { ResultEntity } from "../../../shared/search-result.types";
 import {
-  ApiOsmEntityCategory,
   IApiUserPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
@@ -27,6 +26,7 @@ import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
 import { SearchContext } from "../../../context/SearchContext";
 import { UserContext } from "../../../context/UserContext";
 import { OsmEntityMapper } from "../../../../../shared/types/osm-entity-mapper";
+import { getOsmCategories } from "../../../shared/pois.functions";
 
 interface ILocalitiesProps {
   toggleAllLocalities: () => void;
@@ -145,7 +145,7 @@ const Localities: FC<ILocalitiesProps> = ({
             })}
 
           {/* POIs */}
-          {Object.values(ApiOsmEntityCategory).map((category) => {
+          {getOsmCategories().map(({ category, title }) => {
             return (
               <div key={`container-${category}`}>
                 {groupedEntries.some(
@@ -154,9 +154,7 @@ const Localities: FC<ILocalitiesProps> = ({
                       category && items.length
                 ) && (
                   <li className="locality-option-heading" key={category}>
-                    <h4>
-                      {t(IntlKeys.snapshotEditor.pointsOfInterest[category])}
-                    </h4>
+                    <h4>{title}</h4>
                   </li>
                 )}
                 {groupedEntries

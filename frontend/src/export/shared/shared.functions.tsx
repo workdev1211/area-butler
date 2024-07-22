@@ -7,19 +7,17 @@ export const getFilteredLegend = (
   entityGroups: EntityGroup[],
   poiIcons?: IApiUserPoiIcon[]
 ): ILegendItem[] => {
-  return (
-    entityGroups
-      .reduce<ILegendItem[]>((result, { active, name, title }) => {
-        if (active) {
-          result.push({
-            title,
-            icon: deriveIconForPoiGroup(name, poiIcons),
-          });
-        }
+  return entityGroups.reduce<ILegendItem[]>(
+    (result, { active, name, title }) => {
+      if (active) {
+        result.push({
+          title,
+          icon: deriveIconForPoiGroup(name, poiIcons),
+        });
+      }
 
-        return result;
-      }, [])
-      // TODO remove sort after ExportModal refactoring
-      .sort((a, b) => a.title.localeCompare(b.title))
+      return result;
+    },
+    []
   );
 };

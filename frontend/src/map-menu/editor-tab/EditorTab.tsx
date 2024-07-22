@@ -308,7 +308,6 @@ const EditorTab: FC<IEditorTabProps> = ({
             )}
             {groupedEntries
               .filter((ge) => ge.items.length)
-              .sort((a, b) => a.title.localeCompare(b.title))
               .map((group) => (
                 <li key={group.name}>
                   <div className="flex flex-col">

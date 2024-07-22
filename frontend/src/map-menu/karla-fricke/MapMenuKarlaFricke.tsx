@@ -44,9 +44,9 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
 
   const groupedEntries = useMemo(
     () =>
-      entityGroupsByActMeans
-        .filter((ge) => ge.items.length && ge.name !== OsmName.property)
-        .sort((a, b) => a.title.localeCompare(b.title)),
+      entityGroupsByActMeans.filter(
+        (ge) => ge.items.length && ge.name !== OsmName.property
+      ),
     [entityGroupsByActMeans]
   );
 

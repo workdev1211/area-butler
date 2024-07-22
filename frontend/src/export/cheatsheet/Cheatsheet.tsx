@@ -20,7 +20,7 @@ import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import areaButlerLogo from "../../assets/img/logo.svg";
-import { EntityGroup, ResultEntity } from "../../shared/search-result.types";
+import { EntityGroup } from "../../shared/search-result.types";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
@@ -30,7 +30,6 @@ import { SearchContext } from "../../context/SearchContext";
 
 interface ICheatsheetProps {
   searchResponse: ApiSearchResponse;
-  entities: ResultEntity[];
   censusData?: TCensusData;
   particlePollutionData: ApiGeojsonFeature[];
   federalElectionData: FederalElectionDistrict;

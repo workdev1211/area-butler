@@ -6,6 +6,7 @@ import { IntlKeys } from "i18n/keys";
 import {
   ApiCoordinates,
   ApiOsmEntity,
+  ApiOsmEntityCategory,
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
@@ -419,7 +420,7 @@ export const deriveInitialEntityGroups = ({
       : poiGroups)
   );
 
-  return entityGroups;
+  return entityGroups.sort((a, b) => a.title.localeCompare(b.title));
 };
 
 export const derivePoiGroupsByActMeans = (
@@ -470,3 +471,14 @@ export const toggleEntityVisibility = (
 
   return entityVisibility;
 };
+
+export const getOsmCategories = (): Array<{
+  category: ApiOsmEntityCategory;
+  title: string;
+}> =>
+  Object.values(ApiOsmEntityCategory)
+    .map((category) => ({
+      category,
+      title: i18.t(IntlKeys.snapshotEditor.pointsOfInterest[category]),
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title));

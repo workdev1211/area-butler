@@ -107,7 +107,6 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     let activeGroupNumber = 0;
 
     return searchContextState.entityGroupsByActMeans
-      .sort((a: EntityGroup, b: EntityGroup) => a.title.localeCompare(b.title))
       .reduce<ISortableEntityGroup[]>((result, group) => {
         if (
           [OsmName.favorite, OsmName.property].includes(group.name as OsmName)

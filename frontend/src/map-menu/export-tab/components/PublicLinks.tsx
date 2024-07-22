@@ -11,10 +11,7 @@ import { integrationNames } from "../../../../../shared/constants/integration";
 import { useTools } from "../../../hooks/tools";
 import { IntlKeys } from "i18n/keys";
 import { SearchContext } from "../../../context/SearchContext";
-import {
-  IApiIntSetPropPubLinksReq,
-  IntegrationTypesEnum,
-} from "../../../../../shared/types/integration";
+import { IApiIntSetPropPubLinksReq } from "../../../../../shared/types/integration";
 import { UserContext } from "../../../context/UserContext";
 import { AreaButlerExportTypesEnum } from "../../../../../shared/types/types";
 
