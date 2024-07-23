@@ -7,7 +7,7 @@ import {
   IApiPropstackFetchProperties,
   IApiPropstackImage,
   IApiPropstackLink,
-  IPropstackBroker,
+  IPropstackBroker, IPropstackCustomFields,
   IPropstackLink,
   IPropstackProperty,
   IPropstackPropertyStatus,
@@ -108,7 +108,7 @@ export class PropstackApiService {
   async updatePropertyById(
     apiKey: string,
     propertyId: number,
-    updatedParams: Partial<IPropstackProperty>,
+    updatedParams: Partial<IPropstackProperty & { partial_custom_fields?: IPropstackCustomFields[]; }>,
   ): Promise<IPropstackProperty> {
     const headers = {
       'Content-Type': 'application/json',

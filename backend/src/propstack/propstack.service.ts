@@ -323,10 +323,14 @@ export class PropstackService {
             resExportMatchParams.maxTextLength || defaultMaxTextLength,
           );
 
+    const splitField = resExportMatchParams.fieldId.split('custom_fields.');
+
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
       parseInt(integrationId, 10),
-      { [exportMatchParams.fieldId]: processedText },
+      splitField.length > 1
+        ? { partial_custom_fields: [{ [splitField[1]]: processedText }] }
+        : { [resExportMatchParams.fieldId]: processedText },
     );
   }
 
