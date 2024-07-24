@@ -194,7 +194,7 @@ const LocationExport: FC<ILocationExportProps> = ({
               }}
             >
               <img
-                className="w-6 h-6"
+                className="w-4 h-4"
                 style={invertFilter}
                 src={pdfIcon}
                 alt="pdf"
@@ -213,7 +213,7 @@ const LocationExport: FC<ILocationExportProps> = ({
               }}
             >
               <img
-                className="w-6 h-6"
+                className="w-4 h-4"
                 style={invertFilter}
                 src={pdfIcon}
                 alt="pdf"
@@ -229,7 +229,7 @@ const LocationExport: FC<ILocationExportProps> = ({
               }}
             >
               <img
-                className="w-6 h-6"
+                className="w-4 h-4"
                 style={invertFilter}
                 src={pdfIcon}
                 alt="pdf"

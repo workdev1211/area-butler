@@ -10,13 +10,13 @@ import { ResultStatusEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
 import { usePropstackLogin } from "./hooks/propstacklogin";
 import ScrollToTop from "../components/ScrollToTop";
-import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { ILoginStatus } from "../shared/shared.types";
+import SupportLink from "../components/SupportLink";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -138,7 +138,7 @@ const PropstackContainer: FC = () => {
           draggable
           pauseOnHover
         />
-        {!["products", "map"].includes(currentPath) && <FeedbackModal />}
+        {!["products", "map"].includes(currentPath) && <SupportLink />}
         <Switch>
           <Route path="/potential-customers/:customerId">
             <PotentialCustomerPage />

@@ -8,6 +8,8 @@ import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import useOnClickOutside from "hooks/onclickoutside";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
+import { useHistory } from "react-router-dom";
+import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 
 interface IPotentialCustomerDropDownProps {
   buttonStyles?: string;
@@ -19,6 +21,7 @@ export const PotentialCustomerDropDown: FC<IPotentialCustomerDropDownProps> = ({
   const { t } = useTranslation();
   const { potentialCustomerState } = useContext(PotentialCustomerContext);
   const { searchContextDispatch } = useContext(SearchContext);
+  const { push: historyPush } = useHistory();
 
   const fillDataFromCustomer = ({
     preferredAmenities,
@@ -92,6 +95,22 @@ export const PotentialCustomerDropDown: FC<IPotentialCustomerDropDownProps> = ({
               </li>
             )
           )}
+          <li key="customer-drop-down-new">
+            <button
+              type="button"
+              onClick={() => {
+                historyPush("/potential-customers/new");
+              }}
+              className="btn btn-link whitespace-nowrap"
+            >
+              <div className="flex flex-col items-start">
+                <span className="font-bold">
+                  <img src={plusIcon} alt="pdf-icon" />{" "}
+                  {t(IntlKeys.potentialCustomers.newTargetGroup)}
+                </span>
+              </div>
+            </button>
+          </li>
         </ul>
       )}
     </div>

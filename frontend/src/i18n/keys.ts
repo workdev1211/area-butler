@@ -15,6 +15,7 @@ export const IntlKeys = {
     searching: "common.searching",
     close: "common.close",
     cancel: "common.cancel",
+    discard: "common.discard",
     open: "common.open",
     apply: "common.apply",
     import: "common.import",
@@ -672,7 +673,6 @@ export const IntlKeys = {
 
   integration: {
     absentTokensError: "integration.absentTokensError",
-    cropAndSend: "integration.cropAndSend",
     wrongExportTypeGiven: "integration.wrongExportTypeGiven",
   },
 

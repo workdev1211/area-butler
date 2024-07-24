@@ -70,7 +70,7 @@ const MapMenuListItem: FC<MapMenuListItemProps> = ({
             }}
           >
             <div
-              className={`img-container${
+              className={`img-container img-container-lg${
                 isCustomIcon ? "" : " mask mask-circle"
               }`}
               style={{ background: groupIcon.color }}

@@ -10,7 +10,7 @@
     @apply flex items-center gap-1;
 
     img {
-      @apply w-8;
+      @apply w-4;
     }
   }
 
@@ -21,7 +21,7 @@
     img {
       filter: invert(79%) sepia(0%) saturate(0%) hue-rotate(166deg)
         brightness(86%) contrast(90%);
-      @apply w-6 h-6;
+      @apply w-4 h-4;
     }
   }
 

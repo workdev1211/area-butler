@@ -18,13 +18,13 @@ import { UserContext } from "../context/UserContext";
 import { useOnOfficeLogin } from "./hooks/onofficelogin";
 import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
-import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IOnOfficeLoginStatus } from "../shared/shared.types";
+import SupportLink from "../components/SupportLink";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -147,7 +147,7 @@ const OnOfficeContainer: FunctionComponent = () => {
           draggable
           pauseOnHover
         />
-        {!["products", "map"].includes(currentPath) && <FeedbackModal />}
+        {!["products", "map"].includes(currentPath) && <SupportLink />}
         <Switch>
           <Route path="/potential-customers/:customerId">
             <PotentialCustomerPage />

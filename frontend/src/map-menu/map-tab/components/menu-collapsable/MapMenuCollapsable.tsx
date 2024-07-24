@@ -38,7 +38,7 @@ const MapMenuCollapsable: FunctionComponent<MapMenuCollapsableProps> = ({
         <div className="collapse-title" onClick={toggleOpen}>
           {icon && (
             <img
-              className="w-6 h-6"
+              className="w-4 h-4"
               src={icon}
               alt="copy"
               style={{ filter: "grayscale(100%) brightness(0)" }}

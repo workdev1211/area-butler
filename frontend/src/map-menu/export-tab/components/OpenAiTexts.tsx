@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { setBackgroundColor } from "../../../shared/shared.functions";
 import aiIcon from "../../../assets/icons/ai-big.svg";
@@ -94,13 +94,18 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
                   }}
                 >
                   <img
-                    className="w-6 h-6"
+                    className="w-4 h-4"
                     style={invertFilter}
                     src={aiIcon}
                     alt="ai"
                   />
                   <span>
-                    {t((IntlKeys.snapshotEditor.exportTab.openAITypesSideBarLabel as Record<string, string>)[type])}
+                    {t(
+                      (
+                        IntlKeys.snapshotEditor.exportTab
+                          .openAITypesSideBarLabel as Record<string, string>
+                      )[type]
+                    )}
                   </span>
                 </h3>
               </li>

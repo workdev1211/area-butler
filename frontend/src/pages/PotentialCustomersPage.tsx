@@ -171,7 +171,6 @@ const PotentialCustomersPage: FC = () => {
           <thead>
             <tr>
               <th>{t(IntlKeys.common.name)}</th>
-              <th>{t(IntlKeys.common.email)}</th>
               <th>{t(IntlKeys.potentialCustomers.importantAddresses)}</th>
               <th>{t(IntlKeys.potentialCustomers.livingConcept)}</th>
               <th />
@@ -187,14 +186,6 @@ const PotentialCustomersPage: FC = () => {
                   }
                 >
                   <th>{customer.name}</th>
-                  <td>
-                    <a
-                      href={`mailto:${customer.email}`}
-                      className="link-primary"
-                    >
-                      {customer.email}
-                    </a>
-                  </td>
                   <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
                     {Array.isArray(customer.preferredLocations) &&
                     customer.preferredLocations.length

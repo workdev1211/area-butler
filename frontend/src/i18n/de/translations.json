@@ -13,6 +13,7 @@
     "searching": "Suche...",
     "close": "Schließen",
     "cancel": "Abbrechen",
+    "discard": "Verwerfen",
     "open": "Öffnen",
     "apply": "Anwenden",
     "send": "Senden",
@@ -61,11 +62,11 @@
       "MINUTES": "Minuten"
     },
     "description": "Beschreibung",
-    "addressExpired": "Ihre Adresse ist abgelaufen. Bitte besuchen Sie die {{appUrl}} und verlängern Sie sie."
+    "addressExpired": "Diese Karte ist nicht mehr verfügbar. Bitte kontaktieren Sie AreaButler."
   },
   "environmentalAnalysis": {
-    "createBtn": "Analyse & Karte erstellen",
-    "updateBtn": "Analyse & Karte aktualisieren",
+    "createBtn": "Karte erstellen",
+    "updateBtn": "Karte aktualisieren",
     "error": "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen.",
     "queryLimitReached": "Abfragelimit erreicht",
     "modalBtn": "Neues Kontingent kaufen",
@@ -151,10 +152,10 @@
     "selectRatio": "Seitenverhältnis wählen",
     "selectRatioTooltip": "Wähle den Kartenausschnitt und das Seitenverhältnis (1:1, 4:3, 16:9 oder ein eigenes Format). Tipp für dein Lage-Exposé: Erstelle zwei Bilder: ein großes in 16:9 der Mikrolage und ein kleineres in 1:1 der Makrolage, das in die untere linke Ecke des großen Bildes kommt. Mehr dazu in unseren FAQs unter areabutler.de.",
     "userDefined": "Benutzerdefinierten",
-    "showQRCode": "QR-Code anzeigen",
-    "showLegend": "Legende anzeigen",
+    "showQRCode": "QR-Code",
+    "showLegend": "Legende",
     "showLegendTooltip": "Tipp: Verwenden Sie maximal 8 POI-Kategorien für eine optimale Darstellung.",
-    "showIsochrones": "Isochronensymbole anzeigen",
+    "showIsochrones": "Isochronensymbole",
     "crop": "Zuschneiden",
     "cropSuccess": "Kartenausschnitt erfolgreich gespeichert.",
     "portrait": "portrait",
@@ -174,6 +175,7 @@
     "size": "Größe",
     "directlyToTheObject": "Direkt zum Objekt",
     "hide": "Ausblenden",
+    "discard": "Verwerfen",
     "furtherObjects": "Weitere Objekte",
     "exportTab": {
       "mapSection": "Kartenausschnitte",
@@ -633,7 +635,6 @@
   },
   "integration": {
     "absentTokensError": "Es fehlt ein iFrame-Token!",
-    "cropAndSend": "Zuschneiden & übertragen",
     "wrongExportTypeGiven": "Falscher Exporttyp wurde angegeben!"
   },
   "screenshot": {

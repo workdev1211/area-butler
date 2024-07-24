@@ -31,9 +31,14 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from "../../../../../../shared/types/types";
+import downloadIcon from "../../../../assets/icons/download.svg";
+import caretIcon from "../../../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
+import shareIcon from "../../../../assets/icons/share.svg";
+import cropIcon from "../../../../assets/icons/scissors.svg";
 import walkIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import { integrationNames } from "../../../../../../shared/constants/integration";
 
 interface ICropParams {
   name: string;
@@ -91,8 +96,14 @@ const MeansBlock = ({ means, transportationParams }: IMeansBlockProps) => {
   );
 };
 
+export enum CropActionsEnum {
+  CROP = "crop",
+  DOWNLOAD = "download",
+  SEND_TO_INTEGRATION = "sendToIntegration",
+}
+
 interface IMapClipCropModalProps {
-  closeModal: (croppedMapClipping?: string) => void;
+  closeModal: (croppedMapClipping?: string, action?: CropActionsEnum) => void;
   entityGroups: EntityGroup[];
   mapClipping: string;
   activeMeans?: MeansOfTransportation[];
@@ -199,7 +210,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     );
   };
 
-  const handleCropComplete = async (): Promise<void> => {
+  const handleCropComplete = async (action: CropActionsEnum): Promise<void> => {
     const image = imgRef;
 
     if (!image || !cropState) {
@@ -257,7 +268,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
 
     try {
       const blobFile = await convertBlobToBase64(blob);
-      closeModal(blobFile);
+      closeModal(blobFile, action);
     } catch (e) {
       toastDefaultError();
       console.error(`Error: ${e}`);
@@ -476,7 +487,6 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
               </label>
             )}
           </div>
-
           <div className="flex flex-col sm:flex-row gap-2">
             <button
               className="btn btn-default"
@@ -484,20 +494,80 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                 closeModal();
               }}
             >
-              {t(IntlKeys.common.close)}
+              {t(IntlKeys.common.discard)}
             </button>
-
-            <button
-              className="btn btn-primary"
-              onClick={handleCropComplete}
-              disabled={!cropState?.width}
-            >
-              {t(
-                integrationType
-                  ? IntlKeys.integration.cropAndSend
-                  : IntlKeys.snapshotEditor.crop
-              )}
-            </button>
+            {(integrationType && (
+              <button
+                className="btn btn-primary"
+                onClick={() =>
+                  handleCropComplete(CropActionsEnum.SEND_TO_INTEGRATION)
+                }
+                disabled={!cropState?.width}
+              >
+                <img
+                  src={shareIcon}
+                  alt="icon-share"
+                  className="invert h-full break-after-avoid mr-2"
+                />
+                {t(IntlKeys.snapshotEditor.exportTab.sendTo, {
+                  integrationType: integrationNames[integrationType!],
+                })}
+              </button>
+            )) || (
+              <button
+                className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
+                onClick={() => handleCropComplete(CropActionsEnum.DOWNLOAD)}
+                disabled={!cropState?.width}
+              >
+                <img
+                  src={downloadIcon}
+                  alt="icon-share"
+                  className="invert h-full mr-2"
+                />
+                {t(IntlKeys.snapshotEditor.exportTab.download)}
+              </button>
+            )}
+            <div className="dropdown dropdown-hover dropdown-top dropdown-end">
+              <button
+                className="btn btn-primary dropdown-btn w-14"
+                disabled={!cropState?.width}
+              >
+                <img
+                  src={caretIcon}
+                  alt="icon-dropdown"
+                  className="rotate-180"
+                />
+              </button>
+              <ul
+                className="dropdown-content text-right"
+                style={{ top: "auto", background: "none" }}
+              >
+                <li
+                  className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
+                  onClick={() => handleCropComplete(CropActionsEnum.CROP)}
+                >
+                  <img
+                    src={cropIcon}
+                    alt="icon-share"
+                    className="invert h-full mr-2"
+                  />
+                  {t(IntlKeys.snapshotEditor.crop)}
+                </li>
+                {integrationType && (
+                  <li
+                    className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
+                    onClick={() => handleCropComplete(CropActionsEnum.DOWNLOAD)}
+                  >
+                    <img
+                      src={downloadIcon}
+                      alt="icon-share"
+                      className="invert h-full mr-2"
+                    />
+                    {t(IntlKeys.snapshotEditor.exportTab.download)}
+                  </li>
+                )}
+              </ul>
+            </div>
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "context/SearchContext";
+import downloadIcon from "../../assets/icons/download.svg";
 import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import sendToIntegrationIcon from "../../assets/icons/entrance-alt1.svg";
 import { ConfigContext } from "../../context/ConfigContext";
@@ -59,9 +60,9 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
   const downloadClipping = (clipping: MapClipping, i: number): void => {
     saveAs(
       clipping.mapClippingDataUrl,
-      `${parsedAddress}-${t(IntlKeys.snapshotEditor.exportTab.mapSection)}-${
-        i + 1
-      }.png`
+      `${t(IntlKeys.snapshotEditor.screenshotName)}-${parsedAddress}-${t(
+        IntlKeys.snapshotEditor.exportTab.mapSection
+      )}-${i + 1}.png`
     );
   };
 
@@ -79,14 +80,14 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
           />
 
           <div className="flex gap-5 flex-wrap">
-            <button
-              className="w-6 h-6 cursor-pointer border-b-2 border-b-black"
+            <img
+              src={downloadIcon}
+              className="w-6 h-6 cursor-pointer"
+              alt="icon-download"
               onClick={() => {
                 downloadClipping(clipping, i);
               }}
-            >
-              ↓
-            </button>
+            />
 
             <img
               src={deleteIcon}

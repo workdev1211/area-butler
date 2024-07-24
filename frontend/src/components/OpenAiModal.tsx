@@ -1,7 +1,7 @@
 import { FunctionComponent, useContext } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
 import crossIcon from "../assets/icons/cross.svg";
@@ -60,7 +60,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
 
   return (
     <div className="modal modal-open z-2000">
-      <div className="modal-box max-h-screen min-w-[75%]">
+      <div className="modal-box modal-full-screen">
         <h1 className="text-xl flex items-center gap-2 p-3 border-b">
           {t(IntlKeys.snapshotEditor.exportTab.aiTextsFromMagicPen)}
           <button

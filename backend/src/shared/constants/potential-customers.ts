@@ -15,6 +15,11 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
         unit: UnitsOfTransportation.MINUTES,
       },
       {
+        type: MeansOfTransportation.BICYCLE,
+        amount: 15,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+      {
         type: MeansOfTransportation.CAR,
         amount: 20,
         unit: UnitsOfTransportation.MINUTES,
@@ -41,6 +46,11 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       {
         type: MeansOfTransportation.WALK,
         amount: 10,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+      {
+        type: MeansOfTransportation.BICYCLE,
+        amount: 15,
         unit: UnitsOfTransportation.MINUTES,
       },
       {
@@ -110,12 +120,18 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
         amount: 15,
         unit: UnitsOfTransportation.MINUTES,
       },
+      {
+        type: MeansOfTransportation.CAR,
+        amount: 30,
+        unit: UnitsOfTransportation.MINUTES,
+      },
     ],
     preferredAmenities: [
       OsmName.bus_stop,
       OsmName.chemist,
       OsmName.dentist,
       OsmName.doctors,
+      OsmName.restaurant,
       OsmName.kindergarten,
       OsmName.park,
       OsmName.playground,

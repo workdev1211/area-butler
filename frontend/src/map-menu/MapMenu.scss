@@ -12,7 +12,8 @@
   --menu-item-pl: 24px;
   --menu-item-h: 56px;
   --menu-footer-h: 88px;
-  --menu-image-w-h: 36px;
+  --menu-image-w-h: 20px;
+  --menu-image-w-h-lg: 33px;
   --locality-py: 10px;
   --locality-pr: 60px;
   --locality-pl: 24px;
@@ -258,6 +259,12 @@
           width: var(--menu-image-w-h);
           height: var(--menu-image-w-h);
 
+          &.img-container-lg {
+            width: var(--menu-image-w-h-lg);
+            height: var(--menu-image-w-h-lg);
+
+          }
+
           img.item {
             filter: brightness(0) invert(1);
           }
@@ -341,7 +348,7 @@
       .feedback-button {
         all: unset;
         border: 1px solid;
-        @apply btn-sm border-primary rounded-full font-bold bg-white text-primary hover:bg-primary hover:text-white;
+        @apply btn-sm border-primary rounded-full font-bold bg-white text-primary hover:bg-primary hover:text-white cursor-pointer;
       }
 
       .save-button {

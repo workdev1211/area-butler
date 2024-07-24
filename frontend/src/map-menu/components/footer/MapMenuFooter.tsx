@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react";
 
 import BackButton from "../../../layout/BackButton";
-import FeedbackModal from "../../../components/FeedbackModal";
 import saveIcon from "../../../assets/icons/save.svg";
 import MapMenuFooterLinks from "./MapMenuFooterLinks";
 import { MapDisplayModesEnum } from "../../../../../shared/types/types";
+import SupportLink from "../../../components/SupportLink";
 
 interface IMapMenuFooterProps {
   mapDisplayMode: MapDisplayModesEnum;
@@ -21,7 +21,7 @@ const MapMenuFooter: FunctionComponent<IMapMenuFooterProps> = ({
     <div className="map-menu-footer">
       <div className="button-container">
         {isEditorMode && <BackButton key="back-button" />}
-        <FeedbackModal />
+        <SupportLink />
         <button
           type="button"
           className="save-button"

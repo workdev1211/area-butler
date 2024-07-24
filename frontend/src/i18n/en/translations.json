@@ -352,13 +352,14 @@
     },
     "description": "Description",
     "cancel": "Cancel",
+    "discard": "Discard",
     "userDefined": "User-defined",
     "custom": "User-defined",
-    "addressExpired": "Your address has expired. Please visit the {{appUrl}} and renew it."
+    "addressExpired": "This map is no longer available. Please contact AreaButler."
   },
   "environmentalAnalysis": {
-    "createBtn": "Create analysis & map",
-    "updateBtn": "Update analysis & map",
+    "createBtn": "Create map",
+    "updateBtn": "Update map",
     "error": "Error during search execution. Please repeat at a later time.",
     "queryLimitReached": "Query limit reached",
     "modalBtn": "Buy new contingent",
@@ -633,7 +634,6 @@
   },
   "integration": {
     "absentTokensError": "An iFrame token is missing!",
-    "cropAndSend": "Crop & transfer",
     "wrongExportTypeGiven": "Wrong export type was specified!"
   },
   "screenshot": {

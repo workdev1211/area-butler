@@ -1,7 +1,7 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 import { useHistory } from "react-router-dom";
 
 import {
@@ -56,7 +56,9 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
         <div className="collapse-title-container">
           <img src={fileIcon} alt="customer-data-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">{t(IntlKeys.snapshotEditor.exportTab.ownFiles)}</div>
+            <div className="collapse-title-text-1">
+              {t(IntlKeys.snapshotEditor.exportTab.ownFiles)}
+            </div>
           </div>
         </div>
       </div>
@@ -67,7 +69,9 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               className="max-w-fit items-center cursor-pointer"
               onClick={() => {
                 if (!searchContextState.localityParams.length) {
-                  toastSuccess(t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain));
+                  toastSuccess(
+                    t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain)
+                  );
                   return;
                 }
 
@@ -85,7 +89,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                 historyPush("/potential-customers/from-result");
               }}
             >
-              <img className="w-6 h-6" src={editIcon} alt="pdf" />
+              <img className="w-4 h-4" src={editIcon} alt="pdf" />
               {t(IntlKeys.snapshotEditor.exportTab.saveTargetGroup)}
             </h3>
           </li>
@@ -95,7 +99,9 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                 className="max-w-fit items-center cursor-pointer"
                 onClick={() => {
                   if (!searchContextState.placesLocation?.label) {
-                    toastSuccess(t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain));
+                    toastSuccess(
+                      t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain)
+                    );
                     return;
                   }
 
@@ -109,7 +115,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                   historyPush("/real-estates/from-result");
                 }}
               >
-                <img className="w-6 h-6" src={editIcon} alt="pdf" />
+                <img className="w-4 h-4" src={editIcon} alt="pdf" />
                 {t(IntlKeys.realEstate.createObject)}
               </h3>
             </li>
@@ -121,7 +127,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                 await duplicateSnapshot(snapshotId);
               }}
             >
-              <img className="w-6 h-6" src={copyIcon} alt="pdf" />
+              <img className="w-4 h-4" src={copyIcon} alt="pdf" />
               {t(IntlKeys.mapSnapshots.duplicateCard)}
             </h3>
           </li>

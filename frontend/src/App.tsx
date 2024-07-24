@@ -29,10 +29,10 @@ import {
 } from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
-import FeedbackModal from "./components/FeedbackModal";
 import { LoadingMessage } from "./components/Loading";
 // import MaintenanceModal from "./components/MaintenanceModal";
 import BrowserWarningModal from "./components/BrowserWarningModal";
+import SupportLink from "./components/SupportLink";
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
@@ -222,7 +222,7 @@ function App() {
           <Nav />
           <Authenticated>
             <UpgradeSubscriptionHandlerContainer />
-            {snapshotEditorPath !== currentPath && <FeedbackModal />}
+            {snapshotEditorPath !== currentPath && <SupportLink />}
           </Authenticated>
           <PayPalScriptProvider options={initialPaypalOptions}>
             <PotentialCustomerContextProvider>

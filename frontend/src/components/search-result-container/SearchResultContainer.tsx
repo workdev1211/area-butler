@@ -47,7 +47,9 @@ import {
   ResultEntity,
 } from "../../shared/search-result.types";
 import MapMenuButton from "./components/MapMenuButton";
-import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal";
+import MapClipCropModal, {
+  CropActionsEnum,
+} from "./components/map-clip-crop-modal/MapClipCropModal";
 import { Loading } from "../Loading";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../../shared/types/location";
 import { useGoogleMapsApi } from "../../hooks/google";
@@ -59,6 +61,7 @@ import {
   derivePoiGroupsByActMeans,
   toggleEntityVisibility,
 } from "../../shared/pois.functions";
+import { saveAs } from "file-saver";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -429,7 +432,8 @@ const SearchResultContainer = forwardRef<
     };
 
     const handleMapClipCrop = async (
-      croppedMapClipping?: string
+      croppedMapClipping?: string,
+      action?: CropActionsEnum
     ): Promise<void> => {
       if (!croppedMapClipping) {
         setMapClipping(undefined);
@@ -443,13 +447,20 @@ const SearchResultContainer = forwardRef<
         },
       });
 
-      if (integrationType) {
+      if (integrationType && action === CropActionsEnum.SEND_TO_INTEGRATION) {
         void sendToIntegration({
           base64Image: croppedMapClipping,
           exportType: AreaButlerExportTypesEnum.SCREENSHOT,
           filename: `${screenshotName}.png`,
           fileTitle: screenshotName,
         });
+      } else if (action === CropActionsEnum.DOWNLOAD) {
+        saveAs(
+          croppedMapClipping,
+          `${t(IntlKeys.snapshotEditor.screenshotName)}-${searchAddress}-${t(
+            IntlKeys.snapshotEditor.exportTab.mapSection
+          )}.png`
+        );
       } else {
         toastSuccess(t(IntlKeys.snapshotEditor.cropSuccess));
       }

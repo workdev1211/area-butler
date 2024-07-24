@@ -9,7 +9,6 @@ import "./MyVivendaContainer.scss";
 import { ResultStatusEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
 import ScrollToTop from "../components/ScrollToTop";
-import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { Loading, LoadingMessage } from "../components/Loading";
@@ -17,6 +16,7 @@ import { ILoginStatus } from "../shared/shared.types";
 import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useMyVivendaLogin } from "./hooks/myvivendalogin";
 import { IntlKeys } from "../i18n/keys";
+import SupportLink from "../components/SupportLink";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -105,7 +105,7 @@ const MyVivendaContainer: FC = () => {
           draggable
           pauseOnHover
         />
-        <FeedbackModal />
+        <SupportLink />
         <Switch>
           <Route path={`/${snapshotEditorPath}/:snapshotId`}>
             <SnapshotEditorPage />

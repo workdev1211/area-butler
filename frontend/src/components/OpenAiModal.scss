@@ -1,5 +1,8 @@
-.modal {
+.modal-box.modal-full-screen {
+    max-height: 90vh;
+    min-width: 90%;
+
     .scrollable-content {
-        max-height: calc(100vh - 90px);
+        max-height: calc(90vh - 75px);
     }
 }
