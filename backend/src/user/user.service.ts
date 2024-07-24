@@ -55,7 +55,10 @@ export class UserService {
 
       const poiIcons = existingUser.poiIcons;
 
-      if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
+      if (
+        poiIcons &&
+        Object.keys(poiIcons).some((key) => poiIcons[key]?.length)
+      ) {
         existingUser.poiIcons = poiIcons;
       }
 
@@ -205,7 +208,10 @@ export class UserService {
     if (withAssets) {
       const poiIcons = user.poiIcons;
 
-      if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
+      if (
+        poiIcons &&
+        Object.keys(poiIcons).some((key) => poiIcons[key]?.length)
+      ) {
         user.poiIcons = poiIcons;
       }
     }
