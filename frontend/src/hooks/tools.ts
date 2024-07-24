@@ -62,11 +62,11 @@ export const useTools = () => {
     return url;
   };
 
-  const createCodeSnippet = (): string => `<iframe
+  const createCodeSnippet = (tokenDataParams?: IGetTokenDataParams): string => `<iframe
   style="border: none"
   width="100%"
   height="100%"
-  src="${createDirectLink()}"
+  src="${createDirectLink(tokenDataParams)}"
   title="AreaButler Map Snippet"
 ></iframe>`;
 

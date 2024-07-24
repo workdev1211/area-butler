@@ -37,8 +37,19 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
   const openCodeSnippetModal = (
     snapshot: ApiSearchResultSnapshotResponse
   ): void => {
-    setCodeSnippet(createCodeSnippet());
-    setDirectLink(createDirectLink());
+    const tokenDataParams = {
+      isAddressShown: snapshot.config?.showAddress,
+      tokens: {
+        addressToken: snapshot.addressToken,
+        unaddressToken: snapshot.unaddressToken,
+        token: snapshot.token,
+      },
+    };
+    const directionLink = createDirectLink(tokenDataParams);
+    const codeSnippet = createCodeSnippet(tokenDataParams);
+
+    setCodeSnippet(codeSnippet);
+    setDirectLink(directionLink);
     setSnapshot(snapshot);
     setIsShownModal(true);
   };
