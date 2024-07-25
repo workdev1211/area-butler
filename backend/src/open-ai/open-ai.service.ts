@@ -16,8 +16,6 @@ import {
 } from '../../../shared/constants/open-ai';
 import {
   ApiFurnishing,
-  ApiRealEstateCharacteristics,
-  ApiRealEstateCost,
   ApiRealEstateCostType,
   ApiRealEstateListing,
 } from '@area-butler-types/real-estate';
@@ -27,7 +25,6 @@ import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { processLocationIndices } from '../../../shared/functions/location-index.functions';
 import { ZensusAtlasService } from '../data-provision/zensus-atlas/zensus-atlas.service';
-import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import {
   cleanCensusProperties,
   processCensusData,
@@ -35,6 +32,7 @@ import {
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 import { OsmEntityMapper } from '@area-butler-types/osm-entity-mapper';
+import { defaultSnapshotConfig } from '../../../shared/constants/location';
 
 // TODO remove similar interfaces like for the frontend part
 interface IGeneralQueryData {
@@ -81,222 +79,81 @@ export class OpenAiService {
 
   async getLocDescQuery(
     user: UserDocument | TIntegrationUserDocument,
-    {
+    { isForOnePage, ...queryData }: ILocDescQueryData,
+  ): Promise<string> {
+    const {
       snapshotRes: {
         snapshot,
         config: snapshotConfig = { ...defaultSnapshotConfig },
       },
-      tonality,
-      language,
-      customText,
-      meanOfTransportation,
       targetGroupName = defaultTargetGroupName,
-      textLength = OpenAiTextLengthEnum.MEDIUM,
-      isForOnePage,
-    }: ILocDescQueryData,
-    initQueryText?: string,
-  ): Promise<string> {
-    let queryText =
-      initQueryText ||
-      'Sei mein Experte für die Immobilien-Lagetexte und schreibe eine werbliche Lagebeschreibung.';
+    } = queryData;
 
-    queryText += snapshotConfig.showAddress
-      ? ` Es geht um eine Immobilien mit der Adresse: ${snapshot.placesLocation.label}.`
-      : '';
-
-    queryText += language
-      ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
-      : '';
-
-    // text length with the OnePage case
-    queryText += ` ${
-      isForOnePage
-        ? 'Der Text darf maximal 500 Zeichen lang sein.'
-        : openAiTextLengthOptions.find(({ value }) => value === textLength).text
-    }`;
-
-    queryText += ` Nutze eine ${tonality} Art der Formulierung. Verzichte in jeder Situation auf Sonderzeichen und Emoticons. Vermeide Überschriften für den Text.`;
-
-    if (customText) {
-      queryText +=
-        customText ===
-        'Teaser Text für Portale und aufbauenden Text generieren.'
-          ? ' Generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt.'
-          : ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
-    }
-
-    queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen. Erwähne vor allem POI-Kategorien die der Zielgruppe "${targetGroupName}" gefallen und lege dar warum diese Lage gerade für diese Zielgruppe optimal ist.`;
-    queryText +=
-      ' Wenn möglich, nenne die Entfernung zum nächstgelegenen internationalen Flughafen, nenne die Autobahnen die nah an der Immobilien verlaufen, nenne die nächste ÖPNV Möglichkeiten.\n';
-
-    // POIs
-
-    const processedPoiData = this.processPoiData(
-      snapshot,
-      snapshotConfig,
-      meanOfTransportation,
+    return (
+      `Du bist ein erfahrener Immobilienmakler. Schreibe eine werbliche Lagebeschreibung für eine Wohnimmobilie` +
+      (snapshotConfig.showAddress
+        ? ` an der Adresse + ${snapshot.placesLocation.label}. `
+        : '. ') +
+      `Der Text soll die Zielgruppe "${targetGroupName}" ansprechen, und keine Sonderzeichen oder Emoticons verwenden. ` +
+      `Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n\n` +
+      this.getTextualRequirements(queryData, true, false, isForOnePage) +
+      `\n\n` +
+      (await this.getLocationDescription(queryData, user))
     );
-    const poiCategories = Object.keys(processedPoiData);
-
-    if (poiCategories.length) {
-      queryText +=
-        'Hier eine Tabelle mit den jeweils 3 nächsten erreichbaren POIs der jeweiligen Kategorie mit Entfernung in Meter und Name.';
-      queryText += ` Nenne aus der Tabelle 3 POIs die für "${targetGroupName}" interessant sein könnten.\n`;
-
-      poiCategories.forEach((category) => {
-        queryText += `${category}:`;
-        const pois = processedPoiData[category];
-        pois.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
-
-        pois.forEach(({ name, distanceInMeters }) => {
-          queryText += ` ${name} (${Math.round(distanceInMeters)}m),`;
-        });
-
-        queryText = queryText.slice(0, -1);
-        queryText += '.\n';
-      });
-    }
-
-    // Location indices
-
-    const locationIndices = await this.locationIndexService.queryWithUser(
-      user,
-      {
-        type: 'Point',
-        coordinates: [snapshot.location.lng, snapshot.location.lat],
-      },
-    );
-
-    if (
-      locationIndices.length &&
-      Object.keys(locationIndices[0].properties).length
-    ) {
-      const resultingLocationIndices = processLocationIndices(
-        locationIndices[0].properties,
-      );
-
-      queryText +=
-        'Hier die von uns berechneten Lage-Indizes für diese Adresse. Diese aggregieren alle POIs in der Umgebung der Adresse, gewichten Sie nach der Distanz und errechnen eine Zahl zwischen 0-100%. Zudem fließt auch die Flächenbedeckung mit ein. z.B. je mehr Grünflächen in der Umgebung desto höher der Gesundheitsindex. Benutze die Indizes für qualitative Aussagen ohne die Indizes explizit zu erwähnen:\n';
-
-      Object.values(resultingLocationIndices).forEach(({ name, value }) => {
-        queryText += `${name}: ${value}%, `;
-      });
-
-      queryText = queryText.slice(0, -2);
-      queryText += '.\n';
-    }
-
-    // Zensus data
-
-    const zensusData = await this.zensusAtlasService.query(
-      user,
-      calculateRelevantArea(snapshot.location).geometry,
-    );
-
-    if (Object.values(zensusData).some((dataType) => dataType.length > 0)) {
-      const processedCensusData = processCensusData(
-        cleanCensusProperties(zensusData),
-      );
-
-      queryText +=
-        'Hier ist zudem die Analyse der Zensus Daten an der Adresse. Nutze die Zahlen zu positiven Formulierungen für die Zielgruppe. Nenne keine Zahlen Quantitativ sondern kreiere nur qualitative Aussagen:\n';
-
-      Object.values(processedCensusData).forEach(
-        ({ label, value: { addressData } }) => {
-          queryText += `${label}: ${addressData}, `;
-        },
-      );
-
-      queryText = queryText.slice(0, -2);
-      queryText += '.';
-    }
-
-    // TODO will be added later
-    // // Landcover data
-    //
-    // queryText +=
-    //   'Hier die Landcover data für diese plz. Nutze diese Prozentzahlen für qualitative Aussagen welche Flächenbedeckung diese Umgebung prägt:';
-
-    return queryText;
   }
 
-  getRealEstDescQuery({
-    customText,
-    realEstateType,
-    tonality,
-    language,
-    targetGroupName = defaultTargetGroupName,
-    textLength = OpenAiTextLengthEnum.MEDIUM,
-    realEstate: { address, costStructure, characteristics },
-  }: IRealEstDescQueryData): string {
-    let queryText = 'Sei mein Experte für die Immobilienbeschreibungen.';
-
-    queryText += ` ${
-      openAiTextLengthOptions.find(({ value }) => value === textLength).text
-    }`;
-
-    // left just in case because the address should be mandatory
-    // if (address) {
-    queryText += ` Die Adresse lautet ${address}.`;
-    // }
-
-    queryText += language
-      ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
-      : '';
-
-    queryText = this.getRealEstateDescription(
-      queryText,
+  getRealEstDescQuery(queryData: IRealEstDescQueryData): string {
+    const {
       realEstateType,
-      costStructure,
-      characteristics,
+      realEstate: { address, costStructure, characteristics },
+      targetGroupName = defaultTargetGroupName,
+    } = queryData;
+    return (
+      `Du bist ein erfahrener Immobilienmakler. Schreibe eine ansprechende Objektbeschreibung für ein ${realEstateType} an der Adresse ${address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n` +
+      this.getTextualRequirements(queryData, false, true) +
+      '\n\n' +
+      this.getRealEstateDescription({
+        realEstateType,
+        realEstate: { costStructure, characteristics },
+      })
     );
-
-    queryText += ` Nutze eine ${tonality} Art der Formulierung. Verwende keine Sonderzeichen und Emoticons.`;
-
-    if (customText) {
-      queryText +=
-        customText ===
-        'Teaser Text für Portale und aufbauenden Text generieren.'
-          ? ' Generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt.'
-          : ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
-    }
-
-    queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen.`;
-
-    return queryText;
   }
 
   async getLocRealEstDescQuery(
     user: UserDocument | TIntegrationUserDocument,
-    { realEstateType, ...locDescQueryData }: ILocRealEstDescQueryData,
+    { realEstateType, ...queryData }: ILocRealEstDescQueryData,
   ): Promise<string> {
     const {
+      targetGroupName,
       snapshotRes: { realEstate },
-    } = locDescQueryData;
+    } = queryData;
 
-    let queryText =
-      'Sei mein Experte für Immobilien-Exposé-Texte und schreibe einen werblichen Text über die Immobilie und gehe darin auf Fakten des Objekts sowie über die Lage ein.';
-
-    queryText = await this.getLocDescQuery(user, locDescQueryData, queryText);
-
-    if (realEstate) {
-      queryText = this.getRealEstateDescription(
-        queryText,
-        realEstateType,
-        realEstate.costStructure,
-        realEstate.characteristics,
-      );
-    }
-
-    return queryText;
+    return (
+      `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse an der Adresse + ${realEstate.address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n` +
+      this.getTextualRequirements(queryData, true, true) +
+      '\n\n' +
+      (await this.getLocationDescription(queryData, user)) +
+      (realEstate &&
+        '\n\n' +
+          this.getRealEstateDescription({
+            realEstateType,
+            realEstate: {
+              costStructure: realEstate.costStructure,
+              characteristics: realEstate.characteristics,
+            },
+          }))
+    );
   }
 
   getImproveText(originalText: string, customText: string) {
     return (
-      'Sei mein Experte für Immobilien. In einer vorherigen Iteration ist folgender Text entstanden ============' +
-      originalText +
-      '============ Der Kunde hat hierzu folgende Änderungswünsche: ' +
-      customText
+      `Sei mein Experte für Immobilien. Es wurde ein Text zu einer Immobilie erstellt, allerdings hat der Autor folgenden Änderungswunsch: ${customText}\n` +
+      '\nDer Text soll, sofern der Änderungswunsch nichts anderes fordert:\n' +
+      '- die Tonalität beibehalten\n' +
+      '- die Sprache beibehalten\n' +
+      '- do not include any explanation\n' +
+      '\nDer Änderungswunsch soll auf den folgenden Text angewandt werden:\n' +
+      originalText
     );
   }
 
@@ -448,14 +305,150 @@ export class OpenAiService {
     }, {});
   }
 
-  private getRealEstateDescription(
-    queryText: string,
-    realEstateType: string,
-    costStructure: ApiRealEstateCost,
-    characteristics: ApiRealEstateCharacteristics,
+  private getTextualRequirements(
+    {
+      tonality,
+      language,
+      customText,
+      targetGroupName = defaultTargetGroupName,
+      textLength = OpenAiTextLengthEnum.MEDIUM,
+    }: IGeneralQueryData,
+    locationText = false,
+    realEstateText = false,
+    isForOnePage = false,
   ): string {
-    queryText += ` Das Exposee ist für ein ${realEstateType}.`;
+    return (
+      'Der Text soll:\n' +
+      [
+        isForOnePage
+          ? `Der Text darf maximal 500 Zeichen lang sein.`
+          : openAiTextLengthOptions.find(({ value }) => value === textLength)
+              .text,
+        `eine ${tonality} Tonalität haben`,
+        `die Zielgruppe "${targetGroupName}" ansprechen`,
+        ...(realEstateText
+          ? [`darlegen, warum dieses Objekt für diese Zielgruppe passt`]
+          : []),
+        ...(locationText
+          ? [
+              `Lagedetails und die für die Zielgruppe "${targetGroupName}" wichtigsten POIs namentlich nennen`,
+              `nur gerundete ca. Angaben statt exakten Metern und Minuten verwenden`,
+              `Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen`,
+            ]
+          : []),
+        `verwende als Ausgabesprache ${language ? language : 'DE'} (BCP 47)`,
+        customText === 'Teaser Text für Portale und aufbauenden Text generieren'
+          ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`
+          : `bitte beachte folgenden Wunsch bei der Erstellung: ${customText}`,
+        `do not include any explanation`,
+      ]
+        .map((value) => `- ${value}`)
+        .join('\n')
+    );
+  }
 
+  private async getLocationDescription(
+    {
+      snapshotRes: {
+        snapshot,
+        config: snapshotConfig = { ...defaultSnapshotConfig },
+      },
+      meanOfTransportation,
+      targetGroupName = defaultTargetGroupName,
+    }: ILocDescQueryData,
+    user: UserDocument | TIntegrationUserDocument,
+  ): Promise<string> {
+    let queryText =
+      `Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe "${targetGroupName}":\n` +
+      `1. Detaillierte POI Tabelle aus dem AreaButler (siehe unten).\n` +
+      `2. Lage-Indizes (siehe unten): Verwende diese für qualitative Aussagen, ohne die Indizes explizit zu erwähnen.\n` +
+      `3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.\n` +
+      (snapshotConfig.showAddress
+        ? `4. Führe in jedem Fall eine eigene Online-Recherche der Adresse ${snapshot.placesLocation.label} aus und nutze zusätzlich gewonnene Informationen insbesondere für eine kurze Beschreibung der Charakteristika der Straße in der die Adresse liegt.`
+        : ``) +
+      `\nDaten`;
+
+    // POIs
+
+    const processedPoiData = this.processPoiData(
+      snapshot,
+      snapshotConfig,
+      meanOfTransportation,
+    );
+    const poiCategories = Object.keys(processedPoiData);
+    if (poiCategories.length > 0) {
+      queryText +=
+        '\n\nPOIs:\n' +
+        poiCategories
+          .map((category) => {
+            const pois = processedPoiData[category];
+            pois.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
+            return `${category}: (${pois
+              .map(
+                ({ name, distanceInMeters }) =>
+                  `${name} (${Math.round(distanceInMeters)}m)`,
+              )
+              .join(', ')})`;
+          })
+          .join('\n');
+    }
+
+    // Location indices
+
+    const locationIndices = await this.locationIndexService.queryWithUser(
+      user,
+      {
+        type: 'Point',
+        coordinates: [snapshot.location.lng, snapshot.location.lat],
+      },
+    );
+
+    if (
+      locationIndices.length &&
+      Object.keys(locationIndices[0].properties).length
+    ) {
+      const resultingLocationIndices = processLocationIndices(
+        locationIndices[0].properties,
+      );
+
+      queryText +=
+        `\n\nLage-Indizes:\n` +
+        Object.values(resultingLocationIndices)
+          .map(({ name, value }) => `${name}: ${value}%`)
+          .join('\n');
+    }
+
+    // Zensus data
+
+    const zensusData = await this.zensusAtlasService.query(
+      user,
+      calculateRelevantArea(snapshot.location).geometry,
+    );
+
+    if (Object.values(zensusData).some((dataType) => dataType.length > 0)) {
+      const processedCensusData = processCensusData(
+        cleanCensusProperties(zensusData),
+      );
+
+      queryText +=
+        '\n\nZensus Daten:\n' +
+        Object.values(processedCensusData)
+          .map(
+            ({ label, value: { addressData } }) => `${label}: ${addressData}`,
+          )
+          .join('\n');
+    }
+
+    return queryText;
+  }
+
+  private getRealEstateDescription({
+    realEstateType,
+    realEstate: { costStructure, characteristics },
+  }): string {
+    const objectDetails: string[] = [
+      `Das Exposee ist für ein ${realEstateType}`,
+    ];
     // Keep in mind that in the future, the currency may not only be the Euro
     // minPrice is a minimum price, price is a price or a maximum one
     const price =
@@ -470,62 +463,77 @@ export class OpenAiService {
     if (price && costType) {
       switch (costType) {
         case ApiRealEstateCostType.RENT_MONTHLY_COLD: {
-          queryText += ` Das Objekt kostet ${price} Euro kalt zur Miete.`;
+          objectDetails.push(`Das Objekt kostet ${price} Euro kalt zur Miete`);
           break;
         }
 
         case ApiRealEstateCostType.RENT_MONTHLY_WARM: {
-          queryText += ` Das Objekt kostet ${price} Euro warm zur Miete.`;
+          objectDetails.push(`Das Objekt kostet ${price} Euro warm zur Miete`);
           break;
         }
 
         default: {
-          queryText += ` Das Objekt hat einen Kaufpreis von ${price} Euro.`;
+          objectDetails.push(
+            `Das Objekt hat einen Kaufpreis von ${price} Euro`,
+          );
         }
       }
     }
 
     if (characteristics?.propertySizeInSquareMeters) {
-      queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${characteristics.propertySizeInSquareMeters}qm.`;
+      objectDetails.push(
+        `Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${characteristics.propertySizeInSquareMeters}qm`,
+      );
     }
     if (characteristics?.realEstateSizeInSquareMeters) {
-      queryText += ` Die Wohnfläche beträgt ${characteristics.realEstateSizeInSquareMeters}qm.`;
+      objectDetails.push(
+        `Die Wohnfläche beträgt ${characteristics.realEstateSizeInSquareMeters}qm`,
+      );
     }
     if (characteristics?.numberOfRooms) {
-      queryText += ` Es gibt ${characteristics.numberOfRooms} Zimmer.`;
+      objectDetails.push(`Es gibt ${characteristics.numberOfRooms} Zimmer`);
     }
     if (characteristics?.energyEfficiency) {
-      queryText += ` Die Energieeffizienzklasse des Objektes ist '${characteristics.energyEfficiency}'.`;
+      objectDetails.push(
+        `Die Energieeffizienzklasse des Objektes ist '${characteristics.energyEfficiency}'`,
+      );
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.GARDEN)) {
-      queryText += ' Es gibt einen Garten.';
+      objectDetails.push('Es gibt einen Garten');
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.BALCONY)) {
-      queryText += ' Das Objekt verfügt über einen Balkon.';
+      objectDetails.push('Das Objekt verfügt über einen Balkon');
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.BASEMENT)) {
-      queryText += ' Zu dem Objekt gehört ein Keller.';
+      objectDetails.push(' Zu dem Objekt gehört ein Keller');
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.GUEST_REST_ROOMS)) {
-      queryText += ' Es gibt ein Gäste-WC.';
+      objectDetails.push(' Es gibt ein Gäste-WC');
     }
     if (
       characteristics?.furnishing?.includes(ApiFurnishing.UNDERFLOOR_HEATING)
     ) {
-      queryText += ' Bei der Heizung handelt es sich um ein Fußbodenheizung.';
+      objectDetails.push(
+        ' Bei der Heizung handelt es sich um ein Fußbodenheizung',
+      );
     }
     if (
       characteristics?.furnishing?.includes(ApiFurnishing.GARAGE_PARKING_SPACE)
     ) {
-      queryText += ' Zugehörig gibt es einen Stellplatz.';
+      objectDetails.push(' Zugehörig gibt es einen Stellplatz');
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.ACCESSIBLE)) {
-      queryText += ' Das Objekt ist barrierefrei eingerichtet und zugänglich.';
+      objectDetails.push(
+        ' Das Objekt ist barrierefrei eingerichtet und zugänglich',
+      );
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.FITTED_KITCHEN)) {
-      queryText += ' Das Objekt verfügt über eine Einbauküche.';
+      objectDetails.push(' Das Objekt verfügt über eine Einbauküche');
     }
 
-    return queryText;
+    return (
+      'Hier sind Details für dich zum Objekt:\n' +
+      objectDetails.map((detail) => `- ${detail}`).join('\n')
+    );
   }
 }
