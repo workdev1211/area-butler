@@ -383,19 +383,32 @@ const SnapshotEditorPage: FC = () => {
 
     newEntity.isCustom = true;
     const osmEntityMapper = new OsmEntityMapper();
+    const groupName = osmEntityMapper.getGrpNameByOsmName(newEntity.osmName)!;
+
+    const resultGroupEntities =
+      searchContextState.responseGroupedEntities ?? [];
+    const foundGroupEntity = resultGroupEntities.find(
+      ({ name }) => groupName === name
+    );
+
+    if (foundGroupEntity) {
+      foundGroupEntity.items.push(newEntity);
+    } else {
+      resultGroupEntities.push({
+        active: true,
+        items: [newEntity],
+        name: groupName,
+        title: t(
+          (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+            groupName
+          ]
+        ),
+      });
+    }
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        !osmEntityMapper
-          .getByGroupName(ge.name)
-          ?.some(({ name }) => name === poiLocation.entity.name)
-          ? ge
-          : {
-              ...ge,
-              items: [...ge.items, newEntity],
-            }
-      ),
+      payload: resultGroupEntities,
     });
 
     searchContextDispatch({

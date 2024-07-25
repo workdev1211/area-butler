@@ -64,7 +64,7 @@ const checkIsLocationHidden = (
   if (!isLocationHidden && config?.hiddenGroups) {
     isLocationHidden = config.hiddenGroups.some(
       (groupName) =>
-        groupName === osmEntityMapper.getByOsmName(entity.name)?.groupName
+        groupName === osmEntityMapper.getGrpNameByOsmName(entity.name)
     );
   }
 
@@ -384,9 +384,9 @@ export const deriveInitialEntityGroups = ({
 
   const poiGroups = Object.values(
     poiItems.reduce<Record<string, EntityGroup>>((result, resultEntity) => {
-      const groupName = osmEntityMapper.getByOsmName(
+      const groupName = osmEntityMapper.getGrpNameByOsmName(
         resultEntity.osmName
-      )?.groupName;
+      );
 
       if (!groupName) {
         return result;

@@ -230,7 +230,7 @@ export class LocationExtService {
       [OsmName.pub, PoiGroupEnum.bar_pub],
     ]);
 
-    const osmNameMapping = new OsmEntityMapper().getOsmNameMapping();
+    const osmEntityMapper = new OsmEntityMapper();
 
     const legacyCondition = {
       $in: Array.from(legacyPoiGroups.keys()),
@@ -312,9 +312,9 @@ export class LocationExtService {
             const processLocalParams = localityParams.reduce<ApiOsmEntity[]>(
               (result, localityParam) => {
                 if (!localityParam.groupName) {
-                  localityParam.groupName = osmNameMapping.get(
+                  localityParam.groupName = osmEntityMapper.getGrpNameByOsmName(
                     localityParam.name,
-                  )?.groupName;
+                  );
                 }
 
                 result.push(localityParam);

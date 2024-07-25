@@ -19,7 +19,7 @@ import {
   MeansOfTransportation,
 } from "../../../../shared/types/types";
 import SearchResultContainer from "../../components/search-result-container/SearchResultContainer";
-import { EntityGroup, ICurrentMapRef } from "../../shared/search-result.types";
+import { ICurrentMapRef } from "../../shared/search-result.types";
 import { useLocationData } from "../../hooks/locationdata";
 import { SnapshotEditorRouterProps } from "../../pages/SnapshotEditorPage";
 import TourStarter from "../../tour/TourStarter";
@@ -67,7 +67,6 @@ const MapPage: FC = () => {
   const [processedRealEstates, setProcessedRealEstates] = useState<
     ApiRealEstateListing[]
   >([]);
-  const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
 
   // initialization
@@ -322,8 +321,6 @@ const MapPage: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
-  const osmEntityMapper = new OsmEntityMapper();
-
   const onPoiAdd = (poiLocation: ApiOsmLocation): void => {
     if (!snapshotRes) {
       return;
@@ -350,36 +347,39 @@ const MapPage: FC = () => {
     }
 
     newEntity.isCustom = true;
+    const osmEntityMapper = new OsmEntityMapper();
+    const groupName = osmEntityMapper.getGrpNameByOsmName(newEntity.osmName)!;
+
+    const resultGroupEntities =
+      searchContextState.responseGroupedEntities ?? [];
+    const foundGroupEntity = resultGroupEntities.find(
+      ({ name }) => groupName === name
+    );
+
+    if (foundGroupEntity) {
+      foundGroupEntity.items.push(newEntity);
+    } else {
+      resultGroupEntities.push({
+        active: true,
+        items: [newEntity],
+        name: groupName,
+        title: t(
+          (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+            groupName
+          ]
+        ),
+      });
+    }
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        !osmEntityMapper
-          .getByGroupName(ge.name)
-          ?.some(({ name }) => name === poiLocation.entity.name)
-          ? ge
-          : {
-              ...ge,
-              items: [...ge.items, newEntity],
-            }
-      ),
+      payload: resultGroupEntities,
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.ADD_CUSTOM_POI,
       payload: poiLocation,
     });
-
-    // update dedicated entity groups for editor
-    setEditorGroups(
-      editorGroups.map((ge) =>
-        !osmEntityMapper
-          .getByGroupName(ge.name)
-          ?.some(({ name }) => name === poiLocation.entity.name)
-          ? ge
-          : { ...ge, items: [...ge.items, newEntity] }
-      )
-    );
   };
 
   if (

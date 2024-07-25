@@ -139,9 +139,7 @@ export class IdMarker extends L.Marker {
       cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
     }
 
-    const groupName = osmEntityMapper.getByOsmName(
-      this.entity.osmName
-    )?.groupName;
+    const groupName = osmEntityMapper.getGrpNameByOsmName(this.entity.osmName);
 
     const searchString = [
       groupName
@@ -1133,9 +1131,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           if (
             !parsedEntityGroups.some(
               ({ active, name }) =>
-                osmEntityMapper
-                  .getByGroupName(name)
-                  ?.some(({ name }) => name === entity.osmName) && active
+                osmEntityMapper.getGrpNameByOsmName(entity.osmName) === name &&
+                active
             )
           ) {
             return true;
@@ -1171,7 +1168,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
           if (!markerIcon) {
             markerIcon = deriveIconForPoiGroup(
-              osmEntityMapper.getByOsmName(entity.osmName)?.groupName,
+              osmEntityMapper.getGrpNameByOsmName(entity.osmName),
               userMapPoiIcons
             );
           }

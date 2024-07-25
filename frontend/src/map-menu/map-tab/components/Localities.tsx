@@ -164,14 +164,10 @@ const Localities: FC<ILocalitiesProps> = ({
                         category && items.length
                   )
                   .map((ge, geIndex) => {
-                    const isRealEstateListing = ge.name === OsmName.property;
-                    const isPreferredLocation = ge.name === OsmName.favorite;
-
-                    const groupIconInfo: IPoiIcon = isRealEstateListing
-                      ? getRealEstateListingsIcon(resultingPoiIcons)
-                      : isPreferredLocation
-                      ? getPreferredLocationsIcon(resultingPoiIcons)
-                      : deriveIconForPoiGroup(ge.name, resultingPoiIcons);
+                    const groupIconInfo: IPoiIcon = deriveIconForPoiGroup(
+                      ge.name,
+                      resultingPoiIcons
+                    );
 
                     return (
                       <MapMenuListItem

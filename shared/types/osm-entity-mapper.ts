@@ -50,6 +50,14 @@ export class OsmEntityMapper {
     return this.osmNameMapping.get(osmName);
   }
 
+  getGrpNameByOsmName(osmName: OsmName): TPoiGroupName | undefined {
+    if ([OsmName.favorite, OsmName.property].includes(osmName)) {
+      return osmName as TPoiGroupName;
+    }
+
+    return this.osmNameMapping.get(osmName)?.groupName;
+  }
+
   getCategoryMapping(): TGroupNameMapping {
     return this.groupNameMapping;
   }
