@@ -135,17 +135,18 @@ export class PropstackService {
   ): Promise<void> {
     const { parameters } = integrationUser;
     publicLinkParams.map(({ title, url, isLinkEntity, isAddressShown }) => {
+      this.propstackApiService.createPropertyLink(
+        (parameters as IApiIntUserPropstackParams).apiKey,
+        {
+          title,
+          url,
+          is_embedable: true,
+          on_landing_page: true,
+          property_id: parseInt(integrationId, 10),
+        },
+      );
       if (isLinkEntity) {
-        return this.propstackApiService.createPropertyLink(
-          (parameters as IApiIntUserPropstackParams).apiKey,
-          {
-            title,
-            url,
-            is_embedable: true,
-            on_landing_page: true,
-            property_id: parseInt(integrationId, 10),
-          },
-        );
+        return
       }
       this.updatePropertyTextField(integrationUser, {
         exportType,
