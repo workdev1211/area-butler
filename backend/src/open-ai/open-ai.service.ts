@@ -125,11 +125,15 @@ export class OpenAiService {
   ): Promise<string> {
     const {
       targetGroupName,
-      snapshotRes: { realEstate },
+      snapshotRes: { config, realEstate },
     } = queryData;
 
+    const initialText = config.showAddress
+      ? `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse + ${realEstate.address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n`
+      : `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n`;
+
     return (
-      `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse an der Adresse + ${realEstate.address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n` +
+      initialText +
       this.getTextualRequirements(queryData, true, true) +
       '\n\n' +
       (await this.getLocationDescription(queryData, user)) +
@@ -257,18 +261,18 @@ export class OpenAiService {
     snapshotConfig: ApiSearchResultSnapshotConfig,
     meanOfTransportation: MeansOfTransportation,
   ): Partial<Record<OsmName, { name: string; distance: number }[]>> {
-    const osmEntityMapping = [...new OsmEntityMapper().getGroupNameMapping()];
+    // const osmEntityMapping = [...new OsmEntityMapper().getGroupNameMapping()];
 
-    const selectedPoiCategories = osmEntityMapping.reduce<Set<OsmName>>(
-      (result, [groupName, [...osmEntities]]) => {
-        if (snapshotConfig.defaultActiveGroups?.includes(groupName)) {
-          osmEntities.forEach(({ name }) => result.add(name));
-        }
-
-        return result;
-      },
-      new Set(),
-    );
+    // const selectedPoiCategories = osmEntityMapping.reduce<Set<OsmName>>(
+    //   (result, [groupName, [...osmEntities]]) => {
+    //     if (snapshotConfig.defaultActiveGroups?.includes(groupName)) {
+    //       osmEntities.forEach(({ name }) => result.add(name));
+    //     }
+    //
+    //     return result;
+    //   },
+    //   new Set(),
+    // );
 
     return snapshot.searchResponse.routingProfiles[
       meanOfTransportation
@@ -284,9 +288,9 @@ export class OpenAiService {
         ? (type as unknown as OsmName)
         : name;
 
-      if (selectedPoiCategories.size && !selectedPoiCategories.has(osmName)) {
-        return result;
-      }
+      // if (selectedPoiCategories.size && !selectedPoiCategories.has(osmName)) {
+      //   return result;
+      // }
 
       const resultingName = openAiTranslationDictionary[osmName].plural;
 
@@ -336,7 +340,7 @@ export class OpenAiService {
               `Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen`,
             ]
           : []),
-        `verwende als Ausgabesprache ${language ? language : 'DE'} (BCP 47)`,
+        `verwende als Ausgabesprache ${language || 'DE'} (BCP 47)`,
         customText === 'Teaser Text für Portale und aufbauenden Text generieren'
           ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`
           : `bitte beachte folgenden Wunsch bei der Erstellung: ${customText}`,
@@ -363,9 +367,7 @@ export class OpenAiService {
       `1. Detaillierte POI Tabelle aus dem AreaButler (siehe unten).\n` +
       `2. Lage-Indizes (siehe unten): Verwende diese für qualitative Aussagen, ohne die Indizes explizit zu erwähnen.\n` +
       `3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.\n` +
-      (snapshotConfig.showAddress
-        ? `4. Führe in jedem Fall eine eigene Online-Recherche der Adresse ${snapshot.placesLocation.label} aus und nutze zusätzlich gewonnene Informationen insbesondere für eine kurze Beschreibung der Charakteristika der Straße in der die Adresse liegt.`
-        : ``) +
+      `4. Führe in jedem Fall eine eigene Online-Recherche der Adresse ${snapshot.placesLocation.label} aus und nutze zusätzlich gewonnene Informationen insbesondere für eine kurze Beschreibung der Charakteristika der Straße in der die Adresse liegt. Trotzdem darf der Name der Adresse nicht eplizit im Text genannt werden.` +
       `\nDaten`;
 
     // POIs
