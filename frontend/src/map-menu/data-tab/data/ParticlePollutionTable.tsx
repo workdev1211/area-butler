@@ -3,8 +3,8 @@ import { FunctionComponent } from "react";
 import { IntlKeys } from 'i18n/keys';
 import { useTranslation } from 'react-i18next';
 
-import { ApiGeojsonFeature } from "../../../../../../shared/types/types";
-import { Loading } from "../../../../components/Loading";
+import { ApiGeojsonFeature } from "../../../../../shared/types/types";
+import { Loading } from "../../../components/Loading";
 
 export interface PollutionData {
   mean: number;

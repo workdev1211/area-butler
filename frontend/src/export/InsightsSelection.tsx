@@ -29,7 +29,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
   const { t } = useTranslation();
   return (
     <div className="mt-5">
-      <h1 className="my-5 font-bold">{t(IntlKeys.snapshotEditor.exportTab.insights)}</h1>
+      <h1 className="my-5 font-bold">{t(IntlKeys.snapshotEditor.dataTab.insights)}</h1>
       <div className="flex flex-col">
         {hasCensusInSubscription && (
           <label
@@ -42,7 +42,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
               className="checkbox checkbox-primary"
               onChange={() => setShowCensus(!showCensus)}
             />
-            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.censusAtlas)}</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.dataTab.censusAtlas)}</span>
           </label>
         )}
         {hasFederalElectionInSubscription && (
@@ -56,7 +56,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
               className="checkbox checkbox-primary"
               onChange={() => setShowFederalElection(!showFederalElection)}
             />
-            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.federalElections)}</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.dataTab.federalElections)}</span>
           </label>
         )}
         {hasParticlePollutionInSubscription && (
@@ -70,7 +70,7 @@ const InsightsSelection: React.FunctionComponent<InsightsSelectionProps> = ({
               className="checkbox checkbox-primary"
               onChange={() => setShowParticlePollution(!showParticlePollution)}
             />
-            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.particularMatterPollution)}</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.dataTab.particularMatterPollution)}</span>
           </label>
         )}
       </div>

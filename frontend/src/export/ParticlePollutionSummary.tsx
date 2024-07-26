@@ -8,7 +8,7 @@ import "./EntityTable.scss";
 import {
   averageParticlePollution,
   PollutionData,
-} from "map-menu/map-tab/components/data/ParticlePollutionTable";
+} from "map-menu/data-tab/data/ParticlePollutionTable";
 import { deriveColorPalette } from "shared/shared.functions";
 import { ApiGeojsonFeature } from "../../../shared/types/types";
 
@@ -44,7 +44,7 @@ const ParticlePollutionSummary: FunctionComponent<IPartPollutSumProps> = ({
           <tr style={tableHeaderStyle}>
             <th>{t(IntlKeys.common.description)}</th>
             <th>{t(IntlKeys.common.value)}</th>
-            <th>{t(IntlKeys.snapshotEditor.exportTab.germany)}</th>
+            <th>{t(IntlKeys.snapshotEditor.dataTab.germany)}</th>
           </tr>
         </thead>
         <tbody>

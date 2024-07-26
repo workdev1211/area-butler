@@ -81,7 +81,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
 
   const colorPalette = deriveColorPalette(color);
   let documentTitle = `${t(
-    IntlKeys.snapshotEditor.exportTab.myLocation
+    IntlKeys.snapshotEditor.dataTab.myLocation
   )}_AreaButler`;
 
   if (realEstateListing?.name) {
@@ -99,7 +99,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
 
     const gridSummary = createTable(
       {
-        title: t(IntlKeys.snapshotEditor.exportTab.surroundings),
+        title: t(IntlKeys.snapshotEditor.dataTab.surroundings),
         pageBreak: false,
         columnWidths: [4000, 3000, 3000, 3000, 3000],
         headerColor: colorPalette.primaryColor,
@@ -130,7 +130,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
       censusData && censusData.addressData.length > 0
         ? createTable({
             pageBreak: false,
-            title: t(IntlKeys.snapshotEditor.exportTab.neighborhoodDemographic),
+            title: t(IntlKeys.snapshotEditor.dataTab.neighborhoodDemographic),
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
@@ -142,7 +142,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
       federalElectionData && Object.keys(federalElectionData).length > 0
         ? createTable({
             pageBreak: false,
-            title: t(IntlKeys.snapshotEditor.exportTab.federalElections),
+            title: t(IntlKeys.snapshotEditor.dataTab.federalElections),
             columnWidths: [2000, 5000, 5000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
@@ -155,7 +155,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
         ? createTable({
             pageBreak: false,
             title: t(
-              IntlKeys.snapshotEditor.exportTab.particularMatterPollution
+              IntlKeys.snapshotEditor.dataTab.particularMatterPollution
             ),
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
@@ -193,7 +193,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
         new Paragraph({
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: t(IntlKeys.snapshotEditor.exportTab.mapSection),
+          text: t(IntlKeys.snapshotEditor.dataTab.mapSection),
         }),
       ]
     );
@@ -206,7 +206,7 @@ const DocxExpose: FC<IDocxExposeProps> = ({
           pageBreakBefore: true,
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: t(IntlKeys.snapshotEditor.exportTab.cardLegend),
+          text: t(IntlKeys.snapshotEditor.dataTab.cardLegend),
         }),
         watermark,
         legendTable

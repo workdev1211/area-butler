@@ -62,7 +62,8 @@
       "MINUTES": "Minuten"
     },
     "description": "Beschreibung",
-    "addressExpired": "Diese Karte ist nicht mehr verfügbar. Bitte kontaktieren Sie AreaButler."
+    "addressExpired": "Diese Karte ist nicht mehr verfügbar. Bitte kontaktieren Sie AreaButler.",
+    "help": "Hilfe"
   },
   "environmentalAnalysis": {
     "createBtn": "Karte erstellen",
@@ -108,7 +109,7 @@
     "map": "Karte",
     "needsFilter": "Bedürfnisfilter",
     "editor": "Editor",
-    "export": "Exporte",
+    "data": "Daten",
     "current": "Aktuell",
     "cardInYourBranding": "Karte in Ihrem Branding?",
     "talkToUs": "Sprechen Sie uns an.",
@@ -177,7 +178,7 @@
     "hide": "Ausblenden",
     "discard": "Verwerfen",
     "furtherObjects": "Weitere Objekte",
-    "exportTab": {
+    "dataTab": {
       "mapSection": "Kartenausschnitte",
       "mapSectionDescription": "Für Exposés, Print Medien, Bildergalerien",
       "useScreenshotBtn": "Bitte verwenden Sie den Screenshot-Button in der unteren linken Ecke\n            der Karte.",

@@ -45,7 +45,7 @@ const PublicLinks: FC = () => {
       <div>
         <div>
           <img src={urlIcon} alt="iframe-url" />
-          <span>{t(IntlKeys.snapshotEditor.exportTab.publicLink)}</span>
+          <span>{t(IntlKeys.snapshotEditor.dataTab.publicLink)}</span>
         </div>
 
         <div
@@ -88,7 +88,7 @@ const PublicLinks: FC = () => {
         <div>
           <div>
             <img src={urlIcon} alt="iframe-url" />
-            <span>{t(IntlKeys.snapshotEditor.exportTab.publicLinks)}</span>
+            <span>{t(IntlKeys.snapshotEditor.dataTab.publicLinks)}</span>
           </div>
 
           <div

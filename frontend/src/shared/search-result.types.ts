@@ -1,8 +1,8 @@
 import {
   ApiAddress,
-  ApiCoordinates,
+  ApiCoordinates, ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
-  IApiMapboxStyle,
+  IApiMapboxStyle, IApiUserPoiIcon, MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
   TPoiGroupName,
@@ -11,8 +11,12 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
 } from "../../../shared/types/real-estate";
-import { TApiLocIndexProps } from "../../../shared/types/location-index";
+import { TApiLocIndexProps, TLocationIndexData } from "../../../shared/types/location-index";
 import { TUnlockIntProduct } from "../../../shared/types/integration";
+import { EntityRoute, EntityTransitRoute } from '../../../shared/types/routing';
+import { ReactNode } from 'react';
+import { TCensusData } from '../../../shared/types/data-provision';
+import { FederalElectionDistrict } from '../hooks/federalelectiondata';
 
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
@@ -71,8 +75,27 @@ export interface IEditorTabProps {
   isNewSnapshot: boolean;
 }
 
-export interface IExportTabProps {
-  searchAddress: string;
+export interface IDataTabProps {
   snapshotId: string;
   performUnlock?: TUnlockIntProduct;
+  mapDisplayMode: MapDisplayModesEnum;
+  locationIndexData?: TLocationIndexData;
+  showInsights?: boolean;
+  openUpgradeSubscriptionModal?: (message: ReactNode) => void;
+  censusData?: TCensusData;
+  federalElectionData?: FederalElectionDistrict;
+  particlePollutionData?: ApiGeojsonFeature[];
+}
+
+export interface IMapTabProps {
+  toggleAllLocalities: () => void;
+  searchAddress?: string;
+  snapshotId?: string;
+  toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
+  routes: EntityRoute[];
+  toggleTransitRoute: (item: ResultEntity) => void;
+  transitRoutes: EntityTransitRoute[];
+  mapDisplayMode: MapDisplayModesEnum;
+  performUnlock?: TUnlockIntProduct;
+  userMenuPoiIcons?: IApiUserPoiIcon[];
 }

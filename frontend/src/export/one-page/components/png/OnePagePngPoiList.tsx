@@ -33,7 +33,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
           fontWeight: 700,
         }}
       >
-        {t(IntlKeys.snapshotEditor.exportTab.overview)}
+        {t(IntlKeys.snapshotEditor.dataTab.overview)}
       </div>
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>

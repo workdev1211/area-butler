@@ -36,7 +36,7 @@ const OnePageEntitySelection: FC<IOnePageEntitySelectionProps> = ({
         activeGroupNumber === ENTITY_GROUP_LIMIT) &&
       !group.active
     ) {
-      toastError(t(IntlKeys.snapshotEditor.exportTab.tooManyGroups));
+      toastError(t(IntlKeys.snapshotEditor.dataTab.tooManyGroups));
       return;
     }
 
@@ -53,7 +53,7 @@ const OnePageEntitySelection: FC<IOnePageEntitySelectionProps> = ({
         }}
         onClick={closeCollapsable}
       >
-        2. {t(IntlKeys.snapshotEditor.exportTab.POITable)} (
+        2. {t(IntlKeys.snapshotEditor.dataTab.POITable)} (
         {entityGroups.filter((group) => group.active).length}/
         {ENTITY_GROUP_LIMIT || entityGroups.length})
       </div>

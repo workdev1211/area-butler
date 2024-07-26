@@ -4,7 +4,7 @@ import LocationIndexTable from "./LocationIndexTable";
 import {
   LocIndexPropsEnum,
   TLocationIndexData,
-} from "../../../../../../shared/types/location-index";
+} from "../../../../../shared/types/location-index";
 
 const testData: TLocationIndexData = {
   [LocIndexPropsEnum.EVENING_ENTERTAINMENT]: {

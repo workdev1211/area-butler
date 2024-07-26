@@ -33,7 +33,7 @@ const OnePagePngMapQrCode: FunctionComponent<IOnePagePngMapQrCodeProps> = ({
           fontWeight: 700,
         }}
       >
-        {t(IntlKeys.snapshotEditor.exportTab.interactiveMap)}
+        {t(IntlKeys.snapshotEditor.dataTab.interactiveMap)}
       </div>
       <div
         style={{
@@ -100,7 +100,7 @@ const OnePagePngMapQrCode: FunctionComponent<IOnePagePngMapQrCodeProps> = ({
                     lineHeight: "1rem",
                   }}
                 >
-                  {t(IntlKeys.snapshotEditor.exportTab.scanAndNew)} {t(IntlKeys.snapshotEditor.exportTab.discoverResidentialArea)}
+                  {t(IntlKeys.snapshotEditor.dataTab.scanAndNew)} {t(IntlKeys.snapshotEditor.dataTab.discoverResidentialArea)}
                 </div>
                 <img
                   src={downArrowIcon}

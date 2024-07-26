@@ -147,7 +147,7 @@ const Steps: Step[] = [
         width="560"
         height="315"
         src="https://www.youtube.com/embed/_qpY8uBWsD8?start=7"
-        title={i18.t(IntlKeys.snapshotEditor.export)}
+        title={i18.t(IntlKeys.snapshotEditor.data)}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen={true}
       />

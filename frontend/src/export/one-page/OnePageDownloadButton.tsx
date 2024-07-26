@@ -26,7 +26,7 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
   const { t } = useTranslation();
   const componentRef = useRef(null);
 
-  let documentTitle = `${t(IntlKeys.snapshotEditor.exportTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(IntlKeys.snapshotEditor.dataTab.myLocation)}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;

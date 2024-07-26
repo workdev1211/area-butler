@@ -92,7 +92,7 @@ export const OnePagePng: FunctionComponent<IOnePagePngProps> = ({
                 fontWeight: 700,
               }}
             >
-              {t(IntlKeys.snapshotEditor.exportTab.locationDescription)}
+              {t(IntlKeys.snapshotEditor.dataTab.locationDescription)}
             </div>
             <div style={{ textAlign: "justify", maxWidth: "747px" }}>
               {addressDescription}

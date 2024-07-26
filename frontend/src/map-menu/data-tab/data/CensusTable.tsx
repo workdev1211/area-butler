@@ -3,10 +3,10 @@ import { FunctionComponent } from "react";
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
 
-import { ApiDataProvisionEnum } from "../../../../../../shared/types/types";
-import { Loading } from "../../../../components/Loading";
-import { TCensusData } from "../../../../../../shared/types/data-provision";
-import { processCensusData } from "../../../../../../shared/functions/census.functions";
+import { ApiDataProvisionEnum } from "../../../../../shared/types/types";
+import { Loading } from "../../../components/Loading";
+import { TCensusData } from "../../../../../shared/types/data-provision";
+import { processCensusData } from "../../../../../shared/functions/census.functions";
 
 interface ICensusTableProps {
   censusData?: TCensusData;

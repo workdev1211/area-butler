@@ -458,7 +458,7 @@ const SearchResultContainer = forwardRef<
         saveAs(
           croppedMapClipping,
           `${t(IntlKeys.snapshotEditor.screenshotName)}-${searchAddress}-${t(
-            IntlKeys.snapshotEditor.exportTab.mapSection
+            IntlKeys.snapshotEditor.dataTab.mapSection
           )}.png`
         );
       } else {

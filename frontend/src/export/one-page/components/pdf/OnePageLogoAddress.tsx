@@ -39,7 +39,7 @@ const OnePageLogoAddress: FunctionComponent<IOnePageLogoAddressProps> = ({
             {snapshotConfig?.isDetailsShown &&
               realEstateListing?.costStructure && (
                 <div>
-                  <strong>{t(IntlKeys.snapshotEditor.exportTab.costs)}:</strong>{" "}
+                  <strong>{t(IntlKeys.snapshotEditor.dataTab.costs)}:</strong>{" "}
                   {getRealEstateCost(realEstateListing?.costStructure)} (
                   {
                     allRealEstateCostTypes.find(

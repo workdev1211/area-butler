@@ -117,7 +117,7 @@ export const Expose = forwardRef(
             logo={props.logo}
             leftHeaderElement={
               <div className="text-2xl font-bold">
-                {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysis)}
+                {t(IntlKeys.snapshotEditor.dataTab.environmentalAnalysis)}
               </div>
             }
             key={`entity-group-chunk-${i}`}
@@ -140,7 +140,7 @@ export const Expose = forwardRef(
             logo={props.logo}
             leftHeaderElement={
               <div className="text-2xl font-bold">
-                {t(IntlKeys.snapshotEditor.exportTab.surroundingsHeader)}
+                {t(IntlKeys.snapshotEditor.dataTab.surroundingsHeader)}
               </div>
             }
           >
@@ -169,7 +169,7 @@ export const Expose = forwardRef(
             logo={props.logo}
             leftHeaderElement={
               <div className="text-2xl font-bold">
-                {t(IntlKeys.snapshotEditor.exportTab.cardLegend)}
+                {t(IntlKeys.snapshotEditor.dataTab.cardLegend)}
               </div>
             }
           >
@@ -206,14 +206,14 @@ export const Expose = forwardRef(
             logo={props.logo}
             leftHeaderElement={
               <div className="text-2xl font-bold">
-                {t(IntlKeys.snapshotEditor.exportTab.insights)}
+                {t(IntlKeys.snapshotEditor.dataTab.insights)}
               </div>
             }
           >
             {censusData && censusData.addressData.length > 0 && (
               <>
                 <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-                  {t(IntlKeys.snapshotEditor.exportTab.neighborhoodDemographic)}
+                  {t(IntlKeys.snapshotEditor.dataTab.neighborhoodDemographic)}
                 </h4>
                 <CensusSummary
                   primaryColor={props.color}
@@ -224,7 +224,7 @@ export const Expose = forwardRef(
             {federalElectionData && federalElectionData?.results?.length > 0 && (
               <>
                 <h4 className="mx-10 text-xl w-56 font-bold">
-                  {t(IntlKeys.snapshotEditor.exportTab.federalElections)}
+                  {t(IntlKeys.snapshotEditor.dataTab.federalElections)}
                 </h4>
                 <FederalElectionSummary
                   primaryColor={props.color}

@@ -38,8 +38,8 @@ const FederalElectionSummary: FunctionComponent<
           <thead style={{ backgroundAttachment: "fixed" }}>
             <tr style={tableHeaderStyle}>
               <th>{t(IntlKeys.snapshotEditor.socialDemographics.politicalParty)}</th>
-              <th>{t(IntlKeys.snapshotEditor.exportTab.resultSecondVote)}</th>
-              <th>{t(IntlKeys.snapshotEditor.exportTab.resultLastElection)}</th>
+              <th>{t(IntlKeys.snapshotEditor.dataTab.resultSecondVote)}</th>
+              <th>{t(IntlKeys.snapshotEditor.dataTab.resultLastElection)}</th>
             </tr>
           </thead>
           <tbody>

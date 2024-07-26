@@ -111,7 +111,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
   const handleUnlock = (): void => {
     if (performUnlock) {
       performUnlock(
-        t(IntlKeys.snapshotEditor.exportTab.unlockInteractiveMap),
+        t(IntlKeys.snapshotEditor.dataTab.unlockInteractiveMap),
         IntegrationActionTypeEnum.UNLOCK_IFRAME
       );
     }
@@ -149,7 +149,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
           <img src={digitalMediaIcon} alt="digital-media-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
-              {t(IntlKeys.snapshotEditor.exportTab.digitalMedia)}
+              {t(IntlKeys.snapshotEditor.dataTab.digitalMedia)}
             </div>
           </div>
         </div>
@@ -167,7 +167,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={qrCodeIcon} alt="url-link" />
-                <span>{t(IntlKeys.snapshotEditor.exportTab.qrCodeLink)}</span>
+                <span>{t(IntlKeys.snapshotEditor.dataTab.qrCodeLink)}</span>
               </div>
               <div
                 onClick={async () => {
@@ -178,7 +178,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
                 }}
               >
                 <img src={downloadIcon} alt="download-qr-code" />
-                <span>{t(IntlKeys.snapshotEditor.exportTab.download)}</span>
+                <span>{t(IntlKeys.snapshotEditor.dataTab.download)}</span>
               </div>
               {integrationType && (
                 <div
@@ -187,10 +187,10 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
                       base64Image: await getQrCodeBase64(directLink),
                       exportType: AreaButlerExportTypesEnum.QR_CODE,
                       fileTitle: t(
-                        IntlKeys.snapshotEditor.exportTab.qrCodeFileName
+                        IntlKeys.snapshotEditor.dataTab.qrCodeFileName
                       ),
                       filename: `${t(
-                        IntlKeys.snapshotEditor.exportTab.qrCodeLink
+                        IntlKeys.snapshotEditor.dataTab.qrCodeLink
                       )}.png`,
                       // left just in case
                       // filename: `${searchAddress.replace(
@@ -212,7 +212,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
               <div>
                 <img src={legendIcon} alt="download-legend" />
                 <span>
-                  {t(IntlKeys.snapshotEditor.exportTab.legendPOIIcons)}
+                  {t(IntlKeys.snapshotEditor.dataTab.legendPOIIcons)}
                 </span>
               </div>
               <div
@@ -224,7 +224,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
                 }}
               >
                 <img src={downloadIcon} alt="download-qr-code" />
-                <span>{t(IntlKeys.snapshotEditor.exportTab.download)}</span>
+                <span>{t(IntlKeys.snapshotEditor.dataTab.download)}</span>
               </div>
             </div>
 
@@ -234,7 +234,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
               <div>
                 <img src={iframeIcon} alt="iframe" />
                 <span>
-                  {t(IntlKeys.snapshotEditor.exportTab.iframeForWebsite)}
+                  {t(IntlKeys.snapshotEditor.dataTab.iframeForWebsite)}
                 </span>
               </div>
               <div

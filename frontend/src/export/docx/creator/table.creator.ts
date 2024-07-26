@@ -18,7 +18,7 @@ import {
 import {
   averageParticlePollution,
   PollutionData,
-} from "map-menu/map-tab/components/data/ParticlePollutionTable";
+} from "map-menu/data-tab/data/ParticlePollutionTable";
 import {
   distanceToHumanReadable,
   timeToHumanReadable,

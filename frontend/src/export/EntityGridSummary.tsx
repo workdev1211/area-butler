@@ -69,7 +69,7 @@ export const EntityGridSummary: FC<IEntityGridSummaryProps> = ({
         <thead style={{ backgroundAttachment: "fixed" }}>
           <tr style={tableHeaderStyle}>
             <th />
-            <th>{t(IntlKeys.snapshotEditor.exportTab.nextPlace)}</th>
+            <th>{t(IntlKeys.snapshotEditor.dataTab.nextPlace)}</th>
             {transportationParams
               .filter((t) => activeMeans.includes(t.type))
               .sort(

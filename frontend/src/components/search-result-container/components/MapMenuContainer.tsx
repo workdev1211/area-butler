@@ -23,8 +23,9 @@ import {
   EntityGroup,
   ICurrentMapRef,
   IEditorTabProps,
-  IExportTabProps,
+  IDataTabProps,
   ResultEntity,
+  IMapTabProps,
 } from "../../../shared/search-result.types";
 import { useTools } from "../../../hooks/tools";
 import { deriveAvailableMeansFromResponse } from "../../../shared/shared.functions";
@@ -84,7 +85,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   const { getActualUser } = useTools();
 
   const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
-  const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
+  const [dataTabProps, setDataTabProps] = useState<IDataTabProps>();
 
   const searchAddress = placesLocation?.label;
   const resultLocation = mapCenter ?? location!;
@@ -141,9 +142,20 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
       onConfigChange: handleConfigChange,
     });
 
-    setExportTabProps({
-      searchAddress,
+    setDataTabProps({
+      locationIndexData,
       snapshotId,
+      showInsights: mapDisplayMode === "EDITOR",
+      mapDisplayMode,
+      openUpgradeSubscriptionModal: (message) => {
+        userDispatch({
+          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+          payload: { open: true, message },
+        });
+      },
+      censusData,
+      federalElectionData,
+      particlePollutionData
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,6 +171,11 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
     searchAddress,
     searchResponse,
     snapshotId,
+    userDispatch,
+    censusData,
+    federalElectionData,
+    particlePollutionData,
+    locationIndexData
   ]);
 
   const toggleAllLocalities = (): void => {
@@ -247,7 +264,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
     <MapMenu
       censusData={censusData}
       editorTabProps={editorTabProps}
-      exportTabProps={exportTabProps}
+      dataTabProps={dataTabProps}
       federalElectionData={federalElectionData}
       locationIndexData={locationIndexData}
       mapDisplayMode={mapDisplayMode}

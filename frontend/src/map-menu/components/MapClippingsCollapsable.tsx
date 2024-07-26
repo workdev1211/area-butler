@@ -32,7 +32,7 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
   const { t } = useTranslation();
 
   const parsedAddress = (
-    searchAddress || t(IntlKeys.snapshotEditor.exportTab.myLocation)
+    searchAddress || t(IntlKeys.snapshotEditor.dataTab.myLocation)
   )
     .replace(",", "-")
     .replace(/\s/g, "");
@@ -40,7 +40,7 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
 
   const removeAllClippings = (): void => {
     window.confirm(
-      t(IntlKeys.snapshotEditor.exportTab.deleteAllMapSectionsConfirmation)
+      t(IntlKeys.snapshotEditor.dataTab.deleteAllMapSectionsConfirmation)
     ) &&
       searchContextDispatch({
         type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
@@ -49,7 +49,7 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
 
   const removeClipping = (clipping: MapClipping): void => {
     window.confirm(
-      t(IntlKeys.snapshotEditor.exportTab.deleteThisMapSectionsConfirmation)
+      t(IntlKeys.snapshotEditor.dataTab.deleteThisMapSectionsConfirmation)
     ) &&
       searchContextDispatch({
         type: SearchContextActionTypes.REMOVE_MAP_CLIPPING,
@@ -61,7 +61,7 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
     saveAs(
       clipping.mapClippingDataUrl,
       `${t(IntlKeys.snapshotEditor.screenshotName)}-${parsedAddress}-${t(
-        IntlKeys.snapshotEditor.exportTab.mapSection
+        IntlKeys.snapshotEditor.dataTab.mapSection
       )}-${i + 1}.png`
     );
   };

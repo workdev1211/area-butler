@@ -247,7 +247,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const isTrial = user?.subscription?.type === ApiSubscriptionPlanType.TRIAL;
 
   const buttonTitle = t(
-    IntlKeys.snapshotEditor.exportTab.generateLocationExpose
+    IntlKeys.snapshotEditor.dataTab.generateLocationExpose
   );
   const snapshotConfig = searchContextState.responseConfig!;
   // 'var(--primary-gradient)' is not extracted in the 'OnePagePng' component
@@ -271,7 +271,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
             style={{ width: "calc(100% + 21px)" }}
           >
             <span className="text-sm font-bold pl-[24px]">
-              {t(IntlKeys.snapshotEditor.exportTab.pleaseCompleteAllSteps)}
+              {t(IntlKeys.snapshotEditor.dataTab.pleaseCompleteAllSteps)}
             </span>
           </div>
         </div>
@@ -309,7 +309,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
                 });
               }}
             >
-              1. {t(IntlKeys.snapshotEditor.exportTab.locationDescription)} (
+              1. {t(IntlKeys.snapshotEditor.dataTab.locationDescription)} (
               {locationDescription.length}/{onePageCharacterLimit})
             </div>
 
@@ -356,7 +356,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
                       }}
                       disabled={isOpenAiBusy}
                     >
-                      {t(IntlKeys.snapshotEditor.exportTab.generateAIText)}
+                      {t(IntlKeys.snapshotEditor.dataTab.generateAIText)}
                     </button>
                   </div>
 

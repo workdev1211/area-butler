@@ -1,7 +1,7 @@
 .map-menu {
   overflow-y: auto;
   top: 0;
-  right: 0;
+  right: calc(var(--menu-item-pl) / 2);
   bottom: 0;
   width: 0;
   transition: width 0.2s;
@@ -11,7 +11,7 @@
   --menu-item-pb: 20px;
   --menu-item-pl: 24px;
   --menu-item-h: 56px;
-  --menu-footer-h: 88px;
+  --menu-footer-h: 70px;
   --menu-image-w-h: 20px;
   --menu-image-w-h-lg: 33px;
   --locality-py: 10px;
@@ -26,14 +26,13 @@
   .tab-bar {
     height: 112px;
     color: var(--primary);
-    padding: calc(var(--menu-item-pl) / 2) 0 calc(var(--menu-item-pl) / 2)
-      var(--menu-item-pl);
+    padding: calc(var(--menu-item-pl) / 2) 0 calc(var(--menu-item-pl) / 2) 0;
     @apply text-base font-medium;
 
     .tab-container {
       padding: 0.5rem calc(2.5rem + 24px) 0.5rem 2.5rem;
       border: 0.25rem solid transparent;
-      border-radius: 1rem 0 0 1rem;
+      border-radius: 1rem;
       background: white;
       @apply flex gap-10;
     }
@@ -66,16 +65,15 @@
     background: var(--base-anthracite);
     padding: 0 var(--menu-item-pr) 0 var(--menu-item-pl) !important;
     border-bottom: none;
+    border-radius: 5px 5px 0 0;
+
+    span {
+      max-width: calc(100% - 65px);
+    }
     @apply flex flex-col justify-center;
 
     .map-menu-header-text {
       @apply text-lg;
-    }
-
-    .btn-link {
-      padding: 0 !important;
-      height: auto !important;
-      @apply w-auto justify-start text-white flex flex-nowrap;
     }
   }
 
@@ -335,11 +333,12 @@
     height: var(--menu-footer-h);
     padding: 4px var(--menu-item-pl) 2px var(--menu-item-pl);
     border-top: 2px solid var(--primary);
+    border-radius: 0 0 5px 5px;
     background: white;
-    @apply flex flex-col gap-1;
+    @apply flex flex-col;
 
     .button-container {
-      @apply flex items-center justify-between gap-10;
+      @apply flex items-center justify-between;
 
       .back-button {
         @apply m-0 w-auto;
@@ -352,12 +351,9 @@
       }
 
       .save-button {
-        width: var(--btn-height) !important;
-        height: var(--btn-height) !important;
         background: var(--primary-gradient);
-        @apply btn p-0;
 
-        img {
+        path {
           width: 2rem;
           height: 2rem;
           @apply invert;

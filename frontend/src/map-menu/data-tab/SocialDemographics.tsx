@@ -3,19 +3,19 @@ import { FunctionComponent, ReactNode, useState } from "react";
 import { IntlKeys } from "i18n/keys";
 import { useTranslation } from "react-i18next";
 
-import { setBackgroundColor } from "../../../shared/shared.functions";
-import { ApiDataSource } from "../../../../../shared/types/subscription-plan";
-import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
+import { setBackgroundColor } from "../../shared/shared.functions";
+import { ApiDataSource } from "../../../../shared/types/subscription-plan";
+import MapMenuCollapsable from "../map-tab/components/menu-collapsable/MapMenuCollapsable";
 import CensusTable from "./data/CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./data/FederalElectionTable";
-import socialDemographicsIcon from "../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
-import censusDataIcon from "../../../assets/icons/census-data.svg";
-import federalElectionIcon from "../../../assets/icons/federal-election.svg";
-import { TUnlockIntProduct } from "../../../../../shared/types/integration";
-import { useTools } from "../../../hooks/tools";
-import { TCensusData } from "../../../../../shared/types/data-provision";
-import UnlockProductButton from "../../components/UnlockProductButton";
+import socialDemographicsIcon from "../../assets/icons/map-menu/02-soziales-und-demographie.svg";
+import censusDataIcon from "../../assets/icons/census-data.svg";
+import federalElectionIcon from "../../assets/icons/federal-election.svg";
+import { TUnlockIntProduct } from "../../../../shared/types/integration";
+import { useTools } from "../../hooks/tools";
+import { TCensusData } from "../../../../shared/types/data-provision";
+import UnlockProductButton from "../components/UnlockProductButton";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>

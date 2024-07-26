@@ -3,12 +3,12 @@ import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
-import { setBackgroundColor } from "../../../shared/shared.functions";
-import locationIndicesIcon from "../../../assets/icons/map-menu/11-lageindizes.svg";
+import { setBackgroundColor } from "../../shared/shared.functions";
+import locationIndicesIcon from "../../assets/icons/map-menu/11-lageindizes.svg";
 import LocationIndexTable from "./data/LocationIndexTable";
-import { TUnlockIntProduct } from "../../../../../shared/types/integration";
-import UnlockProductButton from "../../components/UnlockProductButton";
-import { TLocationIndexData } from "../../../../../shared/types/location-index";
+import { TUnlockIntProduct } from "../../../../shared/types/integration";
+import UnlockProductButton from "../components/UnlockProductButton";
+import { TLocationIndexData } from "../../../../shared/types/location-index";
 
 interface ILocationIndicesProps {
   isStatsDataAvailable: boolean;

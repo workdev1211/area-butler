@@ -120,7 +120,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       )}
 
       <PdfPage
-        title={t(IntlKeys.snapshotEditor.exportTab.summary)}
+        title={t(IntlKeys.snapshotEditor.dataTab.summary)}
         logo={props.logo}
         nextPageNumber={nextPageNumber}
         leftHeaderElement={qrCodeElement}
@@ -130,7 +130,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
             <>
               <div className="text-2xl font-bold">{props.listingAddress}</div>
               <div className="text-xl font-bold mt-1 text-black">
-                {t(IntlKeys.snapshotEditor.exportTab.locationOverview)}
+                {t(IntlKeys.snapshotEditor.dataTab.locationOverview)}
               </div>
             </>
           )}
@@ -138,7 +138,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {props.realEstateListing && (
             <>
               <h3 className="text-2xl w-56 font-bold text-black">
-                {t(IntlKeys.snapshotEditor.exportTab.locationOverview)}
+                {t(IntlKeys.snapshotEditor.dataTab.locationOverview)}
               </h3>
 
               <div className="font-bold">{props.realEstateListing.address}</div>
@@ -147,7 +147,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
                 props.realEstateListing?.costStructure && (
                   <div>
                     <strong>
-                      {t(IntlKeys.snapshotEditor.exportTab.costs)}:
+                      {t(IntlKeys.snapshotEditor.dataTab.costs)}:
                     </strong>{" "}
                     {getRealEstateCost(props.realEstateListing?.costStructure)}{" "}
                     (
@@ -184,7 +184,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
         <div className="mx-5 flex gap-2 flex-wrap">
           {chunkedGroupes.length === 0 ? (
-            <div>{t(IntlKeys.snapshotEditor.exportTab.noLocationSelected)}</div>
+            <div>{t(IntlKeys.snapshotEditor.dataTab.noLocationSelected)}</div>
           ) : (
             chunkedGroupes[0].map((group) => (
               <div className="text-xs" key={`tab-content-${group.name}`}>
@@ -202,7 +202,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       {chunkedGroupes.length > 1 &&
         chunkedGroupes.slice(1).map((chunk, i) => (
           <PdfPage
-            title={t(IntlKeys.snapshotEditor.exportTab.summary)}
+            title={t(IntlKeys.snapshotEditor.dataTab.summary)}
             logo={props.logo}
             nextPageNumber={nextPageNumber}
             leftHeaderElement={qrCodeElement}
@@ -237,7 +237,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
         <PdfPage
           nextPageNumber={nextPageNumber}
           logo={props.logo}
-          title={t(IntlKeys.snapshotEditor.exportTab.cardLegend)}
+          title={t(IntlKeys.snapshotEditor.dataTab.cardLegend)}
           leftHeaderElement={qrCodeElement}
         >
           <div className="ml-10 mt-3">
@@ -248,7 +248,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
       {(censusData || federalElectionData || particlePollutionData) && (
         <PdfPage
-          title={t(IntlKeys.snapshotEditor.exportTab.insights)}
+          title={t(IntlKeys.snapshotEditor.dataTab.insights)}
           logo={props.logo}
           nextPageNumber={nextPageNumber}
           leftHeaderElement={qrCodeElement}
@@ -256,7 +256,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {censusData && censusData.addressData.length > 0 && (
             <>
               <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-                {t(IntlKeys.snapshotEditor.exportTab.neighborhoodDemographic)}
+                {t(IntlKeys.snapshotEditor.dataTab.neighborhoodDemographic)}
               </h4>
               <CensusSummary
                 primaryColor={props.color}
@@ -268,7 +268,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {federalElectionData && (
             <>
               <h4 className="mx-10 text-xl w-56 font-bold">
-                {t(IntlKeys.snapshotEditor.exportTab.federalElections)}
+                {t(IntlKeys.snapshotEditor.dataTab.federalElections)}
               </h4>
               <FederalElectionSummary
                 primaryColor={props.color}

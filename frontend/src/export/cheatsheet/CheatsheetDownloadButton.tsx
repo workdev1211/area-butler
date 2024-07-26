@@ -65,7 +65,7 @@ export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
   const isIntegrationUser = "integrationUserId" in user;
 
   let documentTitle = `${t(
-    IntlKeys.snapshotEditor.exportTab.myLocation
+    IntlKeys.snapshotEditor.dataTab.myLocation
   )}_AreaButler`;
 
   if (realEstateListing?.name) {

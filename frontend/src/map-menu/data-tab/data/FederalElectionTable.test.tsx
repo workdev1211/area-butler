@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import FederalElectionTable from "./FederalElectionTable";
-import { FederalElectionDistrict } from "../../../../hooks/federalelectiondata";
-import { ApiFeatureElectionParty } from "../../../../../../shared/types/federal-election";
+import { FederalElectionDistrict } from "../../../hooks/federalelectiondata";
+import { ApiFeatureElectionParty } from "../../../../../shared/types/federal-election";
 
 const testData: FederalElectionDistrict = {
   name: "Hamburg-Nord",

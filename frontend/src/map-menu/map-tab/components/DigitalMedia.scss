@@ -1,4 +1,4 @@
-.export-tab .digital-media > div {
+.digital-media > div {
   grid-template-columns: 1fr 1fr 0.75fr;
   height: 56px;
   padding: 4px;
@@ -35,7 +35,7 @@
 }
 
 @media (min-width: 1024px) {
-  .export-tab .digital-media > div {
+  .digital-media > div {
     grid-template-columns: 1.5fr 1fr 0.75fr;
     padding: 4px var(--menu-item-pl) 4px calc(var(--menu-item-pl) + 0.75rem);
   }

@@ -57,7 +57,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
           <img src={fileIcon} alt="customer-data-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
-              {t(IntlKeys.snapshotEditor.exportTab.ownFiles)}
+              {t(IntlKeys.snapshotEditor.dataTab.ownFiles)}
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               onClick={() => {
                 if (!searchContextState.localityParams.length) {
                   toastSuccess(
-                    t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain)
+                    t(IntlKeys.snapshotEditor.dataTab.loadingClickAgain)
                   );
                   return;
                 }
@@ -90,7 +90,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               }}
             >
               <img className="w-4 h-4" src={editIcon} alt="pdf" />
-              {t(IntlKeys.snapshotEditor.exportTab.saveTargetGroup)}
+              {t(IntlKeys.snapshotEditor.dataTab.saveTargetGroup)}
             </h3>
           </li>
           {!integrationType && (
@@ -100,7 +100,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
                 onClick={() => {
                   if (!searchContextState.placesLocation?.label) {
                     toastSuccess(
-                      t(IntlKeys.snapshotEditor.exportTab.loadingClickAgain)
+                      t(IntlKeys.snapshotEditor.dataTab.loadingClickAgain)
                     );
                     return;
                   }

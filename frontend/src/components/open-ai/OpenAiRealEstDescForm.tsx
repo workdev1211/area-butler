@@ -134,8 +134,8 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
           <div className="form-control">
             <Select
               className="select select-bordered w-full max-w-full"
-              label={t(IntlKeys.snapshotEditor.exportTab.realEstate)}
-              placeholder={t(IntlKeys.snapshotEditor.exportTab.realEstatePlaceholder)}
+              label={t(IntlKeys.snapshotEditor.dataTab.realEstate)}
+              placeholder={t(IntlKeys.snapshotEditor.dataTab.realEstatePlaceholder)}
               name="realEstateId"
               disabled={listings.length < 2}
               defaultValue={
@@ -148,7 +148,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
                   key={placeholderSelectOptionKey}
                   disabled={true}
                 >
-                  {t(IntlKeys.snapshotEditor.exportTab.selectRealEstate)}
+                  {t(IntlKeys.snapshotEditor.dataTab.selectRealEstate)}
                 </option>
               )}
               {listings.map(({ id, name, address }) => (
@@ -161,9 +161,9 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
 
           <div className="form-control">
             <CustomTextSelect
-              mainLabel={t(IntlKeys.snapshotEditor.exportTab.objectType)}
+              mainLabel={t(IntlKeys.snapshotEditor.dataTab.objectType)}
               label={t(IntlKeys.common.description)}
-              placeholder={t(IntlKeys.snapshotEditor.exportTab.objectType)}
+              placeholder={t(IntlKeys.snapshotEditor.dataTab.objectType)}
               name="realEstateType"
               selectOptions={openAiRealEstTypeOptions}
               customTextValue={OpenAiRealEstTypesEnum.CUSTOM}

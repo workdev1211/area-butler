@@ -59,7 +59,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
             <img src={aiLocationDescIcon} alt="ai-description-icon" />
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">
-                {t(IntlKeys.snapshotEditor.exportTab.automaticTextsTitle)}
+                {t(IntlKeys.snapshotEditor.dataTab.automaticTextsTitle)}
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
                   <span>
                     {t(
                       (
-                        IntlKeys.snapshotEditor.exportTab
+                        IntlKeys.snapshotEditor.dataTab
                           .openAITypesSideBarLabel as Record<string, string>
                       )[type]
                     )}

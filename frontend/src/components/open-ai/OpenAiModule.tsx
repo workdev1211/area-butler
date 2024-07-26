@@ -146,7 +146,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         }
 
         default: {
-          toastError(t(IntlKeys.snapshotEditor.exportTab.errorOccurred));
+          toastError(t(IntlKeys.snapshotEditor.dataTab.errorOccurred));
           return;
         }
       }
@@ -171,11 +171,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-0">
       <div>
-        <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.exportTab.contentDetails)}</div>
+        <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.dataTab.contentDetails)}</div>
 
         <div className="form-control">
           <label htmlFor="queryType" className="label">
-            <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.targetFormat)}</span>
+            <span className="label-text">{t(IntlKeys.snapshotEditor.dataTab.targetFormat)}</span>
           </label>
 
           <select
@@ -196,11 +196,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               key={placeholderSelectOptionKey}
               disabled={true}
             >
-              {t(IntlKeys.snapshotEditor.exportTab.generateQuestion)}
+              {t(IntlKeys.snapshotEditor.dataTab.generateQuestion)}
             </option>
             {resultQueryTypes.map(({ type, label }) => (
               <option value={type} key={type} className="flex flex-col">
-                {t((IntlKeys.snapshotEditor.exportTab.openAITypesOptionLabel as Record<string, string>)[type])}
+                {t((IntlKeys.snapshotEditor.dataTab.openAITypesOptionLabel as Record<string, string>)[type])}
               </option>
             ))}
           </select>
@@ -311,7 +311,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           OpenAiQueryTypeEnum.GENERAL_QUESTION,
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <>
-            <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.exportTab.textualInformation)}</div>
+            <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.dataTab.textualInformation)}</div>
 
             <OpenAiGeneralForm
               formId="open-ai-general-form"

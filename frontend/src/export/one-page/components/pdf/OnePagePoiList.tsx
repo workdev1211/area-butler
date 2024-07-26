@@ -19,7 +19,7 @@ const OnePagePoiList: FC<IOnePagePoiListProps> = ({ filteredGroups }) => {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="text-2xl font-bold">
-        {t(IntlKeys.snapshotEditor.exportTab.overview)}
+        {t(IntlKeys.snapshotEditor.dataTab.overview)}
       </div>
       <div className="flex gap-3 flex-wrap">
         {filteredGroups.map((group) => {

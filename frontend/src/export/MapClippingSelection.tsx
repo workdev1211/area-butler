@@ -44,7 +44,7 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
         selectedMapClippingsCount === limit) &&
       !mapClipping.isSelected
     ) {
-      toastError(t(IntlKeys.snapshotEditor.exportTab.tooManyGroups));
+      toastError(t(IntlKeys.snapshotEditor.dataTab.tooManyGroups));
       return;
     }
 
@@ -69,14 +69,14 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
       >
         {selectableMapClippings.length > 0 ? (
           <span>
-            {t(IntlKeys.snapshotEditor.exportTab.selectedPictures)}{" "}
+            {t(IntlKeys.snapshotEditor.dataTab.selectedPictures)}{" "}
             {selectableMapClippings.filter((c) => c.isSelected).length} /{" "}
             {limit
               ? `${limit} (${selectableMapClippings.length})`
               : selectableMapClippings.length}
           </span>
         ) : (
-          <span>{t(IntlKeys.snapshotEditor.exportTab.noMapSelectionsSaved)}</span>
+          <span>{t(IntlKeys.snapshotEditor.dataTab.noMapSelectionsSaved)}</span>
         )}
       </div>
       <div className="collapse-content bg-white flex flex-col">

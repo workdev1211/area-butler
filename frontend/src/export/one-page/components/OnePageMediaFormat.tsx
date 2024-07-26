@@ -62,7 +62,7 @@ const OnePageMediaFormat: FC<IOnePageMediaFormatProps> = ({
         }}
         onClick={toggleCollapsable}
       >
-        3. {t(IntlKeys.snapshotEditor.exportTab.mediaAndFormat)}
+        3. {t(IntlKeys.snapshotEditor.dataTab.mediaAndFormat)}
       </div>
       <div className="collapse-content">
         <div className="flex flex-col gap-5 pt-5">
@@ -130,7 +130,7 @@ const OnePageMediaFormat: FC<IOnePageMediaFormatProps> = ({
                   className="checkbox checkbox-primary"
                   readOnly
                 />
-                <span className="label-text">{t(IntlKeys.snapshotEditor.exportTab.transparentBackground)}</span>
+                <span className="label-text">{t(IntlKeys.snapshotEditor.dataTab.transparentBackground)}</span>
               </div>
             )}
           </div>

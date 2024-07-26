@@ -58,8 +58,8 @@ export const QrCode: FC<IQrCodeProps> = ({
       />
 
       <div className="flex flex-col">
-        <div>{t(IntlKeys.snapshotEditor.exportTab.scanAndNew)}</div>
-        <div>{t(IntlKeys.snapshotEditor.exportTab.discoverResidentialArea)}</div>
+        <div>{t(IntlKeys.snapshotEditor.dataTab.scanAndNew)}</div>
+        <div>{t(IntlKeys.snapshotEditor.dataTab.discoverResidentialArea)}</div>
       </div>
     </div>
   );

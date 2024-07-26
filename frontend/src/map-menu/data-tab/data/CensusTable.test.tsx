@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 
 import CensusTable from "./CensusTable";
-import { ApiDataProvisionEnum } from "../../../../../../shared/types/types";
+import { ApiDataProvisionEnum } from "../../../../../shared/types/types";
 
 const testData: any = {
   [ApiDataProvisionEnum.ADDRESS_DATA]: [

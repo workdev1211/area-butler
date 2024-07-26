@@ -11,7 +11,7 @@
   "snapshotEditor": {
     "map": "Map",
     "editor": "Editor",
-    "export": "Exports",
+    "data": "Data",
     "addressNotPublished": "Exact address not published",
     "pointsOfInterest": {
       "label": "Points of interest",
@@ -142,7 +142,7 @@
     "primaryColor": "Primary color",
     "cardsIcon": "Cards Icon",
     "uploadIcon": "Upload icon",
-    "exportTab": {
+    "dataTab": {
       "mapSection": "Map sections",
       "mapSectionDescription": "For exposés, print media, picture galleries",
       "useScreenshotBtn": "Please use the screenshot button in the bottom left corner\n            of the map.",
@@ -355,7 +355,8 @@
     "discard": "Discard",
     "userDefined": "User-defined",
     "custom": "User-defined",
-    "addressExpired": "This map is no longer available. Please contact AreaButler."
+    "addressExpired": "This map is no longer available. Please contact AreaButler.",
+    "help": "Help"
   },
   "environmentalAnalysis": {
     "createBtn": "Create map",

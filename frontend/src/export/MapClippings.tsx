@@ -48,7 +48,7 @@ export const MapClippings: FC<IMapClippingsProps> = ({
         <PdfPage
           nextPageNumber={nextPageNumber}
           logo={logo}
-          title={t(IntlKeys.snapshotEditor.exportTab.mapSection)}
+          title={t(IntlKeys.snapshotEditor.dataTab.mapSection)}
           key={pairIndex}
           leftHeaderElement={qrCode.isShownQrCode && <QrCode />}
         >

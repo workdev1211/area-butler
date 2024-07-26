@@ -92,7 +92,7 @@ export const OnePagePngDownload: FC<IOnePagePngDownProps> = ({
   }, [mapClippings]);
 
   let documentTitle = `${t(
-    IntlKeys.snapshotEditor.exportTab.myLocation
+    IntlKeys.snapshotEditor.dataTab.myLocation
   )}_AreaButler`;
 
   if (realEstateListing?.name) {
@@ -170,7 +170,7 @@ export const OnePagePngDownload: FC<IOnePagePngDownProps> = ({
               });
             }}
           >
-            {t(IntlKeys.snapshotEditor.exportTab.sendTo, {
+            {t(IntlKeys.snapshotEditor.dataTab.sendTo, {
               integrationType: integrationNames[integrationType],
             })}
           </button>

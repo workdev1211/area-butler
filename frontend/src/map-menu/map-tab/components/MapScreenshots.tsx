@@ -43,7 +43,7 @@ const MapScreenshots: FC<IMapScreenshotsProps> = ({
           <img src={mapScreenshotsIcon} alt="map-screenshots-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
-              {t(IntlKeys.snapshotEditor.exportTab.mapSection)}
+              {t(IntlKeys.snapshotEditor.dataTab.mapSection)}
             </div>
           </div>
         </div>
@@ -62,7 +62,7 @@ const MapScreenshots: FC<IMapScreenshotsProps> = ({
                 "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
             }}
           >
-            {t(IntlKeys.snapshotEditor.exportTab.useScreenshotBtn)}
+            {t(IntlKeys.snapshotEditor.dataTab.useScreenshotBtn)}
           </div>
         )}
       </div>

@@ -134,8 +134,8 @@ const ExportModal: FC<IExportModalProps> = ({
 
   const buttonTitle =
     exportType !== ExportTypeEnum.CHEATSHEET
-      ? t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisExport)
-      : t(IntlKeys.snapshotEditor.exportTab.cheatSheetExport);
+      ? t(IntlKeys.snapshotEditor.dataTab.environmentalAnalysisExport)
+      : t(IntlKeys.snapshotEditor.dataTab.cheatSheetExport);
 
   const resultingColor =
     searchContextState.responseConfig?.primaryColor ||
@@ -179,7 +179,7 @@ const ExportModal: FC<IExportModalProps> = ({
 
               <div>
                 <h1 className="my-5 font-bold">
-                  {t(IntlKeys.snapshotEditor.exportTab.pictures)}
+                  {t(IntlKeys.snapshotEditor.dataTab.pictures)}
                 </h1>
 
                 <div className="mb-5">

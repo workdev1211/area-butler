@@ -3,11 +3,11 @@ import { FunctionComponent } from "react";
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
 
-import { Loading } from "../../../../components/Loading";
+import { Loading } from "../../../components/Loading";
 import {
   LocIndexPropsEnum,
   TLocationIndexData,
-} from "../../../../../../shared/types/location-index";
+} from "../../../../../shared/types/location-index";
 
 interface ILocationIndexTableProps {
   locationIndexData?: TLocationIndexData;

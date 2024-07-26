@@ -118,7 +118,7 @@ const LocationExport: FC<ILocationExportProps> = ({
 
       performUnlock(
         isOnePageExport
-          ? t(IntlKeys.snapshotEditor.exportTab.unlockLocationExpose)
+          ? t(IntlKeys.snapshotEditor.dataTab.unlockLocationExpose)
           : statsExportUnlockText,
         actionType
       );
@@ -177,7 +177,7 @@ const LocationExport: FC<ILocationExportProps> = ({
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">
               <div className="collapse-title-text-1">
-                {t(IntlKeys.snapshotEditor.exportTab.reportsAndLocationExpose)}
+                {t(IntlKeys.snapshotEditor.dataTab.reportsAndLocationExpose)}
               </div>
             </div>
           </div>
@@ -200,7 +200,7 @@ const LocationExport: FC<ILocationExportProps> = ({
                 alt="pdf"
               />
               <span>
-                {t(IntlKeys.snapshotEditor.exportTab.generateLocationExpose)}
+                {t(IntlKeys.snapshotEditor.dataTab.generateLocationExpose)}
               </span>
               {/*<span className="badge badge-primary">NEU</span>*/}
             </h3>
@@ -218,7 +218,7 @@ const LocationExport: FC<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              {t(IntlKeys.snapshotEditor.exportTab.environmentalAnalysisPDF)}
+              {t(IntlKeys.snapshotEditor.dataTab.environmentalAnalysisPDF)}
             </h3>
           </li>
           <li>
@@ -234,7 +234,7 @@ const LocationExport: FC<ILocationExportProps> = ({
                 src={pdfIcon}
                 alt="pdf"
               />
-              {t(IntlKeys.snapshotEditor.exportTab.overviewPDF)}
+              {t(IntlKeys.snapshotEditor.dataTab.overviewPDF)}
             </h3>
           </li>
         </ul>

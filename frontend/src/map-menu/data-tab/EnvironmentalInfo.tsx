@@ -3,16 +3,16 @@ import { FunctionComponent, ReactNode, useState } from "react";
 import { IntlKeys } from "i18n/keys";
 import { useTranslation } from "react-i18next";
 
-import { ApiGeojsonFeature } from "../../../../../shared/types/types";
-import { setBackgroundColor } from "../../../shared/shared.functions";
-import { ApiDataSource } from "../../../../../shared/types/subscription-plan";
-import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
+import { ApiGeojsonFeature } from "../../../../shared/types/types";
+import { setBackgroundColor } from "../../shared/shared.functions";
+import { ApiDataSource } from "../../../../shared/types/subscription-plan";
+import MapMenuCollapsable from "../map-tab/components/menu-collapsable/MapMenuCollapsable";
 import ParticlePollutionTable from "./data/ParticlePollutionTable";
-import environmentalInfoIcon from "../../../assets/icons/map-menu/03-umweltinformationen.svg";
-import particlePollutionIcon from "../../../assets/icons/particle-pollution.svg";
-import { TUnlockIntProduct } from "../../../../../shared/types/integration";
-import { useTools } from "../../../hooks/tools";
-import UnlockProductButton from "../../components/UnlockProductButton";
+import environmentalInfoIcon from "../../assets/icons/map-menu/03-umweltinformationen.svg";
+import particlePollutionIcon from "../../assets/icons/particle-pollution.svg";
+import { TUnlockIntProduct } from "../../../../shared/types/integration";
+import { useTools } from "../../hooks/tools";
+import UnlockProductButton from "../components/UnlockProductButton";
 
 interface IEnvironmentalInfoProps {
   isStatsDataAvailable: boolean;

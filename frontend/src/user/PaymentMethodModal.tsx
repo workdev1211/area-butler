@@ -192,7 +192,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
             }}
             onError={() => {
               closeModal();
-              toastError(t(IntlKeys.snapshotEditor.exportTab.errorOccurred));
+              toastError(t(IntlKeys.snapshotEditor.dataTab.errorOccurred));
             }}
           />
         </div>

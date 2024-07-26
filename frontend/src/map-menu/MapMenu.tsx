@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from "react";
+import { FC, ReactNode, useContext, useState } from "react";
 
 import "./MapMenu.scss";
 
@@ -7,7 +7,7 @@ import { IntlKeys } from "i18n/keys";
 
 import {
   IEditorTabProps,
-  IExportTabProps,
+  IDataTabProps,
   ResultEntity,
 } from "../shared/search-result.types";
 import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
@@ -23,9 +23,10 @@ import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
 import downloadIcon from "../assets/icons/download.svg";
+import fileIcon from "../assets/icons/file.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
-import ExportTab from "./export-tab/ExportTab";
+import DataTab from "./data-tab/DataTab";
 import MapMenuFooter from "./components/footer/MapMenuFooter";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { statsExportUnlockText } from "../../../shared/constants/on-office/on-office-products";
@@ -36,11 +37,12 @@ import {
 } from "../../../shared/types/integration";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
+import { SearchContext } from "../context/SearchContext";
 
 enum TabsEnum {
   Map = "Map",
+  Data = "Data",
   Editor = "Editor",
-  Export = "Export",
 }
 
 export interface IMapMenuProps {
@@ -57,7 +59,7 @@ export interface IMapMenuProps {
   // Routes END
   config?: ApiSearchResultSnapshotConfig;
   editorTabProps?: IEditorTabProps;
-  exportTabProps?: IExportTabProps;
+  dataTabProps?: IDataTabProps;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   saveConfig?: () => Promise<void>;
   showInsights?: boolean;
@@ -90,7 +92,7 @@ const MapMenu: FC<IMapMenuProps> = ({
   locationIndexData,
   userMenuPoiIcons,
   editorTabProps,
-  exportTabProps,
+  dataTabProps,
 }) => {
   const { t } = useTranslation();
   const { unlockProduct } = useIntegrationTools();
@@ -102,18 +104,29 @@ const MapMenu: FC<IMapMenuProps> = ({
     actionType?: IntegrationActionTypeEnum;
   }>({ isShownModal: false });
 
+  const {
+    searchContextState: { responseConfig },
+  } = useContext(SearchContext);
+
   const isMapTab = activeTab === TabsEnum.Map;
   const isEditorTab = activeTab === TabsEnum.Editor;
-  const isExportTab = activeTab === TabsEnum.Export;
+  const isDataTab = activeTab === TabsEnum.Data;
   const isShownAddress = !!config?.showAddress || !config;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+
+  const toggleShowAddress = () => {
+    editorTabProps?.onConfigChange({
+      ...responseConfig,
+      showAddress: !responseConfig!.showAddress,
+    });
+  };
 
   let mapMenuContentHeight;
 
   switch (mapDisplayMode) {
     case MapDisplayModesEnum.EDITOR: {
       mapMenuContentHeight =
-        "calc(100% - calc(var(--menu-item-h) * 3) - var(--menu-footer-h))";
+        "calc(100% - calc(var(--menu-item-h) * 3) - var(--menu-footer-h) - var(--menu-item-pl))";
       break;
     }
 
@@ -152,7 +165,7 @@ const MapMenu: FC<IMapMenuProps> = ({
       )}
 
       {isEditorMode && (
-        <div className="tab-bar bg-primary-gradient">
+        <div className="tab-bar">
           <div className="tab-container" data-tour="tab-icons">
             <div
               className={`tab-item${isMapTab ? " tab-item-active" : ""}`}
@@ -165,6 +178,16 @@ const MapMenu: FC<IMapMenuProps> = ({
               <div>{t(IntlKeys.snapshotEditor.map)}</div>
             </div>
             <div
+              className={`tab-item${isDataTab ? " tab-item-active" : ""}`}
+              onClick={() => {
+                setActiveTab(TabsEnum.Data);
+              }}
+              data-tour="icon-exporte"
+            >
+              <img src={fileIcon} alt="data-icon" />
+              <div>{t(IntlKeys.snapshotEditor.data)}</div>
+            </div>
+            <div
               className={`tab-item${isEditorTab ? " tab-item-active" : ""}`}
               onClick={() => {
                 setActiveTab(TabsEnum.Editor);
@@ -174,41 +197,24 @@ const MapMenu: FC<IMapMenuProps> = ({
               <img src={editorIcon} alt="editor-icon" />
               <div>{t(IntlKeys.snapshotEditor.editor)}</div>
             </div>
-            <div
-              className={`tab-item${isExportTab ? " tab-item-active" : ""}`}
-              onClick={() => {
-                setActiveTab(TabsEnum.Export);
-              }}
-              data-tour="icon-exporte"
-            >
-              <img src={downloadIcon} alt="export-icon" />
-              <div>{t(IntlKeys.snapshotEditor.export)}</div>
-            </div>
           </div>
         </div>
       )}
 
       <div className="map-menu-header" data-tour="reset-position">
-        <button
-          type="button"
-          className="btn btn-link flex gap-3"
-          onClick={() => {
-            if (isShownAddress) {
-              resetPosition();
-            }
-          }}
-        >
-          <img
-            className="w-[20px] h-[20px]"
-            src={positionIcon}
-            alt="position-icon"
+        <label className="cursor-pointer flex items-center">
+          <input
+            type="checkbox"
+            className="toggle"
+            checked={responseConfig?.showAddress}
+            onChange={toggleShowAddress}
           />
-          <div className="map-menu-header-text">
+          <span className="label-text text-white map-menu-header-text ml-5">
             {isShownAddress
               ? searchAddress
               : t(IntlKeys.snapshotEditor.addressNotPublished)}
-          </div>
-        </button>
+          </span>
+        </label>
       </div>
 
       <div
@@ -220,38 +226,28 @@ const MapMenu: FC<IMapMenuProps> = ({
       >
         {isMapTab && (
           <MapTab
+            snapshotId={editorTabProps?.snapshotId}
+            searchAddress={searchAddress}
             toggleAllLocalities={toggleAllLocalities}
             toggleRoute={toggleRoute}
             routes={routes}
             toggleTransitRoute={toggleTransitRoute}
             transitRoutes={transitRoutes}
-            openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
-            showInsights={showInsights}
-            censusData={censusData}
-            federalElectionData={federalElectionData}
-            particlePollutionData={particlePollutionData}
-            locationIndexData={locationIndexData}
             mapDisplayMode={mapDisplayMode}
             userMenuPoiIcons={userMenuPoiIcons}
             performUnlock={performUnlock}
           />
         )}
+        {isDataTab && isEditorMode && dataTabProps && (
+          <DataTab {...{ ...dataTabProps, performUnlock }} />
+        )}
 
         {isEditorTab && isEditorMode && editorTabProps && (
           <EditorTab {...editorTabProps} />
         )}
-
-        {isExportTab && isEditorMode && exportTabProps && (
-          <ExportTab {...{ ...exportTabProps, performUnlock }} />
-        )}
       </div>
 
-      {isEditorMode && (
-        <MapMenuFooter
-          mapDisplayMode={mapDisplayMode}
-          saveConfig={saveConfig}
-        />
-      )}
+      {isEditorMode && <MapMenuFooter saveConfig={saveConfig} />}
     </div>
   );
 };

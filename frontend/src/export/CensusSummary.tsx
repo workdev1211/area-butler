@@ -36,9 +36,9 @@ export const CensusSummary: FunctionComponent<ICensusSummaryProps> = ({
         <table className="entity-table">
           <thead style={{ backgroundAttachment: "fixed" }}>
             <tr style={tableHeaderStyle}>
-              <th>{t(IntlKeys.snapshotEditor.exportTab.descriptionPerKm)}</th>
+              <th>{t(IntlKeys.snapshotEditor.dataTab.descriptionPerKm)}</th>
               <th>{t(IntlKeys.common.value)}</th>
-              <th>{t(IntlKeys.snapshotEditor.exportTab.germany)}</th>
+              <th>{t(IntlKeys.snapshotEditor.dataTab.germany)}</th>
             </tr>
           </thead>
           <tbody>

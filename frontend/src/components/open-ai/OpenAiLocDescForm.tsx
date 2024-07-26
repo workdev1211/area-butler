@@ -88,8 +88,8 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
       <Form id={formId}>
         <div className="form-control">
           <Select
-            label={t(IntlKeys.snapshotEditor.exportTab.aiFieldOfKnowledge)}
-            placeholder={t(IntlKeys.snapshotEditor.exportTab.aiFieldOfKnowledge)}
+            label={t(IntlKeys.snapshotEditor.dataTab.aiFieldOfKnowledge)}
+            placeholder={t(IntlKeys.snapshotEditor.dataTab.aiFieldOfKnowledge)}
             name="meanOfTransportation"
             disabled={meansOfTransportation.length === 1}
             defaultValue={processedInitialValues.meanOfTransportation}

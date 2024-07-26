@@ -50,7 +50,7 @@ export const EntityTable: FC<IEntityTableProps> = ({
         <thead style={{ backgroundAttachment: "fixed" }}>
           <tr style={tableHeaderStyle}>
             {hasNames && <th>{t(IntlKeys.common.name)}</th>}
-            <th>{t(IntlKeys.snapshotEditor.exportTab.distance)}</th>
+            <th>{t(IntlKeys.snapshotEditor.dataTab.distance)}</th>
             {showRoutingColumns &&
               byFoot &&
               activeMeans.includes(MeansOfTransportation.WALK) && (

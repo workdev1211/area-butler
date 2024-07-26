@@ -59,7 +59,7 @@ export const OnePage = forwardRef<unknown, IOnePageDownProps>(
             {/* Description */}
             {addressDescription && (
               <div className="flex flex-col gap-1.5">
-                <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.exportTab.locationDescription)}</div>
+                <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.dataTab.locationDescription)}</div>
                 <div className="text-justify">{addressDescription}</div>
               </div>
             )}

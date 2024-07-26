@@ -44,8 +44,8 @@ const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const label = initialValues?.isFormalToInformal
-    ? t(IntlKeys.snapshotEditor.exportTab.copyTheText)
-    : t(IntlKeys.snapshotEditor.exportTab.yourRequestToAI);
+    ? t(IntlKeys.snapshotEditor.dataTab.copyTheText)
+    : t(IntlKeys.snapshotEditor.dataTab.yourRequestToAI);
 
   const validationSchema = Yup.object({
     text: Yup.string(),

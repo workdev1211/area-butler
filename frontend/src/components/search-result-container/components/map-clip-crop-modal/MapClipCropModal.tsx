@@ -509,7 +509,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                   alt="icon-share"
                   className="invert h-full break-after-avoid mr-2"
                 />
-                {t(IntlKeys.snapshotEditor.exportTab.sendTo, {
+                {t(IntlKeys.snapshotEditor.dataTab.sendTo, {
                   integrationType: integrationNames[integrationType!],
                 })}
               </button>
@@ -524,7 +524,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                   alt="icon-share"
                   className="invert h-full mr-2"
                 />
-                {t(IntlKeys.snapshotEditor.exportTab.download)}
+                {t(IntlKeys.snapshotEditor.dataTab.download)}
               </button>
             )}
             <div className="dropdown dropdown-hover dropdown-top dropdown-end">
@@ -563,7 +563,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                       alt="icon-share"
                       className="invert h-full mr-2"
                     />
-                    {t(IntlKeys.snapshotEditor.exportTab.download)}
+                    {t(IntlKeys.snapshotEditor.dataTab.download)}
                   </li>
                 )}
               </ul>

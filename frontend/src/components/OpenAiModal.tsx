@@ -52,7 +52,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   const handleUnlock = (): void => {
     if (performUnlock) {
       performUnlock(
-        t(IntlKeys.snapshotEditor.exportTab.unlockAiTexts),
+        t(IntlKeys.snapshotEditor.dataTab.unlockAiTexts),
         IntegrationActionTypeEnum.UNLOCK_OPEN_AI
       );
     }
@@ -62,7 +62,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     <div className="modal modal-open z-2000">
       <div className="modal-box modal-full-screen">
         <h1 className="text-xl flex items-center gap-2 p-3 border-b">
-          {t(IntlKeys.snapshotEditor.exportTab.aiTextsFromMagicPen)}
+          {t(IntlKeys.snapshotEditor.dataTab.aiTextsFromMagicPen)}
           <button
             className="btn btn-sm absolute right-3 top-3"
             onClick={closeModal}

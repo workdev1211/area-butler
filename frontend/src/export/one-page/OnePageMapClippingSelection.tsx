@@ -38,7 +38,7 @@ const OnePageMapClippingSelection: FunctionComponent<
         selectedMapClippingsCount === limit) &&
       !mapClipping.isSelected
     ) {
-      toastError(t(IntlKeys.snapshotEditor.exportTab.tooManyGroups));
+      toastError(t(IntlKeys.snapshotEditor.dataTab.tooManyGroups));
       return;
     }
 
@@ -50,12 +50,12 @@ const OnePageMapClippingSelection: FunctionComponent<
     <div>
       {selectableMapClippings.length > 0 ? (
         <div>
-          {t(IntlKeys.snapshotEditor.exportTab.selectedMapSections)}{" "}
+          {t(IntlKeys.snapshotEditor.dataTab.selectedMapSections)}{" "}
           {selectableMapClippings.filter((c) => c.isSelected).length}/
           {limit || selectableMapClippings.length}
         </div>
       ) : (
-        <div>{t(IntlKeys.snapshotEditor.exportTab.noMapSelectionsSaved)}</div>
+        <div>{t(IntlKeys.snapshotEditor.dataTab.noMapSelectionsSaved)}</div>
       )}
 
       <ReactSortable

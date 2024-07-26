@@ -72,7 +72,7 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
               <div className="text-2xl font-bold">{listingAddress}</div>
               <div>
                 <h3 className="text-xl w-96 font-bold text-black">
-                  {t(IntlKeys.snapshotEditor.exportTab.mobilityCriteria)}
+                  {t(IntlKeys.snapshotEditor.dataTab.mobilityCriteria)}
                 </h3>
                 <div className="flex gap-2">
                   {transportationParams.map(
@@ -108,14 +108,14 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
               {realEstateListing && (
                 <>
                   <h3 className="text-xl w-96 font-bold text-black">
-                    {t(IntlKeys.snapshotEditor.exportTab.yourNewProperty)}
+                    {t(IntlKeys.snapshotEditor.dataTab.yourNewProperty)}
                   </h3>
                   <div className="font-bold">{realEstateListing.address}</div>
 
                   {responseConfig?.isDetailsShown &&
                     realEstateListing?.costStructure && (
                       <div className="text-justify">
-                        <strong>{t(IntlKeys.snapshotEditor.exportTab.costs)}:</strong>{" "}
+                        <strong>{t(IntlKeys.snapshotEditor.dataTab.costs)}:</strong>{" "}
                         {getRealEstateCost(realEstateListing?.costStructure)} (
                         {
                           t((IntlKeys.realEstate.costTypes as Record<string, string>)[allRealEstateCostTypes.find(
@@ -157,7 +157,7 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
 
       <div className={!isFirstPage ? "pt-5" : ""}>
         <h3 className="text-xl w-96 font-bold mx-10 text-black">
-          {t(IntlKeys.snapshotEditor.exportTab.surroundings)}
+          {t(IntlKeys.snapshotEditor.dataTab.surroundings)}
         </h3>
         <EntityGridSummary
           groupedEntries={groupedEntries}

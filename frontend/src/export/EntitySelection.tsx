@@ -57,7 +57,7 @@ const EntitySelection: FC<IEntitySelectionProps> = ({
   return (
     <div>
       <h1 className="my-5 font-bold">
-        {t(IntlKeys.snapshotEditor.exportTab.selectedLocalities)} (
+        {t(IntlKeys.snapshotEditor.dataTab.selectedLocalities)} (
         {filteredEntities.filter((group) => group.active).length} /{" "}
         {filteredEntities.length})
       </h1>
