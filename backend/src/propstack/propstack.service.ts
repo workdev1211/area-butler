@@ -52,6 +52,7 @@ import { configService } from '../config/config.service';
 import { PlaceService } from '../place/place.service';
 import {
   ApiSearchResultSnapshotResponse,
+  AreaButlerExportTypesEnum,
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import { LocationService } from '../location/location.service';
@@ -135,6 +136,23 @@ export class PropstackService {
   ): Promise<void> {
     const { parameters } = integrationUser;
     publicLinkParams.map(({ title, url, isLinkEntity, isAddressShown }) => {
+      if (
+        integrationUser.config.exportMatching[
+          AreaButlerExportTypesEnum.EMBEDDED_LINKS
+        ]
+      ) {
+        return this.updatePropertyTextField(integrationUser, {
+          exportType,
+          integrationId,
+          exportMatchParams: {
+            fieldId: isAddressShown
+              ? propstackUrlFieldsMapper.WITH_ADDRESS
+              : propstackUrlFieldsMapper.WITHOUT_ADDRESS,
+          },
+          text: url,
+        });
+      }
+
       this.propstackApiService.createPropertyLink(
         (parameters as IApiIntUserPropstackParams).apiKey,
         {
@@ -145,17 +163,19 @@ export class PropstackService {
           property_id: parseInt(integrationId, 10),
         },
       );
+
       if (isLinkEntity) {
-        return
+        return;
       }
+
       this.updatePropertyTextField(integrationUser, {
         exportType,
+        integrationId,
         exportMatchParams: {
           fieldId: isAddressShown
             ? propstackUrlFieldsMapper.WITH_ADDRESS
             : propstackUrlFieldsMapper.WITHOUT_ADDRESS,
         },
-        integrationId,
         text: url,
       });
     });
