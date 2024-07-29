@@ -53,8 +53,18 @@ export interface IRealEstDescQueryParams
 
 export interface ILocRealEstDescQueryParams
   extends ILocDescQueryParams,
-    Omit<IRealEstDescQueryParams, 'realEstate'> {
-  realEstate?: Partial<ApiRealEstateListing>;
+    IRealEstDescQueryParams {}
+
+interface IGetTextReqsParams {
+  queryParams: IGeneralQueryParams;
+  isLocDescPresent?: boolean;
+  isRealEstDescPresent?: boolean;
+  isForOnePage?: boolean;
+}
+
+interface IGetRealEstDescParams {
+  realEstate: Partial<ApiRealEstateListing>;
+  realEstateType: string;
 }
 
 const POI_LIMIT_BY_CATEGORY = 3;
@@ -68,55 +78,59 @@ export class OpenAiQueryService {
 
   async getLocDescQuery(
     user: UserDocument | TIntegrationUserDocument,
-    { isForOnePage, ...queryData }: ILocDescQueryParams,
+    { isForOnePage, ...queryParams }: ILocDescQueryParams,
   ): Promise<string> {
     const {
-      snapshotRes: {
-        snapshot,
-        config: snapshotConfig = { ...defaultSnapshotConfig },
-      },
+      snapshotRes: { snapshot, config = { ...defaultSnapshotConfig } },
       targetGroupName = defaultTargetGroupName,
-    } = queryData;
+    } = queryParams;
 
     return (
       `Du bist ein erfahrener Immobilienmakler. Schreibe eine werbliche Lagebeschreibung für eine Wohnimmobilie` +
-      (snapshotConfig.showAddress
+      (config.showAddress
         ? ` an der Adresse + ${snapshot.placesLocation.label}. `
         : '. ') +
       `Der Text soll die Zielgruppe "${targetGroupName}" ansprechen, und keine Sonderzeichen oder Emoticons verwenden. ` +
       `Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n\n` +
-      this.getTextReqs(queryData, true, false, isForOnePage) +
+      this.getTextReqs({
+        isForOnePage,
+        queryParams,
+        isLocDescPresent: true,
+      }) +
       `\n\n` +
-      (await this.getLocDesc(queryData, user))
+      (await this.getLocDesc(user, queryParams))
     );
   }
 
-  getRealEstDescQuery(queryData: IRealEstDescQueryParams): string {
+  getRealEstDescQuery(queryParams: IRealEstDescQueryParams): string {
     const {
+      realEstate,
       realEstateType,
-      realEstate: { address, costStructure, characteristics },
       targetGroupName = defaultTargetGroupName,
-    } = queryData;
+    } = queryParams;
 
     return (
-      `Du bist ein erfahrener Immobilienmakler. Schreibe eine ansprechende Objektbeschreibung für ein ${realEstateType} an der Adresse ${address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n` +
-      this.getTextReqs(queryData, false, true) +
+      `Du bist ein erfahrener Immobilienmakler. Schreibe eine ansprechende Objektbeschreibung für ein ${realEstateType} an der Adresse ${realEstate.address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n` +
+      this.getTextReqs({
+        queryParams,
+        isRealEstDescPresent: true,
+      }) +
       '\n\n' +
       this.getRealEstDesc({
+        realEstate,
         realEstateType,
-        realEstate: { costStructure, characteristics },
       })
     );
   }
 
   async getLocRealEstDescQuery(
     user: UserDocument | TIntegrationUserDocument,
-    { realEstateType, ...queryData }: ILocRealEstDescQueryParams,
+    { realEstate, realEstateType, ...queryParams }: ILocRealEstDescQueryParams,
   ): Promise<string> {
     const {
       targetGroupName,
-      snapshotRes: { config, realEstate },
-    } = queryData;
+      snapshotRes: { config },
+    } = queryParams;
 
     const initialText = config.showAddress
       ? `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse + ${realEstate.address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n`
@@ -124,17 +138,18 @@ export class OpenAiQueryService {
 
     return (
       initialText +
-      this.getTextReqs(queryData, true, true) +
+      this.getTextReqs({
+        queryParams,
+        isLocDescPresent: true,
+        isRealEstDescPresent: true,
+      }) +
       '\n\n' +
-      (await this.getLocDesc(queryData, user)) +
+      (await this.getLocDesc(user, queryParams)) +
       (realEstate &&
         '\n\n' +
           this.getRealEstDesc({
+            realEstate,
             realEstateType,
-            realEstate: {
-              costStructure: realEstate.costStructure,
-              characteristics: realEstate.characteristics,
-            },
           }))
     );
   }
@@ -205,18 +220,18 @@ export class OpenAiQueryService {
     }, {});
   }
 
-  private getTextReqs(
-    {
+  private getTextReqs({
+    queryParams: {
       tonality,
       language,
       customText,
       targetGroupName = defaultTargetGroupName,
       textLength = OpenAiTextLengthEnum.MEDIUM,
-    }: IGeneralQueryParams,
-    locationText = false,
-    realEstateText = false,
+    },
+    isLocDescPresent = false,
+    isRealEstDescPresent = false,
     isForOnePage = false,
-  ): string {
+  }: IGetTextReqsParams): string {
     return (
       'Der Text soll:\n' +
       [
@@ -226,10 +241,10 @@ export class OpenAiQueryService {
               .text,
         `eine ${openAiTonalities[tonality]} Tonalität haben`,
         `die Zielgruppe "${targetGroupName}" ansprechen`,
-        ...(realEstateText
+        ...(isRealEstDescPresent
           ? [`darlegen, warum dieses Objekt für diese Zielgruppe passt`]
           : []),
-        ...(locationText
+        ...(isLocDescPresent
           ? [
               `Lagedetails und die für die Zielgruppe "${targetGroupName}" wichtigsten POIs namentlich nennen`,
               `nur gerundete ca. Angaben statt exakten Metern und Minuten verwenden`,
@@ -248,12 +263,12 @@ export class OpenAiQueryService {
   }
 
   private async getLocDesc(
+    user: UserDocument | TIntegrationUserDocument,
     {
       snapshotRes: { snapshot },
       meanOfTransportation,
       targetGroupName = defaultTargetGroupName,
     }: ILocDescQueryParams,
-    user: UserDocument | TIntegrationUserDocument,
   ): Promise<string> {
     let queryText =
       `Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe "${targetGroupName}":\n` +
@@ -342,7 +357,7 @@ export class OpenAiQueryService {
   private getRealEstDesc({
     realEstateType,
     realEstate: { costStructure, characteristics },
-  }): string {
+  }: IGetRealEstDescParams): string {
     const objectDetails: string[] = [
       `Das Exposee ist für ein ${realEstateType}`,
     ];

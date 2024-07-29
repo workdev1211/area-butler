@@ -10,6 +10,7 @@ import { PlaceModule } from '../place/place.module';
 import { ClientModule } from '../client/client.module';
 import { OpenAiQueryService } from './open-ai-query.service';
 import { LocationModule } from '../location/location.module';
+import { OpenAiExtService } from './open-ai-ext.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { LocationModule } from '../location/location.module';
     UserModule,
   ],
   controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
-  providers: [OpenAiService, OpenAiQueryService],
+  providers: [OpenAiService, OpenAiQueryService, OpenAiExtService],
   exports: [OpenAiService],
 })
 export class OpenAiModule {}

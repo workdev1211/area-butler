@@ -160,7 +160,7 @@ export interface IApiFetchPoiDataReqStatus
 export interface IApiFetchPoiDataRes
   extends IExternalApiRes<ApiOsmLocation[]> {}
 
-export interface IApiQueryOpenAiExtReq extends IApiFetchPoiDataReq {
+export interface IOpenAiExtQueryReq extends IApiFetchPoiDataReq {
   queryType?: ApiOpenAiQueryTypesEnum;
   tonality?: OpenAiTonalityEnum;
   maxTextLength?: number;
@@ -174,10 +174,10 @@ export interface IApiQueryOpenAiExtReq extends IApiFetchPoiDataReq {
   furnishing?: ApiFurnishing[];
 }
 
-export interface IApiQueryOpenAiExtReqStatus
-  extends IExternalApiReqStatus<IApiQueryOpenAiExtReq> {}
+export interface IApiOpenAiExtQueryReqStatus
+  extends IExternalApiReqStatus<IOpenAiExtQueryReq> {}
 
-export interface IApiQueryOpenAiExtRes extends IExternalApiRes<string> {}
+export interface IOpenAiExtQueryRes extends IExternalApiRes<string> {}
 
 export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
   isAddressShown?: boolean;

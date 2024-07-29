@@ -1,8 +1,9 @@
-import { OpenAiQueryTypeEnum } from "../../types/open-ai";
+import { OpenAiQueryTypeEnum, TOpenAiLocDescType } from "../../types/open-ai";
 import {
   PropstackPropMarketTypesEnum,
   PropstackTextFieldTypeEnum,
 } from "../../types/propstack";
+import { getBidirectionalMapping } from "../../functions/shared.functions";
 
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [
@@ -26,27 +27,29 @@ export const propstackPropertyMarketTypeNames: {
   },
 ];
 
-export const propstackExportTypeMapper: Partial<
-  Record<OpenAiQueryTypeEnum, string>
-> = {
-  [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: "location_note",
-  [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: "description_note",
-  [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: "other_note",
-};
-
 export const propstackUrlFieldsMapper = {
-  "WITH_ADDRESS": "areabutler_link_with_address",
-  "WITHOUT_ADDRESS": "areabutler_link_without_address"
-}
-
-export const propstackOpenAiFieldMapper: Record<
-  PropstackTextFieldTypeEnum,
-  OpenAiQueryTypeEnum
-> = {
-  [PropstackTextFieldTypeEnum.LOCATION_NOTE]:
-  OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-  [PropstackTextFieldTypeEnum.DESCRIPTION_NOTE]:
-  OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-  [PropstackTextFieldTypeEnum.OTHER_NOTE]:
-  OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+  WITH_ADDRESS: "areabutler_link_with_address",
+  WITHOUT_ADDRESS: "areabutler_link_without_address",
 };
+
+const propstackToOpenAiFieldMapper: Map<
+  PropstackTextFieldTypeEnum,
+  TOpenAiLocDescType
+> = new Map([
+  [
+    PropstackTextFieldTypeEnum.LOCATION_NOTE,
+    OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+  ],
+  [
+    PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
+    OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+  ],
+  [
+    PropstackTextFieldTypeEnum.OTHER_NOTE,
+    OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+  ],
+]);
+
+export const propstackOpenAiFieldMapper = getBidirectionalMapping(
+  propstackToOpenAiFieldMapper
+);

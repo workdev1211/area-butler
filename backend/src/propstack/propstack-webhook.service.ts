@@ -17,13 +17,20 @@ import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { IApiIntUserPropstackParams } from '@area-butler-types/integration-user';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
-import { PropstackService } from './propstack.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { IPropstackWebhookProperty } from '../shared/types/propstack';
 import ApiPropstackWebhookToAreaButlerDto from '../real-estate-listing/dto/api-propstack-webhook-to-area-butler.dto';
 import ApiPropstackWebhookToAreaButlerUpdDto from './dto/api-propstack-webhook-to-area-butler-upd.dto';
 import { PlaceService } from '../place/place.service';
-import { ResultStatusEnum } from '@area-butler-types/types';
+import {
+  MeansOfTransportation,
+  ResultStatusEnum,
+} from '@area-butler-types/types';
+import { OpenAiService } from '../open-ai/open-ai.service';
+import { PropstackTextFieldTypeEnum } from '@area-butler-types/propstack';
+import { propstackOpenAiFieldMapper } from '../../../shared/constants/propstack/propstack-constants';
+import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
+import { defaultRealEstType } from '../../../shared/constants/open-ai';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -33,9 +40,9 @@ export class PropstackWebhookService {
   private readonly logger = new Logger(PropstackWebhookService.name);
 
   constructor(
+    private readonly openAiService: OpenAiService,
     private readonly placeService: PlaceService,
     private readonly propstackApiService: PropstackApiService,
-    private readonly propstackService: PropstackService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly snapshotExtService: SnapshotExtService,
@@ -127,13 +134,24 @@ export class PropstackWebhookService {
       return;
     }
 
-    const openAiDescriptions = await this.propstackService.fetchTextFieldValues(
-      {
-        eventId,
-        user,
-        realEstateId: realEstateListing.id,
-        snapshotId: snapshotResponse.id,
+    const openAiDescs = await this.openAiService.batchFetchLocDescs(user, {
+      meanOfTransportation: MeansOfTransportation.WALK,
+      realEstateId: realEstateListing.id,
+      realEstateType: defaultRealEstType,
+      snapshotId: snapshotResponse.id,
+    });
+
+    const propstackOpenAiDescs = Object.entries(openAiDescs).reduce(
+      (result, [openAiLocDescType, locDesc]) => {
+        result[
+          propstackOpenAiFieldMapper.get(
+            openAiLocDescType as TOpenAiLocDescType,
+          )
+        ] = locDesc;
+
+        return result;
       },
+      {} as Record<PropstackTextFieldTypeEnum, string>,
     );
 
     (
@@ -142,7 +160,7 @@ export class PropstackWebhookService {
           propstackApiKey,
           resultProperty.id,
           {
-            ...openAiDescriptions,
+            ...propstackOpenAiDescs,
             // the old iframe link way - left just in case
             // custom_fields: {
             //   objekt_webseiten_url: createDirectLink(token),

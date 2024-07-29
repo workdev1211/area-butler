@@ -60,7 +60,7 @@ import {
 } from '@area-butler-types/integration-user';
 import {
   onOfficeUrlFieldsMapper,
-  openAiQueryTypeToOnOfficeEstateFieldMapping
+  openAiQueryTypeToOnOfficeEstateFieldMapping,
 } from '../../../shared/constants/on-office/on-office-constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
@@ -74,7 +74,8 @@ import { PlaceService } from '../place/place.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { ContingentIntService } from '../user/contingent-int.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
+import { openAiLocDescTypes } from '../../../shared/constants/open-ai';
 
 @Injectable()
 export class OnOfficeService {
@@ -586,11 +587,7 @@ export class OnOfficeService {
 
     if (
       !resExportMatchParams &&
-      [
-        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-      ].includes(exportType as OpenAiQueryTypeEnum)
+      openAiLocDescTypes.includes(exportType as TOpenAiLocDescType)
     ) {
       resExportMatchParams = {
         fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],

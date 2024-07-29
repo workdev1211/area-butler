@@ -10,7 +10,7 @@ import { Transform } from 'class-transformer';
 
 import {
   ApiOpenAiQueryTypesEnum,
-  IApiQueryOpenAiExtReq,
+  IOpenAiExtQueryReq,
 } from '../../shared/types/external-api';
 import ApiFetchPoiDataReqDto from '../../location/dto/api-fetch-poi-data-req.dto';
 import {
@@ -24,7 +24,7 @@ import { getEnumValidMessage } from '../../shared/functions/validation';
 
 class ApiOpenAiExtQueryReqDto
   extends ApiFetchPoiDataReqDto
-  implements IApiQueryOpenAiExtReq
+  implements IOpenAiExtQueryReq
 {
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,

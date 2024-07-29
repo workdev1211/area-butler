@@ -2,36 +2,24 @@ import { Controller, Get, HttpException, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectUser } from '../user/inject-user.decorator';
-import { OpenAiService } from './open-ai.service';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import ApiOpenAiExtQueryReqDto from './dto/api-open-ai-ext-query-req.dto';
-import { LocationExtService } from '../location/location-ext.service';
+import { ResultStatusEnum } from '@area-butler-types/types';
 import {
-  ApiSearchResultSnapshotResponse,
-  ResultStatusEnum,
-} from '@area-butler-types/types';
-import {
-  ApiOpenAiQueryTypesEnum,
   ApiUsageStatsTypesEnum,
-  IApiQueryOpenAiExtReqStatus,
-  IApiQueryOpenAiExtRes,
+  IApiOpenAiExtQueryReqStatus,
+  IOpenAiExtQueryRes,
 } from '../shared/types/external-api';
-import { defaultRealEstType } from '../../../shared/constants/open-ai';
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
-import { PlaceService } from '../place/place.service';
-import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
+import { OpenAiExtService } from './open-ai-ext.service';
 
 @ApiTags('open-ai', 'api')
 @Controller('api/open-ai-ext')
 export class OpenAiExtController extends ApiKeyAuthController {
   constructor(
-    private readonly locationExtService: LocationExtService,
-    private readonly openAiApiService: OpenAiApiService,
-    private readonly openAiService: OpenAiService,
-    private readonly placeService: PlaceService,
+    private readonly openAiExtService: OpenAiExtService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -39,124 +27,21 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
   @ApiOperation({ description: 'Fetch Open AI response' })
   @Get('query')
-  async fetchResponse(
+  async fetchQuery(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query()
-    queryOpenAiRes: ApiOpenAiExtQueryReqDto,
-  ): Promise<IApiQueryOpenAiExtRes | string> {
-    const {
-      queryType,
-      tonality,
-      maxTextLength,
-      language,
-      lat,
-      lng,
-      address,
-      transportMode,
-      distance,
-      unit,
-      price,
-      priceType,
-      housingArea: realEstateSizeInSquareMeters,
-      totalArea: propertySizeInSquareMeters,
-      energyEfficiency,
-      furnishing,
-    } = queryOpenAiRes;
-
-    const requestStatus: IApiQueryOpenAiExtReqStatus = {
+    openAiQueryReqDto: ApiOpenAiExtQueryReqDto,
+  ): Promise<IOpenAiExtQueryRes | string> {
+    const requestStatus: IApiOpenAiExtQueryReqStatus = {
       status: ResultStatusEnum.SUCCESS,
-      queryParams: queryOpenAiRes,
+      queryParams: openAiQueryReqDto,
     };
 
     try {
-      // TODO move all complex logic to a separate OpenAI service
-      const place = await this.placeService.fetchPlaceOrFail({
-        user,
-        location: address || { lat, lng },
-      });
+      const { coordinates, queryResp } =
+        await this.openAiExtService.fetchExtQuery(user, openAiQueryReqDto);
 
-      const coordinates = place.geometry.location;
-      const resultingAddress = address || place.formatted_address;
       Object.assign(requestStatus, { coordinates });
-
-      const realEstate: Partial<ApiRealEstateListing> = {
-        address: resultingAddress,
-        characteristics: {
-          realEstateSizeInSquareMeters,
-          propertySizeInSquareMeters,
-          energyEfficiency,
-          furnishing,
-        },
-        costStructure: {
-          price: { amount: price, currency: '€' },
-          type: priceType,
-        },
-      };
-
-      let queryResp: string;
-
-      switch (queryType) {
-        case ApiOpenAiQueryTypesEnum.LOC_DESC:
-        case ApiOpenAiQueryTypesEnum.LOC_EST_DESC: {
-          const poiData = await this.locationExtService.fetchPoiData({
-            transportMode,
-            distance,
-            unit,
-            coordinates,
-          });
-
-          const snapshotRes = {
-            realEstate,
-            snapshot: {
-              location: coordinates,
-              placesLocation: { label: resultingAddress },
-              searchResponse: {
-                routingProfiles: {
-                  [transportMode]: { locationsOfInterest: poiData },
-                },
-              },
-            },
-          } as ApiSearchResultSnapshotResponse;
-
-          queryResp =
-            queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
-              ? await this.openAiService.fetchLocDesc(user, {
-                  language,
-                  snapshotRes,
-                  tonality,
-                  meanOfTransportation: transportMode,
-                })
-              : await this.openAiService.fetchLocRealEstDesc(user, {
-                  language,
-                  snapshotRes,
-                  tonality,
-                  meanOfTransportation: transportMode,
-                  realEstateType: defaultRealEstType,
-                });
-
-          break;
-        }
-
-        case ApiOpenAiQueryTypesEnum.EST_DESC: {
-          queryResp = await this.openAiService.fetchRealEstDesc(user, {
-            language,
-            realEstate,
-            tonality,
-            realEstateType: defaultRealEstType,
-          });
-        }
-      }
-
-      if (queryResp.length > maxTextLength) {
-        queryResp =
-          `Fasse den folgenden Text so zusammen, dass er nicht länger als ${maxTextLength} Zeichen lang ist! Lasse die Tonalität hierbei unverändert.\n` +
-          (language
-            ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
-            : '') +
-          queryResp;
-
-        queryResp = await this.openAiApiService.fetchResponse(queryResp);
-      }
 
       return {
         input: { coordinates },

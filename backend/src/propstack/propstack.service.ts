@@ -40,10 +40,8 @@ import {
   IApiPropstackLoginQueryParams,
   IApiPropstackLoginReq,
   PropstackActionTypeEnum,
-  PropstackTextFieldTypeEnum,
 } from '@area-butler-types/propstack';
 import {
-  propstackExportTypeMapper,
   propstackOpenAiFieldMapper,
   propstackPropertyMarketTypeNames,
   propstackUrlFieldsMapper,
@@ -53,28 +51,15 @@ import { PlaceService } from '../place/place.service';
 import {
   ApiSearchResultSnapshotResponse,
   AreaButlerExportTypesEnum,
-  MeansOfTransportation,
 } from '@area-butler-types/types';
-import { LocationService } from '../location/location.service';
-import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 import {
   OpenAiQueryTypeEnum,
-  OpenAiTonalityEnum,
+  TOpenAiLocDescType,
 } from '@area-butler-types/open-ai';
-import { defaultRealEstType } from '../../../shared/constants/open-ai';
-import { UserDocument } from '../user/schema/user.schema';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { ContingentIntService } from '../user/contingent-int.service';
-import { OpenAiService } from '../open-ai/open-ai.service';
-
-interface IPropstackFetchTextFieldValues {
-  realEstateId: string;
-  snapshotId: string;
-  user: UserDocument | TIntegrationUserDocument;
-  eventId?: string; // only for the webhook events
-  targetGroupName?: string;
-}
+import { openAiLocDescTypes } from '../../../shared/constants/open-ai';
 
 @Injectable()
 export class PropstackService {
@@ -86,11 +71,9 @@ export class PropstackService {
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly httpService: HttpService,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly locationService: LocationService,
     private readonly placeService: PlaceService,
     private readonly propstackApiService: PropstackApiService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly openAiService: OpenAiService,
   ) {}
 
   async connect({
@@ -268,7 +251,7 @@ export class PropstackService {
       isChild: !!parentId,
       openAiQueryType:
         target === PropstackActionTypeEnum.GENERATE_TEXT
-          ? propstackOpenAiFieldMapper[fieldName]
+          ? (propstackOpenAiFieldMapper.get(fieldName) as OpenAiQueryTypeEnum)
           : undefined,
     };
   }
@@ -319,14 +302,12 @@ export class PropstackService {
 
     if (
       !resExportMatchParams &&
-      [
-        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-      ].includes(exportType as OpenAiQueryTypeEnum)
+      openAiLocDescTypes.includes(exportType as TOpenAiLocDescType)
     ) {
       resExportMatchParams = {
-        fieldId: propstackExportTypeMapper[exportType],
+        fieldId: propstackOpenAiFieldMapper.get(
+          exportType as TOpenAiLocDescType,
+        ),
         maxTextLength: defaultMaxTextLength,
       };
     }
@@ -620,76 +601,5 @@ export class PropstackService {
       decipher.update(Buffer.from(accessToken, 'hex')),
       decipher.final(),
     ]).toString();
-  }
-
-  async fetchTextFieldValues({
-    eventId,
-    realEstateId,
-    snapshotId,
-    user,
-    targetGroupName = defaultTargetGroupName,
-  }: IPropstackFetchTextFieldValues): Promise<
-    Partial<Record<PropstackTextFieldTypeEnum, string>>
-  > {
-    const fetchOpenAiDescription = async (
-      fetchDescription: Promise<string>,
-      descriptionName: PropstackTextFieldTypeEnum,
-    ): Promise<{ [p: string]: string }> => {
-      return { [descriptionName]: await fetchDescription };
-    };
-
-    const openAiQueryResults = await Promise.allSettled([
-      fetchOpenAiDescription(
-        this.openAiService.fetchLocDesc(user, {
-          snapshotId,
-          targetGroupName,
-          meanOfTransportation: MeansOfTransportation.WALK,
-          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
-        }),
-        PropstackTextFieldTypeEnum.LOCATION_NOTE,
-      ),
-      fetchOpenAiDescription(
-        this.openAiService.fetchRealEstDesc(user, {
-          realEstateId,
-          targetGroupName,
-          realEstateType: defaultRealEstType,
-          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
-        }),
-        PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
-      ),
-      fetchOpenAiDescription(
-        this.openAiService.fetchLocRealEstDesc(user, {
-          realEstateId,
-          snapshotId,
-          targetGroupName,
-          meanOfTransportation: MeansOfTransportation.WALK,
-          realEstateType: defaultRealEstType,
-          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
-        }),
-        PropstackTextFieldTypeEnum.OTHER_NOTE,
-      ),
-    ]);
-
-    // this.logger.verbose(
-    //   `Event ${eventId} continues to be processed for ${dayjs
-    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-    //     .humanize()}. Fetching of OpenAi descriptions is complete.`,
-    // );
-
-    return openAiQueryResults.reduce<
-      Partial<Record<PropstackTextFieldTypeEnum, string>>
-    >((result, queryResult) => {
-      if (queryResult.status === 'fulfilled') {
-        Object.assign(result, { ...queryResult.value });
-      } else {
-        const fetchErrorMessage = `The following error has occurred on fetching OpenAi descriptions: ${queryResult.reason}.`;
-
-        PropstackService.logger.error(
-          eventId ? `Event ${eventId}. ` : '' + fetchErrorMessage,
-        );
-      }
-
-      return result;
-    }, {});
   }
 }

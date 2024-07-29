@@ -1,12 +1,14 @@
 import {
   OpenAiCustomTextEnum,
-  OpenAiOsmQueryNameEnum,
   OpenAiQueryTypeEnum,
   OpenAiRealEstTypesEnum,
   OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
+  TOpenAiLocDescType,
 } from "../types/open-ai";
 import { ISelectTextValue, OsmName } from "../types/types";
+
+// TODO translation required
 
 export const openAiTranslationDictionary: Record<
   OsmName,
@@ -141,39 +143,40 @@ export const openAiQueryTypes: Array<{
   },
 ];
 
-export const osmNameToOsmQueryNameMapping: Partial<
-  Record<OsmName, OpenAiOsmQueryNameEnum>
-> = {
-  [OsmName.bus_stop]: OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT,
-  [OsmName.station]: OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT,
-  [OsmName.motorway_link]: OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS,
-  [OsmName.charging_station]: OpenAiOsmQueryNameEnum.CHARGING_STATIONS,
-  [OsmName.fuel]: OpenAiOsmQueryNameEnum.GAS_STATIONS,
-  [OsmName.supermarket]: OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES,
-  [OsmName.chemist]: OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES,
-  [OsmName.kindergarten]: OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN,
-  [OsmName.school]: OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN,
-  [OsmName.university]: OpenAiOsmQueryNameEnum.UNIVERSITIES,
-  [OsmName.playground]: OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS,
-  [OsmName.park]: OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS,
-  [OsmName.bar]: OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS,
-  [OsmName.restaurant]: OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS,
-  [OsmName.theatre]: OpenAiOsmQueryNameEnum.THEATERS,
-  [OsmName.fitness_centre]: OpenAiOsmQueryNameEnum.SPORTS,
-  [OsmName.sports_centre]: OpenAiOsmQueryNameEnum.SPORTS,
-  [OsmName.sports_hall]: OpenAiOsmQueryNameEnum.SPORTS,
-  [OsmName.swimming_pool]: OpenAiOsmQueryNameEnum.SWIMMING_POOLS,
-  [OsmName.doctors]: OpenAiOsmQueryNameEnum.DOCTORS,
-  [OsmName.dentist]: OpenAiOsmQueryNameEnum.DOCTORS,
-  [OsmName.clinic]: OpenAiOsmQueryNameEnum.DOCTORS,
-  [OsmName.pharmacy]: OpenAiOsmQueryNameEnum.PHARMACIES,
-  [OsmName.hospital]: OpenAiOsmQueryNameEnum.HOSPITALS,
-  [OsmName.attraction]: OpenAiOsmQueryNameEnum.SIGHTS,
-};
-
-export const minCharacterNumber = 1500;
-export const maxCharacterNumber = 6000;
-export const defaultCharacterNumber = 4000;
+// Could be needed in the future
+// export const osmNameToOsmQueryNameMapping: Partial<
+//   Record<OsmName, OpenAiOsmQueryNameEnum>
+// > = {
+//   [OsmName.bus_stop]: OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT,
+//   [OsmName.station]: OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT,
+//   [OsmName.motorway_link]: OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS,
+//   [OsmName.charging_station]: OpenAiOsmQueryNameEnum.CHARGING_STATIONS,
+//   [OsmName.fuel]: OpenAiOsmQueryNameEnum.GAS_STATIONS,
+//   [OsmName.supermarket]: OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES,
+//   [OsmName.chemist]: OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES,
+//   [OsmName.kindergarten]: OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN,
+//   [OsmName.school]: OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN,
+//   [OsmName.university]: OpenAiOsmQueryNameEnum.UNIVERSITIES,
+//   [OsmName.playground]: OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS,
+//   [OsmName.park]: OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS,
+//   [OsmName.bar]: OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS,
+//   [OsmName.restaurant]: OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS,
+//   [OsmName.theatre]: OpenAiOsmQueryNameEnum.THEATERS,
+//   [OsmName.fitness_centre]: OpenAiOsmQueryNameEnum.SPORTS,
+//   [OsmName.sports_centre]: OpenAiOsmQueryNameEnum.SPORTS,
+//   [OsmName.sports_hall]: OpenAiOsmQueryNameEnum.SPORTS,
+//   [OsmName.swimming_pool]: OpenAiOsmQueryNameEnum.SWIMMING_POOLS,
+//   [OsmName.doctors]: OpenAiOsmQueryNameEnum.DOCTORS,
+//   [OsmName.dentist]: OpenAiOsmQueryNameEnum.DOCTORS,
+//   [OsmName.clinic]: OpenAiOsmQueryNameEnum.DOCTORS,
+//   [OsmName.pharmacy]: OpenAiOsmQueryNameEnum.PHARMACIES,
+//   [OsmName.hospital]: OpenAiOsmQueryNameEnum.HOSPITALS,
+//   [OsmName.attraction]: OpenAiOsmQueryNameEnum.SIGHTS,
+// };
+//
+// export const minCharacterNumber = 1500;
+// export const maxCharacterNumber = 6000;
+// export const defaultCharacterNumber = 4000;
 
 export const openAiTextLengthOptions: ISelectTextValue[] = [
   {
@@ -217,3 +220,9 @@ export const openAiRealEstTypeOptions: ISelectTextValue[] = [
 export const defaultRealEstType = openAiRealEstTypeOptions.find(
   ({ value }) => value === OpenAiRealEstTypesEnum.HOUSE
 )!.text;
+
+export const openAiLocDescTypes: TOpenAiLocDescType[] = [
+  OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+  OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+  OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+];

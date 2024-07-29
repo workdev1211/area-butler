@@ -1,6 +1,6 @@
 import { IIntUserExpMatchParams } from "./integration-user";
 import { TApiIntUserProdContType } from "./integration-user";
-import { OpenAiQueryTypeEnum } from "./open-ai";
+import { TOpenAiLocDescType } from "./open-ai";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   ApiIntUserPropstackProdContTypesEnum,
@@ -11,7 +11,6 @@ import {
   AreaButlerExportTypesEnum,
   IApiUploadFileReq,
   ISelectTextValue,
-  ResultStatusEnum,
 } from "./types";
 
 export enum IntegrationTypesEnum {
@@ -136,9 +135,7 @@ export interface IApiRealEstAvailIntStatuses {
 
 export interface IApiIntUpdEstTextFieldReq {
   exportType:
-    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+    | TOpenAiLocDescType
     | AreaButlerExportTypesEnum.INLINE_FRAME
     | AreaButlerExportTypesEnum.EMBEDDED_LINKS;
   integrationId: string;

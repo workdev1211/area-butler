@@ -1,10 +1,10 @@
 import { IsIn, IsNotEmpty } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
 import { IApiPropstackUpdEstTextFieldReq } from '@area-butler-types/propstack';
 import ApiIntUpdEstTextFieldReqDto from '../../dto/integration/api-int-upd-est-text-field-req.dto';
-import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
+import { openAiLocDescTypes } from '../../../../shared/constants/open-ai';
 
 @Exclude()
 class ApiPropstackUpdPropTextFieldReqDto
@@ -13,15 +13,8 @@ class ApiPropstackUpdPropTextFieldReqDto
 {
   @Expose()
   @IsNotEmpty()
-  @IsIn([
-    OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-    OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-    OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-  ])
-  exportType:
-    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION;
+  @IsIn(openAiLocDescTypes)
+  exportType: TOpenAiLocDescType;
 }
 
 export default ApiPropstackUpdPropTextFieldReqDto;

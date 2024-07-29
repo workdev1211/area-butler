@@ -12,6 +12,8 @@ import {
   IApiOpenAiLocDescQuery,
   IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiRealEstDescQuery,
+  OpenAiQueryTypeEnum,
+  TOpenAiLocDescType,
 } from '@area-butler-types/open-ai';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
@@ -145,5 +147,22 @@ export class OpenAiService {
     return this.openAiApiService.fetchResponse(
       this.openAiQueryService.getImprovedText(originalText, customText),
     );
+  }
+
+  async batchFetchLocDescs(
+    user: UserDocument | TIntegrationUserDocument,
+    fetchLocRealEstDescParams: TFetchLocRealEstDescParams,
+  ): Promise<Record<TOpenAiLocDescType, string>> {
+    const [locDesc, locRealEstDesc, realEstDesc] = await Promise.all([
+      this.fetchLocDesc(user, fetchLocRealEstDescParams),
+      this.fetchLocRealEstDesc(user, fetchLocRealEstDescParams),
+      this.fetchRealEstDesc(user, fetchLocRealEstDescParams),
+    ]);
+
+    return {
+      [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: locDesc,
+      [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: locRealEstDesc,
+      [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: realEstDesc,
+    };
   }
 }

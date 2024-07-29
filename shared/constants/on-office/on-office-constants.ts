@@ -1,7 +1,8 @@
-import { OpenAiQueryTypeEnum } from "../../types/open-ai";
+import { OpenAiQueryTypeEnum, TOpenAiLocDescType } from "../../types/open-ai";
 
-export const openAiQueryTypeToOnOfficeEstateFieldMapping: Partial<
-  Record<OpenAiQueryTypeEnum, string>
+export const openAiQueryTypeToOnOfficeEstateFieldMapping: Record<
+  TOpenAiLocDescType,
+  string
 > = {
   [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: "lage",
   [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: "objektbeschreibung",
@@ -9,8 +10,6 @@ export const openAiQueryTypeToOnOfficeEstateFieldMapping: Partial<
 };
 
 export const onOfficeUrlFieldsMapper = {
-  "WITH_ADDRESS": "MPAreaButlerUrlWithAddress",
-  "WITHOUT_ADDRESS": "MPAreaButlerUrlNoAddress"
-}
-
-export const onOfficeOpenAiCharacterLimit = 2000;
+  WITH_ADDRESS: "MPAreaButlerUrlWithAddress",
+  WITHOUT_ADDRESS: "MPAreaButlerUrlNoAddress",
+};

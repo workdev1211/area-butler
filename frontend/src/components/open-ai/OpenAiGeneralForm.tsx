@@ -82,7 +82,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
         ...initialValues,
       }
     : {
-        tonality: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
+        tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
         targetGroupName: defaultTargetGroupName,
         customText: "",
         textLength: isFromOnePage ? undefined : OpenAiTextLengthEnum.MEDIUM,
@@ -145,7 +145,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
                 label={t(IntlKeys.snapshotEditor.dataTab.textTonality)}
                 placeholder={t(IntlKeys.snapshotEditor.dataTab.textTonality)}
                 name="tonality"
-                defaultValue={OpenAiTonalityEnum.EASYGOING_YOUTHFUL}
+                defaultValue={OpenAiTonalityEnum.FORMAL_SERIOUS}
               >
                 {Object.values(OpenAiTonalityEnum).map((tonality) => (
                   <option value={tonality} key={tonality}>

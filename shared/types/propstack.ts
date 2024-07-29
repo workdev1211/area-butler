@@ -1,5 +1,5 @@
 import { IApiIntUpdEstTextFieldReq } from "./integration";
-import { OpenAiQueryTypeEnum } from "./open-ai";
+import { TOpenAiLocDescType } from "./open-ai";
 
 export interface IApiPropstackLoginQueryParams {
   apiKey: string;
@@ -37,10 +37,7 @@ export interface IUploadPropertyImageRes {
 
 export interface IApiPropstackUpdEstTextFieldReq
   extends IApiIntUpdEstTextFieldReq {
-  exportType:
-    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION;
+  exportType: TOpenAiLocDescType;
 }
 
 export enum PropstackActionTypeEnum {

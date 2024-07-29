@@ -10,6 +10,7 @@ import { Observable, tap } from 'rxjs';
 import { RealEstateListingIntService } from '../../real-estate-listing/real-estate-listing-int.service';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { IntegrationActionTypeEnum } from '@area-butler-types/integration';
+import { RealEstateListingDocument } from '../../real-estate-listing/schema/real-estate-listing.schema';
 
 @Injectable()
 export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
@@ -25,17 +26,18 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
     const { integrationId } = req.body;
     const integrationUser: TIntegrationUserDocument = req.principal;
 
-    let realEstate =
-      await this.realEstateListingIntService.findOneOrFailByIntParams({
-        integrationId,
-        integrationType: integrationUser.integrationType,
-        integrationUserId: integrationUser.integrationUserId,
-      });
+    let realEstate: RealEstateListingDocument;
 
-    if (
-      !integrationUser.isSubscriptionActive &&
-      !realEstate.integrationParams.openAiRequestQuantity
-    ) {
+    if (!integrationUser.isSubscriptionActive) {
+      realEstate =
+        await this.realEstateListingIntService.findOneOrFailByIntParams({
+          integrationId,
+          integrationType: integrationUser.integrationType,
+          integrationUserId: integrationUser.integrationUserId,
+        });
+    }
+
+    if (!realEstate.integrationParams.openAiRequestQuantity) {
       await this.realEstateListingIntService.handleProductUnlock(
         integrationUser,
         { integrationId, actionType: IntegrationActionTypeEnum.UNLOCK_OPEN_AI },
