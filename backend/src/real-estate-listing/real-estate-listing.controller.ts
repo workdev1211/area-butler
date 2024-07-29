@@ -32,7 +32,6 @@ import {
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatEnum } from '@area-butler-types/types';
-import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 import { Role, Roles } from '../auth/role/roles.decorator';
@@ -174,18 +173,6 @@ export class RealEstateListingController extends AuthenticatedController {
       type: contentType,
       disposition: `attachment; filename="example.${fileType}"`,
     });
-  }
-
-  @ApiOperation({ description: 'Fetch Open AI real estate description' })
-  @Post('open-ai-real-estate-desc')
-  fetchOpenAiRealEstDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
-  ): Promise<string> {
-    return this.realEstateListingService.fetchOpenAiRealEstateDesc(
-      user,
-      realEstDescQueryDto,
-    );
   }
 
   @ApiOperation({ description: 'Import real estates from a specified CRM' })

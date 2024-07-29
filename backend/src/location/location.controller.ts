@@ -20,8 +20,6 @@ import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
-import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
@@ -157,32 +155,5 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
   ): Promise<IApiLateSnapConfigOption[]> {
     return this.locationService.fetchLastSnapConfigs(user, limitNumber);
-  }
-
-  @ApiOperation({ description: 'Fetch Open AI location description' })
-  @Post('open-ai-loc-desc')
-  fetchOpenAiLocationDescription(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
-  ): Promise<string> {
-    return this.locationService.fetchOpenAiLocationDescription(
-      user,
-      locationDescriptionQuery,
-    );
-  }
-
-  @ApiOperation({
-    description: 'Fetch Open AI location and real estate description',
-  })
-  @Post('open-ai-loc-real-est-desc')
-  fetchOpenAiLocRealEstDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body()
-    locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
-  ): Promise<string> {
-    return this.locationService.fetchOpenAiLocRealEstDesc(
-      user,
-      locRealEstDescQueryQuery,
-    );
   }
 }

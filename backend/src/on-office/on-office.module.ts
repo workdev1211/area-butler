@@ -10,7 +10,6 @@ import {
   OnOfficeTransaction,
   OnOfficeTransactionSchema,
 } from './schema/on-office-transaction.schema';
-import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 import { PlaceModule } from '../place/place.module';
 import { OnOfficeWebhookController } from './on-office-webhook.controller';
 
@@ -19,7 +18,6 @@ import { OnOfficeWebhookController } from './on-office-webhook.controller';
     ClientModule,
     LocationModule,
     PlaceModule,
-    RealEstateListingModule,
     UserModule,
     MongooseModule.forFeature([
       { name: OnOfficeTransaction.name, schema: OnOfficeTransactionSchema },

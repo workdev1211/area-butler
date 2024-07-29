@@ -56,7 +56,6 @@ import {
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import { LocationService } from '../location/location.service';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 import {
   OpenAiQueryTypeEnum,
@@ -67,6 +66,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { ContingentIntService } from '../user/contingent-int.service';
+import { OpenAiService } from '../open-ai/open-ai.service';
 
 interface IPropstackFetchTextFieldValues {
   realEstateId: string;
@@ -90,7 +90,7 @@ export class PropstackService {
     private readonly placeService: PlaceService,
     private readonly propstackApiService: PropstackApiService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly realEstateListingService: RealEstateListingService,
+    private readonly openAiService: OpenAiService,
   ) {}
 
   async connect({
@@ -135,6 +135,7 @@ export class PropstackService {
     { integrationId, publicLinkParams, exportType }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
     const { parameters } = integrationUser;
+
     publicLinkParams.map(({ title, url, isLinkEntity, isAddressShown }) => {
       if (
         integrationUser.config.exportMatching[
@@ -585,7 +586,7 @@ export class PropstackService {
     return integrationUser.save();
   }
 
-  static encryptAccessToken(accessToken: string): string {
+  static encryptAccessToken(apiKey: string): string {
     // left just in case to explain how the new keys are generated
     // const key =
     //   configService.getPropstackLoginSecret() ||
@@ -597,7 +598,7 @@ export class PropstackService {
       null,
     );
 
-    return Buffer.concat([cipher.update(accessToken), cipher.final()]).toString(
+    return Buffer.concat([cipher.update(apiKey), cipher.final()]).toString(
       'hex',
     );
   }
@@ -639,7 +640,7 @@ export class PropstackService {
 
     const openAiQueryResults = await Promise.allSettled([
       fetchOpenAiDescription(
-        this.locationService.fetchOpenAiLocationDescription(user, {
+        this.openAiService.fetchLocDesc(user, {
           snapshotId,
           targetGroupName,
           meanOfTransportation: MeansOfTransportation.WALK,
@@ -648,7 +649,7 @@ export class PropstackService {
         PropstackTextFieldTypeEnum.LOCATION_NOTE,
       ),
       fetchOpenAiDescription(
-        this.realEstateListingService.fetchOpenAiRealEstateDesc(user, {
+        this.openAiService.fetchRealEstDesc(user, {
           realEstateId,
           targetGroupName,
           realEstateType: defaultRealEstType,
@@ -657,7 +658,7 @@ export class PropstackService {
         PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
       ),
       fetchOpenAiDescription(
-        this.locationService.fetchOpenAiLocRealEstDesc(user, {
+        this.openAiService.fetchLocRealEstDesc(user, {
           realEstateId,
           snapshotId,
           targetGroupName,

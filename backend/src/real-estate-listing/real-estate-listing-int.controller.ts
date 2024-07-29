@@ -12,12 +12,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RealEstateListingService } from './real-estate-listing.service';
 import { InjectUser } from '../user/inject-user.decorator';
-import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
-import { InjectRealEstateListing } from './inject-real-estate-listing.decorator';
-import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import ApiUnlockIntProductReqDto from './dto/api-unlock-int-product-req.dto';
 import {
@@ -50,24 +46,6 @@ export class RealEstateListingIntController {
       )
     ).map((realEstate) =>
       mapRealEstateListingToApiRealEstateListing(integrationUser, realEstate),
-    );
-  }
-
-  @ApiOperation({ description: 'Fetch Open AI real estate description' })
-  @UseInterceptors(
-    InjectIntegrationUserInterceptor,
-    ProcessOpenAiIntUsageInterceptor,
-  )
-  @Post('open-ai-real-estate-desc')
-  fetchOpenAiRealEstateDescription(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
-    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
-  ): Promise<string> {
-    return this.realEstateListingService.fetchOpenAiRealEstateDesc(
-      integrationUser,
-      realEstateDescriptionQuery,
-      realEstateListing,
     );
   }
 

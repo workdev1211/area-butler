@@ -22,7 +22,6 @@ import { RoutingService } from '../routing/routing.service';
 import { HttpModule } from '@nestjs/axios';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { LocationExtController } from './location-ext.controller';
-import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntController } from './location-int.controller';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { LocationExtService } from './location-ext.service';
@@ -39,8 +38,8 @@ import { LocationMyvController } from './location-myv.controller';
     ClientModule,
     DataProvisionModule,
     HttpModule,
-    OpenAiModule,
     PlaceModule,
+    // TODO think about complete removal of the 'realEstateListingIntService' from 'LocationModule'
     RealEstateListingModule,
     UserModule,
     MongooseModule.forFeature([
@@ -73,6 +72,7 @@ import { LocationMyvController } from './location-myv.controller';
     LocationService,
     SnapshotExtService,
     SnapshotService,
+    RealEstateListingModule,
   ],
 })
 export class LocationModule {}

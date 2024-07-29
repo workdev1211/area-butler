@@ -9,7 +9,6 @@ import {
   RealEstateListingSchema,
 } from './schema/real-estate-listing.schema';
 import { ClientModule } from '../client/client.module';
-import { OpenAiModule } from '../open-ai/open-ai.module';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import { RealEstateListingIntController } from './real-estate-listing-int.controller';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
@@ -23,7 +22,6 @@ import { PlaceModule } from '../place/place.module';
   imports: [
     ClientModule,
     DataProvisionModule,
-    OpenAiModule,
     PlaceModule,
     UserModule,
     MongooseModule.forFeature([

@@ -8,15 +8,18 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { SubscriptionService } from '../user/subscription.service';
-import ApiOpenAiImproveTextQueryDto from '../location/dto/api-open-ai-improve-text-query.dto';
-
-// TODO think about moving all external OpenAI methods to the OpenAI controller
+import ApiOpenAiImproveTextQueryDto from './dto/api-open-ai-improve-text-query.dto';
+import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
+import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
+import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
+import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai')
 export class OpenAiController extends AuthenticatedController {
   constructor(
     private readonly subscriptionService: SubscriptionService,
+    private readonly openAiApiService: OpenAiApiService,
     private readonly openAiService: OpenAiService,
   ) {
     super();
@@ -25,46 +28,73 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({
     description: 'Fetch Open AI text improvement',
   })
-  @Post('open-ai-improve-text')
-  async fetchOpenAiImproveText(
+  @Post('improve-text')
+  async fetchImprovedText(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() { originalText, customText }: ApiOpenAiImproveTextQueryDto,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
-
-    const queryText = this.openAiService.getImproveText(
-      originalText,
-      customText,
-    );
-    return this.openAiService.fetchResponse(queryText);
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchImprovedText(originalText, customText);
   }
 
   @ApiOperation({ description: 'Fetch Open AI response' })
   @Post('query')
-  async fetchResponse(
+  async fetchQuery(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() { text, isFormalToInformal }: ApiOpenAiQueryDto,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
+    this.checkIsOpenAiAvail(user);
+
+    return isFormalToInformal
+      ? this.openAiService.fetchFormToInform(text)
+      : this.openAiApiService.fetchResponse(text);
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI location description' })
+  @Post('loc-desc')
+  async fetchLocDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchLocDesc(user, locationDescriptionQuery);
+  }
+
+  @ApiOperation({
+    description: 'Fetch Open AI location and real estate description',
+  })
+  @Post('loc-real-est-desc')
+  async fetchLocRealEstDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body()
+    locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+
+    return this.openAiService.fetchLocRealEstDesc(
+      user,
+      locRealEstDescQueryQuery,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @Post('real-est-desc')
+  async fetchRealEstDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchRealEstDesc(user, realEstDescQueryDto);
+  }
+
+  // TODO think about moving the check to the UserSubscriptionPipe
+  private checkIsOpenAiAvail(user: UserDocument): void {
+    this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
       (subscriptionPlan) =>
         !user.subscription?.appFeatures?.openAi &&
         !subscriptionPlan.appFeatures.openAi,
       'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
     );
-
-    const queryText = isFormalToInformal
-      ? this.openAiService.getFormToInformQuery(text)
-      : text;
-
-    return this.openAiService.fetchResponse(queryText);
   }
 }

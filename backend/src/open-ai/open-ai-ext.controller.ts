@@ -6,7 +6,7 @@ import { OpenAiService } from './open-ai.service';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import ApiQueryOpenAiExtReqDto from './dto/api-query-open-ai-ext-req.dto';
+import ApiOpenAiExtQueryReqDto from './dto/api-open-ai-ext-query-req.dto';
 import { LocationExtService } from '../location/location-ext.service';
 import {
   ApiSearchResultSnapshotResponse,
@@ -18,19 +18,18 @@ import {
   IApiQueryOpenAiExtReqStatus,
   IApiQueryOpenAiExtRes,
 } from '../shared/types/external-api';
-import {
-  defaultRealEstType,
-  openAiTonalities,
-} from '../../../shared/constants/open-ai';
+import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { PlaceService } from '../place/place.service';
+import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
 
 @ApiTags('open-ai', 'api')
 @Controller('api/open-ai-ext')
 export class OpenAiExtController extends ApiKeyAuthController {
   constructor(
     private readonly locationExtService: LocationExtService,
+    private readonly openAiApiService: OpenAiApiService,
     private readonly openAiService: OpenAiService,
     private readonly placeService: PlaceService,
     private readonly usageStatisticsService: UsageStatisticsService,
@@ -43,7 +42,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
   async fetchResponse(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query()
-    queryOpenAiRes: ApiQueryOpenAiExtReqDto,
+    queryOpenAiRes: ApiOpenAiExtQueryReqDto,
   ): Promise<IApiQueryOpenAiExtRes | string> {
     const {
       queryType,
@@ -78,7 +77,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
       const coordinates = place.geometry.location;
       const resultingAddress = address || place.formatted_address;
-      const resultingTonality = openAiTonalities[tonality];
+      Object.assign(requestStatus, { coordinates });
 
       const realEstate: Partial<ApiRealEstateListing> = {
         address: resultingAddress,
@@ -94,7 +93,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
         },
       };
 
-      let query: string;
+      let queryResp: string;
 
       switch (queryType) {
         case ApiOpenAiQueryTypesEnum.LOC_DESC:
@@ -119,53 +118,49 @@ export class OpenAiExtController extends ApiKeyAuthController {
             },
           } as ApiSearchResultSnapshotResponse;
 
-          query =
+          queryResp =
             queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
-              ? await this.openAiService.getLocDescQuery(user, {
-                  snapshotRes,
+              ? await this.openAiService.fetchLocDesc(user, {
                   language,
+                  snapshotRes,
+                  tonality,
                   meanOfTransportation: transportMode,
-                  tonality: resultingTonality,
                 })
-              : await this.openAiService.getLocRealEstDescQuery(user, {
-                  snapshotRes,
+              : await this.openAiService.fetchLocRealEstDesc(user, {
                   language,
+                  snapshotRes,
+                  tonality,
                   meanOfTransportation: transportMode,
                   realEstateType: defaultRealEstType,
-                  tonality: resultingTonality,
                 });
 
           break;
         }
 
         case ApiOpenAiQueryTypesEnum.EST_DESC: {
-          query = this.openAiService.getRealEstDescQuery({
-            realEstate,
+          queryResp = await this.openAiService.fetchRealEstDesc(user, {
             language,
+            realEstate,
+            tonality,
             realEstateType: defaultRealEstType,
-            tonality: resultingTonality,
           });
         }
       }
 
-      Object.assign(requestStatus, { coordinates });
-
-      let response = await this.openAiService.fetchResponse(query);
-
-      if (response.length > maxTextLength) {
-        query =
+      if (queryResp.length > maxTextLength) {
+        queryResp =
           `Fasse den folgenden Text so zusammen, dass er nicht länger als ${maxTextLength} Zeichen lang ist! Lasse die Tonalität hierbei unverändert.\n` +
           (language
             ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
             : '') +
-          response;
+          queryResp;
 
-        response = await this.openAiService.fetchResponse(query);
+        queryResp = await this.openAiApiService.fetchResponse(queryResp);
       }
 
       return {
         input: { coordinates },
-        result: response,
+        result: queryResp,
       };
     } catch (e) {
       requestStatus.status = ResultStatusEnum.FAILURE;

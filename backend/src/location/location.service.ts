@@ -45,13 +45,6 @@ import {
   IApiSubscriptionLimitAmount,
 } from '@area-butler-types/subscription-plan';
 import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
-import { openAiTonalities } from '../../../shared/constants/open-ai';
-import {
-  IApiOpenAiLocDescQuery,
-  IApiOpenAiLocRealEstDescQuery,
-} from '@area-butler-types/open-ai';
-import { OpenAiService } from '../open-ai/open-ai.service';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
@@ -71,11 +64,9 @@ export class LocationService {
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly integrationUserService: IntegrationUserService,
     private readonly isochroneService: IsochroneService,
-    private readonly openAiService: OpenAiService,
     private readonly overpassDataService: OverpassDataService,
     private readonly overpassService: OverpassService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
     private readonly userService: UserService,
   ) {}
@@ -487,92 +478,5 @@ export class LocationService {
         );
       }
     }
-  }
-
-  async fetchOpenAiLocationDescription(
-    user: UserDocument | TIntegrationUserDocument,
-    {
-      customText,
-      isForOnePage,
-      meanOfTransportation,
-      snapshotId,
-      targetGroupName,
-      textLength,
-      tonality,
-    }: IApiOpenAiLocDescQuery,
-  ): Promise<string> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      // TODO think about moving everything to the UserSubscriptionPipe
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.openAi &&
-          !subscriptionPlan.appFeatures.openAi,
-        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const snapshotRes = await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
-      user,
-      snapshotId,
-      false,
-    );
-
-    const queryText = await this.openAiService.getLocDescQuery(user, {
-      customText,
-      isForOnePage,
-      meanOfTransportation,
-      snapshotRes,
-      targetGroupName,
-      textLength,
-      tonality: openAiTonalities[tonality],
-    });
-
-    return this.openAiService.fetchResponse(queryText);
-  }
-
-  async fetchOpenAiLocRealEstDesc(
-    user: UserDocument | TIntegrationUserDocument,
-    {
-      customText,
-      meanOfTransportation,
-      realEstateType,
-      snapshotId,
-      targetGroupName,
-      textLength,
-      tonality,
-    }: IApiOpenAiLocRealEstDescQuery,
-  ): Promise<string> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      // TODO think about moving everything to the UserSubscriptionPipe
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.openAi &&
-          !subscriptionPlan.appFeatures.openAi,
-        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const snapshotRes = await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
-      user,
-      snapshotId,
-    );
-
-    const queryText = await this.openAiService.getLocRealEstDescQuery(user, {
-      customText,
-      meanOfTransportation,
-      realEstateType,
-      snapshotRes,
-      targetGroupName,
-      textLength,
-      tonality: openAiTonalities[tonality],
-    });
-
-    return this.openAiService.fetchResponse(queryText);
   }
 }

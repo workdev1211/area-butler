@@ -6,13 +6,20 @@ import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
-import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
-import ApiOpenAiImproveTextQueryDto from '../location/dto/api-open-ai-improve-text-query.dto';
+import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
+import ApiOpenAiImproveTextQueryDto from './dto/api-open-ai-improve-text-query.dto';
+import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
+import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
+import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
+import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai-int')
 export class OpenAiIntController {
-  constructor(private readonly openAiService: OpenAiService) {}
+  constructor(
+    private readonly openAiApiService: OpenAiApiService,
+    private readonly openAiService: OpenAiService,
+  ) {}
 
   @ApiOperation({
     description: 'Fetch Open AI text improvement',
@@ -21,17 +28,12 @@ export class OpenAiIntController {
     InjectIntegrationUserInterceptor,
     ProcessOpenAiIntUsageInterceptor,
   )
-  @Post('open-ai-improve-text')
-  fetchOpenAiImproveText(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
+  @Post('improve-text')
+  fetchImprovedText(
     @Body()
     { originalText, customText }: ApiOpenAiImproveTextQueryDto,
   ): Promise<string> {
-    const queryText = this.openAiService.getImproveText(
-      originalText,
-      customText,
-    );
-    return this.openAiService.fetchResponse(queryText);
+    return this.openAiService.fetchImprovedText(originalText, customText);
   }
 
   @ApiOperation({ description: 'Fetch Open AI response' })
@@ -40,15 +42,63 @@ export class OpenAiIntController {
     ProcessOpenAiIntUsageInterceptor,
   )
   @Post('query')
-  async fetchResponse(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
+  fetchQuery(
     @Body()
     { text, isFormalToInformal }: ApiOpenAiQueryDto,
   ): Promise<string> {
-    const queryText = isFormalToInformal
-      ? this.openAiService.getFormToInformQuery(text)
-      : text;
+    return isFormalToInformal
+      ? this.openAiService.fetchFormToInform(text)
+      : this.openAiApiService.fetchResponse(text);
+  }
 
-    return this.openAiService.fetchResponse(queryText);
+  @ApiOperation({ description: 'Fetch Open AI location description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('loc-desc')
+  fetchLocDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchLocDesc(
+      integrationUser,
+      locationDescriptionQuery,
+    );
+  }
+
+  @ApiOperation({
+    description: 'Fetch Open AI location and real estate description',
+  })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('loc-real-est-desc')
+  fetchLocRealEstDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body()
+    locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchLocRealEstDesc(
+      integrationUser,
+      locRealEstDescQueryQuery,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('real-est-desc')
+  fetchRealEstDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchRealEstDesc(
+      integrationUser,
+      realEstateDescriptionQuery,
+    );
   }
 }

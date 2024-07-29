@@ -22,7 +22,7 @@ import {
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { getEnumValidMessage } from '../../shared/functions/validation';
 
-class ApiQueryOpenAiExtReqDto
+class ApiOpenAiExtQueryReqDto
   extends ApiFetchPoiDataReqDto
   implements IApiQueryOpenAiExtReq
 {
@@ -116,4 +116,4 @@ class ApiQueryOpenAiExtReqDto
   furnishing?: ApiFurnishing[];
 }
 
-export default ApiQueryOpenAiExtReqDto;
+export default ApiOpenAiExtQueryReqDto;

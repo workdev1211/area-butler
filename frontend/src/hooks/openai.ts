@@ -63,6 +63,7 @@ export const useOpenAi = () => {
       }
     }
 
+    // required only for the proper request number count
     if (isIntegration) {
       resOpenAiQuery.integrationId = realEstateListing.integrationId;
     }
@@ -72,29 +73,29 @@ export const useOpenAi = () => {
     switch (openAiQueryType) {
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
         url = isIntegration
-          ? "/api/location-int/open-ai-loc-desc"
-          : "/api/location/open-ai-loc-desc";
+          ? "/api/open-ai-int/loc-desc"
+          : "/api/open-ai/loc-desc";
         break;
       }
 
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
         url = isIntegration
-          ? "/api/real-estate-listing-int/open-ai-real-estate-desc"
-          : "/api/real-estate-listing/open-ai-real-estate-desc";
+          ? "/api/open-ai-int/real-est-desc"
+          : "/api/open-ai/real-est-desc";
         break;
       }
 
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
         url = isIntegration
-          ? "/api/location-int/open-ai-loc-real-est-desc"
-          : "/api/location/open-ai-loc-real-est-desc";
+          ? "/api/open-ai-int/loc-real-est-desc"
+          : "/api/open-ai/loc-real-est-desc";
         break;
       }
 
       case OpenAiQueryTypeEnum.IMPROVE_TEXT: {
         url = isIntegration
-          ? "/api/open-ai-int/open-ai-improve-text"
-          : "/api/open-ai/open-ai-improve-text";
+          ? "/api/open-ai-int/improve-text"
+          : "/api/open-ai/improve-text";
         break;
       }
 

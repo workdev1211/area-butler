@@ -12,17 +12,13 @@ import {
   IApiRealEstateListingSchema,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
-import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
-import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import {
   ApiCoordinates,
   ApiGeometry,
   ResultStatusEnum,
 } from '@area-butler-types/types';
-import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { getProcUpdateQuery } from '../shared/functions/shared';
 
 interface IFetchByLocationParams {
@@ -41,7 +37,6 @@ export class RealEstateListingService {
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly subscriptionService: SubscriptionService,
-    private readonly openAiService: OpenAiService,
     private readonly locationIndexService: LocationIndexService,
   ) {}
 
@@ -263,46 +258,6 @@ export class RealEstateListingService {
     }
 
     await existingListing.deleteOne();
-  }
-
-  async fetchOpenAiRealEstateDesc(
-    user: UserDocument | TIntegrationUserDocument,
-    {
-      realEstateId,
-      realEstateType,
-      targetGroupName,
-      textLength,
-      tonality,
-    }: IApiOpenAiRealEstDescQuery,
-    realEstate?: RealEstateListingDocument,
-  ): Promise<string> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      // TODO think about moving everything to the UserSubscriptionPipe
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.openAi &&
-          !subscriptionPlan.appFeatures.openAi,
-        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const resultRealEstate = mapRealEstateListingToApiRealEstateListing(
-      user,
-      realEstate || (await this.fetchById(user, realEstateId)),
-    );
-
-    const queryText = this.openAiService.getRealEstDescQuery({
-      targetGroupName,
-      realEstateType,
-      textLength,
-      realEstate: resultRealEstate,
-      tonality: openAiTonalities[tonality],
-    });
-
-    return this.openAiService.fetchResponse(queryText);
   }
 
   async assignLocationIndices(
