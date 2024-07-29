@@ -1,6 +1,13 @@
 .data-tab {
-  --data-tab-pr: 80px;
-  color: var(--base-anthracite);
-  z-index: 1000;
-  transition: width 0.2s;
+  @apply h-full flex flex-col relative bg-white;
+
+  .collapse-content > ul > li {
+    height: 60px;
+
+    h3 {
+      color: var(--base-anthracite);
+      padding: 0 calc(var(--menu-image-w-h) / 2) 0 calc(var(--menu-image-w-h) / 2);
+      @apply text-base flex gap-2;
+    }
+  }
 }

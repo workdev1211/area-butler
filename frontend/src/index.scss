@@ -86,12 +86,12 @@ html {
   --subcontent-padding-y: 26px;
 
   --btn-height: 48px;
-  --btn-padding: 16px;
+  --btn-padding: 14px;
   --btn-border-radius: 8px;
 
   --form-field-short-flex-basis: 56px;
 
-  --map-menu-width: 500px;
+  --map-menu-width: 420px;
   --mobile-map-menu-width: 390px;
 }
 
@@ -122,14 +122,17 @@ html {
   color: white;
   background: var(--primary-gradient);
 }
+
 .bg-primary-gradient.loading {
   color: white;
 }
+
 .bg-primary-gradient:disabled {
   background: white;
   color: var(--base-silver);
   border: 1px solid var(--base-silver);
 }
+
 .bg-primary-gradient:disabled img {
   filter: brightness(0.7);
 }
@@ -138,14 +141,17 @@ html {
   color: white;
   background: var(--secondary-gradient);
 }
+
 .bg-secondary-gradient.loading {
   color: white;
 }
+
 .bg-secondary-gradient:disabled {
   background: white;
   color: var(--base-silver);
   border: 1px solid var(--base-silver);
 }
+
 .bg-secondary-gradient:disabled img {
   filter: brightness(0.7);
 }
@@ -207,7 +213,9 @@ html {
   input[type="datetime"], input[type="datetime-local"],
   input[type="date"], input[type="month"], input[type="time"],
   input[type="week"], input[type="number"], input[type="email"],
-  input[type="url"]{ font-size: 16px; }
+  input[type="url"] {
+    font-size: 16px;
+  }
 }
 
 /* Fix Input Zoom on iPhone 5, 5C, 5S, iPod Touch 5g */
@@ -216,7 +224,9 @@ html {
   input[type="datetime"], input[type="datetime-local"],
   input[type="date"], input[type="month"], input[type="time"],
   input[type="week"], input[type="number"], input[type="email"],
-  input[type="url"]{ font-size: 16px; }
+  input[type="url"] {
+    font-size: 16px;
+  }
 }
 
 /* Fix Input Zoom on iPhone 6, iPhone 6s, iPhone 7  */
@@ -225,7 +235,9 @@ html {
   input[type="datetime"], input[type="datetime-local"],
   input[type="date"], input[type="month"], input[type="time"],
   input[type="week"], input[type="number"], input[type="email"],
-  input[type="tel"], input[type="url"]{ font-size: 16px; }
+  input[type="tel"], input[type="url"] {
+    font-size: 16px;
+  }
 }
 
 /* Fix Input Zoom on iPhone 6 Plus, iPhone 6s Plus, iPhone 7 Plus, iPhone 8, iPhone X, XS, XS Max  */
@@ -234,5 +246,7 @@ html {
   input[type="datetime"], input[type="datetime-local"],
   input[type="date"], input[type="month"], input[type="time"],
   input[type="week"], input[type="number"], input[type="email"],
-  input[type="tel"], input[type="url"]{ font-size: 16px; }
+  input[type="tel"], input[type="url"] {
+    font-size: 16px;
+  }
 }

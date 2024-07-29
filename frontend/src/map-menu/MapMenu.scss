@@ -1,8 +1,8 @@
 .map-menu {
   overflow-y: auto;
-  top: 0;
+  top: calc(var(--menu-item-pl) / 2);
   right: calc(var(--menu-item-pl) / 2);
-  bottom: 0;
+  bottom: calc(var(--menu-item-pl) / 2);
   width: 0;
   transition: width 0.2s;
   z-index: 1000;
@@ -24,29 +24,30 @@
   }
 
   .tab-bar {
-    height: 112px;
-    color: var(--primary);
-    padding: calc(var(--menu-item-pl) / 2) 0 calc(var(--menu-item-pl) / 2) 0;
-    @apply text-base font-medium;
+    padding: 0 0 0 0;
+    @apply text-base;
 
     .tab-container {
-      padding: 0.5rem calc(2.5rem + 24px) 0.5rem 2.5rem;
-      border: 0.25rem solid transparent;
-      border-radius: 1rem;
-      background: white;
-      @apply flex gap-10;
+      padding: 0 2rem 0 1rem;
+      border-radius: 1rem 1rem 0 0;
+      @apply flex gap-2 items-start;
     }
 
     .tab-item {
-      height: 67px;
-      border-radius: 0.75rem;
-      background: lightgrey;
+      height: 40px;
+      border-radius: 5px 5px 0 0;
+      border: none;
+      background: white;
       color: black;
-      @apply flex flex-1 flex-col items-center cursor-pointer justify-center gap-1;
+      @apply flex flex-1 items-center cursor-pointer justify-center gap-2;
 
-      &.tab-item-active {
+      &:hover {
+        background: var(--base-bright-silver);
+      }
+
+      &.tab-item-active, &.tab-item-active:hover {
         color: white;
-        background: var(--primary-gradient);
+        background: var(--base-anthracite);
 
         img {
           filter: invert(100%);
@@ -67,9 +68,14 @@
     border-bottom: none;
     border-radius: 5px 5px 0 0;
 
-    span {
-      max-width: calc(100% - 65px);
+    .toggle {
+      scale: 0.8;
+
+      &:checked {
+        background: var(--custom-primary);
+      }
     }
+
     @apply flex flex-col justify-center;
 
     .map-menu-header-text {
@@ -82,6 +88,10 @@
     overflow-y: scroll;
     z-index: 1000;
     @apply h-full flex flex-col bg-white;
+
+    &.embed-mode {
+      border-radius: 0 0 5px 5px;
+    }
 
     .collapse-title {
       color: var(--base-anthracite);
@@ -293,16 +303,16 @@
 
       &:checked {
         background-image: linear-gradient(-45deg, transparent 65%, #ffffff 0),
-          linear-gradient(45deg, transparent 75%, #ffffff 0),
-          linear-gradient(-45deg, #ffffff 40%, transparent 0),
-          linear-gradient(
-            44deg,
-            #ffffff 30%,
-            var(--primary) 0,
-            var(--primary) 40%,
-            transparent 0
-          ),
-          linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+        linear-gradient(45deg, transparent 75%, #ffffff 0),
+        linear-gradient(-45deg, #ffffff 40%, transparent 0),
+        linear-gradient(
+                        44deg,
+                        #ffffff 30%,
+                        var(--primary) 0,
+                        var(--primary) 40%,
+                        transparent 0
+        ),
+        linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
       }
     }
 
@@ -311,20 +321,20 @@
 
       &:checked {
         background-image: linear-gradient(
-            -45deg,
-            transparent 65%,
-            var(--custom-primary) 0
-          ),
-          linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
-          linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
-          linear-gradient(
-            44deg,
-            var(--custom-primary) 30%,
-            #ffffff 0,
-            #ffffff 40%,
-            transparent 0
-          ),
-          linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
+                        -45deg,
+                        transparent 65%,
+                        var(--custom-primary) 0
+        ),
+        linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
+        linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
+        linear-gradient(
+                        44deg,
+                        var(--custom-primary) 30%,
+                        #ffffff 0,
+                        #ffffff 40%,
+                        transparent 0
+        ),
+        linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
       }
     }
   }

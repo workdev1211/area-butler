@@ -6,11 +6,10 @@ import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
 import {
-  IEditorTabProps,
   IDataTabProps,
+  IEditorTabProps,
   ResultEntity,
 } from "../shared/search-result.types";
-import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
 import {
   ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
@@ -22,7 +21,6 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
-import downloadIcon from "../assets/icons/download.svg";
 import fileIcon from "../assets/icons/file.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
@@ -126,13 +124,13 @@ const MapMenu: FC<IMapMenuProps> = ({
   switch (mapDisplayMode) {
     case MapDisplayModesEnum.EDITOR: {
       mapMenuContentHeight =
-        "calc(100% - calc(var(--menu-item-h) * 3) - var(--menu-footer-h) - var(--menu-item-pl))";
+        "calc(100% - calc(var(--menu-item-h) * 2) - var(--menu-footer-h))";
       break;
     }
 
     case MapDisplayModesEnum.EMBEDDED:
     default: {
-      mapMenuContentHeight = "calc(100% - var(--menu-item-h))";
+      mapMenuContentHeight = "calc(100% - var(--menu-item-h) * 1.2)";
     }
   }
 
@@ -203,12 +201,14 @@ const MapMenu: FC<IMapMenuProps> = ({
 
       <div className="map-menu-header" data-tour="reset-position">
         <label className="cursor-pointer flex items-center">
-          <input
-            type="checkbox"
-            className="toggle"
-            checked={responseConfig?.showAddress}
-            onChange={toggleShowAddress}
-          />
+          {isEditorMode && (
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={responseConfig?.showAddress}
+              onChange={toggleShowAddress}
+            />
+          )}
           <span className="label-text text-white map-menu-header-text ml-5">
             {isShownAddress
               ? searchAddress
@@ -218,7 +218,7 @@ const MapMenu: FC<IMapMenuProps> = ({
       </div>
 
       <div
-        className="map-menu-content"
+        className={`map-menu-content ${!isEditorMode ? "embed-mode" : ""}`}
         style={{
           height: mapMenuContentHeight,
         }}

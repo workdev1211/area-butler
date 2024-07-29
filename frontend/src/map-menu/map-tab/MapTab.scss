@@ -6,8 +6,7 @@
 
     h3 {
       color: var(--base-anthracite);
-      padding: 0 calc(var(--menu-image-w-h) / 2) 0
-      calc(var(--menu-image-w-h) / 2);
+      padding: 0 calc(var(--menu-image-w-h) / 2) 0 calc(var(--menu-image-w-h) / 2);
       @apply text-base flex gap-2;
     }
   }
