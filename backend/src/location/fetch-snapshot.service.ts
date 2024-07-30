@@ -290,6 +290,7 @@ export class FetchSnapshotService {
     user: UserDocument | TIntegrationUserDocument,
     filterQuery: FilterQuery<SearchResultSnapshotDocument> = {},
     isCheckSubscription = true,
+    isUserOwner = true,
   ): Promise<FilterQuery<SearchResultSnapshotDocument>> {
     const isIntegrationUser = 'integrationUserId' in user;
 

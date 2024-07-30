@@ -20,8 +20,7 @@ const MapMenuFooter: FunctionComponent<IMapMenuFooterProps> = ({
       <div className="button-container">
         <a
           type="button"
-          className="back-button btn w-full sm:w-auto mr-auto font-bold"
-          style={{ background: "var(--primary-gradient)", color: "white" }}
+          className="btn w-full sm:w-auto font-bold btn-outline hover:bg-primary border-primary text-primary hover:border-primary"
           target={"_blank"}
           href={
             "https://areabutler.notion.site/AreaButler-Support-Bereich-82b853f363fe47738581e964fe77c828"

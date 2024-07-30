@@ -202,18 +202,16 @@ const MapMenu: FC<IMapMenuProps> = ({
       )}
 
       <div className="map-menu-header" data-tour="reset-position">
-        <label
-          className="cursor-pointer flex items-center"
-          onClick={toggleShowAddress}
-        >
+        <label className="cursor-pointer flex items-center">
           {isEditorMode && (
-            <img
-              src={isShownAddress ? locationCheckIcon : locationNotFoundIcon}
-              alt="location-icon"
-              className="img-container invert size-1"
+            <input
+              type="checkbox"
+              className="toggle"
+              checked={responseConfig?.showAddress}
+              onChange={toggleShowAddress}
             />
           )}
-          <span className="label-text text-white map-menu-header-text ml-3">
+          <span className="label-text text-white map-menu-header-text">
             {isShownAddress
               ? searchAddress
               : t(IntlKeys.snapshotEditor.addressNotPublished)}
