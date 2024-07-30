@@ -66,7 +66,9 @@ const PublicLinks: FC = () => {
                   publicLinkParams: [
                     {
                       isLinkEntity,
-                      isAddressShown: !!responseConfig?.showAddress,
+                      exportType: !!responseConfig?.showAddress
+                        ? AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+                        : AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
                       title: responseConfig?.showAddress
                         ? unaddressLinkTitle
                         : addressLinkTitle,
@@ -98,13 +100,13 @@ const PublicLinks: FC = () => {
                 publicLinkParams: [
                   {
                     isLinkEntity,
-                    isAddressShown: true,
+                    exportType: AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
                     title: addressLinkTitle,
                     url: createDirectLink({ isAddressShown: true }),
                   },
                   {
                     isLinkEntity,
-                    isAddressShown: false,
+                    exportType: AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
                     title: unaddressLinkTitle,
                     url: createDirectLink({ isAddressShown: false }),
                   },

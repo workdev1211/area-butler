@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -8,13 +9,19 @@ import {
 import { Exclude, Expose } from 'class-transformer';
 
 import { IApiIntPublicLinkParams } from '@area-butler-types/integration';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 
 @Exclude()
 class ApiIntPublicLinkParamsDto implements IApiIntPublicLinkParams {
   @Expose()
   @IsNotEmpty()
-  @IsBoolean()
-  isAddressShown: boolean;
+  @IsIn([
+    AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
+    AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+  ])
+  exportType:
+    | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+    | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
 
   @Expose()
   @IsNotEmpty()

@@ -59,8 +59,8 @@ import {
   IApiIntUserOnOfficeParams,
 } from '@area-butler-types/integration-user';
 import {
-  onOfficeUrlFieldsMapper,
-  openAiQueryTypeToOnOfficeEstateFieldMapping,
+  onOfficeLinkFieldMapper,
+  onOfficeOpenAiFieldMapper,
 } from '../../../shared/constants/on-office/on-office-constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
@@ -74,8 +74,7 @@ import { PlaceService } from '../place/place.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { ContingentIntService } from '../user/contingent-int.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
-import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
-import { openAiLocDescTypes } from '../../../shared/constants/open-ai';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
 @Injectable()
 export class OnOfficeService {
@@ -561,12 +560,7 @@ export class OnOfficeService {
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
-    {
-      exportMatchParams,
-      exportType,
-      integrationId,
-      text,
-    }: IApiIntUpdEstTextFieldReq,
+    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -581,32 +575,41 @@ export class OnOfficeService {
     );
 
     const defaultMaxTextLength = 2000;
-    const resExpMatching = exportMatching || parentUser?.config.exportMatching;
-    let resExportMatchParams =
-      exportMatchParams || (resExpMatching && resExpMatching[exportType]);
+    const resultExpMatch = exportMatching || parentUser?.config.exportMatching;
+    let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
 
-    if (
-      !resExportMatchParams &&
-      openAiLocDescTypes.includes(exportType as TOpenAiLocDescType)
-    ) {
-      resExportMatchParams = {
-        fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
-        maxTextLength: defaultMaxTextLength,
-      };
-    }
+    if (!exportMatchParams) {
+      switch (exportType) {
+        case AreaButlerExportTypesEnum.LINK_WITH_ADDRESS:
+        case AreaButlerExportTypesEnum.LINK_WO_ADDRESS: {
+          exportMatchParams = { fieldId: onOfficeLinkFieldMapper[exportType] };
+          break;
+        }
 
-    if (!resExportMatchParams) {
-      throw new UnprocessableEntityException(
-        'Could not determine the field id!',
-      );
+        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+          exportMatchParams = {
+            fieldId: onOfficeOpenAiFieldMapper[exportType],
+            maxTextLength: defaultMaxTextLength,
+          };
+          break;
+        }
+
+        default: {
+          throw new UnprocessableEntityException(
+            'Could not determine the field id!',
+          );
+        }
+      }
     }
 
     const processedText =
-      resExportMatchParams.maxTextLength === 0
+      exportMatchParams.maxTextLength === 0
         ? text
         : text.slice(
             0,
-            resExportMatchParams.maxTextLength || defaultMaxTextLength,
+            exportMatchParams.maxTextLength || defaultMaxTextLength,
           );
 
     const request: IApiOnOfficeRequest = {
@@ -624,7 +627,7 @@ export class OnOfficeService {
             parameters: {
               extendedclaim: extendedClaim,
               data: {
-                [resExportMatchParams.fieldId]: processedText,
+                [exportMatchParams.fieldId]: processedText,
               },
             },
           },
@@ -760,7 +763,11 @@ export class OnOfficeService {
 
   async createEstateLink(
     { parameters }: TIntegrationUserDocument,
-    { integrationId, title, url }: IApiIntCreateEstateLinkReq,
+    {
+      integrationId,
+      title,
+      url,
+    }: Omit<IApiIntCreateEstateLinkReq, 'exportType'>,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -924,13 +931,12 @@ export class OnOfficeService {
 
   async setPropPublicLinks(
     integrationUser: TIntegrationUserDocument,
-    { exportType, integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
+    { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
     await Promise.all(
-      publicLinkParams.map(({ isAddressShown, isLinkEntity, title, url }) => {
+      publicLinkParams.map(({ exportType, isLinkEntity, title, url }) => {
         if (isLinkEntity) {
           return this.createEstateLink(integrationUser, {
-            exportType,
             integrationId,
             title,
             url,
@@ -941,11 +947,6 @@ export class OnOfficeService {
           exportType,
           integrationId,
           text: url,
-          exportMatchParams: {
-            fieldId: isAddressShown
-              ? onOfficeUrlFieldsMapper.WITH_ADDRESS
-              : onOfficeUrlFieldsMapper.WITHOUT_ADDRESS,
-          },
         });
       }),
     );

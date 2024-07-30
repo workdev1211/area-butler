@@ -559,6 +559,8 @@ export enum FeatureTypeEnum {
 
 export enum AreaButlerExportTypesEnum {
   EMBEDDED_LINKS = "EMBEDDED_LINKS",
+  LINK_WITH_ADDRESS = "LINK_WITH_ADDRESS",
+  LINK_WO_ADDRESS = "LINK_WO_ADDRESS",
   QR_CODE = "QR_CODE",
   INLINE_FRAME = "INLINE_FRAME",
   ONE_PAGE_PNG = "ONE_PAGE_PNG",

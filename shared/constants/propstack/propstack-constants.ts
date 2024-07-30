@@ -4,6 +4,7 @@ import {
   PropstackTextFieldTypeEnum,
 } from "../../types/propstack";
 import { getBidirectionalMapping } from "../../functions/shared.functions";
+import { AreaButlerExportTypesEnum } from "../../types/types";
 
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [
@@ -27,9 +28,14 @@ export const propstackPropertyMarketTypeNames: {
   },
 ];
 
-export const propstackUrlFieldsMapper = {
-  WITH_ADDRESS: "areabutler_link_with_address",
-  WITHOUT_ADDRESS: "areabutler_link_without_address",
+export const propstackLinkFieldMapper: Record<
+  | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+  | AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+  string
+> = {
+  [AreaButlerExportTypesEnum.LINK_WITH_ADDRESS]: "areabutler_link_with_address",
+  [AreaButlerExportTypesEnum.LINK_WO_ADDRESS]:
+    "areabutler_link_without_address",
 };
 
 const propstackToOpenAiFieldMapper: Map<
@@ -41,12 +47,12 @@ const propstackToOpenAiFieldMapper: Map<
     OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
   ],
   [
-    PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
-    OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-  ],
-  [
     PropstackTextFieldTypeEnum.OTHER_NOTE,
     OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+  ],
+  [
+    PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
+    OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
   ],
 ]);
 

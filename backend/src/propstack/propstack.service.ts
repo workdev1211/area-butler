@@ -42,9 +42,9 @@ import {
   PropstackActionTypeEnum,
 } from '@area-butler-types/propstack';
 import {
+  propstackLinkFieldMapper,
   propstackOpenAiFieldMapper,
   propstackPropertyMarketTypeNames,
-  propstackUrlFieldsMapper,
 } from '../../../shared/constants/propstack/propstack-constants';
 import { configService } from '../config/config.service';
 import { PlaceService } from '../place/place.service';
@@ -52,14 +52,10 @@ import {
   ApiSearchResultSnapshotResponse,
   AreaButlerExportTypesEnum,
 } from '@area-butler-types/types';
-import {
-  OpenAiQueryTypeEnum,
-  TOpenAiLocDescType,
-} from '@area-butler-types/open-ai';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { ContingentIntService } from '../user/contingent-int.service';
-import { openAiLocDescTypes } from '../../../shared/constants/open-ai';
 
 @Injectable()
 export class PropstackService {
@@ -115,38 +111,22 @@ export class PropstackService {
 
   async setPropPublicLinks(
     integrationUser: TIntegrationUserDocument,
-    { integrationId, publicLinkParams, exportType }: IApiIntSetPropPubLinksReq,
+    { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
-    const { parameters } = integrationUser;
-
-    publicLinkParams.map(({ title, url, isLinkEntity, isAddressShown }) => {
-      if (
-        integrationUser.config.exportMatching[
-          AreaButlerExportTypesEnum.EMBEDDED_LINKS
-        ]
-      ) {
+    publicLinkParams.map(({ exportType, isLinkEntity, title, url }) => {
+      if (integrationUser.config.exportMatching[exportType]) {
         return this.updatePropertyTextField(integrationUser, {
           exportType,
           integrationId,
-          exportMatchParams: {
-            fieldId: isAddressShown
-              ? propstackUrlFieldsMapper.WITH_ADDRESS
-              : propstackUrlFieldsMapper.WITHOUT_ADDRESS,
-          },
           text: url,
         });
       }
 
-      this.propstackApiService.createPropertyLink(
-        (parameters as IApiIntUserPropstackParams).apiKey,
-        {
-          title,
-          url,
-          is_embedable: true,
-          on_landing_page: true,
-          property_id: parseInt(integrationId, 10),
-        },
-      );
+      this.createPropertyLink(integrationUser, {
+        integrationId,
+        title,
+        url,
+      });
 
       if (isLinkEntity) {
         return;
@@ -155,11 +135,6 @@ export class PropstackService {
       this.updatePropertyTextField(integrationUser, {
         exportType,
         integrationId,
-        exportMatchParams: {
-          fieldId: isAddressShown
-            ? propstackUrlFieldsMapper.WITH_ADDRESS
-            : propstackUrlFieldsMapper.WITHOUT_ADDRESS,
-        },
         text: url,
       });
     });
@@ -288,52 +263,56 @@ export class PropstackService {
       parentUser,
       config: { exportMatching },
     }: TIntegrationUserDocument,
-    {
-      exportType,
-      exportMatchParams,
-      integrationId,
-      text,
-    }: IApiIntUpdEstTextFieldReq,
+    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
-    const resExpMatching = exportMatching || parentUser?.config.exportMatching;
-    let resExportMatchParams =
-      exportMatchParams || (resExpMatching && resExpMatching[exportType]);
     const defaultMaxTextLength = 2000;
+    const resultExpMatch = exportMatching || parentUser?.config.exportMatching;
+    let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
 
-    if (
-      !resExportMatchParams &&
-      openAiLocDescTypes.includes(exportType as TOpenAiLocDescType)
-    ) {
-      resExportMatchParams = {
-        fieldId: propstackOpenAiFieldMapper.get(
-          exportType as TOpenAiLocDescType,
-        ),
-        maxTextLength: defaultMaxTextLength,
-      };
-    }
+    if (!exportMatchParams) {
+      switch (exportType) {
+        case AreaButlerExportTypesEnum.LINK_WITH_ADDRESS:
+        case AreaButlerExportTypesEnum.LINK_WO_ADDRESS: {
+          exportMatchParams = {
+            fieldId: propstackLinkFieldMapper[exportType],
+          };
+          break;
+        }
 
-    if (!resExportMatchParams) {
-      throw new UnprocessableEntityException(
-        'Could not determine the field id!',
-      );
+        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+          exportMatchParams = {
+            fieldId: propstackOpenAiFieldMapper.get(exportType),
+            maxTextLength: defaultMaxTextLength,
+          };
+          break;
+        }
+
+        default: {
+          throw new UnprocessableEntityException(
+            'Could not determine the field id!',
+          );
+        }
+      }
     }
 
     const processedText =
-      resExportMatchParams.maxTextLength === 0
+      exportMatchParams.maxTextLength === 0
         ? text
         : text.slice(
             0,
-            resExportMatchParams.maxTextLength || defaultMaxTextLength,
+            exportMatchParams.maxTextLength || defaultMaxTextLength,
           );
 
-    const splitField = resExportMatchParams.fieldId.split('custom_fields.');
+    const splitField = exportMatchParams.fieldId.split('custom_fields.');
 
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
       parseInt(integrationId, 10),
       splitField.length > 1
         ? { partial_custom_fields: [{ [splitField[1]]: processedText }] }
-        : { [resExportMatchParams.fieldId]: processedText },
+        : { [exportMatchParams.fieldId]: processedText },
     );
   }
 
@@ -355,7 +334,11 @@ export class PropstackService {
 
   createPropertyLink(
     { parameters }: TIntegrationUserDocument,
-    { integrationId, title, url }: IApiIntCreateEstateLinkReq,
+    {
+      integrationId,
+      title,
+      url,
+    }: Omit<IApiIntCreateEstateLinkReq, 'exportType'>,
   ): Promise<IPropstackLink> {
     return this.propstackApiService.createPropertyLink(
       (parameters as IApiIntUserPropstackParams).apiKey,

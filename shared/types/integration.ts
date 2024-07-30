@@ -1,6 +1,5 @@
-import { IIntUserExpMatchParams } from "./integration-user";
 import { TApiIntUserProdContType } from "./integration-user";
-import { TOpenAiLocDescType } from "./open-ai";
+import { OpenAiQueryTypeEnum } from "./open-ai";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   ApiIntUserPropstackProdContTypesEnum,
@@ -135,12 +134,14 @@ export interface IApiRealEstAvailIntStatuses {
 
 export interface IApiIntUpdEstTextFieldReq {
   exportType:
-    | TOpenAiLocDescType
+    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
     | AreaButlerExportTypesEnum.INLINE_FRAME
-    | AreaButlerExportTypesEnum.EMBEDDED_LINKS;
+    | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+    | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
   integrationId: string;
   text: string;
-  exportMatchParams?: IIntUserExpMatchParams;
 }
 
 export interface IApiIntUploadEstateFileReq extends IApiUploadFileReq {
@@ -148,14 +149,18 @@ export interface IApiIntUploadEstateFileReq extends IApiUploadFileReq {
 }
 
 export interface IApiIntCreateEstateLinkReq {
-  exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS;
+  exportType:
+    | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+    | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
   integrationId: string;
   title: string;
   url: string;
 }
 
 export interface IApiIntPublicLinkParams {
-  isAddressShown: boolean;
+  exportType:
+    | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+    | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
   url: string;
   isLinkEntity?: boolean;
   title?: string;

@@ -8,8 +8,13 @@ import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 class ApiIntCreateEstateLinkReqDto implements IApiIntCreateEstateLinkReq {
   @Expose()
   @IsNotEmpty()
-  @IsIn([AreaButlerExportTypesEnum.EMBEDDED_LINKS])
-  exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS;
+  @IsIn([
+    AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
+    AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+  ])
+  exportType:
+    | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+    | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
 
   @Expose()
   @IsNotEmpty()
