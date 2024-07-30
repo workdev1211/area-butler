@@ -22,10 +22,9 @@ import {
 import {
   EntityGroup,
   ICurrentMapRef,
-  IEditorTabProps,
   IDataTabProps,
+  IEditorTabProps,
   ResultEntity,
-  IMapTabProps,
 } from "../../../shared/search-result.types";
 import { useTools } from "../../../hooks/tools";
 import { deriveAvailableMeansFromResponse } from "../../../shared/shared.functions";
@@ -155,7 +154,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
       },
       censusData,
       federalElectionData,
-      particlePollutionData
+      particlePollutionData,
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,7 +174,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
     censusData,
     federalElectionData,
     particlePollutionData,
-    locationIndexData
+    locationIndexData,
   ]);
 
   const toggleAllLocalities = (): void => {

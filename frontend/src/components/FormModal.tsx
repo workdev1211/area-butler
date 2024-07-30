@@ -1,17 +1,17 @@
 import {
+  cloneElement,
   FunctionComponent,
   JSXElementConstructor,
+  MouseEvent,
   ReactElement,
   ReactNode,
   useEffect,
   useState,
-  cloneElement,
-  MouseEvent,
 } from "react";
 import { v4 as uuid } from "uuid";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 export interface ModalConfig {
   buttonTitle?: string;
@@ -89,7 +89,7 @@ export const FormModal: FunctionComponent<{
         </button>
       ) : null}
       {modalOpen && (
-        <div id="my-modal" className="modal modal-open z-2000">
+        <div id="my-modal" className="modal modal-open z-2500">
           <div className="modal-box max-h-screen overflow-y-auto">
             <h1 className="text-xl mb-5 flex items-center gap-2">
               {modalConfig.modalTitle}

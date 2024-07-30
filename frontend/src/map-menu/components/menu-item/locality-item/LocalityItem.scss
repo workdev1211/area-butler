@@ -11,8 +11,7 @@
   }
 
   .locality-item-content {
-    padding: var(--locality-py) var(--locality-pr) var(--locality-py)
-      var(--locality-pl) !important;
+    padding: var(--locality-py) 0 var(--locality-py) var(--locality-pl) !important;
     grid-template-columns: repeat(4, 1fr);
     @apply grid w-full items-center font-medium text-base;
 

@@ -21,6 +21,8 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
+import locationCheckIcon from "../assets/icons/map-menu/editor-tab/location-check.svg";
+import locationNotFoundIcon from "../assets/icons/map-menu/editor-tab/location-not-found.svg";
 import fileIcon from "../assets/icons/file.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
@@ -200,16 +202,18 @@ const MapMenu: FC<IMapMenuProps> = ({
       )}
 
       <div className="map-menu-header" data-tour="reset-position">
-        <label className="cursor-pointer flex items-center">
+        <label
+          className="cursor-pointer flex items-center"
+          onClick={toggleShowAddress}
+        >
           {isEditorMode && (
-            <input
-              type="checkbox"
-              className="toggle"
-              checked={responseConfig?.showAddress}
-              onChange={toggleShowAddress}
+            <img
+              src={isShownAddress ? locationCheckIcon : locationNotFoundIcon}
+              alt="location-icon"
+              className="img-container invert size-1"
             />
           )}
-          <span className="label-text text-white map-menu-header-text ml-5">
+          <span className="label-text text-white map-menu-header-text ml-3">
             {isShownAddress
               ? searchAddress
               : t(IntlKeys.snapshotEditor.addressNotPublished)}

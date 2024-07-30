@@ -127,20 +127,22 @@ const Localities: FC<ILocalitiesProps> = ({
                 : deriveIconForPoiGroup(ge.name, resultingPoiIcons);
 
               return (
-                <MapMenuListItem
-                  entityGroup={ge}
-                  groupIcon={groupIconInfo}
-                  isCustomIcon={
-                    (isRealEstateListing && !!config?.mapIcon) ||
-                    groupIconInfo.isCustom
-                  }
-                  entityGroupIndex={geIndex}
-                  routes={routes}
-                  toggleRoute={toggleRoute}
-                  transitRoutes={transitRoutes}
-                  toggleTransitRoute={toggleTransitRoute}
-                  key={`${ge.name}-${geIndex}-map-menu-list-item-top`}
-                />
+                <div>
+                  <MapMenuListItem
+                    entityGroup={ge}
+                    groupIcon={groupIconInfo}
+                    isCustomIcon={
+                      (isRealEstateListing && !!config?.mapIcon) ||
+                      groupIconInfo.isCustom
+                    }
+                    entityGroupIndex={geIndex}
+                    routes={routes}
+                    toggleRoute={toggleRoute}
+                    transitRoutes={transitRoutes}
+                    toggleTransitRoute={toggleTransitRoute}
+                    key={`${ge.name}-${geIndex}-map-menu-list-item-top`}
+                  />
+                </div>
               );
             })}
 

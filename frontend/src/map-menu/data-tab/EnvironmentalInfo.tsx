@@ -70,24 +70,29 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
       <div className="collapse-content">
         {isStatsDataAvailable ? (
           <ul>
-            <li className="locality-option-li" key="list-item-zensus-feinstaub">
-              <MapMenuCollapsable
-                title={t(
-                  IntlKeys.snapshotEditor.environmentInfo
-                    .particulateMatterPollution
-                )}
-                icon={particlePollutionIcon}
-                subscriptionCheck={() => hasPollutionData}
-                openUpgradeSubscriptionModal={() => {
-                  openUpgradeSubscriptionModal &&
-                    openUpgradeSubscriptionModal(hasPollutionData);
-                }}
+            <div>
+              <li
+                className="locality-option-li"
+                key="list-item-zensus-feinstaub"
               >
-                <ParticlePollutionTable
-                  particlePollutionData={particlePollutionData}
-                />
-              </MapMenuCollapsable>
-            </li>
+                <MapMenuCollapsable
+                  title={t(
+                    IntlKeys.snapshotEditor.environmentInfo
+                      .particulateMatterPollution
+                  )}
+                  icon={particlePollutionIcon}
+                  subscriptionCheck={() => hasPollutionData}
+                  openUpgradeSubscriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(hasPollutionData);
+                  }}
+                >
+                  <ParticlePollutionTable
+                    particlePollutionData={particlePollutionData}
+                  />
+                </MapMenuCollapsable>
+              </li>
+            </div>
           </ul>
         ) : (
           <UnlockProductButton performUnlock={performUnlock} />

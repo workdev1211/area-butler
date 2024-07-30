@@ -113,40 +113,46 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
       <div className="collapse-content">
         {isStatsDataAvailable ? (
           <ul>
-            <li className="locality-option-li" key="list-item-zensus">
-              <MapMenuCollapsable
-                title={t(IntlKeys.snapshotEditor.socialDemographics.censusData)}
-                icon={censusDataIcon}
-                subscriptionCheck={() => hasCensusData}
-                openUpgradeSubscriptionModal={() => {
-                  openUpgradeSubscriptionModal &&
-                    openUpgradeSubscriptionModal(
-                      censusNotInSubscriptionPlanMessage
-                    );
-                }}
-              >
-                <CensusTable censusData={censusData} />
-              </MapMenuCollapsable>
-            </li>
-            <li className="locality-option-li" key="list-item-btw">
-              <MapMenuCollapsable
-                title={t(
-                  IntlKeys.snapshotEditor.socialDemographics.federalElections
-                )}
-                icon={federalElectionIcon}
-                subscriptionCheck={() => hasElectionData}
-                openUpgradeSubscriptionModal={() => {
-                  openUpgradeSubscriptionModal &&
-                    openUpgradeSubscriptionModal(
-                      federalElectionNotInSubscriptionPlanMessage
-                    );
-                }}
-              >
-                <FederalElectionTable
-                  federalElectionData={federalElectionData}
-                />
-              </MapMenuCollapsable>
-            </li>
+            <div>
+              <li className="locality-option-li" key="list-item-zensus">
+                <MapMenuCollapsable
+                  title={t(
+                    IntlKeys.snapshotEditor.socialDemographics.censusData
+                  )}
+                  icon={censusDataIcon}
+                  subscriptionCheck={() => hasCensusData}
+                  openUpgradeSubscriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(
+                        censusNotInSubscriptionPlanMessage
+                      );
+                  }}
+                >
+                  <CensusTable censusData={censusData} />
+                </MapMenuCollapsable>
+              </li>
+            </div>
+            <div>
+              <li className="locality-option-li" key="list-item-btw">
+                <MapMenuCollapsable
+                  title={t(
+                    IntlKeys.snapshotEditor.socialDemographics.federalElections
+                  )}
+                  icon={federalElectionIcon}
+                  subscriptionCheck={() => hasElectionData}
+                  openUpgradeSubscriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(
+                        federalElectionNotInSubscriptionPlanMessage
+                      );
+                  }}
+                >
+                  <FederalElectionTable
+                    federalElectionData={federalElectionData}
+                  />
+                </MapMenuCollapsable>
+              </li>
+            </div>
           </ul>
         ) : (
           <UnlockProductButton performUnlock={performUnlock} />

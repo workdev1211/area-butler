@@ -172,6 +172,10 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       aspect: +(16 / 9).toFixed(3),
     },
     {
+      name: "21:9",
+      aspect: +(21 / 9).toFixed(3),
+    },
+    {
       name: "16:9 (portrait)",
       aspect: +(9 / 16).toFixed(3),
     },
@@ -186,6 +190,8 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   const [cropParams, setCropParams] = useState<ICropParams>(
     fourToThreeCropParams
   );
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imageHeight, setImageHeight] = useState(0);
   const [isShownQrCode, setIsShownQrCode] = useState(true);
   const [isShownLegend, setIsShownLegend] = useState(true);
   const [isShownIsochrones, setIsShownIsochrones] = useState(true);
@@ -332,6 +338,9 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
             unit: "%",
           };
 
+    const pixelCrop = convertToPixelCrop(crop, image.width, image.height);
+    setImageWidth(pixelCrop.width);
+    setImageHeight(pixelCrop.height);
     setCropState(crop);
   }, [cropParams, imgRef, imgRef?.width]);
 
@@ -344,16 +353,23 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
           crop={cropState}
           aspect={cropParams.aspect}
           onChange={(crop, percentCrop) => {
+            setImageWidth(crop.width);
+            setImageHeight(crop.height);
             setCropState(percentCrop);
           }}
           renderSelectionAddon={() => (
             <div ref={(ref) => setOverlayRef(ref)}>
+              <div className="imageSize">
+                <label>
+                  {Math.round(imageWidth)} x {Math.round(imageHeight)}
+                </label>
+              </div>
               {qrCode && isShownQrCode && (
                 <div className="qrCodeContainer">
                   <MapClipQrCode qrCodeImage={qrCode} color={color} />
                 </div>
               )}
-              {isShownLegend && (
+              {isShownLegend && entityGroups.length && (
                 <div className="mapMenu">
                   <ul className="menu-desktop">
                     {entityGroups.map((ge) => (
@@ -440,39 +456,42 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                 </span>
               </label>
             )}
-            <label className="cursor-pointer label">
-              <input
-                type="checkbox"
-                name="showLegend"
-                checked={isShownLegend}
-                onChange={toggleDrawLegend}
-                className="checkbox checkbox-xs checkbox-primary mr-2"
-              />
-              <span className="label-text" style={{ position: "relative" }}>
-                {t(IntlKeys.snapshotEditor.showLegend)}
-                <div
-                  className="indicator-item badge w-4 h-4 text-white"
-                  style={{
-                    fontSize: 9,
-                    padding: 0,
-                    position: "absolute",
-                    bottom: "100%",
-                    left: "100%",
-                    border: "1px solid var(--primary)",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--primary)",
-                  }}
-                >
+            {(entityGroups.length && (
+              <label className="cursor-pointer label">
+                <input
+                  type="checkbox"
+                  name="showLegend"
+                  checked={isShownLegend}
+                  onChange={toggleDrawLegend}
+                  className="checkbox checkbox-xs checkbox-primary mr-2"
+                />
+                <span className="label-text" style={{ position: "relative" }}>
+                  {t(IntlKeys.snapshotEditor.showLegend)}
                   <div
-                    className="tooltip tooltip-right tooltip-accent text-justify font-medium"
-                    data-tip={t(IntlKeys.snapshotEditor.showLegendTooltip)}
+                    className="indicator-item badge w-4 h-4 text-white"
+                    style={{
+                      fontSize: 9,
+                      padding: 0,
+                      position: "absolute",
+                      bottom: "100%",
+                      left: "100%",
+                      border: "1px solid var(--primary)",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--primary)",
+                    }}
                   >
-                    i
+                    <div
+                      className="tooltip tooltip-right tooltip-accent text-justify font-medium"
+                      data-tip={t(IntlKeys.snapshotEditor.showLegendTooltip)}
+                    >
+                      i
+                    </div>
                   </div>
-                </div>
-              </span>
-            </label>
-            {activeMeans?.length && transportationParams && (
+                </span>
+              </label>
+            )) ||
+              ""}
+            {(activeMeans?.length && transportationParams && (
               <label className="cursor-pointer label">
                 <input
                   type="checkbox"
@@ -485,7 +504,8 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                   {t(IntlKeys.snapshotEditor.showIsochrones)}
                 </span>
               </label>
-            )}
+            )) ||
+              ""}
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
             <button

@@ -5,7 +5,6 @@ import { IntlKeys } from "i18n/keys";
 
 import { ReactComponent as SaveIcon } from "../../../assets/icons/save.svg";
 import MapMenuFooterLinks from "./MapMenuFooterLinks";
-import { useHistory } from "react-router-dom";
 
 interface IMapMenuFooterProps {
   saveConfig?: () => Promise<void>;
@@ -15,23 +14,22 @@ const MapMenuFooter: FunctionComponent<IMapMenuFooterProps> = ({
   saveConfig = () => {},
 }) => {
   const { t } = useTranslation();
-  const history = useHistory();
 
   return (
     <div className="map-menu-footer">
       <div className="button-container">
-        <button
+        <a
           type="button"
           className="back-button btn w-full sm:w-auto mr-auto font-bold"
           style={{ background: "var(--primary-gradient)", color: "white" }}
-          onClick={() => {
-            history.push(
-              "https://areabutler.notion.site/AreaButler-Support-Bereich-82b853f363fe47738581e964fe77c828"
-            );
-          }}
+          target={"_blank"}
+          href={
+            "https://areabutler.notion.site/AreaButler-Support-Bereich-82b853f363fe47738581e964fe77c828"
+          }
+          rel="noreferrer"
         >
           ? {t(IntlKeys.common.help)}
-        </button>
+        </a>
         <MapMenuFooterLinks />
         <button
           type="button"

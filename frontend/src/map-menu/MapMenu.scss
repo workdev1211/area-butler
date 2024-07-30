@@ -11,7 +11,7 @@
   --menu-item-pb: 20px;
   --menu-item-pl: 24px;
   --menu-item-h: 56px;
-  --menu-footer-h: 70px;
+  --menu-footer-h: 63px;
   --menu-image-w-h: 20px;
   --menu-image-w-h-lg: 33px;
   --locality-py: 10px;
@@ -29,13 +29,13 @@
 
     .tab-container {
       padding: 0 2rem 0 1rem;
-      border-radius: 1rem 1rem 0 0;
+      border-radius: .5rem .5rem 0 0;
       @apply flex gap-2 items-start;
     }
 
     .tab-item {
       height: 40px;
-      border-radius: 5px 5px 0 0;
+      border-radius: .5rem .5rem 0 0;
       border: none;
       background: white;
       color: black;
@@ -66,17 +66,13 @@
     background: var(--base-anthracite);
     padding: 0 var(--menu-item-pr) 0 var(--menu-item-pl) !important;
     border-bottom: none;
-    border-radius: 5px 5px 0 0;
-
-    .toggle {
-      scale: 0.8;
-
-      &:checked {
-        background: var(--custom-primary);
-      }
-    }
+    border-radius: .5rem .5rem 0 0;
 
     @apply flex flex-col justify-center;
+
+    img {
+      width: var(--menu-image-w-h);
+    }
 
     .map-menu-header-text {
       @apply text-lg;
@@ -90,7 +86,7 @@
     @apply h-full flex flex-col bg-white;
 
     &.embed-mode {
-      border-radius: 0 0 5px 5px;
+      border-radius: 0 0 .5rem .5rem;
     }
 
     .collapse-title {
@@ -341,9 +337,9 @@
 
   .map-menu-footer {
     height: var(--menu-footer-h);
-    padding: 4px var(--menu-item-pl) 2px var(--menu-item-pl);
+    padding: 6px;
     border-top: 2px solid var(--primary);
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 .5rem .5rem;
     background: white;
     @apply flex flex-col;
 
