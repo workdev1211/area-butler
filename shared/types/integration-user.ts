@@ -33,6 +33,7 @@ export interface IApiIntegrationUser {
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
   subscription?: IIntUserSubscription;
+  poiIcons?: IApiUserPoiIcons;
 }
 
 export type TApiIntUserAvailProdContingents = Partial<

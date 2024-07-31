@@ -99,6 +99,7 @@ export const usePropstackLogin = () => {
     openAiQueryType,
     realEstate,
     subscription,
+    poiIcons,
   }: IApiIntUserLoginRes): Promise<void> => {
     await i18n.changeLanguage(config.language);
     userDispatch({
@@ -110,6 +111,7 @@ export const usePropstackLogin = () => {
         integrationUserId,
         isChild,
         subscription,
+        poiIcons,
       },
     });
 

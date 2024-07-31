@@ -186,6 +186,7 @@ export const useOnOfficeLogin = () => {
     latestSnapshot,
     realEstate,
     subscription,
+    poiIcons,
   }: IApiIntUserLoginRes): Promise<void> => {
     await i18n.changeLanguage(config.language);
     userDispatch({
@@ -197,6 +198,7 @@ export const useOnOfficeLogin = () => {
         integrationUserId,
         isChild,
         subscription,
+        poiIcons,
       },
     });
 

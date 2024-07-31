@@ -469,8 +469,7 @@ const SearchResultContainer = forwardRef<
     };
 
     const containerClasses = `search-result-container theme-${responseConfig?.theme}`;
-    const resUserPoiIcons =
-      userPoiIcons || (!isIntegrationUser ? user.poiIcons : undefined);
+    const resUserPoiIcons = userPoiIcons || user.poiIcons;
 
     const isMapMenuKFPresent =
       isThemeKf && (!isEmbeddedMode || !responseConfig?.hideMapMenu);
