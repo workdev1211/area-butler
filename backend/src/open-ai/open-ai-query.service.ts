@@ -48,7 +48,7 @@ export interface ILocDescQueryParams
 export interface IRealEstDescQueryParams
   extends IGeneralQueryParams,
     Omit<IApiOpenAiRealEstDescQuery, 'realEstateId'> {
-  realEstate: Partial<ApiRealEstateListing>;
+  realEstate: ApiRealEstateListing;
 }
 
 export interface ILocRealEstDescQueryParams
@@ -63,7 +63,7 @@ interface IGetTextReqsParams {
 }
 
 interface IGetRealEstDescParams {
-  realEstate: Partial<ApiRealEstateListing>;
+  realEstate: ApiRealEstateListing;
   realEstateType: string;
 }
 
@@ -102,6 +102,24 @@ export class OpenAiQueryService {
     );
   }
 
+  async getLocRealEstDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    locRealEstDescQueryParams: ILocRealEstDescQueryParams,
+  ): Promise<string> {
+    const {
+      realEstate,
+      targetGroupName,
+      snapshotRes: { config },
+    } = locRealEstDescQueryParams;
+
+    const initialText =
+      `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse` +
+      (config.showAddress ? ` an der Adresse ${realEstate.address}.` : '.') +
+      `Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n`;
+
+    return this.getLocRealEstDesc(user, initialText, locRealEstDescQueryParams);
+  }
+
   getRealEstDescQuery(queryParams: IRealEstDescQueryParams): string {
     const {
       realEstate,
@@ -123,37 +141,6 @@ export class OpenAiQueryService {
     );
   }
 
-  async getLocRealEstDescQuery(
-    user: UserDocument | TIntegrationUserDocument,
-    { realEstate, realEstateType, ...queryParams }: ILocRealEstDescQueryParams,
-  ): Promise<string> {
-    const {
-      targetGroupName,
-      snapshotRes: { config },
-    } = queryParams;
-
-    const initialText = config.showAddress
-      ? `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse + ${realEstate.address}. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n`
-      : `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt. Der Text soll ${targetGroupName} ansprechen. Verwende keine Sonderzeichen und Emoticons. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.\n`;
-
-    return (
-      initialText +
-      this.getTextReqs({
-        queryParams,
-        isLocDescPresent: true,
-        isRealEstDescPresent: true,
-      }) +
-      '\n\n' +
-      (await this.getLocDesc(user, queryParams)) +
-      (realEstate &&
-        '\n\n' +
-          this.getRealEstDesc({
-            realEstate,
-            realEstateType,
-          }))
-    );
-  }
-
   getImprovedText(originalText: string, customText: string): string {
     return (
       `Sei mein Experte für Immobilien. Es wurde ein Text zu einer Immobilie erstellt, allerdings hat der Autor folgenden Änderungswunsch: ${customText}\n` +
@@ -170,7 +157,186 @@ export class OpenAiQueryService {
     return `Ersetze im folgenden text die formale Sie-Form durch die informale Du-Form: \n\n ${formalText}`;
   }
 
-  // Left in case of a future progress in OpenAi text limiting
+  async getFacebookPostQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    locRealEstDescQueryParams: ILocRealEstDescQueryParams,
+  ): Promise<string> {
+    const {
+      realEstate,
+      targetGroupName,
+      snapshotRes: { config },
+    } = locRealEstDescQueryParams;
+
+    const initialText =
+      `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe einen für Facebook optimierten social media Post für unser Objekt` +
+      (config.showAddress ? ` an der Adresse ${realEstate.address}.` : '.') +
+      `Der Text soll ${targetGroupName} ansprechen. Verwende Emoticons aber sehr sparsam. Verzichte auf Übertreibungen, Beschönigungen. Strukturierte den Post in Abschnitte. Vermeide Referenzierungen und Quellenangaben.`;
+
+    return this.getLocRealEstDesc(user, initialText, locRealEstDescQueryParams);
+  }
+
+  async getInstagramCaptionQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    locRealEstDescQueryParams: ILocRealEstDescQueryParams,
+  ): Promise<string> {
+    const {
+      realEstate,
+      targetGroupName,
+      snapshotRes: { config },
+    } = locRealEstDescQueryParams;
+
+    const initialText =
+      `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe eine Instagram Caption für unser Objekt an der Adresse` +
+      (config.showAddress ? ` an der Adresse ${realEstate.address}.` : '.') +
+      `Der Text soll ${targetGroupName} ansprechen. Verwende Emoticons aber sehr sparsam. Verzichte auf Übertreibungen, Beschönigungen. Strukturierte den Post in Abschnitte. Vermeide Referenzierungen und Quellenangaben.`;
+
+    return this.getLocRealEstDesc(user, initialText, locRealEstDescQueryParams);
+  }
+
+  async getMacroLocDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    locDescQueryParams: ILocDescQueryParams,
+  ): Promise<string> {
+    const address =
+      locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
+
+    const initialText = `Führe eine umfangreiche Online-Recherche durchführen, um eine detaillierte und präzise Makrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
+
+Der Text soll:
+
+- keine Sonderzeichen oder Emoticons verwenden.
+- keine Referenzierungen und Quellenangaben enthalten.
+- Do not include any explanation
+
+**Inhalt der Makrolagenbeschreibung**:
+
+1.	**Geographische Lage**:
+•	Beschreiben Sie die geographische Lage der Immobilie, einschließlich des Bundeslandes, der Region und der Nähe zu größeren Städten und Ballungsräumen. Erwähnen Sie geografische Besonderheiten wie die Nähe zu Flüssen, Bergen oder der Küste.
+
+2.	**Infrastruktur**:
+•	Verkehrsanbindung: Beschreiben Sie die Erreichbarkeit der Immobilie durch Autobahnen, Bundesstraßen, Bahnhöfe und Flughäfen.
+•	Öffentliche Verkehrsmittel: Listen Sie die verfügbaren Bus- und Bahnlinien sowie Haltestellen in der Nähe auf.
+•	Versorgungsinfrastruktur: Geben Sie eine Übersicht über Supermärkte, Einkaufszentren und Dienstleister in der Umgebung.
+
+3.	**Wirtschaftliche Faktoren**:
+•	Erläutern Sie die wichtigsten Wirtschaftssektoren und Branchen in der Region.
+•	Beschreiben Sie die Arbeitsmarktsituation, einschließlich der Arbeitslosenquote und der Beschäftigungsstruktur.
+•	Nennen die wichtige Unternehmen und Arbeitgeber in der Region.
+
+4.	**Demographische Daten**:
+•	Beschreiben Sie die Bevölkerungsentwicklung, einschließlich Wachstums- oder Schrumpfungstendenzen.
+•	Geben Sie Informationen zur Altersstruktur der Bevölkerung.
+•	Erläutern Sie die typische Haushaltsgröße und -typen in der Region.
+
+5.	**Bildungs- und Ausbildungseinrichtungen**:
+•	Listen Sie die Anzahl und Qualität der Schulen, Universitäten und Berufsschulen auf.
+•	Geben Sie Informationen zu Weiterbildungsmöglichkeiten und Ausbildungsstätten.
+
+6.	**Kulturelle und soziale Infrastruktur**:
+•	Beschreiben Sie die Freizeitmöglichkeiten, einschließlich Parks, Sportanlagen und kulturellen Einrichtungen wie Theatern und Museen.
+•	Nennen Sie Gastronomiebetriebe und Hotels in der Umgebung.
+•	Geben Sie einen Überblick über soziale Einrichtungen wie Krankenhäuser, Ärzte und Pflegeeinrichtungen.
+
+7.	**Umweltfaktoren**:
+•	Beschreiben Sie die natürlichen Gegebenheiten, einschließlich Klima und Bodenbeschaffenheit.
+•	Erläutern Sie die Umweltqualität, einschließlich Luft- und Wasserqualität sowie Lärmbelastung.
+•	Nennen Sie Naturschutzgebiete und Erholungsgebiete in der Nähe.
+
+8.	**Wohnungsmarkt**:
+•	Geben Sie eine Übersicht über Angebot und Nachfrage auf dem Wohnungsmarkt, einschließlich der Leerstandsquote und der Bautätigkeit.
+•	Beschreiben Sie das Preisniveau für Miet- und Kaufobjekte.
+•	Erläutern Sie aktuelle Markttrends und Entwicklungen.
+
+9.	**Stadtentwicklung und Planungen**:
+•	Beschreiben Sie aktuelle städtebauliche Projekte und geplante Entwicklungen in der Region.
+•	Geben Sie Informationen zu Infrastrukturprojekten wie neuen Verkehrswegen oder dem Ausbau von öffentlichen Einrichtungen.
+•	Erläutern Sie zukünftige Entwicklungen und Prognosen.
+
+10.	**Rechtliche Rahmenbedingungen**:
+•	Beschreiben Sie relevante Bauvorschriften und -restriktionen.
+•	Nennen Sie eventuell vorhandene Denkmalschutz- oder Naturschutzauflagen.
+•	Geben Sie Informationen zu verfügbaren Förderprogrammen und staatlichen Unterstützungen.
+
+Zudem verwende diese vom AreaButler generierten Daten:
+
+###Daten:
+`;
+
+    return initialText + (await this.getLocDesc(user, locDescQueryParams));
+  }
+
+  async getMicroLocDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    locDescQueryParams: ILocDescQueryParams,
+  ): Promise<string> {
+    const address =
+      locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
+
+    const initialText = `Führe eine umfangreiche Online-Recherche durchführen, um eine detaillierte und präzise Mikrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
+
+Der Text soll:
+- keine Sonderzeichen oder Emoticons verwenden.
+- keine Referenzierungen und Quellenangaben enthalten.
+- Do not include any explanation
+
+Die Beschreibung sollte folgende Punkte umfassen:
+
+1. **Geographische Lage**
+    - Adresse: [Adresse]
+    - Stadtteil:
+    - Höhenlage:
+2. **Infrastruktur**
+    - Verkehrsanbindung:
+        - Öffentliche Verkehrsmittel:
+        - Straßenanbindung:
+        - Parkmöglichkeiten:
+    - Einrichtungen des täglichen Bedarfs:
+        - Supermärkte, Discounter, Bäckereien, Apotheken:
+    - Bildungseinrichtungen:
+        - Kindergärten, Schulen (Grundschulen, weiterführende Schulen):
+    - Gesundheitsversorgung:
+        - Ärzte, Fachärzte, Krankenhäuser:
+3. **Freizeit und Erholung**
+    - Grünflächen und Parks:
+    - Sporteinrichtungen:
+    - Kulturelle Einrichtungen:
+    - Restaurants und Cafés:
+4. **Soziale Infrastruktur**
+    - Nachbarschaft:
+        - Demographische Struktur, soziales Umfeld (Ruhe, Sauberkeit, Sicherheit):
+    - Dienstleistungen:
+        - Post, Banken, Friseure, Reinigungen:
+5. **Wirtschaftliche Aspekte**
+    - Arbeitsmarkt:
+        - Nähe zu Gewerbegebieten, Büros, Fabriken, wichtige Arbeitgeber:
+    - Immobilienmarkt:
+        - Vergleichbare Miet- und Kaufpreise, Entwicklungstendenzen:
+6. **Umwelt und Klima**
+    - Luftqualität:
+    - Lärmbelästigung:
+    - Klima:
+7. **Sicherheitsaspekte**
+    - Kriminalitätsrate:
+    - Polizeipräsenz:
+    - Notfallversorgung:
+8. **Zukunftsperspektiven**
+    - Stadtplanung:
+    - Infrastrukturentwicklung:
+    - Marktentwicklungen:
+9. **Subjektive Eindrücke**
+    - Erster Eindruck:
+    - Besonderheiten:
+    - Potenziale:
+Führe die notwendigen Recherchen online durch, um die erforderlichen Informationen für die jeweilige Adresse zu sammeln und zu integrieren.
+Zudem verwende diese vom AreaButler generierten Daten:
+
+###Daten:
+`;
+
+    return initialText + (await this.getLocDesc(user, locDescQueryParams));
+  }
+
+  // Left in case of future progress in OpenAi text limiting
   // private getResponseTextLimit(
   //   responseLimit?: IApiOpenAiResponseLimit,
   // ): string {
@@ -447,6 +613,28 @@ export class OpenAiQueryService {
     return (
       'Hier sind Details für dich zum Objekt:\n' +
       objectDetails.map((detail) => `- ${detail}`).join('\n')
+    );
+  }
+
+  private async getLocRealEstDesc(
+    user: UserDocument | TIntegrationUserDocument,
+    initialText: string,
+    { realEstate, realEstateType, ...queryParams }: ILocRealEstDescQueryParams,
+  ): Promise<string> {
+    return (
+      initialText +
+      this.getTextReqs({
+        queryParams,
+        isLocDescPresent: true,
+        isRealEstDescPresent: true,
+      }) +
+      '\n\n' +
+      (await this.getLocDesc(user, queryParams)) +
+      '\n\n' +
+      this.getRealEstDesc({
+        realEstate,
+        realEstateType,
+      })
     );
   }
 }

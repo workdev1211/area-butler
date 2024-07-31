@@ -1,7 +1,7 @@
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import OpenAiModule from "./OpenAiModule";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
@@ -48,7 +48,7 @@ interface IGeneratedTexts {
   queryResponse: string;
 }
 
-const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
+const OpenAiChat: FC<IOpenAiChatProps> = ({
   searchResultSnapshotId,
   queryType,
   handleUnlock,
@@ -58,18 +58,17 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
   integrationType,
   fixedQueryType,
 }) => {
-  const { t } = useTranslation();
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
+
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
   const [isFetchResponse, setIsFetchResponse] = useState(false);
   const [isEditMode, setIsEditMode] = useState(-1);
   const [isImproveDialogEnabled, setIsImproveDialogEnabled] = useState(false);
-
   const [queryResponses, setQueryResponse] = useState<IGeneratedTexts[]>([]);
 
+  const { t } = useTranslation();
   const { fetchOpenAiResponse } = useOpenAi();
-
-  const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -215,7 +214,10 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
 
                                 if (success) {
                                   toastSuccess(
-                                    t(IntlKeys.common.successfullyCopiedToClipboard)
+                                    t(
+                                      IntlKeys.common
+                                        .successfullyCopiedToClipboard
+                                    )
                                   );
                                 }
                               }}
@@ -224,7 +226,9 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                               src={deleteIcon}
                               className="w-5 h-5 cursor-pointer"
                               alt="Text verwerfen"
-                              title={t(IntlKeys.snapshotEditor.dataTab.discardText)}
+                              title={t(
+                                IntlKeys.snapshotEditor.dataTab.discardText
+                              )}
                               onClick={() => {
                                 queryResponses.splice(i, 1);
                                 setQueryResponse([...queryResponses]);
@@ -237,9 +241,10 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                           {isSendToIntAllowed(genText.initialQueryType) && (
                             <div
                               className="bg-primary-gradient border border-primary rounded flex gap-1 text-accent-content leading-5 px-2 p-1 ml-1 hover:cursor-pointer text-sm"
-                              title={
-                                t(IntlKeys.snapshotEditor.dataTab.sendTo, { integrationType: integrationNames[integrationType!] })
-                              }
+                              title={t(IntlKeys.snapshotEditor.dataTab.sendTo, {
+                                integrationType:
+                                  integrationNames[integrationType!],
+                              })}
                               onClick={() => {
                                 sendToIntegration({
                                   exportType: genText.initialQueryType as
@@ -255,9 +260,10 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                                 src={shareIcon}
                                 alt="An Partner senden"
                               />
-                              {
-                                t(IntlKeys.snapshotEditor.dataTab.sendTo, { integrationType: integrationNames[integrationType!] })
-                              }
+                              {t(IntlKeys.snapshotEditor.dataTab.sendTo, {
+                                integrationType:
+                                  integrationNames[integrationType!],
+                              })}
                             </div>
                           )}
                         </>
@@ -267,7 +273,9 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                             src={saveIcon}
                             className="w-5 cursor-pointer"
                             alt="Änderung übernehmen"
-                            title={t(IntlKeys.snapshotEditor.dataTab.applyChange)}
+                            title={t(
+                              IntlKeys.snapshotEditor.dataTab.applyChange
+                            )}
                             onClick={() => {
                               if (editInputRef.current) {
                                 queryResponses[i] = {
@@ -282,7 +290,9 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                             src={cancelIcon}
                             className="w-5 cursor-pointer"
                             alt="Änderung verwerfen"
-                            title={t(IntlKeys.snapshotEditor.dataTab.discardChange)}
+                            title={t(
+                              IntlKeys.snapshotEditor.dataTab.discardChange
+                            )}
                             onClick={() => {
                               setIsEditMode(-1);
                             }}
@@ -311,7 +321,9 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                 ref={promptInputRef}
                 disabled={isFetchResponse}
                 className="w-full p-2"
-                placeholder={t(IntlKeys.snapshotEditor.dataTab.improvePlaceholder)}
+                placeholder={t(
+                  IntlKeys.snapshotEditor.dataTab.improvePlaceholder
+                )}
               />
             ) : (
               <OpenAiModule
@@ -373,7 +385,9 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                 }}
                 disabled={isGenerateButtonDisabled || isFetchResponse}
               >
-                {isOpenAiAvailable ? t(IntlKeys.snapshotEditor.dataTab.generate) : t(IntlKeys.common.unlock)}
+                {isOpenAiAvailable
+                  ? t(IntlKeys.snapshotEditor.dataTab.generate)
+                  : t(IntlKeys.common.unlock)}
               </button>
             </div>
           </div>

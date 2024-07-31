@@ -25,6 +25,39 @@ export class OpenAiController extends AuthenticatedController {
     super();
   }
 
+  @ApiOperation({ description: 'Fetch Open AI location description' })
+  @Post('loc-desc')
+  async fetchLocDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchLocDesc(user, locDescQueryDto);
+  }
+
+  @ApiOperation({
+    description: 'Fetch Open AI location and real estate description',
+  })
+  @Post('loc-real-est-desc')
+  async fetchLocRealEstDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body()
+    locRealEstDescQueryDto: ApiOpenAiLocRealEstDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchLocRealEstDesc(user, locRealEstDescQueryDto);
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @Post('real-est-desc')
+  async fetchRealEstDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchRealEstDesc(user, realEstDescQueryDto);
+  }
+
   @ApiOperation({
     description: 'Fetch Open AI text improvement',
   })
@@ -50,41 +83,56 @@ export class OpenAiController extends AuthenticatedController {
       : this.openAiApiService.fetchResponse(text);
   }
 
-  @ApiOperation({ description: 'Fetch Open AI location description' })
-  @Post('loc-desc')
-  async fetchLocDesc(
+  @ApiOperation({
+    description:
+      'Fetch Open AI location and real estate description as a Facebook post',
+  })
+  @Post('facebook-post')
+  async fetchFacebookPost(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
+    @Body()
+    locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
-    return this.openAiService.fetchLocDesc(user, locationDescriptionQuery);
+    return this.openAiService.fetchFacebookPost(user, locRealEstDescQueryQuery);
   }
 
   @ApiOperation({
-    description: 'Fetch Open AI location and real estate description',
+    description:
+      'Fetch Open AI location and real estate description as an Instagram caption',
   })
-  @Post('loc-real-est-desc')
-  async fetchLocRealEstDesc(
+  @Post('instagram-caption')
+  async fetchInstagramCaption(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
     locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
 
-    return this.openAiService.fetchLocRealEstDesc(
+    return this.openAiService.fetchInstagramCaption(
       user,
       locRealEstDescQueryQuery,
     );
   }
 
-  @ApiOperation({ description: 'Fetch Open AI real estate description' })
-  @Post('real-est-desc')
-  async fetchRealEstDesc(
+  @ApiOperation({ description: 'Fetch Open AI macro location description' })
+  @Post('macro-loc-desc')
+  async fetchMacroLocDesc(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
-    return this.openAiService.fetchRealEstDesc(user, realEstDescQueryDto);
+    return this.openAiService.fetchMacroLocDesc(user, locDescQueryDto);
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI micro location description' })
+  @Post('micro-loc-desc')
+  async fetchMicroLocDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchMicroLocDesc(user, locDescQueryDto);
   }
 
   // TODO think about moving the check to the UserSubscriptionPipe

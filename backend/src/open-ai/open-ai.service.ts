@@ -46,8 +46,132 @@ export class OpenAiService {
 
   async fetchLocDesc(
     user: UserDocument | TIntegrationUserDocument,
-    { snapshotId, snapshotRes, ...fetchLocDescParams }: TFetchLocDescParams,
+    locDescParams: TFetchLocDescParams,
   ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getLocDescQuery(
+        user,
+        await this.processLocParams(user, locDescParams),
+      ),
+    );
+  }
+
+  async fetchLocRealEstDesc(
+    user: UserDocument | TIntegrationUserDocument,
+    locRealEstDescParams: TFetchLocRealEstDescParams,
+  ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getLocRealEstDescQuery(
+        user,
+        await this.processLocRealEstParams(user, locRealEstDescParams),
+      ),
+    );
+  }
+
+  async fetchRealEstDesc(
+    user: UserDocument | TIntegrationUserDocument,
+    { realEstateId, realEstate, ...realEstDescParams }: TFetchRealEstDescParams,
+  ): Promise<string> {
+    const resultRealEstate =
+      realEstate ||
+      mapRealEstateListingToApiRealEstateListing(
+        user,
+        await this.realEstateListingService.fetchById(user, realEstateId),
+      );
+
+    if (!resultRealEstate) {
+      throw new UnprocessableEntityException('Real estate not found!');
+    }
+
+    return this.openAiApiService.fetchResponse(
+      this.openAiQueryService.getRealEstDescQuery({
+        realEstate: resultRealEstate,
+        ...realEstDescParams,
+      }),
+    );
+  }
+
+  fetchImprovedText(originalText: string, customText: string): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      this.openAiQueryService.getImprovedText(originalText, customText),
+    );
+  }
+
+  fetchFormToInform(formalText: string): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      this.openAiQueryService.getFormToInformQuery(formalText),
+    );
+  }
+
+  async fetchFacebookPost(
+    user: UserDocument | TIntegrationUserDocument,
+    locRealEstDescParams: TFetchLocRealEstDescParams,
+  ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getFacebookPostQuery(
+        user,
+        await this.processLocRealEstParams(user, locRealEstDescParams),
+      ),
+    );
+  }
+
+  async fetchInstagramCaption(
+    user: UserDocument | TIntegrationUserDocument,
+    locRealEstDescParams: TFetchLocRealEstDescParams,
+  ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getInstagramCaptionQuery(
+        user,
+        await this.processLocRealEstParams(user, locRealEstDescParams),
+      ),
+    );
+  }
+
+  async fetchMacroLocDesc(
+    user: UserDocument | TIntegrationUserDocument,
+    locDescParams: TFetchLocDescParams,
+  ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getMacroLocDescQuery(
+        user,
+        await this.processLocParams(user, locDescParams),
+      ),
+    );
+  }
+
+  async fetchMicroLocDesc(
+    user: UserDocument | TIntegrationUserDocument,
+    locDescParams: TFetchLocDescParams,
+  ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getMicroLocDescQuery(
+        user,
+        await this.processLocParams(user, locDescParams),
+      ),
+    );
+  }
+
+  async batchFetchLocDescs(
+    user: UserDocument | TIntegrationUserDocument,
+    fetchLocRealEstDescParams: TFetchLocRealEstDescParams,
+  ): Promise<Record<TOpenAiLocDescType, string>> {
+    const [locDesc, locRealEstDesc, realEstDesc] = await Promise.all([
+      this.fetchLocDesc(user, fetchLocRealEstDescParams),
+      this.fetchLocRealEstDesc(user, fetchLocRealEstDescParams),
+      this.fetchRealEstDesc(user, fetchLocRealEstDescParams),
+    ]);
+
+    return {
+      [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: locDesc,
+      [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: locRealEstDesc,
+      [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: realEstDesc,
+    };
+  }
+
+  private async processLocParams(
+    user: UserDocument | TIntegrationUserDocument,
+    { snapshotId, snapshotRes, ...locDescParams }: TFetchLocDescParams,
+  ): Promise<ILocDescQueryParams> {
     const resultSnapshotRes =
       snapshotRes ||
       (await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
@@ -60,24 +184,22 @@ export class OpenAiService {
       throw new UnprocessableEntityException('Snapshot not found!');
     }
 
-    return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getLocDescQuery(user, {
-        snapshotRes: resultSnapshotRes,
-        ...fetchLocDescParams,
-      }),
-    );
+    return {
+      snapshotRes: resultSnapshotRes,
+      ...locDescParams,
+    };
   }
 
-  async fetchLocRealEstDesc(
+  private async processLocRealEstParams(
     user: UserDocument | TIntegrationUserDocument,
     {
-      realEstateId,
       realEstate,
+      realEstateId,
       snapshotId,
       snapshotRes,
-      ...fetchLocRealEstDescParams
+      ...locRealEstDescParams
     }: TFetchLocRealEstDescParams,
-  ): Promise<string> {
+  ): Promise<ILocRealEstDescQueryParams> {
     const resultSnapshotRes =
       snapshotRes ||
       (await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
@@ -101,68 +223,10 @@ export class OpenAiService {
       throw new UnprocessableEntityException('Real estate not found!');
     }
 
-    return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getLocRealEstDescQuery(user, {
-        realEstate: resultRealEstate,
-        snapshotRes: resultSnapshotRes,
-        ...fetchLocRealEstDescParams,
-      }),
-    );
-  }
-
-  async fetchRealEstDesc(
-    user: UserDocument | TIntegrationUserDocument,
-    {
-      realEstateId,
-      realEstate,
-      ...fetchRealEstDescParams
-    }: TFetchRealEstDescParams,
-  ): Promise<string> {
-    const resultRealEstate =
-      realEstate ||
-      mapRealEstateListingToApiRealEstateListing(
-        user,
-        await this.realEstateListingService.fetchById(user, realEstateId),
-      );
-
-    if (!resultRealEstate) {
-      throw new UnprocessableEntityException('Real estate not found!');
-    }
-
-    return this.openAiApiService.fetchResponse(
-      this.openAiQueryService.getRealEstDescQuery({
-        realEstate: resultRealEstate,
-        ...fetchRealEstDescParams,
-      }),
-    );
-  }
-
-  fetchFormToInform(formalText: string): Promise<string> {
-    return this.openAiApiService.fetchResponse(
-      this.openAiQueryService.getFormToInformQuery(formalText),
-    );
-  }
-
-  fetchImprovedText(originalText: string, customText: string): Promise<string> {
-    return this.openAiApiService.fetchResponse(
-      this.openAiQueryService.getImprovedText(originalText, customText),
-    );
-  }
-
-  async batchFetchLocDescs(
-    user: UserDocument | TIntegrationUserDocument,
-    fetchLocRealEstDescParams: TFetchLocRealEstDescParams,
-  ): Promise<Record<TOpenAiLocDescType, string>> {
-    const [locDesc, locRealEstDesc, realEstDesc] = await Promise.all([
-      this.fetchLocDesc(user, fetchLocRealEstDescParams),
-      this.fetchLocRealEstDesc(user, fetchLocRealEstDescParams),
-      this.fetchRealEstDesc(user, fetchLocRealEstDescParams),
-    ]);
-
     return {
-      [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: locDesc,
-      [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: locRealEstDesc,
-      [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: realEstDesc,
+      realEstate: resultRealEstate,
+      snapshotRes: resultSnapshotRes,
+      ...locRealEstDescParams,
     };
   }
 }

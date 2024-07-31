@@ -2,7 +2,7 @@
   overflow-y: auto;
   top: calc(var(--menu-item-pl) / 2);
   right: calc(var(--menu-item-pl) / 2);
-  bottom: calc(var(--menu-item-pl) / 2);
+  bottom: calc(var(--menu-item-pl) / 2); // was removed in Nils's version
   width: 0;
   transition: width 0.2s;
   z-index: 1000;
@@ -29,13 +29,13 @@
 
     .tab-container {
       padding: 0 2rem 0 1rem;
-      border-radius: .5rem .5rem 0 0;
+      border-radius: 0.5rem 0.5rem 0 0;
       @apply flex gap-2 items-start;
     }
 
     .tab-item {
       height: 40px;
-      border-radius: .5rem .5rem 0 0;
+      border-radius: 0.5rem 0.5rem 0 0;
       border: none;
       background: white;
       color: black;
@@ -45,7 +45,8 @@
         background: var(--base-bright-silver);
       }
 
-      &.tab-item-active, &.tab-item-active:hover {
+      &.tab-item-active,
+      &.tab-item-active:hover {
         color: white;
         background: var(--base-anthracite);
 
@@ -66,7 +67,7 @@
     background: var(--base-anthracite);
     padding: 0 var(--menu-item-pr) 0 13px !important;
     border-bottom: none;
-    border-radius: .5rem .5rem 0 0;
+    border-radius: 0.5rem 0.5rem 0 0;
 
     @apply flex flex-col justify-center;
 
@@ -91,7 +92,7 @@
     @apply h-full flex flex-col bg-white;
 
     &.embed-mode {
-      border-radius: 0 0 .5rem .5rem;
+      border-radius: 0 0 0.5rem 0.5rem;
     }
 
     .collapse-title {
@@ -158,17 +159,21 @@
           border-color: white;
 
           &:checked {
-            background-image: linear-gradient(-45deg, transparent 65%, #ffffff 0),
-            linear-gradient(45deg, transparent 75%, #ffffff 0),
-            linear-gradient(-45deg, #ffffff 40%, transparent 0),
-            linear-gradient(
-                            44deg,
-                            #ffffff 30%,
-                            var(--primary) 0,
-                            var(--primary) 40%,
-                            transparent 0
-            ),
-            linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+            background-image: linear-gradient(
+                -45deg,
+                transparent 65%,
+                #ffffff 0
+              ),
+              linear-gradient(45deg, transparent 75%, #ffffff 0),
+              linear-gradient(-45deg, #ffffff 40%, transparent 0),
+              linear-gradient(
+                44deg,
+                #ffffff 30%,
+                var(--primary) 0,
+                var(--primary) 40%,
+                transparent 0
+              ),
+              linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
           }
         }
       }
@@ -178,20 +183,20 @@
 
         &:checked {
           background-image: linear-gradient(
-                          -45deg,
-                          transparent 65%,
-                          var(--custom-primary) 0
-          ),
-          linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
-          linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
-          linear-gradient(
-                          44deg,
-                          var(--custom-primary) 30%,
-                          #ffffff 0,
-                          #ffffff 40%,
-                          transparent 0
-          ),
-          linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
+              -45deg,
+              transparent 65%,
+              var(--custom-primary) 0
+            ),
+            linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
+            linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
+            linear-gradient(
+              44deg,
+              var(--custom-primary) 30%,
+              #ffffff 0,
+              #ffffff 40%,
+              transparent 0
+            ),
+            linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
         }
       }
 
@@ -271,7 +276,6 @@
           &.img-container-lg {
             width: var(--menu-image-w-h-lg);
             height: var(--menu-image-w-h-lg);
-
           }
 
           img.item {
@@ -304,16 +308,16 @@
 
       &:checked {
         background-image: linear-gradient(-45deg, transparent 65%, #ffffff 0),
-        linear-gradient(45deg, transparent 75%, #ffffff 0),
-        linear-gradient(-45deg, #ffffff 40%, transparent 0),
-        linear-gradient(
-                        44deg,
-                        #ffffff 30%,
-                        var(--primary) 0,
-                        var(--primary) 40%,
-                        transparent 0
-        ),
-        linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+          linear-gradient(45deg, transparent 75%, #ffffff 0),
+          linear-gradient(-45deg, #ffffff 40%, transparent 0),
+          linear-gradient(
+            44deg,
+            #ffffff 30%,
+            var(--primary) 0,
+            var(--primary) 40%,
+            transparent 0
+          ),
+          linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
       }
     }
 
@@ -322,20 +326,20 @@
 
       &:checked {
         background-image: linear-gradient(
-                        -45deg,
-                        transparent 65%,
-                        var(--custom-primary) 0
-        ),
-        linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
-        linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
-        linear-gradient(
-                        44deg,
-                        var(--custom-primary) 30%,
-                        #ffffff 0,
-                        #ffffff 40%,
-                        transparent 0
-        ),
-        linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
+            -45deg,
+            transparent 65%,
+            var(--custom-primary) 0
+          ),
+          linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
+          linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
+          linear-gradient(
+            44deg,
+            var(--custom-primary) 30%,
+            #ffffff 0,
+            #ffffff 40%,
+            transparent 0
+          ),
+          linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
       }
     }
   }
@@ -344,7 +348,7 @@
     height: var(--menu-footer-h);
     padding: 6px;
     border-top: 2px solid var(--primary);
-    border-radius: 0 0 .5rem .5rem;
+    border-radius: 0 0 0.5rem 0.5rem;
     background: white;
     @apply flex flex-col justify-center;
 

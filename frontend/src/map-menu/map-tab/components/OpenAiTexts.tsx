@@ -84,7 +84,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
             {/*    Lagetext generieren*/}
             {/*  </h3>*/}
             {/*</li>*/}
-            {openAiQueryTypes.map(({ type, sidebarLabel }) => (
+            {openAiQueryTypes.map(({ type }) => (
               <li key={type}>
                 <h3
                   className="max-w-fit items-center cursor-pointer"

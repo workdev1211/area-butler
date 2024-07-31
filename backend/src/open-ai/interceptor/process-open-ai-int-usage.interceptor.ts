@@ -35,20 +35,23 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
           integrationType: integrationUser.integrationType,
           integrationUserId: integrationUser.integrationUserId,
         });
-    }
 
-    if (!realEstate.integrationParams.openAiRequestQuantity) {
-      await this.realEstateListingIntService.handleProductUnlock(
-        integrationUser,
-        { integrationId, actionType: IntegrationActionTypeEnum.UNLOCK_OPEN_AI },
-      );
+      if (!realEstate.integrationParams.openAiRequestQuantity) {
+        await this.realEstateListingIntService.handleProductUnlock(
+          integrationUser,
+          {
+            integrationId,
+            actionType: IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+          },
+        );
 
-      realEstate =
-        await this.realEstateListingIntService.findOneOrFailByIntParams({
-          integrationId,
-          integrationType: integrationUser.integrationType,
-          integrationUserId: integrationUser.integrationUserId,
-        });
+        realEstate =
+          await this.realEstateListingIntService.findOneOrFailByIntParams({
+            integrationId,
+            integrationType: integrationUser.integrationType,
+            integrationUserId: integrationUser.integrationUserId,
+          });
+      }
     }
 
     return next.handle().pipe(

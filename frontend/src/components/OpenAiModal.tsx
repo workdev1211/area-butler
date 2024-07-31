@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -24,7 +24,7 @@ interface IOpenAiModalProps {
   performUnlock?: TUnlockIntProduct;
 }
 
-const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
+const OpenAiModal: FC<IOpenAiModalProps> = ({
   closeModal,
   searchResultSnapshotId,
   queryType,
@@ -41,8 +41,8 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
       isIntegration &&
       [
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
         OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
       ].includes(queryType)
     );
   };
@@ -59,7 +59,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   };
 
   return (
-    <div className="modal modal-open z-2000">
+    <div className="modal modal-open z-9999">
       <div className="modal-box modal-full-screen">
         <h1 className="text-xl flex items-center gap-2 p-3 border-b">
           {t(IntlKeys.snapshotEditor.dataTab.aiTextsFromMagicPen)}

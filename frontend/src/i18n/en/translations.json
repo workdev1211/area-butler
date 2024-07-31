@@ -250,14 +250,22 @@
         "REAL_ESTATE_DESCRIPTION": "Object - Description",
         "LOCATION_REAL_ESTATE_DESCRIPTION": "Exposé text",
         "FORMAL_TO_INFORMAL": "Convert to Du Form",
-        "GENERAL_QUESTION": "General inquiry - Your door to AI"
+        "GENERAL_QUESTION": "General inquiry - Your door to AI",
+        "FACEBOOK_POST": "Facebook Post Exposé-Text",
+        "INSTAGRAM_CAPTION": "Instagram Caption Exposé-Text",
+        "MICRO_LOC_DESC": "Location - Micro-description",
+        "MACRO_LOC_DESC": "Location - Macro-description"
       },
       "openAITypesOptionLabel": {
-        "LOCATION_DESCRIPTION": "Situation text",
+        "LOCATION_DESCRIPTION": "Location text",
         "REAL_ESTATE_DESCRIPTION": "Description of the property",
         "LOCATION_REAL_ESTATE_DESCRIPTION": "Exposé text",
         "FORMAL_TO_INFORMAL": "Transformation you-form into you-form",
-        "GENERAL_QUESTION": "Ask AI a general question"
+        "GENERAL_QUESTION": "Ask AI a general question",
+        "FACEBOOK_POST": "Facebook Post Exposé text",
+        "INSTAGRAM_CAPTION": "Instagram Caption Exposé text",
+        "MICRO_LOC_DESC": "Micro location text",
+        "MACRO_LOC_DESC": "Macro location text"
       },
       "interactiveMap": "Interactive map",
       "publicLinks": "Links with and without address"

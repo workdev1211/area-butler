@@ -78,13 +78,6 @@ export const useOpenAi = () => {
         break;
       }
 
-      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
-        url = isIntegration
-          ? "/api/open-ai-int/real-est-desc"
-          : "/api/open-ai/real-est-desc";
-        break;
-      }
-
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
         url = isIntegration
           ? "/api/open-ai-int/loc-real-est-desc"
@@ -92,10 +85,45 @@ export const useOpenAi = () => {
         break;
       }
 
+      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+        url = isIntegration
+          ? "/api/open-ai-int/real-est-desc"
+          : "/api/open-ai/real-est-desc";
+        break;
+      }
+
       case OpenAiQueryTypeEnum.IMPROVE_TEXT: {
         url = isIntegration
           ? "/api/open-ai-int/improve-text"
           : "/api/open-ai/improve-text";
+        break;
+      }
+
+      case OpenAiQueryTypeEnum.FACEBOOK_POST: {
+        url = isIntegration
+          ? "/api/open-ai-int/facebook-post"
+          : "/api/open-ai/facebook-post";
+        break;
+      }
+
+      case OpenAiQueryTypeEnum.INSTAGRAM_CAPTION: {
+        url = isIntegration
+          ? "/api/open-ai-int/instagram-caption"
+          : "/api/open-ai/instagram-caption";
+        break;
+      }
+
+      case OpenAiQueryTypeEnum.MACRO_LOC_DESC: {
+        url = isIntegration
+          ? "/api/open-ai-int/macro-loc-desc"
+          : "/api/open-ai/macro-loc-desc";
+        break;
+      }
+
+      case OpenAiQueryTypeEnum.MICRO_LOC_DESC: {
+        url = isIntegration
+          ? "/api/open-ai-int/micro-loc-desc"
+          : "/api/open-ai/micro-loc-desc";
         break;
       }
 

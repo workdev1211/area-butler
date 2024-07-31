@@ -21,6 +21,54 @@ export class OpenAiIntController {
     private readonly openAiService: OpenAiService,
   ) {}
 
+  @ApiOperation({ description: 'Fetch Open AI location description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('loc-desc')
+  fetchLocDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchLocDesc(integrationUser, locDescQueryDto);
+  }
+
+  @ApiOperation({
+    description: 'Fetch Open AI location and real estate description',
+  })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('loc-real-est-desc')
+  fetchLocRealEstDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body()
+    locRealEstDescQueryDto: ApiOpenAiLocRealEstDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchLocRealEstDesc(
+      integrationUser,
+      locRealEstDescQueryDto,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('real-est-desc')
+  fetchRealEstDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchRealEstDesc(
+      integrationUser,
+      realEstDescQueryDto,
+    );
+  }
+
   @ApiOperation({
     description: 'Fetch Open AI text improvement',
   })
@@ -51,54 +99,75 @@ export class OpenAiIntController {
       : this.openAiApiService.fetchResponse(text);
   }
 
-  @ApiOperation({ description: 'Fetch Open AI location description' })
-  @UseInterceptors(
-    InjectIntegrationUserInterceptor,
-    ProcessOpenAiIntUsageInterceptor,
-  )
-  @Post('loc-desc')
-  fetchLocDesc(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
-  ): Promise<string> {
-    return this.openAiService.fetchLocDesc(
-      integrationUser,
-      locationDescriptionQuery,
-    );
-  }
-
   @ApiOperation({
-    description: 'Fetch Open AI location and real estate description',
+    description:
+      'Fetch Open AI location and real estate description as a Facebook post',
   })
   @UseInterceptors(
     InjectIntegrationUserInterceptor,
     ProcessOpenAiIntUsageInterceptor,
   )
-  @Post('loc-real-est-desc')
-  fetchLocRealEstDesc(
+  @Post('facebook-post')
+  async fetchFacebookPost(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
     locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
-    return this.openAiService.fetchLocRealEstDesc(
+    return this.openAiService.fetchFacebookPost(
       integrationUser,
       locRealEstDescQueryQuery,
     );
   }
 
-  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @ApiOperation({
+    description:
+      'Fetch Open AI location and real estate description as an Instagram caption',
+  })
   @UseInterceptors(
     InjectIntegrationUserInterceptor,
     ProcessOpenAiIntUsageInterceptor,
   )
-  @Post('real-est-desc')
-  fetchRealEstDesc(
+  @Post('instagram-caption')
+  async fetchInstagramCaption(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
+    @Body()
+    locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
-    return this.openAiService.fetchRealEstDesc(
+    return this.openAiService.fetchInstagramCaption(
       integrationUser,
-      realEstateDescriptionQuery,
+      locRealEstDescQueryQuery,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI macro location description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('macro-loc-desc')
+  async fetchMacroLocDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchMacroLocDesc(
+      integrationUser,
+      locDescQueryDto,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI micro location description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('micro-loc-desc')
+  async fetchMicroLocDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchMicroLocDesc(
+      integrationUser,
+      locDescQueryDto,
     );
   }
 }

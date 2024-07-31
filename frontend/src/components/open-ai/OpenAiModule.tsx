@@ -1,13 +1,7 @@
-import {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { FormikProps } from "formik/dist/types";
 
@@ -43,18 +37,16 @@ interface IOpenAiModuleProps {
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
   searchResultSnapshotId?: string;
-  showResult?: boolean;
   fixedQueryType?: undefined | boolean;
 }
 
-const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
+const OpenAiModule: FC<IOpenAiModuleProps> = ({
   onModuleStatusChange,
   isFetchResponse,
   onResponseFetched,
   initialQueryType,
   onQueryTypeChange,
   searchResultSnapshotId,
-  showResult,
   fixedQueryType,
 }) => {
   const { t } = useTranslation();
@@ -95,13 +87,31 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
       let query: TOpenAiQuery;
 
       switch (queryType) {
-        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
+        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+        case OpenAiQueryTypeEnum.MACRO_LOC_DESC:
+        case OpenAiQueryTypeEnum.MICRO_LOC_DESC: {
           formRef.current?.handleSubmit();
 
           query = {
             snapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
+          };
+
+          break;
+        }
+
+        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+        case OpenAiQueryTypeEnum.FACEBOOK_POST:
+        case OpenAiQueryTypeEnum.INSTAGRAM_CAPTION: {
+          formRef.current?.handleSubmit();
+          realEstDescFormRef.current?.handleSubmit();
+
+          query = {
+            snapshotId: searchResultSnapshotId!,
+            ...generalFormRef.current!.values,
+            ...locDescFormRef.current!.values,
+            ...realEstDescFormRef.current!.values,
           };
 
           break;
@@ -112,20 +122,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
           query = {
             ...generalFormRef.current!.values,
-            ...realEstDescFormRef.current!.values,
-          };
-
-          break;
-        }
-
-        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
-          formRef.current?.handleSubmit();
-          realEstDescFormRef.current?.handleSubmit();
-
-          query = {
-            snapshotId: searchResultSnapshotId!,
-            ...generalFormRef.current!.values,
-            ...locDescFormRef.current!.values,
             ...realEstDescFormRef.current!.values,
           };
 
@@ -161,7 +157,13 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   }, [isFetchResponse, queryType, searchResultSnapshotId]);
 
   useEffect(() => {
-    if (queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION) {
+    if (
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.MACRO_LOC_DESC,
+        OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+      ].includes(queryType as OpenAiQueryTypeEnum)
+    ) {
       onModuleStatusChange(true);
     }
 
@@ -171,11 +173,15 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-0">
       <div>
-        <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.dataTab.contentDetails)}</div>
+        <div className="section-title mb-2">
+          {t(IntlKeys.snapshotEditor.dataTab.contentDetails)}
+        </div>
 
         <div className="form-control">
           <label htmlFor="queryType" className="label">
-            <span className="label-text">{t(IntlKeys.snapshotEditor.dataTab.targetFormat)}</span>
+            <span className="label-text">
+              {t(IntlKeys.snapshotEditor.dataTab.targetFormat)}
+            </span>
           </label>
 
           <select
@@ -198,14 +204,27 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             >
               {t(IntlKeys.snapshotEditor.dataTab.generateQuestion)}
             </option>
-            {resultQueryTypes.map(({ type, label }) => (
+            {resultQueryTypes.map(({ type }) => (
               <option value={type} key={type} className="flex flex-col">
-                {t((IntlKeys.snapshotEditor.dataTab.openAITypesOptionLabel as Record<string, string>)[type])}
+                {t(
+                  (
+                    IntlKeys.snapshotEditor.dataTab
+                      .openAITypesOptionLabel as Record<string, string>
+                  )[type]
+                )}
               </option>
             ))}
           </select>
         </div>
-        {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
+
+        {[
+          OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+          OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+          OpenAiQueryTypeEnum.FACEBOOK_POST,
+          OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
+          OpenAiQueryTypeEnum.MACRO_LOC_DESC,
+          OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+        ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiLocDescForm
             formId="open-ai-loc-desc-form"
             initialValues={cachedOpenAi.locationDescription}
@@ -219,7 +238,12 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           />
         )}
 
-        {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
+        {[
+          OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+          OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+          OpenAiQueryTypeEnum.FACEBOOK_POST,
+          OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
+        ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiRealEstDescForm
             formId="open-ai-real-est-desc-form"
             initialValues={cachedOpenAi.realEstateDescription}
@@ -239,41 +263,10 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           />
         )}
 
-        {queryType === OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION && (
-          <>
-            <OpenAiLocDescForm
-              formId="open-ai-loc-desc-form"
-              initialValues={cachedOpenAi.locationDescription}
-              onValuesChange={(values) => {
-                cachingDispatch({
-                  type: CachingActionTypesEnum.SET_OPEN_AI,
-                  payload: { locationDescription: { ...values } },
-                });
-              }}
-              formRef={locDescFormRef}
-            />
-
-            <OpenAiRealEstDescForm
-              formId="open-ai-real-est-desc-form"
-              initialValues={cachedOpenAi.realEstateDescription}
-              onValuesChange={(values) => {
-                onModuleStatusChange(
-                  !!queryType &&
-                    !!values.realEstateId &&
-                    values.realEstateId !== placeholderSelectOptionKey
-                );
-
-                cachingDispatch({
-                  type: CachingActionTypesEnum.SET_OPEN_AI,
-                  payload: { realEstateDescription: { ...values } },
-                });
-              }}
-              formRef={realEstDescFormRef}
-            />
-          </>
-        )}
-
-        {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
+        {[
+          OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+          OpenAiQueryTypeEnum.GENERAL_QUESTION,
+        ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiQueryForm
             formId="open-ai-formal-to-informal-form"
             initialValues={cachedOpenAi.query}
@@ -288,30 +281,17 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             formRef={formRef}
           />
         )}
-
-        {queryType === OpenAiQueryTypeEnum.GENERAL_QUESTION && (
-          <OpenAiQueryForm
-            formId="open-ai-general-question-form"
-            initialValues={cachedOpenAi.query}
-            onValuesChange={(values) => {
-              onModuleStatusChange(!!queryType && !!values.text);
-
-              cachingDispatch({
-                type: CachingActionTypesEnum.SET_OPEN_AI,
-                payload: { query: { ...values } },
-              });
-            }}
-            formRef={formRef}
-          />
-        )}
       </div>
+
       <div>
         {![
           OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
           OpenAiQueryTypeEnum.GENERAL_QUESTION,
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <>
-            <div className="section-title mb-2">{t(IntlKeys.snapshotEditor.dataTab.textualInformation)}</div>
+            <div className="section-title mb-2">
+              {t(IntlKeys.snapshotEditor.dataTab.textualInformation)}
+            </div>
 
             <OpenAiGeneralForm
               formId="open-ai-general-form"

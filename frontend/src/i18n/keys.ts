@@ -195,8 +195,7 @@ export const IntlKeys = {
       myLocation: "snapshotEditor.dataTab.myLocation",
       unlockInteractiveMap: "snapshotEditor.dataTab.unlockInteractiveMap",
       digitalMedia: "snapshotEditor.dataTab.digitalMedia",
-      digitalMediaDescription:
-        "snapshotEditor.dataTab.digitalMediaDescription",
+      digitalMediaDescription: "snapshotEditor.dataTab.digitalMediaDescription",
       publicLink: "snapshotEditor.dataTab.publicLink",
       qrCodeLink: "snapshotEditor.dataTab.qrCodeLink",
       download: "snapshotEditor.dataTab.download",
@@ -229,8 +228,7 @@ export const IntlKeys = {
       noMapSelectionsSaved: "snapshotEditor.dataTab.noMapSelectionsSaved",
       selectedLocalities: "snapshotEditor.dataTab.selectedLocalities",
       cardLegend: "snapshotEditor.dataTab.cardLegend",
-      neighborhoodDemographic:
-        "snapshotEditor.dataTab.neighborhoodDemographic",
+      neighborhoodDemographic: "snapshotEditor.dataTab.neighborhoodDemographic",
       surroundings: "snapshotEditor.dataTab.surroundings",
       pleaseCompleteAllSteps: "snapshotEditor.dataTab.pleaseCompleteAllSteps",
       generateAIText: "snapshotEditor.dataTab.generateAIText",
@@ -246,8 +244,7 @@ export const IntlKeys = {
       aiFieldOfKnowledge: "snapshotEditor.dataTab.aiFieldOfKnowledge",
       POITable: "snapshotEditor.dataTab.POITable",
       mediaAndFormat: "snapshotEditor.dataTab.mediaAndFormat",
-      enterYourOwnTargetGroup:
-        "snapshotEditor.dataTab.enterYourOwnTargetGroup",
+      enterYourOwnTargetGroup: "snapshotEditor.dataTab.enterYourOwnTargetGroup",
       defaultTargetGroupName: "snapshotEditor.dataTab.defaultTargetGroupName",
       transparentBackground: "snapshotEditor.dataTab.transparentBackground",
       selectedMapSections: "snapshotEditor.dataTab.selectedMapSections",
@@ -257,8 +254,7 @@ export const IntlKeys = {
       surroundingsHeader: "snapshotEditor.dataTab.surroundingsHeader",
       distance: "snapshotEditor.dataTab.distance",
       scanAndNew: "snapshotEditor.dataTab.scanAndNew",
-      discoverResidentialArea:
-        "snapshotEditor.dataTab.discoverResidentialArea",
+      discoverResidentialArea: "snapshotEditor.dataTab.discoverResidentialArea",
       mobilityCriteria: "snapshotEditor.dataTab.mobilityCriteria",
       yourNewProperty: "snapshotEditor.dataTab.yourNewProperty",
       nextPlace: "snapshotEditor.dataTab.nextPlace",
@@ -277,8 +273,7 @@ export const IntlKeys = {
       unlockAiTexts: "snapshotEditor.dataTab.unlockAiTexts",
       aiTextsFromMagicPen: "snapshotEditor.dataTab.aiTextsFromMagicPen",
       aiDescription: "snapshotEditor.dataTab.aiDescription",
-      pleaseEnterRequirements:
-        "snapshotEditor.dataTab.pleaseEnterRequirements",
+      pleaseEnterRequirements: "snapshotEditor.dataTab.pleaseEnterRequirements",
       discardText: "snapshotEditor.dataTab.discardText",
       applyChange: "snapshotEditor.dataTab.applyChange",
       discardChange: "snapshotEditor.dataTab.discardChange",
@@ -314,6 +309,14 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesSideBarLabel.FORMAL_TO_INFORMAL",
         GENERAL_QUESTION:
           "snapshotEditor.dataTab.openAITypesSideBarLabel.GENERAL_QUESTION",
+        FACEBOOK_POST:
+          "snapshotEditor.dataTab.openAITypesSideBarLabel.FACEBOOK_POST",
+        INSTAGRAM_CAPTION:
+          "snapshotEditor.dataTab.openAITypesSideBarLabel.INSTAGRAM_CAPTION",
+        MICRO_LOC_DESC:
+          "snapshotEditor.dataTab.openAITypesSideBarLabel.MICRO_LOC_DESC",
+        MACRO_LOC_DESC:
+          "snapshotEditor.dataTab.openAITypesSideBarLabel.MACRO_LOC_DESC",
       },
       openAITypesOptionLabel: {
         LOCATION_DESCRIPTION:
@@ -326,6 +329,14 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesOptionLabel.FORMAL_TO_INFORMAL",
         GENERAL_QUESTION:
           "snapshotEditor.dataTab.openAITypesOptionLabel.GENERAL_QUESTION",
+        FACEBOOK_POST:
+          "snapshotEditor.dataTab.openAITypesOptionLabel.FACEBOOK_POST",
+        INSTAGRAM_CAPTION:
+          "snapshotEditor.dataTab.openAITypesOptionLabel.INSTAGRAM_CAPTION",
+        MICRO_LOC_DESC:
+          "snapshotEditor.dataTab.openAITypesOptionLabel.MICRO_LOC_DESC",
+        MACRO_LOC_DESC:
+          "snapshotEditor.dataTab.openAITypesOptionLabel.MACRO_LOC_DESC",
       },
       publicLinks: "snapshotEditor.dataTab.publicLinks",
     },

@@ -57,7 +57,7 @@ export class OpenAiExtService {
     const coordinates = place.geometry.location;
     const resultAddress = address || place.formatted_address;
 
-    const realEstate: Partial<ApiRealEstateListing> = {
+    const realEstate = {
       address: resultAddress,
       characteristics: {
         realEstateSizeInSquareMeters,
@@ -69,7 +69,7 @@ export class OpenAiExtService {
         price: { amount: price, currency: '€' },
         type: priceType,
       },
-    };
+    } as ApiRealEstateListing;
 
     let queryResp: string;
 

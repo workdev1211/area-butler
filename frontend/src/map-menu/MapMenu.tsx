@@ -21,8 +21,6 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
-import locationCheckIcon from "../assets/icons/map-menu/editor-tab/location-check.svg";
-import locationNotFoundIcon from "../assets/icons/map-menu/editor-tab/location-not-found.svg";
 import fileIcon from "../assets/icons/file.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
@@ -126,13 +124,14 @@ const MapMenu: FC<IMapMenuProps> = ({
   switch (mapDisplayMode) {
     case MapDisplayModesEnum.EDITOR: {
       mapMenuContentHeight =
-        "calc(100% - calc(var(--menu-item-h) * 2) - var(--menu-footer-h))";
+        "calc(100vh - calc(var(--menu-item-h) * 3.4) - var(--menu-footer-h))";
       break;
     }
 
     case MapDisplayModesEnum.EMBEDDED:
     default: {
-      mapMenuContentHeight = "calc(100% - var(--menu-item-h) * 1.2)";
+      mapMenuContentHeight =
+        "calc(100vh - var(--menu-item-h) - var(--menu-item-pl));";
     }
   }
 
@@ -222,7 +221,7 @@ const MapMenu: FC<IMapMenuProps> = ({
       <div
         className={`map-menu-content ${!isEditorMode ? "embed-mode" : ""}`}
         style={{
-          height: mapMenuContentHeight,
+          maxHeight: mapMenuContentHeight,
         }}
         data-tour="map-menu-contents"
       >

@@ -122,6 +122,16 @@ export const openAiQueryTypes: Array<{
     sidebarLabel: "Lage - Beschreibung",
   },
   {
+    type: OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+    label: "Mikrolagetext",
+    sidebarLabel: "Lage - Mikrobeschreibung",
+  },
+  {
+    type: OpenAiQueryTypeEnum.MACRO_LOC_DESC,
+    label: "Makrolagetext",
+    sidebarLabel: "Lage - Makrobeschreibung",
+  },
+  {
     type: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
     label: "Beschreibung der Immobilie",
     sidebarLabel: "Objekt - Beschreibung",
@@ -130,6 +140,16 @@ export const openAiQueryTypes: Array<{
     type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
     label: "Exposé Text",
     sidebarLabel: "Exposé-Text",
+  },
+  {
+    type: OpenAiQueryTypeEnum.FACEBOOK_POST,
+    label: "Facebook Post",
+    sidebarLabel: "Facebook Post Exposé-Text",
+  },
+  {
+    type: OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
+    label: "Instagram Caption",
+    sidebarLabel: "Instagram Caption Exposé-Text",
   },
   // {
   //   type: OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
