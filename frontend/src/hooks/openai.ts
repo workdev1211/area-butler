@@ -127,6 +127,13 @@ export const useOpenAi = () => {
         break;
       }
 
+      case OpenAiQueryTypeEnum.DISTRICT_DESC: {
+        url = isIntegration
+          ? "/api/open-ai-int/district-desc"
+          : "/api/open-ai/district-desc";
+        break;
+      }
+
       case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
       case OpenAiQueryTypeEnum.GENERAL_QUESTION:
       default: {

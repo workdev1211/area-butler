@@ -254,7 +254,8 @@
         "FACEBOOK_POST": "Facebook Post Exposé-Text",
         "INSTAGRAM_CAPTION": "Instagram Caption Exposé-Text",
         "MICRO_LOC_DESC": "Location - Micro-description",
-        "MACRO_LOC_DESC": "Location - Macro-description"
+        "MACRO_LOC_DESC": "Location - Macro-description",
+        "DISTRICT_DESC": "District description"
       },
       "openAITypesOptionLabel": {
         "LOCATION_DESCRIPTION": "Location text",
@@ -265,7 +266,8 @@
         "FACEBOOK_POST": "Facebook Post Exposé text",
         "INSTAGRAM_CAPTION": "Instagram Caption Exposé text",
         "MICRO_LOC_DESC": "Micro location text",
-        "MACRO_LOC_DESC": "Macro location text"
+        "MACRO_LOC_DESC": "Macro location text",
+        "DISTRICT_DESC": "District description"
       },
       "interactiveMap": "Interactive map",
       "publicLinks": "Links with and without address"

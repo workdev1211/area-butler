@@ -135,6 +135,16 @@ export class OpenAiController extends AuthenticatedController {
     return this.openAiService.fetchMicroLocDesc(user, locDescQueryDto);
   }
 
+  @ApiOperation({ description: 'Fetch Open AI location district description' })
+  @Post('district-desc')
+  async fetchDistrictDesc(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    this.checkIsOpenAiAvail(user);
+    return this.openAiService.fetchDistrictDesc(user, locDescQueryDto);
+  }
+
   // TODO think about moving the check to the UserSubscriptionPipe
   private checkIsOpenAiAvail(user: UserDocument): void {
     this.subscriptionService.checkSubscriptionViolation(

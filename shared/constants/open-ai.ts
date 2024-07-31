@@ -123,22 +123,27 @@ export const openAiQueryTypes: Array<{
   },
   {
     type: OpenAiQueryTypeEnum.MICRO_LOC_DESC,
-    label: "Mikrolagetext",
+    label: "Mikrolage",
     sidebarLabel: "Lage - Mikrobeschreibung",
   },
   {
     type: OpenAiQueryTypeEnum.MACRO_LOC_DESC,
-    label: "Makrolagetext",
+    label: "Makrolage",
     sidebarLabel: "Lage - Makrobeschreibung",
   },
   {
+    type: OpenAiQueryTypeEnum.DISTRICT_DESC,
+    label: "Stadtteiltext",
+    sidebarLabel: "Lage - Stadtteiltext",
+  },
+  {
     type: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-    label: "Beschreibung der Immobilie",
+    label: "Objektbeschreibung",
     sidebarLabel: "Objekt - Beschreibung",
   },
   {
     type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-    label: "Exposé Text",
+    label: "Exposétext",
     sidebarLabel: "Exposé-Text",
   },
   {
@@ -148,7 +153,7 @@ export const openAiQueryTypes: Array<{
   },
   {
     type: OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
-    label: "Instagram Caption",
+    label: "Instagram Post",
     sidebarLabel: "Instagram Caption Exposé-Text",
   },
   // {
@@ -158,7 +163,7 @@ export const openAiQueryTypes: Array<{
   // },
   {
     type: OpenAiQueryTypeEnum.GENERAL_QUESTION,
-    label: "Generelle Frage an KI stellen",
+    label: "Generelle Frage an KI",
     sidebarLabel: "Generelle Anfrage – Ihre Tür zur KI",
   },
 ];

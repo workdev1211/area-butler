@@ -114,11 +114,17 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
         OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
         OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.FACEBOOK_POST,
+        OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
+        OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+        OpenAiQueryTypeEnum.MACRO_LOC_DESC,
+        OpenAiQueryTypeEnum.DISTRICT_DESC,
       ].includes(genText.queryType)
     ) {
       const queryTitle = openAiQueryTypes.find(
         ({ type }) => type === genText.queryType
       )!!.label;
+
       return (
         <>
           Generiere eine/n <strong>{queryTitle}</strong> für die Zielgruppe{" "}

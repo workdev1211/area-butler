@@ -66,6 +66,7 @@ export enum OpenAiQueryTypeEnum {
   INSTAGRAM_CAPTION = "INSTAGRAM_CAPTION",
   MICRO_LOC_DESC = "MICRO_LOC_DESC",
   MACRO_LOC_DESC = "MACRO_LOC_DESC",
+  DISTRICT_DESC = "DISTRICT_DESC",
 }
 
 // export enum OpenAiOsmQueryNameEnum {

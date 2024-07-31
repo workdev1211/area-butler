@@ -170,4 +170,20 @@ export class OpenAiIntController {
       locDescQueryDto,
     );
   }
+
+  @ApiOperation({ description: 'Fetch Open AI location district description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('district-desc')
+  async fetchDistrictDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchDistrictDesc(
+      integrationUser,
+      locDescQueryDto,
+    );
+  }
 }

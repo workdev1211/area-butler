@@ -108,8 +108,8 @@ export class OpenAiQueryService {
   ): Promise<string> {
     const {
       realEstate,
-      targetGroupName,
       snapshotRes: { config },
+      targetGroupName = defaultTargetGroupName,
     } = locRealEstDescQueryParams;
 
     const initialText =
@@ -163,8 +163,8 @@ export class OpenAiQueryService {
   ): Promise<string> {
     const {
       realEstate,
-      targetGroupName,
       snapshotRes: { config },
+      targetGroupName = defaultTargetGroupName,
     } = locRealEstDescQueryParams;
 
     const initialText =
@@ -181,8 +181,8 @@ export class OpenAiQueryService {
   ): Promise<string> {
     const {
       realEstate,
-      targetGroupName,
       snapshotRes: { config },
+      targetGroupName = defaultTargetGroupName,
     } = locRealEstDescQueryParams;
 
     const initialText =
@@ -282,7 +282,7 @@ Der Text soll:
 Die Beschreibung sollte folgende Punkte umfassen:
 
 1. **Geographische Lage**
-    - Adresse: [Adresse]
+    - Adresse: ${address}
     - Stadtteil:
     - Höhenlage:
 2. **Infrastruktur**
@@ -329,6 +329,47 @@ Die Beschreibung sollte folgende Punkte umfassen:
     - Potenziale:
 Führe die notwendigen Recherchen online durch, um die erforderlichen Informationen für die jeweilige Adresse zu sammeln und zu integrieren.
 Zudem verwende diese vom AreaButler generierten Daten:
+
+###Daten:
+`;
+
+    return initialText + (await this.getLocDesc(user, locDescQueryParams));
+  }
+
+  async getDistrictDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    locDescQueryParams: ILocDescQueryParams,
+  ): Promise<string> {
+    const {
+      snapshotRes: {
+        snapshot: {
+          placesLocation: { label: address },
+        },
+      },
+      targetGroupName = defaultTargetGroupName,
+      textLength = OpenAiTextLengthEnum.MEDIUM,
+      tonality,
+    } = locDescQueryParams;
+
+    const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse **${address} liegt**. Der Name des Stadtteils soll im Text genannt werden. Der Text soll die Zielgruppe **${targetGroupName}** ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.
+
+Der Text soll:
+
+- die Adresse nicht explizit erwähnen und nur auf den Stadtteil eingehen
+- ${openAiTextLengthOptions.find(({ value }) => value === textLength).text}
+- eine **${openAiTonalities[tonality]}** Tonalität haben
+- nur gerundete ca. Angaben statt exakten Metern und Minuten verwenden.
+- Stadtteildetails und die für **${targetGroupName}** wichtigsten POIs namentlich nennen.
+- darlegen, warum dieser Stadtteil für diese Zielgruppe optimal ist.
+- Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen.
+- Do not include any explanation
+
+Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe **${targetGroupName} für diesen Stadtteil**:
+
+1. Detaillierte POI Tabelle aus dem AreaButler (siehe unten).
+2. Lage-Indizes (siehe unten): Verwende diese für qualitative Aussagen, ohne die Indizes explizit zu erwähnen.
+3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.
+4. Führe in jedem Fall eine ausgiebige eigene Online-Recherche des Stadtteils aus in der die Adresse **${address} liegt** und nutze vor alle diese zusätzlich gewonnenen Informationen.
 
 ###Daten:
 `;

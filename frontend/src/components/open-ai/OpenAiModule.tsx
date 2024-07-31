@@ -89,7 +89,8 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
       switch (queryType) {
         case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
         case OpenAiQueryTypeEnum.MACRO_LOC_DESC:
-        case OpenAiQueryTypeEnum.MICRO_LOC_DESC: {
+        case OpenAiQueryTypeEnum.MICRO_LOC_DESC:
+        case OpenAiQueryTypeEnum.DISTRICT_DESC: {
           formRef.current?.handleSubmit();
 
           query = {
@@ -162,6 +163,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
         OpenAiQueryTypeEnum.MACRO_LOC_DESC,
         OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+        OpenAiQueryTypeEnum.DISTRICT_DESC,
       ].includes(queryType as OpenAiQueryTypeEnum)
     ) {
       onModuleStatusChange(true);
@@ -224,6 +226,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
           OpenAiQueryTypeEnum.MACRO_LOC_DESC,
           OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+          OpenAiQueryTypeEnum.DISTRICT_DESC,
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiLocDescForm
             formId="open-ai-loc-desc-form"

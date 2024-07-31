@@ -151,6 +151,18 @@ export class OpenAiService {
     );
   }
 
+  async fetchDistrictDesc(
+    user: UserDocument | TIntegrationUserDocument,
+    locDescParams: TFetchLocDescParams,
+  ): Promise<string> {
+    return this.openAiApiService.fetchResponse(
+      await this.openAiQueryService.getDistrictDescQuery(
+        user,
+        await this.processLocParams(user, locDescParams),
+      ),
+    );
+  }
+
   async batchFetchLocDescs(
     user: UserDocument | TIntegrationUserDocument,
     fetchLocRealEstDescParams: TFetchLocRealEstDescParams,

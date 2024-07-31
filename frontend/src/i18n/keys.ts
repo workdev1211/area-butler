@@ -317,6 +317,8 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesSideBarLabel.MICRO_LOC_DESC",
         MACRO_LOC_DESC:
           "snapshotEditor.dataTab.openAITypesSideBarLabel.MACRO_LOC_DESC",
+        DISTRICT_DESC:
+          "snapshotEditor.dataTab.openAITypesSideBarLabel.DISTRICT_DESC",
       },
       openAITypesOptionLabel: {
         LOCATION_DESCRIPTION:
@@ -337,6 +339,8 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesOptionLabel.MICRO_LOC_DESC",
         MACRO_LOC_DESC:
           "snapshotEditor.dataTab.openAITypesOptionLabel.MACRO_LOC_DESC",
+        DISTRICT_DESC:
+          "snapshotEditor.dataTab.openAITypesOptionLabel.DISTRICT_DESC",
       },
       publicLinks: "snapshotEditor.dataTab.publicLinks",
     },
