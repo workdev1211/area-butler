@@ -376,6 +376,7 @@ export class SnapshotService {
           filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
           projectQuery: { config: 1 },
           isFetchRealEstate: false,
+          isNotCheckOwner: true,
         },
       );
     }

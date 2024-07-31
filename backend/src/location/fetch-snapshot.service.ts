@@ -35,6 +35,7 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 interface IFetchSnapshotMainParams {
   filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
   isFetchRealEstate?: boolean;
+  isNotCheckOwner?: boolean;
   projectQuery?: ProjectionFields<SearchResultSnapshotDocument>;
   sortQuery?: TApiMongoSortQuery;
 }
@@ -75,6 +76,7 @@ export class FetchSnapshotService {
       projectQuery,
       sortQuery,
       isFetchRealEstate = true,
+      isNotCheckOwner
     }: IFetchSnapshotMainParams,
   ): Promise<SearchResultSnapshotDocument> {
     const populateOptions: PopulateOptions = isFetchRealEstate
@@ -91,7 +93,7 @@ export class FetchSnapshotService {
 
     return this.searchResultSnapshotModel
       .findOne(
-        await this.getFilterQueryWithUser(user, filterQuery),
+        await this.getFilterQueryWithUser(user, filterQuery, true, isNotCheckOwner),
         projectQuery,
       )
       .sort(sortQuery)
@@ -159,6 +161,7 @@ export class FetchSnapshotService {
       sortQuery,
       isEmbedded,
       isFetchRealEstate,
+      isNotCheckOwner,
       isTrial,
     }: IFetchSnapshotAllParams,
   ): Promise<ApiSearchResultSnapshotResponse> {
@@ -167,6 +170,7 @@ export class FetchSnapshotService {
       filterQuery,
       sortQuery,
       projectQuery,
+      isNotCheckOwner,
     });
 
     if (!snapshotDoc) {
@@ -290,7 +294,7 @@ export class FetchSnapshotService {
     user: UserDocument | TIntegrationUserDocument,
     filterQuery: FilterQuery<SearchResultSnapshotDocument> = {},
     isCheckSubscription = true,
-    isUserOwner = true,
+    isNotCheckOwner = false,
   ): Promise<FilterQuery<SearchResultSnapshotDocument>> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -302,6 +306,10 @@ export class FetchSnapshotService {
           !subscriptionPlan.appFeatures.htmlSnippet,
         'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
       );
+    }
+    
+    if (isNotCheckOwner) {
+      return filterQuery;
     }
 
     const resFilterQuery = { ...filterQuery };
