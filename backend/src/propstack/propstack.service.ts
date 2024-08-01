@@ -509,7 +509,10 @@ export class PropstackService {
         this.httpService.get<ArrayBuffer>(shop.logo_url, {
           responseType: 'arraybuffer',
         }),
-      );
+      ).catch((e) => {
+        PropstackService.logger.error(this.getIntegrationUser.name, e);
+        return { data: undefined };
+      });
 
       if (logoData) {
         integrationUser.config.logo = convertBase64ContentToUri(
