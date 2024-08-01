@@ -76,6 +76,8 @@ import { ContingentIntService } from '../user/contingent-int.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
+type TUpdEstTextFieldParams = Omit<IApiIntUpdEstTextFieldReq, 'integrationId'>;
+
 @Injectable()
 export class OnOfficeService {
   private readonly apiUrl = configService.getBaseApiUrl();
@@ -554,13 +556,14 @@ export class OnOfficeService {
     };
   }
 
-  async updateEstateTextField(
+  async updateEstTextFields(
     {
       parameters,
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
-    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
+    integrationId: string,
+    textFieldsParams: TUpdEstTextFieldParams[],
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -576,41 +579,56 @@ export class OnOfficeService {
 
     const defaultMaxTextLength = 2000;
     const resultExpMatch = exportMatching || parentUser?.config?.exportMatching;
-    let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
 
-    if (!exportMatchParams) {
-      switch (exportType) {
-        case AreaButlerExportTypesEnum.LINK_WITH_ADDRESS:
-        case AreaButlerExportTypesEnum.LINK_WO_ADDRESS: {
-          exportMatchParams = { fieldId: onOfficeLinkFieldMapper[exportType] };
-          break;
-        }
+    const processTextFieldParams = ({
+      exportType,
+      text,
+    }: TUpdEstTextFieldParams) => {
+      let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
 
-        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
-        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
-        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
-          exportMatchParams = {
-            fieldId: onOfficeOpenAiFieldMapper[exportType],
-            maxTextLength: defaultMaxTextLength,
-          };
-          break;
-        }
+      if (!exportMatchParams) {
+        switch (exportType) {
+          case AreaButlerExportTypesEnum.LINK_WITH_ADDRESS:
+          case AreaButlerExportTypesEnum.LINK_WO_ADDRESS: {
+            exportMatchParams = {
+              fieldId: onOfficeLinkFieldMapper[exportType],
+            };
+            break;
+          }
 
-        default: {
-          throw new UnprocessableEntityException(
-            'Could not determine the field id!',
-          );
+          case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+          case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+          case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+            exportMatchParams = {
+              fieldId: onOfficeOpenAiFieldMapper[exportType],
+              maxTextLength: defaultMaxTextLength,
+            };
+            break;
+          }
+
+          default: {
+            throw new UnprocessableEntityException(
+              'Could not determine the field id!',
+            );
+          }
         }
       }
-    }
 
-    const processedText =
-      exportMatchParams.maxTextLength === 0
-        ? text
-        : text.slice(
-            0,
-            exportMatchParams.maxTextLength || defaultMaxTextLength,
-          );
+      const processedText =
+        exportMatchParams.maxTextLength === 0
+          ? text
+          : text.slice(
+              0,
+              exportMatchParams.maxTextLength || defaultMaxTextLength,
+            );
+
+      return { [exportMatchParams.fieldId]: processedText };
+    };
+
+    const data = textFieldsParams.reduce((result, textFieldParams) => {
+      Object.assign(result, processTextFieldParams(textFieldParams));
+      return result;
+    }, {});
 
     const request: IApiOnOfficeRequest = {
       token,
@@ -625,10 +643,8 @@ export class OnOfficeService {
             identifier: '',
             resourcetype: resourceType,
             parameters: {
+              data,
               extendedclaim: extendedClaim,
-              data: {
-                [exportMatchParams.fieldId]: processedText,
-              },
             },
           },
         ],
@@ -638,7 +654,7 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.updateEstateTextField.name,
+      this.updateEstTextFields.name,
       'Estate update failed!',
       request,
       response,
@@ -943,11 +959,12 @@ export class OnOfficeService {
           });
         }
 
-        return this.updateEstateTextField(integrationUser, {
-          exportType,
-          integrationId,
-          text: url,
-        });
+        return this.updateEstTextFields(integrationUser, integrationId, [
+          {
+            exportType,
+            text: url,
+          },
+        ]);
       }),
     );
   }

@@ -109,11 +109,12 @@ export class OnOfficeController {
   @Patch('estate-text')
   updateEstateTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() updateEstateTextFieldDto: ApiIntUpdEstTextFieldReqDto,
+    @Body() { exportType, integrationId, text }: ApiIntUpdEstTextFieldReqDto,
   ): Promise<void> {
-    return this.onOfficeService.updateEstateTextField(
+    return this.onOfficeService.updateEstTextFields(
       integrationUser,
-      updateEstateTextFieldDto,
+      integrationId,
+      [{ exportType, text }],
     );
   }
 
