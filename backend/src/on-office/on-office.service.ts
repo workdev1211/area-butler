@@ -575,7 +575,7 @@ export class OnOfficeService {
     );
 
     const defaultMaxTextLength = 2000;
-    const resultExpMatch = exportMatching || parentUser?.config.exportMatching;
+    const resultExpMatch = exportMatching || parentUser?.config?.exportMatching;
     let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
 
     if (!exportMatchParams) {
@@ -742,7 +742,7 @@ export class OnOfficeService {
     };
 
     const resExportMatching =
-      exportMatching || parentUser?.config.exportMatching;
+      exportMatching || parentUser?.config?.exportMatching;
 
     if (resExportMatching && resExportMatching[exportType]) {
       finalRequest.request.actions[0].parameters.documentAttribute =

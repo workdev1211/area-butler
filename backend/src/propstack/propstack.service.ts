@@ -114,7 +114,10 @@ export class PropstackService {
     { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
     publicLinkParams.map(({ exportType, isLinkEntity, title, url }) => {
-      if (integrationUser.config.exportMatching[exportType]) {
+      if (
+        integrationUser.config?.exportMatching &&
+        integrationUser.config?.exportMatching[exportType]
+      ) {
         return this.updatePropertyTextField(integrationUser, {
           exportType,
           integrationId,
@@ -266,7 +269,7 @@ export class PropstackService {
     { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const defaultMaxTextLength = 2000;
-    const resultExpMatch = exportMatching || parentUser?.config.exportMatching;
+    const resultExpMatch = exportMatching || parentUser?.config?.exportMatching;
     let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
 
     if (!exportMatchParams) {
@@ -311,7 +314,7 @@ export class PropstackService {
       (parameters as IApiIntUserPropstackParams).apiKey,
       parseInt(integrationId, 10),
       splitField.length > 1
-        ? { partial_custom_fields: [{ [splitField[1]]: processedText }] }
+        ? { partial_custom_fields: { [splitField[1]]: processedText } }
         : { [exportMatchParams.fieldId]: processedText },
     );
   }
