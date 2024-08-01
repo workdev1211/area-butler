@@ -6,7 +6,8 @@
 
   div {
     border-right: 1px solid var(--base-bright-silver);
-    @apply flex text-tiny font-medium gap-2 pl-2;
+    line-height: 19px;
+    @apply flex text-sm font-medium gap-2 pl-2;
 
     img {
       width: 20px;

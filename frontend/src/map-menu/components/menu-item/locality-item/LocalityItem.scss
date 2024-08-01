@@ -7,7 +7,7 @@
     padding-bottom: var(--locality-py) !important;
     margin-left: var(--locality-pl);
     border-bottom: 1px solid var(--base-bright-silver);
-    @apply w-full max-w-full font-medium text-lg pl-2;
+    @apply w-full max-w-full font-medium text-base pl-2;
   }
 
   .locality-item-content {

@@ -126,7 +126,7 @@ const MapMenu: FC<IMapMenuProps> = ({
   return (
     <div
       className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""} ${
-        isEditorMode ? "editor-mode" : ""
+        !isEditorMode ? "embed-mode" : ""
       }`}
       data-tour="side-menu"
     >
