@@ -112,22 +112,6 @@ const MapMenu: FC<IMapMenuProps> = ({
     });
   };
 
-  let mapMenuContentHeight;
-
-  switch (mapDisplayMode) {
-    case MapDisplayModesEnum.EDITOR: {
-      mapMenuContentHeight =
-        "calc(100vh - calc(var(--menu-item-h) * 3.4) - var(--menu-footer-h))";
-      break;
-    }
-
-    case MapDisplayModesEnum.EMBEDDED:
-    default: {
-      mapMenuContentHeight =
-        "calc(100vh - var(--menu-item-h) - var(--menu-item-pl));";
-    }
-  }
-
   const performUnlock: TUnlockIntProduct = (
     modalMessage = statsExportUnlockText,
     actionType = IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT
@@ -141,7 +125,9 @@ const MapMenu: FC<IMapMenuProps> = ({
 
   return (
     <div
-      className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}
+      className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""} ${
+        isEditorMode ? "editor-mode" : ""
+      }`}
       data-tour="side-menu"
     >
       {isEditorMode && unlockParams.isShownModal && (
@@ -213,9 +199,6 @@ const MapMenu: FC<IMapMenuProps> = ({
 
       <div
         className={`map-menu-content ${!isEditorMode ? "embed-mode" : ""}`}
-        style={{
-          maxHeight: mapMenuContentHeight,
-        }}
         data-tour="map-menu-contents"
       >
         {isMapTab && (

@@ -2,7 +2,11 @@
   overflow-y: auto;
   top: calc(var(--menu-item-pl) / 2);
   right: calc(var(--menu-item-pl) / 2);
-  bottom: calc(var(--menu-item-pl) / 2); // was removed in Nils's version
+
+  &.editor-mode {
+    bottom: calc(var(--menu-item-pl) / 2);
+  }
+
   width: 0;
   transition: width 0.2s;
   z-index: 1000;
@@ -90,8 +94,10 @@
     overflow-y: scroll;
     z-index: 1000;
     @apply h-full flex flex-col bg-white;
+    max-height: calc(100vh - var(--menu-item-h) * 3.4 - var(--menu-footer-h));
 
     &.embed-mode {
+      max-height: calc(100vh - var(--menu-item-h) * 1.1 - var(--menu-item-pl));;
       border-radius: 0 0 0.5rem 0.5rem;
     }
 
@@ -163,17 +169,17 @@
                 -45deg,
                 transparent 65%,
                 #ffffff 0
-              ),
-              linear-gradient(45deg, transparent 75%, #ffffff 0),
-              linear-gradient(-45deg, #ffffff 40%, transparent 0),
-              linear-gradient(
+            ),
+            linear-gradient(45deg, transparent 75%, #ffffff 0),
+            linear-gradient(-45deg, #ffffff 40%, transparent 0),
+            linear-gradient(
                 44deg,
                 #ffffff 30%,
                 var(--primary) 0,
                 var(--primary) 40%,
                 transparent 0
-              ),
-              linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+            ),
+            linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
           }
         }
       }
@@ -186,17 +192,17 @@
               -45deg,
               transparent 65%,
               var(--custom-primary) 0
-            ),
-            linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
-            linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
-            linear-gradient(
+          ),
+          linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
+          linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
+          linear-gradient(
               44deg,
               var(--custom-primary) 30%,
               #ffffff 0,
               #ffffff 40%,
               transparent 0
-            ),
-            linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
+          ),
+          linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
         }
       }
 
@@ -308,16 +314,16 @@
 
       &:checked {
         background-image: linear-gradient(-45deg, transparent 65%, #ffffff 0),
-          linear-gradient(45deg, transparent 75%, #ffffff 0),
-          linear-gradient(-45deg, #ffffff 40%, transparent 0),
-          linear-gradient(
+        linear-gradient(45deg, transparent 75%, #ffffff 0),
+        linear-gradient(-45deg, #ffffff 40%, transparent 0),
+        linear-gradient(
             44deg,
             #ffffff 30%,
             var(--primary) 0,
             var(--primary) 40%,
             transparent 0
-          ),
-          linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+        ),
+        linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
       }
     }
 
@@ -329,17 +335,17 @@
             -45deg,
             transparent 65%,
             var(--custom-primary) 0
-          ),
-          linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
-          linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
-          linear-gradient(
+        ),
+        linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
+        linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
+        linear-gradient(
             44deg,
             var(--custom-primary) 30%,
             #ffffff 0,
             #ffffff 40%,
             transparent 0
-          ),
-          linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
+        ),
+        linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
       }
     }
   }

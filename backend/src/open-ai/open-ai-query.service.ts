@@ -272,7 +272,7 @@ Zudem verwende diese vom AreaButler generierten Daten:
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
 
-    const initialText = `Führe eine umfangreiche Online-Recherche durchführen, um eine detaillierte und präzise Mikrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
+    const initialText = `Führe eine umfangreiche Online-Recherche durch, um eine detaillierte und präzise Mikrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
 Der Text soll:
 - keine Sonderzeichen oder Emoticons verwenden.
@@ -351,25 +351,25 @@ Zudem verwende diese vom AreaButler generierten Daten:
       tonality,
     } = locDescQueryParams;
 
-    const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse **${address} liegt**. Der Name des Stadtteils soll im Text genannt werden. Der Text soll die Zielgruppe **${targetGroupName}** ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.
+    const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse ${address} liegt. Der Name des Stadtteils soll im Text genannt werden. Der Text soll die Zielgruppe ${targetGroupName} ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.
 
 Der Text soll:
 
 - die Adresse nicht explizit erwähnen und nur auf den Stadtteil eingehen
 - ${openAiTextLengthOptions.find(({ value }) => value === textLength).text}
-- eine **${openAiTonalities[tonality]}** Tonalität haben
+- eine ${openAiTonalities[tonality]} Tonalität haben
 - nur gerundete ca. Angaben statt exakten Metern und Minuten verwenden.
-- Stadtteildetails und die für **${targetGroupName}** wichtigsten POIs namentlich nennen.
+- Stadtteildetails und die für ${targetGroupName} wichtigsten POIs namentlich nennen.
 - darlegen, warum dieser Stadtteil für diese Zielgruppe optimal ist.
 - Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen.
 - Do not include any explanation
 
-Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe **${targetGroupName} für diesen Stadtteil**:
+Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe ${targetGroupName} für diesen Stadtteil:
 
 1. Detaillierte POI Tabelle aus dem AreaButler (siehe unten).
 2. Lage-Indizes (siehe unten): Verwende diese für qualitative Aussagen, ohne die Indizes explizit zu erwähnen.
 3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.
-4. Führe in jedem Fall eine ausgiebige eigene Online-Recherche des Stadtteils aus in der die Adresse **${address} liegt** und nutze vor alle diese zusätzlich gewonnenen Informationen.
+4. Führe in jedem Fall eine ausgiebige eigene Online-Recherche des Stadtteils aus in der die Adresse ${address} liegt und nutze vor alle diese zusätzlich gewonnenen Informationen.
 
 ###Daten:
 `;
