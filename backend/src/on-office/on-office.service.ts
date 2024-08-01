@@ -10,7 +10,7 @@ import * as dayjs from 'dayjs';
 import { plainToInstance } from 'class-transformer';
 
 import { configService } from '../config/config.service';
-import { activateUserPath } from './shared/on-office.constants';
+import { activateUserPath, propertyFields } from './shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
@@ -26,12 +26,12 @@ import {
   IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
   IApiOnOfficeLoginQueryParams,
-  IApiOnOfficeLoginReq,
   IApiOnOfficeOrderData,
   IApiOnOfficeRealEstate,
   IApiOnOfficeRequest,
   IApiOnOfficeResponse,
   IApiOnOfficeUnlockProviderReq,
+  OnOfficeOpenAiFieldEnum,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/on-office-products';
@@ -64,7 +64,7 @@ import {
 } from '../../../shared/constants/on-office/on-office-constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
-import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import {
   buildOnOfficeQueryString,
   getOnOfficeSortedMapData,
@@ -75,8 +75,22 @@ import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { ContingentIntService } from '../user/contingent-int.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 
-type TUpdEstTextFieldParams = Omit<IApiIntUpdEstTextFieldReq, 'integrationId'>;
+interface IProcessEstateData {
+  onOfficeEstate: IApiOnOfficeRealEstate;
+  place: GeocodeResult;
+  realEstate: ApiRealEstateListing;
+}
+
+export interface IPerformLoginData extends IProcessEstateData {
+  integrationUser: TIntegrationUserDocument;
+}
+
+export type TUpdEstTextFieldParams = Omit<
+  IApiIntUpdEstTextFieldReq,
+  'integrationId'
+>;
 
 @Injectable()
 export class OnOfficeService {
@@ -239,7 +253,7 @@ export class OnOfficeService {
 
     try {
       this.onOfficeApiService.checkResponseIsSuccess(
-        this.login.name,
+        this.unlockProvider.name,
         'User login failed!',
         request,
         response,
@@ -251,145 +265,16 @@ export class OnOfficeService {
     }
   }
 
-  async login({
-    onOfficeQueryParams: {
-      customerName,
-      customerWebId,
-      userId,
-      estateId,
-      parameterCacheId,
-      apiClaim: extendedClaim,
-    },
-  }: IApiOnOfficeLoginReq): Promise<IApiIntUserLoginRes> {
-    const integrationUserId = `${customerWebId}-${userId}`;
-
-    // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
-    let integrationUser = await this.integrationUserService.findOne(
-      this.integrationType,
-      { integrationUserId },
-    );
-
-    const parentUser = !integrationUser?.isParent
-      ? await this.integrationUserService.findOne(this.integrationType, {
-          'parameters.customerWebId': customerWebId,
-          'parameters.token': { $exists: true },
-          'parameters.apiKey': { $exists: true },
-          isParent: true,
-        })
-      : undefined;
-
-    if (integrationUser) {
-      const { userName, email } = await this.fetchUserData({
-        ...integrationUser.parameters,
-        extendedClaim,
-      });
-
-      const { color, logo } = await this.fetchLogoAndColor({
-        ...integrationUser.parameters,
-        extendedClaim,
-      });
-
-      const updateQuery: UpdateQuery<IApiIntegrationUserSchema> = {
-        $set: {
-          accessToken: extendedClaim,
-          'config.color': color ? `#${color}` : parentUser?.config.color,
-          'config.logo': logo
-            ? convertBase64ContentToUri(logo)
-            : parentUser?.config.logo,
-          'config.mapIcon': parentUser?.config.mapIcon,
-          'parameters.extendedClaim': extendedClaim,
-          'parameters.parameterCacheId': parameterCacheId,
-          'parameters.customerName': customerName,
-          'parameters.userName': userName,
-          'parameters.email': email,
-          parentId: parentUser?.id,
-        },
-      };
-
-      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
-        integrationUser.id,
-        updateQuery,
-      );
-    }
-
-    if (!integrationUser) {
-      const groupUser =
-        parentUser ||
-        (await this.integrationUserService.findOne(
-          this.integrationType,
-          {
-            'parameters.customerWebId': customerWebId,
-            'parameters.token': { $exists: true },
-            'parameters.apiKey': { $exists: true },
-          },
-          { parameters: 1 },
-        ));
-
-      if (groupUser) {
-        const groupUserParams =
-          groupUser.parameters as IApiIntUserOnOfficeParams;
-
-        const { userName, email } = await this.fetchUserData({
-          ...groupUser.parameters,
-          extendedClaim,
-          userId,
-        });
-
-        const { color, logo } = await this.fetchLogoAndColor({
-          ...groupUser.parameters,
-          extendedClaim,
-        });
-
-        integrationUser = await this.integrationUserService.create({
-          integrationUserId,
-          integrationType: this.integrationType,
-          accessToken: extendedClaim,
-          parameters: {
-            parameterCacheId,
-            customerName,
-            customerWebId,
-            userId,
-            userName,
-            email,
-            extendedClaim,
-            apiKey: groupUserParams.apiKey,
-            token: groupUserParams.token,
-          },
-          config: {
-            color: color ? `#${color}` : parentUser?.config.color,
-            logo: logo
-              ? convertBase64ContentToUri(logo)
-              : parentUser?.config.logo,
-            mapIcon: parentUser?.config.mapIcon,
-          },
-          parentId: parentUser?.id,
-        });
-      }
-    }
-
-    if (!integrationUser) {
-      this.logger.debug(this.login, integrationUserId, customerWebId);
-      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
-    }
-
-    integrationUser.parentUser = parentUser;
-
-    const realEstateDto = await this.fetchAndProcessEstateData(
-      estateId,
-      integrationUser,
-    );
-
-    const realEstate = mapRealEstateListingToApiRealEstateListing(
-      integrationUser,
-      await this.realEstateListingIntService.upsertOneByIntParams(
-        realEstateDto,
-      ),
+  async login(
+    onOfficeQueryParams: IApiOnOfficeLoginQueryParams,
+  ): Promise<IApiIntUserLoginRes> {
+    const { integrationUser, realEstate } = await this.performLogin(
+      onOfficeQueryParams,
     );
 
     return {
-      integrationUserId,
       realEstate,
-      accessToken: extendedClaim,
+      accessToken: integrationUser.accessToken,
       availProdContingents:
         await this.contingentIntService.getAvailProdContingents(
           integrationUser,
@@ -397,6 +282,7 @@ export class OnOfficeService {
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!integrationUser.parentId,
+      integrationUserId: integrationUser.id,
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
         realEstate.id,
@@ -600,7 +486,7 @@ export class OnOfficeService {
           case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
           case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
             exportMatchParams = {
-              fieldId: onOfficeOpenAiFieldMapper[exportType],
+              fieldId: onOfficeOpenAiFieldMapper.get(exportType),
               maxTextLength: defaultMaxTextLength,
             };
             break;
@@ -969,10 +855,146 @@ export class OnOfficeService {
     );
   }
 
-  private async fetchAndProcessEstateData(
-    estateId: string,
+  async performLogin({
+    customerName,
+    customerWebId,
+    userId,
+    estateId,
+    parameterCacheId,
+    apiClaim: extendedClaim,
+  }: IApiOnOfficeLoginQueryParams): Promise<IPerformLoginData> {
+    const integrationUserId = `${customerWebId}-${userId}`;
+
+    // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
+    let integrationUser = await this.integrationUserService.findOne(
+      this.integrationType,
+      { integrationUserId },
+    );
+
+    const parentUser =
+      integrationUser.parentUser ||
+      (!integrationUser?.isParent
+        ? await this.integrationUserService.findOne(this.integrationType, {
+            'parameters.customerWebId': customerWebId,
+            'parameters.token': { $exists: true },
+            'parameters.apiKey': { $exists: true },
+            isParent: true,
+          })
+        : undefined);
+
+    if (integrationUser) {
+      const { userName, email } = await this.fetchUserData({
+        ...integrationUser.parameters,
+        extendedClaim,
+      });
+
+      const { color, logo } = await this.fetchLogoAndColor({
+        ...integrationUser.parameters,
+        extendedClaim,
+      });
+
+      const updateQuery: UpdateQuery<IApiIntegrationUserSchema> = {
+        $set: {
+          accessToken: extendedClaim,
+          'config.color': color ? `#${color}` : parentUser?.config.color,
+          'config.logo': logo
+            ? convertBase64ContentToUri(logo)
+            : parentUser?.config.logo,
+          'config.mapIcon': parentUser?.config.mapIcon,
+          'parameters.extendedClaim': extendedClaim,
+          'parameters.parameterCacheId': parameterCacheId,
+          'parameters.customerName': customerName,
+          'parameters.userName': userName,
+          'parameters.email': email,
+          parentId: parentUser?.id,
+        },
+      };
+
+      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
+        integrationUser.id,
+        updateQuery,
+      );
+    }
+
+    if (!integrationUser) {
+      const groupUser =
+        parentUser ||
+        (await this.integrationUserService.findOne(
+          this.integrationType,
+          {
+            'parameters.customerWebId': customerWebId,
+            'parameters.token': { $exists: true },
+            'parameters.apiKey': { $exists: true },
+          },
+          { parameters: 1 },
+        ));
+
+      if (groupUser) {
+        const groupUserParams =
+          groupUser.parameters as IApiIntUserOnOfficeParams;
+
+        const { userName, email } = await this.fetchUserData({
+          ...groupUser.parameters,
+          extendedClaim,
+          userId,
+        });
+
+        const { color, logo } = await this.fetchLogoAndColor({
+          ...groupUser.parameters,
+          extendedClaim,
+        });
+
+        integrationUser = await this.integrationUserService.create({
+          integrationUserId,
+          integrationType: this.integrationType,
+          accessToken: extendedClaim,
+          parameters: {
+            parameterCacheId,
+            customerName,
+            customerWebId,
+            userId,
+            userName,
+            email,
+            extendedClaim,
+            apiKey: groupUserParams.apiKey,
+            token: groupUserParams.token,
+          },
+          config: {
+            color: color ? `#${color}` : parentUser?.config.color,
+            logo: logo
+              ? convertBase64ContentToUri(logo)
+              : parentUser?.config.logo,
+            mapIcon: parentUser?.config.mapIcon,
+          },
+          parentId: parentUser?.id,
+        });
+      }
+    }
+
+    if (!integrationUser) {
+      this.logger.debug(this.login, integrationUserId, customerWebId);
+      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+    }
+
+    if (!integrationUser.parentUser && parentUser) {
+      integrationUser.parentUser = parentUser;
+    }
+
+    const processedEstateData = await this.processEstateData(
+      integrationUser,
+      estateId,
+    );
+
+    return {
+      integrationUser,
+      ...processedEstateData,
+    };
+  }
+
+  private async processEstateData(
     integrationUser: TIntegrationUserDocument,
-  ): Promise<IApiRealEstateListingSchema> {
+    estateId: string,
+  ): Promise<IProcessEstateData> {
     const { integrationUserId, parameters } = integrationUser;
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -1000,26 +1022,8 @@ export class OnOfficeService {
             resourcetype: resourceType,
             parameters: {
               data: [
-                'objekttitel',
-                'strasse',
-                'hausnummer',
-                'plz',
-                'ort',
-                'land',
-                'breitengrad',
-                'laengengrad',
-                'anzahl_zimmer',
-                'wohnflaeche',
-                'grundstuecksflaeche',
-                'energyClass',
-                'kaufpreis',
-                'waehrung',
-                'kaltmiete',
-                'warmmiete',
-                'anzahl_balkone',
-                'unterkellert',
-                'vermarktungsart',
-                'status2',
+                ...propertyFields,
+                ...Object.values(OnOfficeOpenAiFieldEnum),
               ],
               extendedclaim: extendedClaim,
               formatoutput: true,
@@ -1033,7 +1037,7 @@ export class OnOfficeService {
       await this.onOfficeApiService.sendRequest(request);
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.fetchAndProcessEstateData.name,
+      this.processEstateData.name,
       'The estate entity has not been retrieved!',
       request,
       response,
@@ -1075,7 +1079,7 @@ export class OnOfficeService {
 
     if (!place) {
       this.logger.error(
-        this.fetchAndProcessEstateData.name,
+        this.processEstateData.name,
         locationAddress,
         locationCoordinates,
       );
@@ -1096,10 +1100,21 @@ export class OnOfficeService {
       } as GeoJsonPoint,
     });
 
-    return plainToInstance(ApiOnOfficeToAreaButlerDto, onOfficeEstate, {
-      excludeExtraneousValues: true,
-      exposeUnsetFields: false,
-    });
+    const realEstate = mapRealEstateListingToApiRealEstateListing(
+      integrationUser,
+      await this.realEstateListingIntService.upsertOneByIntParams(
+        plainToInstance(ApiOnOfficeToAreaButlerDto, onOfficeEstate, {
+          excludeExtraneousValues: true,
+          exposeUnsetFields: false,
+        }),
+      ),
+    );
+
+    return {
+      onOfficeEstate,
+      place,
+      realEstate,
+    };
   }
 
   private async fetchLogoAndColor({

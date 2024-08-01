@@ -17,8 +17,8 @@ import {
 } from '../../shared/types/external-api';
 import { getEnumValidMessage } from '../../shared/functions/validation';
 
-const DEFAULT_POI_NUMBER = 5;
-const DEFAULT_DISTANCE = 10;
+export const DEFAULT_POI_NUMBER = 5;
+export const DEFAULT_DISTANCE = 10;
 
 class ApiFetchPoiDataReqDto
   extends ApiCoordinatesOrAddressDto

@@ -161,17 +161,17 @@ export interface IApiFetchPoiDataRes
   extends IExternalApiRes<ApiOsmLocation[]> {}
 
 export interface IOpenAiExtQueryReq extends IApiFetchPoiDataReq {
+  language?: ApiBcp47LanguageEnum;
+  maxTextLength?: number;
   queryType?: ApiOpenAiQueryTypesEnum;
   tonality?: OpenAiTonalityEnum;
-  maxTextLength?: number;
-  language?: ApiBcp47LanguageEnum;
 
-  price?: number;
-  priceType?: ApiRealEstateCostType;
-  housingArea?: number;
-  totalArea?: number;
   energyEfficiency?: ApiEnergyEfficiency;
   furnishing?: ApiFurnishing[];
+  livingAreaInSqM?: number;
+  price?: number;
+  priceType?: ApiRealEstateCostType;
+  totalAreaInSqM?: number;
 }
 
 export interface IApiOpenAiExtQueryReqStatus

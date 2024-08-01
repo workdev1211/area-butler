@@ -1,28 +1,41 @@
-import { Body, Controller, Logger, Get, Req } from '@nestjs/common';
+import {
+  Controller,
+  Logger,
+  Get,
+  Query,
+  UseInterceptors,
+  Param,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+
+import ApiOnOfficeLoginQueryParamsDto from './dto/api-on-office-login-query-params.dto';
+import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
+import { OnOfficeWebhookService } from './on-office-webhook.service';
+import { OnOfficeWebhookUrlEnum } from './shared/on-office.types';
 
 @ApiTags('on-office', 'webhook')
 @Controller('api/on-office-webhook')
 export class OnOfficeWebhookController {
   private readonly logger = new Logger(OnOfficeWebhookController.name);
 
-  @ApiOperation({
-    description: 'Process the onOffice webhook on the target group change',
-  })
-  @Get('target-group')
-  handleTargetGroupChange(
-    @Body() handleTargetGroupChangeDto: any,
-    @Req() request: Request,
-  ): void {
-    this.logger.log(
-      'Request:',
-      request.originalUrl,
-      request.params,
-      request.query,
-      request.body,
-    );
+  constructor(
+    private readonly onOfficeWebhookService: OnOfficeWebhookService,
+  ) {}
 
-    this.logger.log('Request body:', handleTargetGroupChangeDto);
+  @ApiOperation({
+    description: 'Process onOffice webhooks',
+  })
+  @UseInterceptors(VerifyOnOfficeSignatureInterceptor)
+  @Get(':endpoint')
+  handleWebhook(
+    @Param() endpoint: OnOfficeWebhookUrlEnum,
+    @Query() onOfficeQueryParams: ApiOnOfficeLoginQueryParamsDto,
+  ): void {
+    this.logger.verbose(endpoint, onOfficeQueryParams);
+
+    void this.onOfficeWebhookService.handleWebhook(
+      endpoint,
+      onOfficeQueryParams,
+    );
   }
 }

@@ -84,7 +84,7 @@ class ApiOpenAiExtQueryReqDto
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  housingArea?: number;
+  livingAreaInSqM?: number;
 
   @Transform(({ value }: { value: string }): number => +value, {
     toClassOnly: true,
@@ -92,7 +92,7 @@ class ApiOpenAiExtQueryReqDto
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  totalArea?: number;
+  totalAreaInSqM?: number;
 
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,

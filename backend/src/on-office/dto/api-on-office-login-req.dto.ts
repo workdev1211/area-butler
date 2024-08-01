@@ -4,7 +4,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 import {
   IApiOnOfficeLoginQueryParams,
@@ -12,15 +12,18 @@ import {
 } from '@area-butler-types/on-office';
 import ApiOnOfficeLoginQueryParamsDto from './api-on-office-login-query-params.dto';
 
+@Exclude()
 class ApiOnOfficeLoginReqDto implements IApiOnOfficeLoginReq {
+  @Expose()
   @IsNotEmpty()
   @IsString()
   url: string;
 
+  @Expose()
+  @Type(() => ApiOnOfficeLoginQueryParamsDto)
   @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiOnOfficeLoginQueryParamsDto)
   onOfficeQueryParams: IApiOnOfficeLoginQueryParams;
 }
 

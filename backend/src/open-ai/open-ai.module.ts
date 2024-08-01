@@ -22,6 +22,6 @@ import { OpenAiExtService } from './open-ai-ext.service';
   ],
   controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   providers: [OpenAiService, OpenAiQueryService, OpenAiExtService],
-  exports: [OpenAiService],
+  exports: [OpenAiService, OpenAiExtService],
 })
 export class OpenAiModule {}

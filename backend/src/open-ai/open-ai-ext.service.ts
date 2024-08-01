@@ -3,9 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import {
+  ApiEnergyEfficiency,
+  ApiFurnishing,
+  ApiRealEstateCostType,
+  ApiRealEstateListing,
+} from '@area-butler-types/real-estate';
 import {
   ApiOpenAiQueryTypesEnum,
+  ApiUnitsOfTransportEnum,
   IOpenAiExtQueryReq,
 } from '../shared/types/external-api';
 import { PlaceService } from '../place/place.service';
@@ -14,8 +20,11 @@ import { LocationExtService } from '../location/location-ext.service';
 import {
   ApiCoordinates,
   ApiSearchResultSnapshotResponse,
+  MeansOfTransportation,
 } from '@area-butler-types/types';
 import { OpenAiService } from './open-ai.service';
+import { DEFAULT_DISTANCE } from '../location/dto/api-fetch-poi-data-req.dto';
+import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 
 @Injectable()
 export class OpenAiExtService {
@@ -43,8 +52,8 @@ export class OpenAiExtService {
       unit,
       price,
       priceType,
-      housingArea: realEstateSizeInSquareMeters,
-      totalArea: propertySizeInSquareMeters,
+      livingAreaInSqM,
+      totalAreaInSqM,
       energyEfficiency,
       furnishing,
     } = openAiQueryParams;
@@ -57,43 +66,27 @@ export class OpenAiExtService {
     const coordinates = place.geometry.location;
     const resultAddress = address || place.formatted_address;
 
-    const realEstate = {
+    const realEstate = this.generateRealEstate({
+      energyEfficiency,
+      furnishing,
+      livingAreaInSqM,
+      price,
+      priceType,
+      totalAreaInSqM,
       address: resultAddress,
-      characteristics: {
-        realEstateSizeInSquareMeters,
-        propertySizeInSquareMeters,
-        energyEfficiency,
-        furnishing,
-      },
-      costStructure: {
-        price: { amount: price, currency: '€' },
-        type: priceType,
-      },
-    } as ApiRealEstateListing;
+    });
 
     let queryResp: string;
 
     switch (queryType) {
       case ApiOpenAiQueryTypesEnum.LOC_DESC:
       case ApiOpenAiQueryTypesEnum.LOC_EST_DESC: {
-        const poiData = await this.locationExtService.fetchPoiData({
-          transportMode,
+        const snapshotRes = await this.generateSnapshotRes({
           distance,
+          place,
+          transportMode,
           unit,
-          coordinates,
         });
-
-        const snapshotRes = {
-          snapshot: {
-            location: coordinates,
-            placesLocation: { label: resultAddress },
-            searchResponse: {
-              routingProfiles: {
-                [transportMode]: { locationsOfInterest: poiData },
-              },
-            },
-          },
-        } as ApiSearchResultSnapshotResponse;
 
         queryResp =
           queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
@@ -120,7 +113,7 @@ export class OpenAiExtService {
           language,
           realEstate,
           tonality,
-          realEstateType: defaultRealEstType,
+          realEstateType: realEstate.type || defaultRealEstType,
         });
       }
     }
@@ -138,5 +131,73 @@ export class OpenAiExtService {
       coordinates,
       queryResp,
     };
+  }
+
+  // only parameters used in 'OpenAiQueryService' are present
+  generateRealEstate({
+    address,
+    energyEfficiency,
+    furnishing,
+    livingAreaInSqM,
+    price,
+    priceType,
+    totalAreaInSqM,
+  }: {
+    address: string;
+    energyEfficiency?: ApiEnergyEfficiency;
+    furnishing?: ApiFurnishing[];
+    livingAreaInSqM?: number;
+    price?: number;
+    priceType?: ApiRealEstateCostType;
+    totalAreaInSqM?: number;
+  }): ApiRealEstateListing {
+    return {
+      address,
+      characteristics: {
+        energyEfficiency,
+        furnishing,
+        propertySizeInSquareMeters: totalAreaInSqM,
+        realEstateSizeInSquareMeters: livingAreaInSqM,
+      },
+      costStructure: {
+        price: { amount: price, currency: '€' },
+        type: priceType,
+      },
+    } as ApiRealEstateListing;
+  }
+
+  // only parameters used in 'OpenAiQueryService' are present
+  async generateSnapshotRes({
+    place,
+    distance = DEFAULT_DISTANCE,
+    transportMode = MeansOfTransportation.WALK,
+    unit = ApiUnitsOfTransportEnum.MINUTES,
+  }: {
+    place: GeocodeResult;
+    distance?: number;
+    transportMode?: MeansOfTransportation;
+    unit?: ApiUnitsOfTransportEnum;
+  }): Promise<ApiSearchResultSnapshotResponse> {
+    const coordinates = place.geometry.location;
+
+    const poiData = await this.locationExtService.fetchPoiData({
+      coordinates,
+      distance,
+      transportMode,
+      unit,
+    });
+
+    return {
+      config: { showAddress: false },
+      snapshot: {
+        location: coordinates,
+        placesLocation: { label: place.formatted_address },
+        searchResponse: {
+          routingProfiles: {
+            [transportMode]: { locationsOfInterest: poiData },
+          },
+        },
+      },
+    } as ApiSearchResultSnapshotResponse;
   }
 }

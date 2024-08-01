@@ -48,6 +48,7 @@ import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
 import { getProcUpdateQuery } from '../shared/functions/shared';
 import { PlaceService } from '../place/place.service';
 import ApiPropstackWebhookToAreaButlerDto from './dto/api-propstack-webhook-to-area-butler.dto';
+import { propertyFields } from '../on-office/shared/on-office.constants';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -360,30 +361,7 @@ export class RealEstateCrmImportService {
       listlimit: ON_OFFICE_ESTATES_PER_PAGE,
       listoffset: 0,
       formatoutput: true,
-      data: [
-        'Id', // onOffice estate id
-        'objekttitel',
-        'strasse',
-        'hausnummer',
-        'plz',
-        'ort',
-        'land',
-        'breitengrad',
-        'laengengrad',
-        'anzahl_zimmer',
-        'wohnflaeche',
-        'grundstuecksflaeche',
-        'energyClass',
-        'kaufpreis',
-        'waehrung',
-        'kaltmiete',
-        'warmmiete',
-        'anzahl_balkone',
-        'unterkellert',
-        'vermarktungsart',
-        'status2',
-        'objekttyp',
-      ],
+      data: propertyFields,
     };
 
     if (isIntegrationUser) {

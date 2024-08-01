@@ -82,7 +82,7 @@ export class OnOfficeController {
       ...loginData,
     });
 
-    return this.onOfficeService.login(loginData);
+    return this.onOfficeService.login(loginData.onOfficeQueryParams);
   }
 
   @ApiOperation({ description: 'Creates an order' })

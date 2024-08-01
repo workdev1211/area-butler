@@ -187,7 +187,10 @@ export interface IApiOnOfficeRealEstate {
   // external id in onOffice, in our app we use "Id" / "Datensatznr" field
   objektnr_extern: string; // the label is "ImmoNr"
    */
-  lage: string; // description
+  // location descriptions
+  lage: string; // LOCATION_DESCRIPTION
+  sonstige_angaben: string; // LOCATION_REAL_ESTATE_DESCRIPTION
+  objektbeschreibung: string; // REAL_ESTATE_DESCRIPTION
 }
 
 export enum ApiOnOfficeEstateMarketTypesEnum {
@@ -214,13 +217,15 @@ export interface IApiOnOfficeLoginQueryParams {
   apiClaim: string; // extendedClaim
   customerName: string;
   customerWebId: string;
+  estateId: string;
   parameterCacheId: string;
+  signature: string;
   timestamp: string;
   userId: string;
-  estateId: string;
-  signature: string;
+
   groupId?: string;
   imageIds?: string;
+  language?: string; // actually an enum - 'DEU'
 }
 
 export interface IApiOnOfficeLoginReq {
@@ -303,4 +308,10 @@ export enum OnOfficeLoginActionTypesEnum {
 export interface IApiOnOfficeSyncEstatesFilterParams {
   status2?: string;
   vermarktungsart?: string;
+}
+
+export enum OnOfficeOpenAiFieldEnum {
+  LOCATION = "lage",
+  OTHER_INFO = "sonstige_angaben",
+  PROP_DESCRIPTION = "objektbeschreibung",
 }

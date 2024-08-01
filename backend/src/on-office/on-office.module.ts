@@ -12,11 +12,14 @@ import {
 } from './schema/on-office-transaction.schema';
 import { PlaceModule } from '../place/place.module';
 import { OnOfficeWebhookController } from './on-office-webhook.controller';
+import { OnOfficeWebhookService } from './on-office-webhook.service';
+import { OpenAiModule } from '../open-ai/open-ai.module';
 
 @Module({
   imports: [
     ClientModule,
     LocationModule,
+    OpenAiModule,
     PlaceModule,
     UserModule,
     MongooseModule.forFeature([
@@ -24,6 +27,6 @@ import { OnOfficeWebhookController } from './on-office-webhook.controller';
     ]),
   ],
   controllers: [OnOfficeController, OnOfficeWebhookController],
-  providers: [OnOfficeService],
+  providers: [OnOfficeService, OnOfficeWebhookService],
 })
 export class OnOfficeModule {}

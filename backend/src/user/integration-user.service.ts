@@ -1,23 +1,27 @@
-import {HttpException, Injectable, Logger} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {FilterQuery, Model, ProjectionFields, UpdateQuery} from 'mongoose';
-import {BulkWriteResult} from 'mongodb';
-import {EventEmitter2} from 'eventemitter2';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { FilterQuery, Model, ProjectionFields, UpdateQuery } from 'mongoose';
+import { BulkWriteResult } from 'mongodb';
+import { EventEmitter2 } from 'eventemitter2';
 import * as dayjs from 'dayjs';
 
-import {IntegrationUser, TIntegrationUserDocument,} from './schema/integration-user.schema';
-import {IntegrationTypesEnum} from '@area-butler-types/integration';
+import {
+  IntegrationUser,
+  TIntegrationUserDocument,
+} from './schema/integration-user.schema';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUserSchema,
   IApiIntUserCreate,
   TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
-import {MapboxService} from '../client/mapbox/mapbox.service';
-import {ApiTourNamesEnum, LanguageTypeEnum} from '@area-butler-types/types';
-import {intUserInitShowTour} from '../../../shared/constants/integration';
-import {EventType} from '../event/event.types';
-import {getUnitedMapboxStyles} from '../shared/functions/shared';
+import { MapboxService } from '../client/mapbox/mapbox.service';
+import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
+import { intUserInitShowTour } from '../../../shared/constants/integration';
+import { EventType } from '../event/event.types';
+import { getUnitedMapboxStyles } from '../shared/functions/shared';
+import { PARENT_USER_PATH } from './schema/user.schema';
 
 @Injectable()
 export class IntegrationUserService {
@@ -85,7 +89,8 @@ export class IntegrationUserService {
         },
         projectQuery,
       )
-      .sort({ updatedAt: -1 });
+      .sort({ updatedAt: -1 })
+      .populate(PARENT_USER_PATH);
   }
 
   async findOneAndUpdate(
@@ -136,10 +141,9 @@ export class IntegrationUserService {
     integrationUserDbId: string,
     projectQuery?: ProjectionFields<IApiIntegrationUserSchema>,
   ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel.findById(
-      integrationUserDbId,
-      projectQuery,
-    );
+    return this.integrationUserModel
+      .findById(integrationUserDbId, projectQuery)
+      .populate(PARENT_USER_PATH);
   }
 
   async findByDbIdAndUpdate(

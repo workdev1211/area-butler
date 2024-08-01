@@ -165,19 +165,38 @@ export class OpenAiService {
 
   async batchFetchLocDescs(
     user: UserDocument | TIntegrationUserDocument,
-    fetchLocRealEstDescParams: TFetchLocRealEstDescParams,
-  ): Promise<Record<TOpenAiLocDescType, string>> {
-    const [locDesc, locRealEstDesc, realEstDesc] = await Promise.all([
-      this.fetchLocDesc(user, fetchLocRealEstDescParams),
-      this.fetchLocRealEstDesc(user, fetchLocRealEstDescParams),
-      this.fetchRealEstDesc(user, fetchLocRealEstDescParams),
-    ]);
-
-    return {
-      [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: locDesc,
-      [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: locRealEstDesc,
-      [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: realEstDesc,
+    locRealEstDescParams: TFetchLocRealEstDescParams,
+    requiredLocDescTypes?: Set<TOpenAiLocDescType>,
+  ): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
+    const locDescMethods = {
+      [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: async () => ({
+        locDescType: OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        description: await this.fetchLocDesc(user, locRealEstDescParams),
+      }),
+      [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: async () => ({
+        locDescType: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        description: await this.fetchLocRealEstDesc(user, locRealEstDescParams),
+      }),
+      [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: async () => ({
+        locDescType: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        description: await this.fetchRealEstDesc(user, locRealEstDescParams),
+      }),
     };
+
+    const resLocDescMethods = requiredLocDescTypes
+      ? [...requiredLocDescTypes].map(
+          (locDescType) => locDescMethods[locDescType],
+        )
+      : Object.values(locDescMethods);
+
+    return (
+      await Promise.all(
+        resLocDescMethods.map((locDescMethod) => locDescMethod()),
+      )
+    ).reduce((result, { locDescType, description }) => {
+      result[locDescType] = description;
+      return result;
+    }, {});
   }
 
   private async processLocParams(

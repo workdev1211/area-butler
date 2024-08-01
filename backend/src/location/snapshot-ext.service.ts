@@ -92,7 +92,7 @@ export class SnapshotExtService {
 
     const placesLocation: IApiPlacesLocation = {
       label: place.formatted_address || 'Mein Standort',
-      value: { place_id: place?.place_id || '123' },
+      value: { place_id: place.place_id || '123' },
     };
 
     const snapshot: ApiSearchResultSnapshot = {
