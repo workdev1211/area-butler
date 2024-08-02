@@ -497,14 +497,21 @@ export class RealEstateCrmImportService {
           location: locationAddress,
         });
 
+        // onOffice provides id numbers higher than 1000 with the dot thousand separator
+        // could be due to the 'formatoutput' parameter
+        const realEstateId = `${parseInt(
+          realEstate.Id.replace(/([.,])*/g, ''),
+          10,
+        )}`;
+
         if (!place) {
-          errorIds.push(realEstate.Id);
+          errorIds.push(realEstateId);
           continue;
         }
 
         // LEFT FOR DEBUGGING PURPOSES
         // testData.push(
-        //   `${realEstate.Id}: ${
+        //   `${realEstateId}: ${
         //     realEstate.status2
         //   }, ${realEstate.vermarktungsart}, ${
         //     (realEstate as IApiOnOfficeProcessedRealEstate).areaButlerStatus
@@ -536,12 +543,12 @@ export class RealEstateCrmImportService {
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
           isIntegrationUser
             ? {
-                'integrationParams.integrationId': realEstate.Id,
+                'integrationParams.integrationId': realEstateId,
                 'integrationParams.integrationType': user.integrationType,
                 'integrationParams.integrationUserId': user.integrationUserId,
               }
             : {
-                externalId: realEstate.Id,
+                externalId: realEstateId,
                 externalSource: ApiRealEstateExtSourcesEnum.ON_OFFICE,
                 userId: user.id,
               };
