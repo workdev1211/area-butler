@@ -75,7 +75,7 @@ const MapClippingsCollapsable: FC<IMapClippingsCollapsableProps> = ({
               downloadClipping(clipping, i);
             }}
             src={clipping.mapClippingDataUrl}
-            className="lg:w-96 w-80 cursor-pointer"
+            className="w-80 cursor-pointer"
             alt="img-clipping"
           />
 
