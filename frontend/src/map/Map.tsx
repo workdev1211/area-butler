@@ -1444,6 +1444,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         {
           quality: 1,
           pixelRatio: 2,
+          cacheBust: true,
         }
       );
 

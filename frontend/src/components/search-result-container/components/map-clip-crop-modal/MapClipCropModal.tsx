@@ -298,6 +298,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       width: cropWidth,
       height: cropHeight,
       pixelRatio: cropWidth / overlayRef!.clientWidth,
+      cacheBust: true,
     });
 
     const resImage = new Image();

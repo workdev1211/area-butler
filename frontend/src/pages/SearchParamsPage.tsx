@@ -104,11 +104,6 @@ const SearchParamsPage: FC = () => {
     name: LimitIncreaseModelNameEnum;
     id: string | undefined;
   }>();
-  const [unlockParams, setUnlockParams] = useState<{
-    isShownModal: boolean;
-    modalMessage?: string;
-    actionType?: IntegrationActionTypeEnum;
-  }>({ isShownModal: false });
 
   const clearRealEstateParams = (): void => {
     searchContextDispatch({
@@ -503,11 +498,7 @@ const SearchParamsPage: FC = () => {
               }
 
               if (isIntegrationUser) {
-                setUnlockParams({
-                  actionType: IntegrationActionTypeEnum.UNLOCK_SEARCH,
-                  isShownModal: true,
-                  modalMessage: searchUnlockText,
-                });
+                await unlockProduct(IntegrationActionTypeEnum.UNLOCK_SEARCH)
               }
             }}
             className={
@@ -572,17 +563,6 @@ const SearchParamsPage: FC = () => {
       actionsTop={getSearchButton("btn bg-white-primary w-full sm:w-auto")}
       actionsBottom={[<div key="dummy" />, getSearchButton()]}
     >
-      {unlockParams.isShownModal && (
-        <ConfirmationModal
-          closeModal={() => {
-            setUnlockParams({ isShownModal: false });
-          }}
-          onConfirm={async () => {
-            await unlockProduct(unlockParams.actionType!);
-          }}
-          text={unlockParams.modalMessage!}
-        />
-      )}
 
       <TourStarter
         tour={
