@@ -217,7 +217,7 @@ export class FetchSnapshotService {
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.fetchSnapshot(integrationUser, {
       filterQuery: {
-        realEstateId: new Types.ObjectId(realEstateId),
+        realEstateId,
       },
       sortQuery: { createdAt: -1 },
     });

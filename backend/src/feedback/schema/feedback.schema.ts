@@ -1,12 +1,20 @@
-import { FeedbackType } from '@area-butler-types/types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
+
+import { FeedbackType } from '@area-butler-types/types';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type FeedbackDocument = Feedback & Document;
 
-@Schema()
+@Schema({
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 export class Feedback {
-  @Prop({ required: true })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   userId: string;
 
   @Prop({ required: true })

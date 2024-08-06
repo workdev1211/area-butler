@@ -1,12 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 import {
   ApiSubscriptionPlanType,
   IApiSubscriptionPlanAppFeatures,
 } from '@area-butler-types/subscription-plan';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
-@Schema()
+@Schema({
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 export class Subscription {
   @Prop({
     type: String,
@@ -15,7 +19,11 @@ export class Subscription {
   })
   type: ApiSubscriptionPlanType;
 
-  @Prop({ type: String, required: true })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    ...foreignIdGetSet,
+  })
   userId: string;
 
   @Prop({ type: Date, default: Date.now })

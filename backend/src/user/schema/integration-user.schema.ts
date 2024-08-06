@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, FilterQuery } from 'mongoose';
+import { Document, FilterQuery, SchemaTypes } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
@@ -16,6 +16,8 @@ import {
 import { IntUserSubscriptionSchema } from './int-user-subscription.schema';
 import { PARENT_USER_PATH } from './user.schema';
 import { IApiUserPoiIcons } from '@area-butler-types/types';
+import { IntUserConfigSchema } from './int-user-config.schema';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
@@ -28,14 +30,14 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ required: true, type: String })
   accessToken: string; // for AreaButler internal identification purposes
 
+  @Prop({ type: IntUserConfigSchema })
+  config: TApiIntegrationUserConfig;
+
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
   integrationType: IntegrationTypesEnum;
 
   @Prop({ required: true, type: String })
   integrationUserId: string;
-
-  @Prop({ type: Object })
-  config?: TApiIntegrationUserConfig;
 
   @Prop({ type: Boolean })
   isParent?: boolean;
@@ -43,7 +45,10 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ type: Object })
   parameters?: TApiIntegrationUserParameters;
 
-  @Prop({ type: String })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   parentId?: string;
 
   @Prop({ type: Object })
@@ -61,7 +66,7 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
     },
   })
   subscription?: IIntUserSubscription;
-  
+
   @Prop({ type: Object })
   poiIcons?: IApiUserPoiIcons;
 

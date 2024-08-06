@@ -194,7 +194,7 @@ export class SnapshotService {
     }
 
     if (resRealEstateId) {
-      snapshotDoc.realEstateId = new Types.ObjectId(resRealEstateId);
+      snapshotDoc.realEstateId = resRealEstateId;
     }
 
     const savedSnapshotDoc = await new this.searchResultSnapshotModel(

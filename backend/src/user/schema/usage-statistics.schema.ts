@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
@@ -7,12 +7,20 @@ import {
   IApiUsageStatisticsSchema,
   TApiUsageStatistics,
 } from '../../shared/types/external-api';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type UsageStatisticsDocument = UsageStatistics & Document;
 
-@Schema()
+@Schema({
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 export class UsageStatistics implements IApiUsageStatisticsSchema {
-  @Prop({ type: String, required: true })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    ...foreignIdGetSet,
+  })
   userId: string;
 
   @Prop({ type: String, enum: IntegrationTypesEnum })

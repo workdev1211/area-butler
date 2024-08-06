@@ -67,12 +67,12 @@ export class RealEstateListingService {
 
   async fetchById(
     user: UserDocument | TIntegrationUserDocument,
-    realEstateId: string | Types.ObjectId,
+    realEstateId: string,
     projectQuery?: ProjectionFields<IApiRealEstateListingSchema>,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
     const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
-      _id: realEstateId,
+      _id: new Types.ObjectId(realEstateId),
     };
 
     Object.assign(

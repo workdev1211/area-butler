@@ -2,7 +2,8 @@ import { IntegrationTypesEnum } from "./integration";
 import {
   ApiSearchResultSnapshotResponse,
   ApiShowTour,
-  IApiMapboxStyle, IApiUserPoiIcons,
+  IApiMapboxStyle,
+  IApiUserPoiIcons,
   LanguageTypeEnum,
   TAreaButlerExportTypes,
 } from "./types";
@@ -13,9 +14,9 @@ import { TIntegrationUserDocument } from "../../backend/src/user/schema/integrat
 
 export interface IApiIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
+  config: TApiIntegrationUserConfig;
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
-  config?: TApiIntegrationUserConfig;
   isParent?: boolean;
   isSubscriptionActive?: boolean;
   parameters?: TApiIntegrationUserParameters;
@@ -125,18 +126,18 @@ export type TApiIntegrationUserProductsUsed = Partial<
   Record<TApiIntUserProdContType, number>
 >;
 export type TApiIntegrationUserConfig = {
-  language: LanguageTypeEnum;
-  mapboxAccessToken?: string;
-  hideProductPage?: boolean;
-  color?: string;
-  logo?: string;
-  mapIcon?: string;
-  showTour: ApiShowTour;
-  exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
-  templateSnapshotId?: string;
-  extraMapboxStyles?: IApiMapboxStyle[];
-  isSpecialLink?: boolean;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
+  color?: string;
+  exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
+  extraMapboxStyles?: IApiMapboxStyle[];
+  hideProductPage?: boolean;
+  isSpecialLink?: boolean;
+  language?: LanguageTypeEnum;
+  logo?: string;
+  mapboxAccessToken?: string;
+  mapIcon?: string;
+  showTour?: ApiShowTour;
+  templateSnapshotId?: string;
 };
 
 export interface IIntUserExpMatchParams {

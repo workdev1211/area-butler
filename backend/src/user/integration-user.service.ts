@@ -44,13 +44,7 @@ export class IntegrationUserService {
     parameters,
     parentId,
   }: IApiIntUserCreate): Promise<TIntegrationUserDocument> {
-    const processedConfig = config
-      ? { ...config }
-      : ({} as TApiIntegrationUserConfig);
-
-    if (!processedConfig.showTour) {
-      processedConfig.showTour = intUserInitShowTour;
-    }
+    const processedConfig = config ? { ...config } : undefined;
 
     const integrationUser = await this.integrationUserModel.create({
       accessToken,

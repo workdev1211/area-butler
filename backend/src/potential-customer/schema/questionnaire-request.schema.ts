@@ -1,11 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
+
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type QuestionnaireRequestDocument = QuestionnaireRequest & Document;
 
-@Schema()
+@Schema({
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 export class QuestionnaireRequest {
-  @Prop({ required: true })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    ...foreignIdGetSet,
+  })
   userId: string;
 
   @Prop({ required: true })

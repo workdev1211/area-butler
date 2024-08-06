@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
@@ -16,14 +16,15 @@ import { ApiKeyParamsSchema } from './api-key-params.schema';
 import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 import { availableCountries } from '../../../../shared/constants/location';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type UserDocument = User & Document;
 
 export const PARENT_USER_PATH = 'parentUser';
 
 @Schema({
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
+  toJSON: { getters: true, virtuals: true },
+  toObject: { getters: true, virtuals: true },
 })
 export class User {
   @Prop({ type: String, required: true })
@@ -86,10 +87,16 @@ export class User {
   @Prop({ type: ApiKeyParamsSchema })
   apiKeyParams: IApiKeyParams;
 
-  @Prop({ type: String })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   templateSnapshotId: string;
 
-  @Prop({ type: String })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   parentId: string;
 
   @Prop({ type: Object })

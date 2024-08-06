@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as SchemaType, Types } from 'mongoose';
+import { Document, Schema as SchemaType, SchemaTypes } from 'mongoose';
 
 import {
   ApiSearchResultSnapshot,
@@ -16,6 +16,7 @@ import {
 } from '../../user/schema/integration-user.schema';
 import { RealEstateListing } from '../../real-estate-listing/schema/real-estate-listing.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 interface ISearchResultSnapshotSchema extends IIframeTokens {
   config: ApiSearchResultSnapshotConfig;
@@ -32,7 +33,7 @@ interface ISearchResultSnapshotSchema extends IIframeTokens {
   isTrial?: boolean;
   lastAccess?: Date;
   realEstate?: ApiRealEstateListing;
-  realEstateId?: Types.ObjectId;
+  realEstateId?: string;
   updatedAt?: Date;
   user?: UserDocument;
   userId?: string;
@@ -47,8 +48,8 @@ export const SNAPSHOT_USER_PATH = 'user';
 export const SNAPSHOT_INT_USER_PATH = 'integrationUser';
 
 @Schema({
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
+  toJSON: { getters: true, virtuals: true },
+  toObject: { getters: true, virtuals: true },
 })
 export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   @Prop({
@@ -105,11 +106,10 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   lastAccess?: Date;
 
   @Prop({
-    type: Types.ObjectId,
-    set: (value: string | Types.ObjectId): Types.ObjectId =>
-      typeof value === 'string' ? new Types.ObjectId(value) : value,
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
   })
-  realEstateId?: Types.ObjectId;
+  realEstateId?: string;
 
   @Prop({
     type: String,
@@ -123,7 +123,10 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   @Prop({ type: Date })
   updatedAt?: Date;
 
-  @Prop({ type: String })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   userId?: string;
 
   @Prop({ type: Number, default: 0 })

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes } from 'mongoose';
 
 import {
   ApiRealEstateCharacteristics,
@@ -11,10 +11,14 @@ import { GeoJsonPoint } from '../../shared/types/geo-json';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
 import { RealEstateIntegrationParamsSchema } from './real-estate-integration-params.schema';
 import { TApiLocIndexProps } from '@area-butler-types/location-index';
+import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type RealEstateListingDocument = RealEstateListing & Document;
 
-@Schema()
+@Schema({
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 export class RealEstateListing implements IApiRealEstateListingSchema {
   @Prop({ type: String, required: true })
   name: string;
@@ -34,7 +38,10 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
   @Prop({ type: RealEstateIntegrationParamsSchema })
   integrationParams?: IApiRealEstateIntegrationParams;
 
-  @Prop({ type: String })
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   userId?: string;
 
   @Prop({
