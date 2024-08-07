@@ -69,10 +69,10 @@ export enum SnapshotDataTypesEnum {
 }
 
 export interface IApiUsageStatisticsSchema {
-  userId: string;
   integrationType: IntegrationTypesEnum;
-  timestamp: string;
   statistics: TApiUsageStatistics;
+  timestamp: string;
+  userId: string;
 }
 
 export type TApiUsageStatistics = Record<
