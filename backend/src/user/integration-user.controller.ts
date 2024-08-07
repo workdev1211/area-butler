@@ -31,7 +31,7 @@ export class IntegrationUserController {
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('me/hide-tour/:tour')
   async hideTour(
-    @InjectUser() integrationUser,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('tour') tour: ApiTourNamesEnum,
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserToApiIntUser(
@@ -43,7 +43,7 @@ export class IntegrationUserController {
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('me/hide-tour')
   async hideAllTours(
-    @InjectUser() integrationUser,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserToApiIntUser(
       await this.integrationUserService.hideTour(integrationUser),
@@ -54,7 +54,7 @@ export class IntegrationUserController {
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('config')
   async updateConfig(
-    @InjectUser() integrationUser,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() config: ApiIntegrationUserConfigDto,
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserToApiIntUser(

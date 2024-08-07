@@ -277,7 +277,7 @@ export class OnOfficeService {
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!integrationUser.parentId,
-      integrationUserId: integrationUser.id,
+      integrationUserId: integrationUser.integrationUserId,
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
         realEstate.id,
