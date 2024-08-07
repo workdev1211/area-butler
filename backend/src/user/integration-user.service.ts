@@ -18,7 +18,6 @@ import {
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
-import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
 import { getUnitedMapboxStyles } from '../shared/functions/shared';
 import { PARENT_USER_PATH } from './schema/user.schema';
@@ -119,9 +118,11 @@ export class IntegrationUserService {
   async findByTokenOrFail(
     accessToken: string,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOne({
-      accessToken,
-    });
+    const existingUser = await this.integrationUserModel
+      .findOne({
+        accessToken,
+      })
+      .populate(PARENT_USER_PATH);
 
     if (!existingUser) {
       this.logger.error(`${this.findByTokenOrFail.name} ${accessToken}`);

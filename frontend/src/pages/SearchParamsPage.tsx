@@ -68,10 +68,8 @@ import { useRealEstateData } from "../hooks/realestatedata";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { defaultTransportParams } from "../../../shared/constants/location";
 import { useTools } from "../hooks/tools";
-import ConfirmationModal from "../components/ConfirmationModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
-import { searchUnlockText } from "../../../shared/constants/on-office/on-office-products";
 import { deriveInitialEntityGroups } from "../shared/pois.functions";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
@@ -498,7 +496,7 @@ const SearchParamsPage: FC = () => {
               }
 
               if (isIntegrationUser) {
-                await unlockProduct(IntegrationActionTypeEnum.UNLOCK_SEARCH)
+                await unlockProduct(IntegrationActionTypeEnum.UNLOCK_SEARCH);
               }
             }}
             className={
@@ -563,7 +561,6 @@ const SearchParamsPage: FC = () => {
       actionsTop={getSearchButton("btn bg-white-primary w-full sm:w-auto")}
       actionsBottom={[<div key="dummy" />, getSearchButton()]}
     >
-
       <TourStarter
         tour={
           isIntegrationUser

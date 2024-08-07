@@ -9,7 +9,6 @@ import {
 import { Observable } from 'rxjs';
 
 import { IntegrationUserService } from '../integration-user.service';
-import { checkIsParent } from '../../../../shared/functions/integration.functions';
 
 @Injectable()
 export class InjectIntegrationUserInterceptor implements NestInterceptor {
@@ -26,21 +25,10 @@ export class InjectIntegrationUserInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const { authorization } = req.headers;
     const accessToken = authorization?.match(/^AccessToken (.*)$/)?.pop();
-    let integrationUser;
 
-    if (accessToken) {
-      integrationUser = await this.integrationUserService
-        .findByTokenOrFail(accessToken)
-        .catch(() => undefined);
-
-      const parentUser = integrationUser?.parentId
-        ? await this.integrationUserService.findByDbId(integrationUser.parentId)
-        : undefined;
-
-      if (parentUser && checkIsParent(integrationUser, parentUser)) {
-        integrationUser.parentUser = parentUser;
-      }
-    }
+    const integrationUser = await this.integrationUserService
+      .findByTokenOrFail(accessToken)
+      .catch(() => undefined);
 
     if (!integrationUser) {
       this.logger.debug(

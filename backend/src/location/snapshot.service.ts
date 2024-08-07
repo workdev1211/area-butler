@@ -338,15 +338,16 @@ export class SnapshotService {
       : user.templateSnapshotId;
 
     const parentUserId = user.parentId;
-    let parentUser;
+    let parentUser = user.parentUser;
     let parentTemplateId;
     let templateSnapshot: ApiSearchResultSnapshotResponse;
 
-    if (!userTemplateId && parentUserId) {
+    if (!userTemplateId && !parentUser && parentUserId) {
       parentUser = isIntegrationUser
         ? await this.integrationUserService.findByDbId(parentUserId, {
             integrationUserId: 1,
             integrationType: 1,
+            parameters: 1,
             'config.templateSnapshotId': 1,
           })
         : await this.userService.findById({
@@ -361,9 +362,10 @@ export class SnapshotService {
           parentUser.subscription = user.subscription;
         }
 
-        parentTemplateId = isIntegrationUser
-          ? parentUser.config.templateSnapshotId
-          : parentUser.templateSnapshotId;
+        parentTemplateId =
+          'integrationUserId' in parentUser
+            ? parentUser.config.templateSnapshotId
+            : parentUser.templateSnapshotId;
       }
     }
 
