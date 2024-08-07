@@ -134,11 +134,13 @@ export class PropstackController {
   @Patch('property-text')
   updatePropertyTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() updEstTextFieldDto: ApiPropstackUpdPropTextFieldReqDto,
+    @Body()
+    { exportType, integrationId, text }: ApiPropstackUpdPropTextFieldReqDto,
   ): Promise<void> {
-    return this.propstackService.updatePropertyTextField(
+    return this.propstackService.updatePropTextFields(
       integrationUser,
-      updEstTextFieldDto,
+      integrationId,
+      [{ exportType, text }],
     );
   }
 

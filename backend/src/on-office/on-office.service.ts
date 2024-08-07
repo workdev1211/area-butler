@@ -44,10 +44,10 @@ import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 import {
   IApiIntCreateEstateLinkReq,
   IApiIntSetPropPubLinksReq,
-  IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
+  TUpdEstTextFieldParams,
 } from '@area-butler-types/integration';
 import { GeoJsonPoint } from '../shared/types/geo-json';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
@@ -86,11 +86,6 @@ interface IProcessEstateData {
 export interface IPerformLoginData extends IProcessEstateData {
   integrationUser: TIntegrationUserDocument;
 }
-
-export type TUpdEstTextFieldParams = Omit<
-  IApiIntUpdEstTextFieldReq,
-  'integrationId'
->;
 
 @Injectable()
 export class OnOfficeService {
@@ -464,13 +459,15 @@ export class OnOfficeService {
     );
 
     const defaultMaxTextLength = 2000;
-    const resultExpMatch = exportMatching || parentUser?.config?.exportMatching;
+    const resExportMatching =
+      exportMatching || parentUser?.config?.exportMatching;
 
     const processTextFieldParams = ({
       exportType,
       text,
     }: TUpdEstTextFieldParams) => {
-      let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
+      let exportMatchParams =
+        resExportMatching && resExportMatching[exportType];
 
       if (!exportMatchParams) {
         switch (exportType) {
@@ -835,24 +832,32 @@ export class OnOfficeService {
     integrationUser: TIntegrationUserDocument,
     { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
-    await Promise.all(
-      publicLinkParams.map(({ exportType, isLinkEntity, title, url }) => {
-        if (isLinkEntity) {
-          return this.createEstateLink(integrationUser, {
-            integrationId,
-            title,
-            url,
-          });
-        }
+    const textFieldsParams: TUpdEstTextFieldParams[] = [];
 
-        return this.updateEstTextFields(integrationUser, integrationId, [
-          {
-            exportType,
-            text: url,
-          },
-        ]);
-      }),
-    );
+    for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
+      if (isLinkEntity) {
+        await this.createEstateLink(integrationUser, {
+          integrationId,
+          title,
+          url,
+        });
+
+        continue;
+      }
+
+      textFieldsParams.push({
+        exportType,
+        text: url,
+      });
+    }
+
+    if (textFieldsParams.length) {
+      await this.updateEstTextFields(
+        integrationUser,
+        integrationId,
+        textFieldsParams,
+      );
+    }
   }
 
   async performLogin({

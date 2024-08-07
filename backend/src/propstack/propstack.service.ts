@@ -14,10 +14,10 @@ import { IntegrationUserService } from '../user/integration-user.service';
 import {
   IApiIntCreateEstateLinkReq,
   IApiIntSetPropPubLinksReq,
-  IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
+  TUpdEstTextFieldParams,
 } from '@area-butler-types/integration';
 import {
   ApiPropstackImageTypeEnum,
@@ -113,34 +113,37 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
-    publicLinkParams.map(({ exportType, isLinkEntity, title, url }) => {
-      if (
-        integrationUser.config?.exportMatching &&
-        integrationUser.config?.exportMatching[exportType]
-      ) {
-        return this.updatePropertyTextField(integrationUser, {
-          exportType,
+    const resExportMatching =
+      integrationUser.config?.exportMatching ||
+      integrationUser.parentUser?.config?.exportMatching;
+
+    const textFieldsParams: TUpdEstTextFieldParams[] = [];
+
+    for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
+      const isExpMatchAvail = !!(
+        resExportMatching && resExportMatching[exportType]
+      );
+
+      if (!isExpMatchAvail) {
+        await this.createPropertyLink(integrationUser, {
           integrationId,
-          text: url,
+          title,
+          url,
         });
       }
 
-      this.createPropertyLink(integrationUser, {
-        integrationId,
-        title,
-        url,
-      });
-
-      if (isLinkEntity) {
-        return;
+      if (isExpMatchAvail || !isLinkEntity) {
+        textFieldsParams.push({ exportType, text: url });
       }
+    }
 
-      this.updatePropertyTextField(integrationUser, {
-        exportType,
+    if (textFieldsParams.length) {
+      await this.updatePropTextFields(
+        integrationUser,
         integrationId,
-        text: url,
-      });
-    });
+        textFieldsParams,
+      );
+    }
   }
 
   private async getSnapshotRealEstate(
@@ -260,62 +263,78 @@ export class PropstackService {
   //   );
   // }
 
-  async updatePropertyTextField(
+  async updatePropTextFields(
     {
       parameters,
       parentUser,
       config: { exportMatching },
     }: TIntegrationUserDocument,
-    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
+    integrationId: string,
+    textFieldsParams: TUpdEstTextFieldParams[],
   ): Promise<void> {
     const defaultMaxTextLength = 2000;
-    const resultExpMatch = exportMatching || parentUser?.config?.exportMatching;
-    let exportMatchParams = resultExpMatch && resultExpMatch[exportType];
+    const resExportMatching =
+      exportMatching || parentUser?.config?.exportMatching;
 
-    if (!exportMatchParams) {
-      switch (exportType) {
-        case AreaButlerExportTypesEnum.LINK_WITH_ADDRESS:
-        case AreaButlerExportTypesEnum.LINK_WO_ADDRESS: {
-          exportMatchParams = {
-            fieldId: propstackLinkFieldMapper[exportType],
-          };
-          break;
-        }
+    const processTextFieldParams = ({
+      exportType,
+      text,
+    }: TUpdEstTextFieldParams) => {
+      let exportMatchParams =
+        resExportMatching && resExportMatching[exportType];
 
-        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
-        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
-        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
-          exportMatchParams = {
-            fieldId: propstackOpenAiFieldMapper.get(exportType),
-            maxTextLength: defaultMaxTextLength,
-          };
-          break;
-        }
+      if (!exportMatchParams) {
+        switch (exportType) {
+          case AreaButlerExportTypesEnum.LINK_WITH_ADDRESS:
+          case AreaButlerExportTypesEnum.LINK_WO_ADDRESS: {
+            exportMatchParams = {
+              fieldId: propstackLinkFieldMapper[exportType],
+            };
+            break;
+          }
 
-        default: {
-          throw new UnprocessableEntityException(
-            'Could not determine the field id!',
-          );
+          case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+          case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+          case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+            exportMatchParams = {
+              fieldId: propstackOpenAiFieldMapper.get(exportType),
+              maxTextLength: defaultMaxTextLength,
+            };
+            break;
+          }
+
+          default: {
+            throw new UnprocessableEntityException(
+              'Could not determine the field id!',
+            );
+          }
         }
       }
-    }
 
-    const processedText =
-      exportMatchParams.maxTextLength === 0
-        ? text
-        : text.slice(
-            0,
-            exportMatchParams.maxTextLength || defaultMaxTextLength,
-          );
+      const processedText =
+        exportMatchParams.maxTextLength === 0
+          ? text
+          : text.slice(
+              0,
+              exportMatchParams.maxTextLength || defaultMaxTextLength,
+            );
 
-    const splitField = exportMatchParams.fieldId.split('custom_fields.');
+      const splitField = exportMatchParams.fieldId.split('custom_fields.');
+
+      return splitField.length > 1
+        ? { partial_custom_fields: { [splitField[1]]: processedText } }
+        : { [exportMatchParams.fieldId]: processedText };
+    };
+
+    const data = textFieldsParams.reduce((result, textFieldParams) => {
+      Object.assign(result, processTextFieldParams(textFieldParams));
+      return result;
+    }, {});
 
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
       parseInt(integrationId, 10),
-      splitField.length > 1
-        ? { partial_custom_fields: { [splitField[1]]: processedText } }
-        : { [exportMatchParams.fieldId]: processedText },
+      data,
     );
   }
 

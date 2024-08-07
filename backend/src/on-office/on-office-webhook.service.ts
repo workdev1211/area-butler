@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { SnapshotExtService } from '../location/snapshot-ext.service';
-import {
-  IPerformLoginData,
-  OnOfficeService,
-  TUpdEstTextFieldParams,
-} from './on-office.service';
+import { IPerformLoginData, OnOfficeService } from './on-office.service';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import {
   ApiSearchResultSnapshotResponse,
@@ -19,6 +15,7 @@ import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { OpenAiExtService } from '../open-ai/open-ai-ext.service';
 import { OnOfficeWebhookUrlEnum } from './shared/on-office.types';
 import ApiOnOfficeLoginQueryParamsDto from './dto/api-on-office-login-query-params.dto';
+import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
 
 @Injectable()
 export class OnOfficeWebhookService {

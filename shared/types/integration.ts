@@ -144,6 +144,11 @@ export interface IApiIntUpdEstTextFieldReq {
   text: string;
 }
 
+export type TUpdEstTextFieldParams = Omit<
+  IApiIntUpdEstTextFieldReq,
+  "integrationId"
+>;
+
 export interface IApiIntUploadEstateFileReq extends IApiUploadFileReq {
   integrationId: string;
 }
