@@ -283,7 +283,7 @@ export class OnOfficeService {
         realEstate.id,
       ),
       subscription: integrationUser.subscription,
-      poiIcons: integrationUser.poiIcons,
+      poiIcons: integrationUser.poiIcons || integrationUser.parentUser.poiIcons,
     };
   }
 

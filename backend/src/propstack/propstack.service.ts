@@ -208,7 +208,7 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { propertyId, target, fieldName }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
-    const { accessToken, integrationUserId, parentId, subscription, poiIcons } =
+    const { accessToken, integrationUserId, parentId, subscription } =
       integrationUser;
 
     const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
@@ -222,7 +222,6 @@ export class PropstackService {
       latestSnapshot,
       realEstate,
       subscription,
-      poiIcons,
       availProdContingents:
         await this.contingentIntService.getAvailProdContingents(
           integrationUser,
@@ -234,6 +233,7 @@ export class PropstackService {
         target === PropstackActionTypeEnum.GENERATE_TEXT
           ? (propstackOpenAiFieldMapper.get(fieldName) as OpenAiQueryTypeEnum)
           : undefined,
+      poiIcons: integrationUser.poiIcons || integrationUser.parentUser.poiIcons,
     };
   }
 
