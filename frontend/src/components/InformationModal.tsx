@@ -2,21 +2,31 @@ import { FC, useState } from "react";
 
 import closeIcon from "../assets/icons/cross.svg";
 
-interface IMaintenanceModalProps {
+interface IInformationModalProps {
   title: string;
   onClose: (isDontShowAgain: boolean) => void;
+  contentWidthRem?: number;
 }
 
-const MaintenanceModal: FC<IMaintenanceModalProps> = ({
+const InformationModal: FC<IInformationModalProps> = ({
   title,
   onClose,
+  contentWidthRem,
   children,
 }) => {
   const [isDontShowAgain, setIsDontShowAgain] = useState(false);
+  const contentPaddingXRem = 1.5;
 
   return (
-    <div className="modal modal-open z-9999 backdrop-blur-sm">
-      <div className="modal-box p-0 sm:rounded-2xl">
+    <div className="modal modal-open z-9999 backdrop-blur-sm w-auto">
+      <div
+        className="modal-box p-0 sm:rounded-2xl"
+        style={{
+          maxWidth: contentWidthRem
+            ? `calc(${contentWidthRem}rem + ${contentPaddingXRem}rem * 2)`
+            : "auto",
+        }}
+      >
         <div
           className="flex justify-between px-6 py-3 rounded-t-2xl text-white"
           style={{ background: "var(--primary)" }}
@@ -31,7 +41,15 @@ const MaintenanceModal: FC<IMaintenanceModalProps> = ({
             }}
           />
         </div>
-        <div className="px-6 py-6">{children}</div>
+        <div
+          className="py-3"
+          style={{
+            paddingLeft: `${contentPaddingXRem}rem`,
+            paddingRight: `${contentPaddingXRem}rem`,
+          }}
+        >
+          {children}
+        </div>
         <div
           className="flex items-center px-6 py-3 rounded-b-2xl text-white gap-2"
           style={{ background: "var(--primary)" }}
@@ -52,4 +70,4 @@ const MaintenanceModal: FC<IMaintenanceModalProps> = ({
   );
 };
 
-export default MaintenanceModal;
+export default InformationModal;

@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import UAParser from "ua-parser-js";
 
-import MaintenanceModal from "./MaintenanceModal";
+import InformationModal from "./InformationModal";
 
 const browserWarningKey = "is-browser-warning-shown";
 
@@ -20,7 +20,7 @@ const BrowserWarningModal: FC = () => {
   }
 
   return (
-    <MaintenanceModal
+    <InformationModal
       title="Bitte wechseln Sie Ihren Browser"
       onClose={(isDontShowAgain) => {
         if (isDontShowAgain) {
@@ -45,7 +45,7 @@ const BrowserWarningModal: FC = () => {
         Browser auf PC oder Mac. Exportierte Karten & Inhalte funktionieren auf
         allen Geräten & Browsern. Danke für Ihr Verständnis!
       </div>
-    </MaintenanceModal>
+    </InformationModal>
   );
 };
 

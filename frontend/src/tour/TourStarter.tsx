@@ -54,6 +54,8 @@ const tourSteps: Record<ApiTourNamesEnum, Step[]> = {
 };
 
 const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
+  return null;
+
   const {
     userState: { startTour, user, integrationUser },
     userDispatch,
