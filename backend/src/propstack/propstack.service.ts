@@ -272,6 +272,7 @@ export class PropstackService {
     integrationId: string,
     textFieldsParams: TUpdEstTextFieldParams[],
   ): Promise<void> {
+    const customFieldKey = 'partial_custom_fields';
     const defaultMaxTextLength = 2000;
     const resExportMatching =
       exportMatching || parentUser?.config?.exportMatching;
@@ -279,7 +280,7 @@ export class PropstackService {
     const processTextFieldParams = ({
       exportType,
       text,
-    }: TUpdEstTextFieldParams) => {
+    }: TUpdEstTextFieldParams): [string, string | object] => {
       let exportMatchParams =
         resExportMatching && resExportMatching[exportType];
 
@@ -322,12 +323,20 @@ export class PropstackService {
       const splitField = exportMatchParams.fieldId.split('custom_fields.');
 
       return splitField.length > 1
-        ? { partial_custom_fields: { [splitField[1]]: processedText } }
-        : { [exportMatchParams.fieldId]: processedText };
+        ? [customFieldKey, { [splitField[1]]: processedText }]
+        : [exportMatchParams.fieldId, processedText];
     };
 
     const data = textFieldsParams.reduce((result, textFieldParams) => {
-      Object.assign(result, processTextFieldParams(textFieldParams));
+      const [key, value] = processTextFieldParams(textFieldParams);
+
+      if (key === customFieldKey && typeof value === 'object') {
+        const customFields = result[key];
+        result[key] = customFields ? { ...customFields, ...value } : value;
+        return result;
+      }
+
+      result[key] = value;
       return result;
     }, {});
 

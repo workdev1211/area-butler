@@ -56,6 +56,8 @@ const tourSteps: Record<ApiTourNamesEnum, Step[]> = {
 const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
   return null;
 
+  /* eslint-disable */
+
   const {
     userState: { startTour, user, integrationUser },
     userDispatch,
