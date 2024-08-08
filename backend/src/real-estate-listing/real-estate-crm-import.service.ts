@@ -499,15 +499,17 @@ export class RealEstateCrmImportService {
 
         // onOffice provides id numbers higher than 1000 with the dot thousand separator
         // could be due to the 'formatoutput' parameter
-        const realEstateId = `${parseInt(
-          realEstate.Id.replace(/([.,])*/g, ''),
+        const realEstateIdNum = parseInt(
+          realEstate.Id.replace(/([., ])*/g, ''),
           10,
-        )}`;
+        );
 
-        if (!place) {
-          errorIds.push(realEstateId);
+        if (!place || typeof realEstateIdNum !== 'number') {
+          errorIds.push(realEstate.Id);
           continue;
         }
+
+        const realEstateId = `${realEstateIdNum}`;
 
         // LEFT FOR DEBUGGING PURPOSES
         // testData.push(
