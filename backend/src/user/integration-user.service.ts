@@ -203,11 +203,11 @@ export class IntegrationUserService {
     });
   }
 
-  getIntUserResultConfig({
-    config,
-    isParent,
-    parentUser,
-  }: TIntegrationUserDocument): TApiIntegrationUserConfig {
+  getIntUserResultConfig(
+    integrationUser: TIntegrationUserDocument,
+  ): TApiIntegrationUserConfig {
+    const { config, isParent, parentUser } = integrationUser.toObject();
+
     if (isParent || !parentUser) {
       return { ...config };
     }

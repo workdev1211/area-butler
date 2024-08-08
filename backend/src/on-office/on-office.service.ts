@@ -878,7 +878,7 @@ export class OnOfficeService {
     );
 
     const parentUser =
-      integrationUser.parentUser ||
+      integrationUser?.parentUser ||
       (!integrationUser?.isParent
         ? await this.integrationUserService.findOne(this.integrationType, {
             'parameters.customerWebId': customerWebId,
