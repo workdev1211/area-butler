@@ -233,7 +233,8 @@ export class PropstackService {
         target === PropstackActionTypeEnum.GENERATE_TEXT
           ? (propstackOpenAiFieldMapper.get(fieldName) as OpenAiQueryTypeEnum)
           : undefined,
-      poiIcons: integrationUser.poiIcons || integrationUser.parentUser.poiIcons,
+      poiIcons:
+        integrationUser.poiIcons || integrationUser.parentUser?.poiIcons,
     };
   }
 

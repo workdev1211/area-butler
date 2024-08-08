@@ -505,9 +505,9 @@ const SearchParamsPage: FC = () => {
                 : resultingClasses
             }
           >
-            <span className="-mt-1">{searchButtonTitle}</span>
+            <span>{searchButtonTitle}</span>
             <img
-              className="ml-1 -mt-1"
+              className="ml-1"
               style={{
                 filter:
                   "invert(62%) sepia(87%) saturate(446%) hue-rotate(354deg) brightness(95%) contrast(92%)",
