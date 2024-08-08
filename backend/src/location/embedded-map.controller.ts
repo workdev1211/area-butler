@@ -133,7 +133,7 @@ export class EmbeddedMapController {
     return {
       realEstates,
       snapshotRes,
-      userPoiIcons: !isIntegrationUser ? resultUser.poiIcons : undefined,
+      userPoiIcons: resultUser.poiIcons || resultUser.parentUser?.poiIcons,
     };
   }
 
