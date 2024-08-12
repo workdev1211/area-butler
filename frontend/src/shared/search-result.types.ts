@@ -1,8 +1,11 @@
 import {
   ApiAddress,
-  ApiCoordinates, ApiGeojsonFeature,
+  ApiCoordinates,
+  ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
-  IApiMapboxStyle, IApiUserPoiIcon, MapDisplayModesEnum,
+  IApiMapboxStyle,
+  IApiUserPoiIcon,
+  MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
   TPoiGroupName,
@@ -11,12 +14,15 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
 } from "../../../shared/types/real-estate";
-import { TApiLocIndexProps, TLocationIndexData } from "../../../shared/types/location-index";
+import {
+  TApiLocIndexProps,
+  TLocationIndexData,
+} from "../../../shared/types/location-index";
 import { TUnlockIntProduct } from "../../../shared/types/integration";
-import { EntityRoute, EntityTransitRoute } from '../../../shared/types/routing';
-import { ReactNode } from 'react';
-import { TCensusData } from '../../../shared/types/data-provision';
-import { FederalElectionDistrict } from '../hooks/federalelectiondata';
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
+import { ReactNode } from "react";
+import { TCensusData } from "../../../shared/types/data-provision";
+import { FederalElectionDistrict } from "../hooks/federalelectiondata";
 
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
@@ -46,7 +52,7 @@ export interface ResultEntity {
   externalUrl?: string;
   isCustom?: boolean; // for a custom added POI
   isFiltered?: boolean;
-  name: string;
+  name?: string;
   // 'realEstateData' property is set in the following shared function:
   // 'deriveInitialEntityGroups' --> 'buildEntDataFromRealEstates'
   realEstateData?: {

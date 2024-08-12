@@ -398,7 +398,11 @@
       "contactUs": "Gerne liefern wir tiefergehende Daten zu den Themen Arbeitskräfte,\n          Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro Kopf,\n          Gewerbesteuereinnahmen, Logistik-Attraktivität u.v.m. Sprechen Sie uns\n          hierzu einfach direkt an."
     },
     "notAllowedToUse": "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors.",
-    "screenshotName": "Lageplan"
+    "screenshotName": "Lageplan",
+    "addNewLocationModalTitle": "Neuen Ort hinzufügen",
+    "addNewLocationModalBtn": "Hinzufügen",
+    "addNewLocationModalSuccess": "Objekt erfolgreich hinzugefügt!",
+    "addNewLocationModalFailed": "Fehler beim Speichern des Objektes"
   },
   "realEstate": {
     "sync": "Sync-Immobilien",

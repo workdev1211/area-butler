@@ -12,6 +12,7 @@ import center from "@turf/center";
 import { toPng } from "html-to-image";
 import { renderToStaticMarkup } from "react-dom/server";
 
+import { useTranslation } from 'react-i18next';
 import i18 from "i18n";
 import { IntlKeys } from "i18n/keys";
 
@@ -131,7 +132,12 @@ export class IdMarker extends L.Marker {
   }
 
   createPopupContent(): void {
-    const entityTitle = this.entity.name;
+    const osmName = i18.t(
+      (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
+        this.entity.osmName
+      ]
+    );
+    const entityTitle = this.entity.name || osmName;
     let cityFromSearch = "";
 
     if (this.searchAddress) {
@@ -206,7 +212,9 @@ export class IdMarker extends L.Marker {
         : null;
 
     if (this.entity.osmName !== OsmName.property) {
-      let content = `<span class="font-semibold">${entityTitle}</span><br /><br />
+      let content = `<span class="font-semibold">${entityTitle}</span><br />${
+        this.entity.name ? "<span>" + osmName + "</span><br />" : ""
+      }<br />
         <span class="font-semibold mt-2">${title}</span><br />${
         street ? "<div>" + street + "</div><br />" : ""
       }<div class="flex gap-6">${
@@ -475,6 +483,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
   ) => {
     // TODO Further refactoring is required with the usage of react-leaflet library
     // TODO Check all stringified and not stringified dependencies of useEffect hooks
+    const { t } = useTranslation();
 
     const mapRef = useRef<L.Map | null>(null);
     useImperativeHandle(parentMapRef, () => ({
@@ -519,8 +528,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     );
 
     const addPoiModalOpenConfig: ModalConfig = {
-      modalTitle: "Neuen Ort hinzufügen",
-      submitButtonTitle: "Hinzufügen",
+      modalTitle: t(IntlKeys.snapshotEditor.addNewLocationModalTitle),
+      submitButtonTitle: t(IntlKeys.snapshotEditor.addNewLocationModalBtn),
       modalOpen: addPoiModalOpen,
       postSubmit: () => {
         setAddPoiModalOpen(false);

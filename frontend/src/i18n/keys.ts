@@ -437,6 +437,10 @@ export const IntlKeys = {
     },
     notAllowedToUse: "snapshotEditor.notAllowedToUse",
     screenshotName: "snapshotEditor.screenshotName",
+    addNewLocationModalTitle: "snapshotEditor.addNewLocationModalTitle",
+    addNewLocationModalBtn: "snapshotEditor.addNewLocationModalBtn",
+    addNewLocationModalSuccess: "snapshotEditor.addNewLocationModalSuccess",
+    addNewLocationModalFailed: "snapshotEditor.addNewLocationModalFailed",
   },
 
   realEstate: {

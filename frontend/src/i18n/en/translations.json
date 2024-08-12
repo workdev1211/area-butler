@@ -300,7 +300,11 @@
     "hide": "Hide",
     "notAllowedToUse": "Only the Business+ subscription allows the use of the map editor.",
     "screenshotName": "Site plan",
-    "furtherObjects": "Further objects"
+    "furtherObjects": "Further objects",
+    "addNewLocationModalTitle": "Add new location",
+    "addNewLocationModalBtn": "Add",
+    "addNewLocationModalSuccess": "Object successfully added!",
+    "addNewLocationModalFailed": "Error when saving the object"
   },
   "common": {
     "showMore": "Show more",

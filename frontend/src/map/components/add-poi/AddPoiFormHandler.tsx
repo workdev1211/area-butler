@@ -1,6 +1,9 @@
 import { FC } from "react";
 import { v4 as uuid } from "uuid";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { FormModalData } from "components/FormModal";
 import {
   distanceInMeters,
@@ -30,6 +33,7 @@ const AddPoiFormHandler: FC<IAddPoiFormHandlerProps> = ({
   address,
   onPoiAdd,
 }) => {
+  const { t } = useTranslation();
   const onSubmit = async (values: any) => {
     try {
       beforeSubmit();
@@ -55,9 +59,9 @@ const AddPoiFormHandler: FC<IAddPoiFormHandlerProps> = ({
 
       onPoiAdd(osmLocation);
       postSubmit(true);
-      toastSuccess("Objekt erfolgreich hinzugefügt!");
+      toastSuccess(t(IntlKeys.snapshotEditor.addNewLocationModalSuccess));
     } catch (err) {
-      toastError("Fehler beim Speichern des Objektes");
+      toastError(t(IntlKeys.snapshotEditor.addNewLocationModalFailed));
       console.error(err);
       postSubmit(false);
     }

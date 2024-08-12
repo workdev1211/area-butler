@@ -42,8 +42,7 @@ const AddPoiForm: FC<IAddPoiFormProps> = ({
         name: OsmName.doctors,
       }}
       validationSchema={Yup.object({
-        title: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
-        name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
+        title: Yup.string().required(t(IntlKeys.realEstate.enterObjectName)),
       })}
       enableReinitialize={true}
       onSubmit={(values) => {
@@ -53,10 +52,10 @@ const AddPoiForm: FC<IAddPoiFormProps> = ({
       <Form id={formId}>
         <div className="form-control">
           <Input
-            label="Objektname"
+            label={t(IntlKeys.realEstate.objectName)}
             name="title"
             type="text"
-            placeholder="Objektname eingeben"
+            placeholder={t(IntlKeys.realEstate.enterObjectNamePlaceholder)}
             className="input input-bordered w-full"
           />
         </div>
@@ -68,9 +67,8 @@ const AddPoiForm: FC<IAddPoiFormProps> = ({
         <div className="flex flex-wrap items-end gap-6">
           <div className="form-control flex-1">
             <Select
-              label="Objekttyp"
+              label={t(IntlKeys.snapshotEditor.objectType)}
               name="name"
-              placeholder="Objekttype angeben"
             >
               {osmEntityTypes
                 .sort((a, b) =>
