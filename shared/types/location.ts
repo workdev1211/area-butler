@@ -1,4 +1,4 @@
-import { ApiSearchResultSnapshotConfig } from "./types";
+import { ApiSearchResultSnapshotConfig, LanguageTypeEnum } from "./types";
 
 export enum Iso3166_1Alpha2CountriesEnum {
   AD = "AD",
@@ -266,5 +266,6 @@ export interface IFetchEmbedMapQueryParams<
   T extends string | boolean = string
 > {
   token: string;
+  language?: LanguageTypeEnum;
   isAddressShown?: T;
 }

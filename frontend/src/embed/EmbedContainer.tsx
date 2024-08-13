@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import "./EmbedContainer.scss";
 
 import {
-  IApiFetchedEmbeddedData,
+  IApiFetchedEmbeddedData, LanguageTypeEnum,
   MapDisplayModesEnum,
   ResultStatusEnum,
 } from "../../../shared/types/types";
@@ -33,6 +33,7 @@ const queryParamsSchema: Yup.ObjectSchema<IFetchEmbedMapQueryParams> =
   Yup.object({
     token: Yup.string().required(),
     isAddressShown: Yup.mixed<string>().oneOf(Object.keys(boolStringMapping)),
+    language: Yup.string().oneOf(Object.values(LanguageTypeEnum)).optional()
   });
 
 window.addEventListener("resize", () => {
@@ -54,7 +55,7 @@ const EmbedContainer: FC = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [embeddedData, setEmbeddedData] = useState<IApiFetchedEmbeddedData>();
   const [mapDisplayMode, setMapDisplayMode] = useState<MapDisplayModesEnum>();
@@ -97,8 +98,10 @@ const EmbedContainer: FC = () => {
         await queryParamsSchema.validate(queryParamsAndUrl.queryParams);
 
         const {
-          queryParams: { token, isAddressShown },
+          queryParams: { token, isAddressShown, language = 'de' },
         } = queryParamsAndUrl;
+
+        await i18n.changeLanguage(language)
 
         const resIsAddressShown = isAddressShown
           ? boolStringMapping[isAddressShown]
