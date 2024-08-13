@@ -6,8 +6,10 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import structuredClone from '@ungap/structured-clone';
 
 import { OnOfficeService } from '../on-office.service';
+import { TOnOfficeLoginQueryParams } from '@area-butler-types/on-office';
 
 @Injectable()
 export class VerifyOnOfficeSignatureInterceptor implements NestInterceptor {
@@ -20,12 +22,22 @@ export class VerifyOnOfficeSignatureInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
-    const onOfficeQueryParams = { ...req.body.onOfficeQueryParams };
+    let onOfficeQueryParams: TOnOfficeLoginQueryParams;
+    let url: string;
 
     try {
-      this.onOfficeService.verifySignature(onOfficeQueryParams, req.body.url);
+      onOfficeQueryParams = structuredClone(
+        req.body.onOfficeQueryParams ? req.body.onOfficeQueryParams : req.query,
+      );
+
+      url =
+        req.body.url ||
+        `https://${req.hostname}${req.url}`.replace(/(.*)\?.*/, '$1');
+
+      this.onOfficeService.verifySignature(onOfficeQueryParams, url);
     } catch (e) {
-      this.logger.error(onOfficeQueryParams, req.body);
+      this.logger.error(url, JSON.stringify(onOfficeQueryParams));
+      this.logger.error(req.body, req.query);
       throw e;
     }
 

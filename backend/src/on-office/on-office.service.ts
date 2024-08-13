@@ -20,7 +20,6 @@ import {
   ApiOnOfficeTransactionStatusesEnum,
   IApiOnOfficeActivationReq,
   IApiOnOfficeActivationRes,
-  IApiOnOfficeConfirmOrderQueryParams,
   IApiOnOfficeConfirmOrderReq,
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrderReq,
@@ -33,6 +32,7 @@ import {
   IApiOnOfficeUnlockProviderReq,
   OnOfficeOpenAiFieldEnum,
   TApiOnOfficeConfirmOrderRes,
+  TOnOfficeLoginQueryParams,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/on-office-products';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -724,12 +724,7 @@ export class OnOfficeService {
     );
   }
 
-  verifySignature(
-    queryParams:
-      | IApiOnOfficeLoginQueryParams
-      | IApiOnOfficeConfirmOrderQueryParams,
-    url: string,
-  ): void {
+  verifySignature(queryParams: TOnOfficeLoginQueryParams, url: string): void {
     const { signature, ...otherParams } = queryParams;
     const sortedQueryParams = getOnOfficeSortedMapData(otherParams);
 

@@ -15,6 +15,7 @@ import { clientIdToUserId } from '../../shared/constants/api';
 import { UserService } from '../../user/user.service';
 import { IAuth0User } from '../../auth/auth0/auth0-api.strategy';
 import { configService } from '../../config/config.service';
+import { UserDocument } from '../../user/schema/user.schema';
 
 export interface IMyVivendaAuth0User extends IAuth0User {
   snapshot_id: string;
@@ -49,7 +50,7 @@ export class MyVivendaHandleLoginInterceptor implements NestInterceptor {
     }
 
     const clientId = auth0User.azp;
-    let user;
+    let user: UserDocument;
 
     try {
       const userId =

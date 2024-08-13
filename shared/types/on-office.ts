@@ -251,6 +251,10 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
   products: string;
 }
 
+export type TOnOfficeLoginQueryParams =
+  | IApiOnOfficeLoginQueryParams
+  | IApiOnOfficeConfirmOrderQueryParams;
+
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
