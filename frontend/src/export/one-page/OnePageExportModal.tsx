@@ -95,6 +95,9 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const user = userState.user as ApiUser;
   const integrationUser = userState.integrationUser as IApiIntegrationUser;
 
+  const resultingPoiIcons =
+    user?.poiIcons?.menuPoiIcons || integrationUser?.poiIcons?.menuPoiIcons;
+
   const initSelectMapClippings = searchContextState.mapClippings.length
     ? searchContextState.mapClippings.map((c: MapClipping, i) => ({
         ...c,
@@ -106,42 +109,43 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const sortableGroups: ISortableEntityGroup[] = useMemo(() => {
     let activeGroupNumber = 0;
 
-    return searchContextState.entityGroupsByActMeans
-      .reduce<ISortableEntityGroup[]>((result, group) => {
-        if (
-          [OsmName.favorite, OsmName.property].includes(group.name as OsmName)
-        ) {
-          return result;
-        }
-
-        const isGroupActive = cachedOnePage.filteredGroups
-          ? cachedOnePage.filteredGroups!.some(
-              ({ active, name }) => active && name === group.name
-            )
-          : activeGroupNumber < ENTITY_GROUP_LIMIT;
-
-        const sortableGroup = {
-          ...group,
-          active: isGroupActive,
-          id: group.name,
-        };
-
-        sortableGroup.items = sortableGroup.items.map((item, i) => {
-          item.distanceInMeters = Math.round(item.distanceInMeters);
-          item.selected = i < GROUP_ITEM_LIMIT;
-
-          return item;
-        });
-
-        sortableGroup.items.sort(
-          (a, b) => a.distanceInMeters - b.distanceInMeters
-        );
-
-        result.push(sortableGroup);
-        activeGroupNumber += 1;
-
+    return searchContextState.entityGroupsByActMeans.reduce<
+      ISortableEntityGroup[]
+    >((result, group) => {
+      if (
+        [OsmName.favorite, OsmName.property].includes(group.name as OsmName)
+      ) {
         return result;
-      }, []);
+      }
+
+      const isGroupActive = cachedOnePage.filteredGroups
+        ? cachedOnePage.filteredGroups!.some(
+            ({ active, name }) => active && name === group.name
+          )
+        : activeGroupNumber < ENTITY_GROUP_LIMIT;
+
+      const sortableGroup = {
+        ...group,
+        active: isGroupActive,
+        id: group.name,
+      };
+
+      sortableGroup.items = sortableGroup.items.map((item, i) => {
+        item.distanceInMeters = Math.round(item.distanceInMeters);
+        item.selected = i < GROUP_ITEM_LIMIT;
+
+        return item;
+      });
+
+      sortableGroup.items.sort(
+        (a, b) => a.distanceInMeters - b.distanceInMeters
+      );
+
+      result.push(sortableGroup);
+      activeGroupNumber += 1;
+
+      return result;
+    }, []);
   }, [cachedOnePage.filteredGroups, searchContextState.entityGroupsByActMeans]);
 
   const [isOpen, setIsOpen] = useState<IExportFlowState>(
@@ -167,8 +171,9 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const [selectMapClippings, setSelectMapClippings] = useState<
     ISelectableMapClipping[]
   >(initSelectMapClippings);
+
   const [legend, setLegend] = useState<ILegendItem[]>(() =>
-    getFilteredLegend(sortableGroups)
+    getFilteredLegend(sortableGroups, resultingPoiIcons)
   );
   const [isOpenAiBusy, setIsOpenAiBusy] = useState(false);
 
@@ -199,7 +204,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
           group.items.length > 0
         ) {
           const groupIcon = legend.find(
-            ({ title }) => title === group.name
+            ({ name }) => name === group.name
           )?.icon;
 
           const items = [...group.items].slice(0, 3);
@@ -246,9 +251,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const userLogo = integrationUser ? integrationUser.config.logo : user?.logo;
   const isTrial = user?.subscription?.type === ApiSubscriptionPlanType.TRIAL;
 
-  const buttonTitle = t(
-    IntlKeys.snapshotEditor.dataTab.generateLocationExpose
-  );
+  const buttonTitle = t(IntlKeys.snapshotEditor.dataTab.generateLocationExpose);
   const snapshotConfig = searchContextState.responseConfig!;
   // 'var(--primary-gradient)' is not extracted in the 'OnePagePng' component
   const color =
@@ -395,7 +398,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
               setEntityGroups={(groups) => {
                 // triggers on initial render
                 setFilteredGroups(groups);
-                setLegend(getFilteredLegend(groups));
+                setLegend(getFilteredLegend(groups, resultingPoiIcons));
 
                 cachingDispatch({
                   type: CachingActionTypesEnum.SET_ONE_PAGE,

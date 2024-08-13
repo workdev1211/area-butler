@@ -6,6 +6,7 @@ import LegendIcon from "./LegendIcon";
 
 export interface ILegendItem {
   title: string;
+  name: string;
   icon: IPoiIcon;
 }
 

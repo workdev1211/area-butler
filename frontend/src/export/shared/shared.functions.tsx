@@ -12,6 +12,7 @@ export const getFilteredLegend = (
       if (active) {
         result.push({
           title,
+          name,
           icon: deriveIconForPoiGroup(name, poiIcons),
         });
       }
