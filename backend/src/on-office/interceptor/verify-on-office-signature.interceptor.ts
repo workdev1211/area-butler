@@ -34,6 +34,7 @@ export class VerifyOnOfficeSignatureInterceptor implements NestInterceptor {
         req.body.url ||
         `https://${req.hostname}${req.url}`.replace(/(.*)\?.*/, '$1');
 
+      this.logger.verbose(url, onOfficeQueryParams);
       this.onOfficeService.verifySignature(onOfficeQueryParams, url);
     } catch (e) {
       this.logger.error(url, JSON.stringify(onOfficeQueryParams));
