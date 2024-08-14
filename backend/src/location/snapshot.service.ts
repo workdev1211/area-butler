@@ -337,25 +337,26 @@ export class SnapshotService {
       ? user.config.templateSnapshotId
       : user.templateSnapshotId;
 
-    const parentUserId = user.parentId;
     let parentUser = user.parentUser;
-    let parentTemplateId;
-    let templateSnapshot: ApiSearchResultSnapshotResponse;
+    const parentUserId = user.parentId;
+    let parentTemplateId: string;
 
-    if (!userTemplateId && !parentUser && parentUserId) {
-      parentUser = isIntegrationUser
-        ? await this.integrationUserService.findByDbId(parentUserId, {
-            integrationUserId: 1,
-            integrationType: 1,
-            parameters: 1,
-            'config.templateSnapshotId': 1,
-          })
-        : await this.userService.findById({
-            userId: parentUserId,
-            projectQuery: {
-              templateSnapshotId: 1,
-            },
-          });
+    if (!userTemplateId) {
+      if (!parentUser) {
+        parentUser = isIntegrationUser
+          ? await this.integrationUserService.findByDbId(parentUserId, {
+              integrationUserId: 1,
+              integrationType: 1,
+              parameters: 1,
+              'config.templateSnapshotId': 1,
+            })
+          : await this.userService.findById({
+              userId: parentUserId,
+              projectQuery: {
+                templateSnapshotId: 1,
+              },
+            });
+      }
 
       if (parentUser) {
         if (!isIntegrationUser) {
@@ -370,6 +371,7 @@ export class SnapshotService {
     }
 
     const templateSnapshotId = userTemplateId || parentTemplateId;
+    let templateSnapshot: ApiSearchResultSnapshotResponse;
 
     if (templateSnapshotId) {
       templateSnapshot = await this.fetchSnapshotService.fetchSnapshot(

@@ -3,10 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model, ProjectionFields, UpdateQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
-import { readdir, readFile } from 'fs/promises';
-import { join as joinPath } from 'path';
 import { ManipulateType } from 'dayjs';
-import { Dirent } from 'node:fs';
 import { plainToInstance } from 'class-transformer';
 
 import {
@@ -14,21 +11,18 @@ import {
   fixedRequestSubscriptionTypes,
   TRIAL_PRICE_ID,
 } from '../../../shared/constants/subscription-plan';
-import { User, UserDocument } from './schema/user.schema';
+import { PARENT_USER_PATH, User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
   IApiUserApiConnectSettingsReq,
-  IApiUserAssets,
-  IApiUserPoiIcon,
 } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import { getImageTypeFromFileType } from '../shared/functions/shared';
 import ApiUserDto from './dto/api-user.dto';
 
 @Injectable()
@@ -199,7 +193,9 @@ export class UserService {
     withAssets?: boolean;
     withSubscription?: boolean;
   }): Promise<UserDocument> {
-    const user = await this.userModel.findById(userId, projectQuery);
+    const user = await this.userModel
+      .findById(userId, projectQuery)
+      .populate(PARENT_USER_PATH);
 
     if (!user || (!withAssets && !withSubscription)) {
       return user;
@@ -409,58 +405,9 @@ export class UserService {
   }
 
   async fetchByApiKey(apiKey: string): Promise<UserDocument> {
-    return this.userModel.findOne({ 'apiKeyParams.apiKey': apiKey });
-  }
-
-  private async fetchUserAssets(userEmail: string): Promise<IApiUserAssets> {
-    const dirPath = joinPath(process.cwd(), `../shared/assets/${userEmail}`);
-    const mapPoiIconPath = joinPath(dirPath, '/icons/poi/map');
-    const menuPoiIconPath = joinPath(dirPath, '/icons/poi/menu');
-
-    const mapPoiIcons = await this.fetchUserAsset(
-      mapPoiIconPath,
-      this.fetchUserPoiIcon,
-    );
-
-    const menuPoiIcons = await this.fetchUserAsset(
-      menuPoiIconPath,
-      this.fetchUserPoiIcon,
-    );
-
-    return { poiIcons: { mapPoiIcons, menuPoiIcons } };
-  }
-
-  private async fetchUserAsset<T>(
-    dirPath: string,
-    handleFetch: (filename: string, dirPath: string) => Promise<T>,
-  ): Promise<Array<T>> {
-    const dirContent: Dirent[] = await readdir(dirPath, {
-      withFileTypes: true,
-    }).catch(() => undefined);
-
-    if (!dirContent?.length) {
-      return;
-    }
-
-    return Promise.all(
-      dirContent.map(({ name: filename }) => handleFetch(filename, dirPath)),
-    );
-  }
-
-  private async fetchUserPoiIcon(
-    filename: string,
-    dirPath: string,
-  ): Promise<IApiUserPoiIcon> {
-    const name = filename.split('.');
-    const type = name.pop();
-    const file = await readFile(joinPath(dirPath, filename), {
-      encoding: 'base64',
-    });
-
-    return {
-      name: name.join('.'),
-      file: `data:${getImageTypeFromFileType(type)};base64,${file}`,
-    } as IApiUserPoiIcon;
+    return this.userModel
+      .findOne({ 'apiKeyParams.apiKey': apiKey })
+      .populate(PARENT_USER_PATH);
   }
 
   async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
