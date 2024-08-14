@@ -11,7 +11,7 @@ import {
   fixedRequestSubscriptionTypes,
   TRIAL_PRICE_ID,
 } from '../../../shared/constants/subscription-plan';
-import { PARENT_USER_PATH, User, UserDocument } from './schema/user.schema';
+import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
@@ -24,6 +24,7 @@ import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import ApiUserDto from './dto/api-user.dto';
+import { PARENT_USER_PATH } from '../shared/constants/schema';
 
 @Injectable()
 export class UserService {

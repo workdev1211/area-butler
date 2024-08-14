@@ -11,15 +11,21 @@ import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import { TIntegrationUserDocument } from "../../backend/src/user/schema/integration-user.schema";
+import { TCompanyDocument } from "../../backend/src/company/schema/company.schema";
 
 export interface IApiIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
-  config: TApiIntegrationUserConfig;
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
+
+  company?: TCompanyDocument;
+  companyId?: string;
+  config?: TApiIntegrationUserConfig;
+  parameters?: TApiIntegrationUserParameters;
+
+  // OLD
   isParent?: boolean;
   isSubscriptionActive?: boolean;
-  parameters?: TApiIntegrationUserParameters;
   parentId?: string;
   parentUser?: TIntegrationUserDocument;
   productContingents?: TApiIntegrationUserProductContingents;
@@ -98,8 +104,8 @@ export interface IApiIntUserOnOfficeProduct {
 export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 
 export interface IApiIntegrationUserProductContingent {
-  quantity: number;
   expiresAt: Date;
+  quantity: number;
 }
 
 export interface IApiIntUserUpdateParamsAndConfig {

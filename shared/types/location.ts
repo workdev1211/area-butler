@@ -252,6 +252,30 @@ export enum Iso3166_1Alpha2CountriesEnum {
   ZW = "ZW",
 }
 
+export type TAvailableCountries = Extract<
+  Iso3166_1Alpha2CountriesEnum,
+  | Iso3166_1Alpha2CountriesEnum.DE // Germany
+  | Iso3166_1Alpha2CountriesEnum.ES // Spain - ES + IC
+  | Iso3166_1Alpha2CountriesEnum.CY // Cyprus
+  | Iso3166_1Alpha2CountriesEnum.BH // Bahrain - GCC
+  | Iso3166_1Alpha2CountriesEnum.KW // Kuwait - GCC
+  | Iso3166_1Alpha2CountriesEnum.OM // Oman - GCC
+  | Iso3166_1Alpha2CountriesEnum.QA // Qatar - GCC
+  | Iso3166_1Alpha2CountriesEnum.SA // Saudi Arabia - GCC
+  | Iso3166_1Alpha2CountriesEnum.AE // United Arab Emirates - GCC
+  | Iso3166_1Alpha2CountriesEnum.HR // Croatia
+  | Iso3166_1Alpha2CountriesEnum.AT // Austria
+  | Iso3166_1Alpha2CountriesEnum.CH // Switzerland
+  | Iso3166_1Alpha2CountriesEnum.NL // Netherlands
+  | Iso3166_1Alpha2CountriesEnum.FR // France
+  | Iso3166_1Alpha2CountriesEnum.IT // Italy
+  | Iso3166_1Alpha2CountriesEnum.BE // Belgium
+  | Iso3166_1Alpha2CountriesEnum.LU // Luxembourg
+  | Iso3166_1Alpha2CountriesEnum.SI // Slovenia
+  | Iso3166_1Alpha2CountriesEnum.SK // Slovakia
+  | Iso3166_1Alpha2CountriesEnum.PT // Portugal
+>;
+
 export enum Iso3166_1Alpha3CountriesEnum {
   DEU = "DEU",
 }

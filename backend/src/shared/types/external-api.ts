@@ -33,11 +33,10 @@ export enum ApiUnitsOfTransportEnum {
 export enum ApiFeatureTypesEnum {
   ADDRESSES_IN_RANGE = 'ADDRESSES_IN_RANGE',
   LOCATION_INDICES = 'LOCATION_INDICES',
-  TRIGGER_OVERPASS = 'TRIGGER_OVERPASS',
+  OPEN_AI = 'OPEN_AI',
+  POI_DATA = 'POI_DATA',
   SNAPSHOT_DATA = 'SNAPSHOT_DATA',
   ZENSUS_ATLAS = 'ZENSUS_ATLAS',
-  POI_DATA = 'POI_DATA',
-  OPEN_AI = 'OPEN_AI',
 }
 
 export enum ApiUsageStatsTypesEnum {

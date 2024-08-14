@@ -20,7 +20,7 @@ import { MapboxService } from '../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
 import { getUnitedMapboxStyles } from '../shared/functions/shared';
-import { PARENT_USER_PATH } from './schema/user.schema';
+import { PARENT_USER_PATH } from '../shared/constants/schema';
 
 @Injectable()
 export class IntegrationUserService {

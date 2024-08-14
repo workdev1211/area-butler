@@ -18,6 +18,32 @@ import { foreignIdGetSet } from '../../shared/constants/schema';
 
 @Schema({ _id: false })
 class IntUserConfig implements TApiIntegrationUserConfig {
+  // TODO remove?
+  @Prop({ type: Boolean })
+  hideProductPage?: boolean;
+
+  @Prop({
+    type: String,
+    enum: LanguageTypeEnum,
+    default: LanguageTypeEnum.de,
+  })
+  language?: LanguageTypeEnum;
+
+  // TODO should be renamed to 'studyTours'
+  @Prop({
+    type: Object,
+    default: { ...intUserInitShowTour },
+  })
+  showTour?: ApiShowTour;
+
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
+  templateSnapshotId?: string;
+
+  // OLD
+
   @Prop({
     type: Array,
     enum: availableCountries,
@@ -36,17 +62,7 @@ class IntUserConfig implements TApiIntegrationUserConfig {
   extraMapboxStyles?: IApiMapboxStyle[];
 
   @Prop({ type: Boolean })
-  hideProductPage?: boolean;
-
-  @Prop({ type: Boolean })
   isSpecialLink?: boolean;
-
-  @Prop({
-    type: String,
-    enum: LanguageTypeEnum,
-    default: LanguageTypeEnum.de,
-  })
-  language?: LanguageTypeEnum;
 
   @Prop({ type: String })
   logo?: string;
@@ -56,18 +72,6 @@ class IntUserConfig implements TApiIntegrationUserConfig {
 
   @Prop({ type: String })
   mapIcon?: string;
-
-  @Prop({
-    type: Object,
-    default: { ...intUserInitShowTour },
-  })
-  showTour?: ApiShowTour;
-
-  @Prop({
-    type: SchemaTypes.ObjectId,
-    ...foreignIdGetSet,
-  })
-  templateSnapshotId?: string;
 }
 
 export const IntUserConfigSchema = SchemaFactory.createForClass(IntUserConfig);

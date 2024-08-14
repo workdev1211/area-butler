@@ -26,6 +26,8 @@ import { OnOfficeModule } from './on-office/on-office.module';
 import { OpenAiModule } from './open-ai/open-ai.module';
 import { PropstackModule } from './propstack/propstack.module';
 import { MyVivendaModule } from './my-vivenda/my-vivenda.module';
+import { CompanyModule } from './company/company.module';
+import { MigrationModule } from './migration/migration.module';
 
 @Module({
   imports: [
@@ -83,6 +85,8 @@ import { MyVivendaModule } from './my-vivenda/my-vivenda.module';
     OpenAiModule,
     ThrottlerModule.forRoot(),
     MyVivendaModule,
+    CompanyModule,
+    MigrationModule,
   ],
   providers: [
     {

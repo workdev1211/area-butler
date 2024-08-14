@@ -14,11 +14,9 @@ import { SubscriptionService } from '../user/subscription.service';
 import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
-  SNAPSHOT_INT_USER_PATH,
-  SNAPSHOT_REAL_EST_PATH,
 } from './schema/search-result-snapshot.schema';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import { PARENT_USER_PATH, UserDocument } from '../user/schema/user.schema';
+import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { TApiMongoSortQuery } from '../shared/types/shared';
 import ApiSearchResultSnapshotResponseDto, {
@@ -31,6 +29,11 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { IFetchEmbedMapQueryParams } from '@area-butler-types/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import {
+  PARENT_USER_PATH,
+  SNAPSHOT_INT_USER_PATH,
+  SNAPSHOT_REAL_EST_PATH,
+} from '../shared/constants/schema';
 
 interface IFetchSnapshotMainParams {
   filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
@@ -76,7 +79,7 @@ export class FetchSnapshotService {
       projectQuery,
       sortQuery,
       isFetchRealEstate = true,
-      isNotCheckOwner
+      isNotCheckOwner,
     }: IFetchSnapshotMainParams,
   ): Promise<SearchResultSnapshotDocument> {
     const populateOptions: PopulateOptions = isFetchRealEstate
@@ -93,7 +96,12 @@ export class FetchSnapshotService {
 
     return this.searchResultSnapshotModel
       .findOne(
-        await this.getFilterQueryWithUser(user, filterQuery, true, isNotCheckOwner),
+        await this.getFilterQueryWithUser(
+          user,
+          filterQuery,
+          true,
+          isNotCheckOwner,
+        ),
         projectQuery,
       )
       .sort(sortQuery)
@@ -307,7 +315,7 @@ export class FetchSnapshotService {
         'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
       );
     }
-    
+
     if (isNotCheckOwner) {
       return filterQuery;
     }

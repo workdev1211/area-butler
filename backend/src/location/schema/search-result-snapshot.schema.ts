@@ -9,14 +9,19 @@ import {
 import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { SnapshotDataSchema } from './snapshot-data.schema';
-import { User, UserDocument } from '../../user/schema/user.schema';
 import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from '../../user/schema/integration-user.schema';
 import { RealEstateListing } from '../../real-estate-listing/schema/real-estate-listing.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
-import { foreignIdGetSet } from '../../shared/constants/schema';
+import {
+  foreignIdGetSet,
+  SNAPSHOT_INT_USER_PATH,
+  SNAPSHOT_REAL_EST_PATH,
+  SNAPSHOT_USER_PATH,
+} from '../../shared/constants/schema';
+import { User, UserDocument } from '../../user/schema/user.schema';
 
 interface ISearchResultSnapshotSchema extends IIframeTokens {
   config: ApiSearchResultSnapshotConfig;
@@ -42,10 +47,6 @@ interface ISearchResultSnapshotSchema extends IIframeTokens {
 
 export type SearchResultSnapshotDocument = ISearchResultSnapshotSchema &
   Document;
-
-export const SNAPSHOT_REAL_EST_PATH = 'realEstate';
-export const SNAPSHOT_USER_PATH = 'user';
-export const SNAPSHOT_INT_USER_PATH = 'integrationUser';
 
 @Schema({
   toJSON: { getters: true, virtuals: true },

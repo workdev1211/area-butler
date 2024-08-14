@@ -22,10 +22,7 @@ export class MapboxService {
 
   constructor(private readonly http: HttpService) {}
 
-  async createAccessToken(
-    userId: string,
-    allowedUrls: string[] = [],
-  ): Promise<string> {
+  async createAccessToken(userId: string): Promise<string> {
     const tokenTitle = `user-token-${userId}`;
 
     const body = {

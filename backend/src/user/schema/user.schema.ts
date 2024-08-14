@@ -16,73 +16,23 @@ import { ApiKeyParamsSchema } from './api-key-params.schema';
 import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 import { availableCountries } from '../../../../shared/constants/location';
-import { foreignIdGetSet } from '../../shared/constants/schema';
+import {
+  COMPANY_PATH,
+  foreignIdGetSet,
+  PARENT_USER_PATH,
+} from '../../shared/constants/schema';
+import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 
 export type UserDocument = User & Document;
-
-export const PARENT_USER_PATH = 'parentUser';
 
 @Schema({
   toJSON: { getters: true, virtuals: true },
   toObject: { getters: true, virtuals: true },
 })
 export class User {
-  @Prop({ type: String, required: true })
-  fullname: string;
-
-  @Prop({ type: String, required: true, unique: true })
-  email: string;
-
-  @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
-
-  @Prop({ type: Date })
-  consentGiven: Date;
-
-  @Prop({ type: Number, default: 0 })
-  requestsExecuted: number;
-
-  @Prop({ type: Array, default: [] })
-  requestContingents: ApiRequestContingent[];
-
-  @Prop({ type: String })
-  stripeCustomerId: string;
-
-  @Prop({ type: String })
-  paypalCustomerId: string;
-
-  @Prop({ type: Object, default: { ...initialShowTour } })
-  showTour: ApiShowTour;
-
-  @Prop({ type: String })
-  logo: string;
-
-  @Prop({ type: String })
-  mapIcon: string;
-
-  @Prop({ type: String })
-  color: string;
-
-  @Prop({ type: Array })
-  exportFonts: IApiUserExportFont[];
-
-  @Prop({ type: String })
-  mapboxAccessToken: string;
-
-  @Prop({ type: Array, default: [] })
-  allowedUrls: string[];
-
-  @Prop({ type: Array, default: [] })
-  additionalMapBoxStyles: IApiMapboxStyle[];
-
+  // TODO should be renamed to 'externalConnections'
   @Prop({ type: Object })
   apiConnections: TApiUserApiConnections;
-
-  @Prop({
-    type: Array,
-    enum: availableCountries,
-  })
-  allowedCountries: Iso3166_1Alpha2CountriesEnum[];
 
   @Prop({ type: ApiKeyParamsSchema })
   apiKeyParams: IApiKeyParams;
@@ -91,7 +41,73 @@ export class User {
     type: SchemaTypes.ObjectId,
     ...foreignIdGetSet,
   })
+  companyId: string;
+
+  @Prop({ type: Date })
+  consentGiven: Date;
+
+  @Prop({ type: Date, default: Date.now })
+  createdAt: Date;
+
+  @Prop({ type: String, required: true, unique: true })
+  email: string;
+
+  @Prop({ type: String, required: true })
+  fullname: string;
+
+  @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
+  language: LanguageTypeEnum;
+
+  @Prop({ type: String })
+  paypalCustomerId: string;
+
+  @Prop({ type: Array, default: [] })
+  requestContingents: ApiRequestContingent[];
+
+  @Prop({ type: Number, default: 0 })
+  requestsExecuted: number;
+
+  // TODO should be renamed to 'studyTours'
+  @Prop({ type: Object, default: { ...initialShowTour } })
+  showTour: ApiShowTour;
+
+  @Prop({ type: String })
+  stripeCustomerId: string;
+
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
   templateSnapshotId: string;
+
+  company?: TCompanyDocument;
+
+  // OLD
+
+  // TODO should be renamed to 'extraMapboxStyles'
+  @Prop({ type: Array, default: [] })
+  additionalMapBoxStyles: IApiMapboxStyle[];
+
+  @Prop({
+    type: Array,
+    enum: availableCountries,
+  })
+  allowedCountries: Iso3166_1Alpha2CountriesEnum[];
+
+  @Prop({ type: String })
+  color: string;
+
+  @Prop({ type: Array })
+  exportFonts: IApiUserExportFont[];
+
+  @Prop({ type: String })
+  logo: string;
+
+  @Prop({ type: String })
+  mapboxAccessToken: string;
+
+  @Prop({ type: String })
+  mapIcon: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
@@ -101,9 +117,6 @@ export class User {
 
   @Prop({ type: Object })
   poiIcons?: IApiUserPoiIcons;
-
-  @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
-  language: LanguageTypeEnum;
 
   parentUser?: UserDocument;
   subscription?: SubscriptionDocument;
@@ -128,6 +141,13 @@ export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.virtual(PARENT_USER_PATH, {
   ref: User.name,
   localField: 'parentId',
+  foreignField: '_id',
+  justOne: true,
+});
+
+UserSchema.virtual(COMPANY_PATH, {
+  ref: Company.name,
+  localField: 'companyId',
   foreignField: '_id',
   justOne: true,
 });

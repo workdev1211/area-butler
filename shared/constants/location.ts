@@ -9,6 +9,7 @@ import {
 import {
   Iso3166_1Alpha2CountriesEnum,
   Iso3166_1Alpha3CountriesEnum,
+  TAvailableCountries,
 } from "../types/location";
 
 export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
@@ -55,7 +56,7 @@ export const iso3166Alpha3CountryNames: Record<
 
 export const defaultAllowedCountries = [Iso3166_1Alpha2CountriesEnum.DE];
 
-export const availableCountries = [
+export const availableCountries: TAvailableCountries[] = [
   Iso3166_1Alpha2CountriesEnum.DE, // Germany
   Iso3166_1Alpha2CountriesEnum.ES, // Spain - ES + IC
   Iso3166_1Alpha2CountriesEnum.CY, // Cyprus

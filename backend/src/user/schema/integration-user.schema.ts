@@ -14,10 +14,14 @@ import {
   TApiIntegrationUserProductsUsed,
 } from '@area-butler-types/integration-user';
 import { IntUserSubscriptionSchema } from './int-user-subscription.schema';
-import { PARENT_USER_PATH } from './user.schema';
 import { IApiUserPoiIcons } from '@area-butler-types/types';
 import { IntUserConfigSchema } from './int-user-config.schema';
-import { foreignIdGetSet } from '../../shared/constants/schema';
+import {
+  COMPANY_PATH,
+  foreignIdGetSet,
+  PARENT_USER_PATH,
+} from '../../shared/constants/schema';
+import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
@@ -30,8 +34,14 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ required: true, type: String })
   accessToken: string; // for AreaButler internal identification purposes
 
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
+  companyId?: string;
+
   @Prop({ type: IntUserConfigSchema })
-  config: TApiIntegrationUserConfig;
+  config?: TApiIntegrationUserConfig;
 
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
   integrationType: IntegrationTypesEnum;
@@ -39,11 +49,18 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ required: true, type: String })
   integrationUserId: string;
 
-  @Prop({ type: Boolean })
-  isParent?: boolean;
-
   @Prop({ type: Object })
   parameters?: TApiIntegrationUserParameters;
+
+  @Prop({ type: Object })
+  poiIcons?: IApiUserPoiIcons;
+
+  company?: TCompanyDocument;
+
+  // OLD
+
+  @Prop({ type: Boolean })
+  isParent?: boolean;
 
   @Prop({
     type: SchemaTypes.ObjectId,
@@ -66,9 +83,6 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
     },
   })
   subscription?: IIntUserSubscription;
-
-  @Prop({ type: Object })
-  poiIcons?: IApiUserPoiIcons;
 
   isSubscriptionActive?: boolean;
   parentUser?: TIntegrationUserDocument;
@@ -120,5 +134,12 @@ IntegrationUserSchema.virtual(PARENT_USER_PATH, {
 
     return filterQuery;
   },
+  justOne: true,
+});
+
+IntegrationUserSchema.virtual(COMPANY_PATH, {
+  ref: Company.name,
+  localField: 'companyId',
+  foreignField: '_id',
   justOne: true,
 });
