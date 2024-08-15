@@ -16,6 +16,7 @@ import { OpenAiExtService } from '../open-ai/open-ai-ext.service';
 import { OnOfficeWebhookUrlEnum } from './shared/on-office.types';
 import ApiOnOfficeLoginQueryParamsDto from './dto/api-on-office-login-query-params.dto';
 import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
+import { createDirectLink } from '../shared/functions/shared';
 
 @Injectable()
 export class OnOfficeWebhookService {
@@ -74,11 +75,11 @@ export class OnOfficeWebhookService {
       textFieldParams.push(
         {
           exportType: AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
-          text: snapshotRes.addressToken,
+          text: createDirectLink(snapshotRes, true),
         },
         {
           exportType: AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
-          text: snapshotRes.unaddressToken,
+          text: createDirectLink(snapshotRes, false),
         },
       );
     }

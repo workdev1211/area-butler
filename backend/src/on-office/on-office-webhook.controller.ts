@@ -28,7 +28,7 @@ export class OnOfficeWebhookController {
   @UseInterceptors(VerifyOnOfficeSignatureInterceptor)
   @Get(':endpoint')
   handleWebhook(
-    @Param() endpoint: OnOfficeWebhookUrlEnum,
+    @Param('endpoint') endpoint: OnOfficeWebhookUrlEnum,
     @Query() onOfficeQueryParams: ApiOnOfficeLoginQueryParamsDto,
   ): void {
     this.logger.verbose(endpoint, onOfficeQueryParams);
