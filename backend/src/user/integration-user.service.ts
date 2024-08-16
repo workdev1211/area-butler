@@ -1,6 +1,12 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, ProjectionFields, UpdateQuery } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  ProjectionFields,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 import { BulkWriteResult } from 'mongodb';
 import { EventEmitter2 } from 'eventemitter2';
 import * as dayjs from 'dayjs';
@@ -12,15 +18,14 @@ import {
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
-  IApiIntegrationUserSchema,
   IApiIntUserCreate,
-  TApiIntegrationUserConfig,
+  IIntUserConfig,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
 import { getUnitedMapboxStyles } from '../shared/functions/shared';
-import { PARENT_USER_PATH } from '../shared/constants/schema';
+import { COMPANY_PATH, PARENT_USER_PATH } from '../shared/constants/schema';
 
 @Injectable()
 export class IntegrationUserService {
@@ -71,39 +76,21 @@ export class IntegrationUserService {
 
   async findOne(
     integrationType: IntegrationTypesEnum,
-    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
-    projectQuery?: ProjectionFields<IApiIntegrationUserSchema>,
+    filterQuery: FilterQuery<TIntegrationUserDocument>,
+    projectQuery?: ProjectionFields<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel
-      .findOne(
-        {
-          ...filterQuery,
-          integrationType,
-        },
-        projectQuery,
-      )
-      .sort({ updatedAt: -1 })
-      .populate(PARENT_USER_PATH);
-  }
-
-  async findOneAndUpdate(
-    integrationType: IntegrationTypesEnum,
-    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
-    updateQuery: UpdateQuery<IApiIntegrationUserSchema>,
-  ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel.findOneAndUpdate(
+    return this.findOneCore(
       {
         ...filterQuery,
         integrationType,
       },
-      updateQuery,
-      { new: true },
+      projectQuery,
     );
   }
 
   async findOneOrFail(
     integrationType: IntegrationTypesEnum,
-    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
+    filterQuery: FilterQuery<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
     const existingUser = await this.findOne(integrationType, filterQuery);
 
@@ -118,11 +105,9 @@ export class IntegrationUserService {
   async findByTokenOrFail(
     accessToken: string,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel
-      .findOne({
-        accessToken,
-      })
-      .populate(PARENT_USER_PATH);
+    const existingUser = await this.findOneCore({
+      accessToken,
+    });
 
     if (!existingUser) {
       this.logger.error(`${this.findByTokenOrFail.name} ${accessToken}`);
@@ -134,16 +119,32 @@ export class IntegrationUserService {
 
   async findByDbId(
     integrationUserDbId: string,
-    projectQuery?: ProjectionFields<IApiIntegrationUserSchema>,
+    projectQuery?: ProjectionFields<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel
-      .findById(integrationUserDbId, projectQuery)
-      .populate(PARENT_USER_PATH);
+    return this.findOneCore(
+      { _id: new Types.ObjectId(integrationUserDbId) },
+      projectQuery,
+    );
+  }
+
+  async findOneAndUpdate(
+    integrationType: IntegrationTypesEnum,
+    filterQuery: FilterQuery<TIntegrationUserDocument>,
+    updateQuery: UpdateQuery<TIntegrationUserDocument>,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserModel.findOneAndUpdate(
+      {
+        ...filterQuery,
+        integrationType,
+      },
+      updateQuery,
+      { new: true },
+    );
   }
 
   async findByDbIdAndUpdate(
     integrationUserDbId: string,
-    updateQuery: UpdateQuery<IApiIntegrationUserSchema>,
+    updateQuery: UpdateQuery<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel.findByIdAndUpdate(
       integrationUserDbId,
@@ -154,7 +155,7 @@ export class IntegrationUserService {
 
   async updateConfig(
     integrationUser: TIntegrationUserDocument,
-    config: Partial<TApiIntegrationUserConfig>,
+    config: Partial<IIntUserConfig>,
   ): Promise<TIntegrationUserDocument> {
     Object.keys(config).forEach((key) => {
       // 'set' is used because we update properties of a nested object
@@ -205,7 +206,7 @@ export class IntegrationUserService {
 
   getIntUserResultConfig(
     integrationUser: TIntegrationUserDocument,
-  ): TApiIntegrationUserConfig {
+  ): IIntUserConfig {
     const { config, isParent, parentUser } = integrationUser.toObject();
 
     if (isParent || !parentUser) {
@@ -223,5 +224,16 @@ export class IntegrationUserService {
         config.extraMapboxStyles,
       ),
     };
+  }
+
+  private async findOneCore(
+    filterQuery: FilterQuery<TIntegrationUserDocument>,
+    projectQuery?: ProjectionFields<TIntegrationUserDocument>,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserModel
+      .findOne(filterQuery, projectQuery)
+      .sort({ updatedAt: -1 })
+      .populate(PARENT_USER_PATH)
+      .populate(COMPANY_PATH);
   }
 }

@@ -11,7 +11,7 @@ import {
   LanguageTypeEnum,
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
-import { SubscriptionDocument } from './subscription.schema';
+import { Subscription, SubscriptionDocument } from './subscription.schema';
 import { ApiKeyParamsSchema } from './api-key-params.schema';
 import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
@@ -20,6 +20,7 @@ import {
   COMPANY_PATH,
   foreignIdGetSet,
   PARENT_USER_PATH,
+  SUBSCRIPTION_PATH,
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 
@@ -30,13 +31,6 @@ export type UserDocument = User & Document;
   toObject: { getters: true, virtuals: true },
 })
 export class User {
-  // TODO should be renamed to 'externalConnections'
-  @Prop({ type: Object })
-  apiConnections: TApiUserApiConnections;
-
-  @Prop({ type: ApiKeyParamsSchema })
-  apiKeyParams: IApiKeyParams;
-
   @Prop({
     type: SchemaTypes.ObjectId,
     ...foreignIdGetSet,
@@ -52,12 +46,6 @@ export class User {
   @Prop({ type: String, required: true, unique: true })
   email: string;
 
-  @Prop({ type: String, required: true })
-  fullname: string;
-
-  @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
-  language: LanguageTypeEnum;
-
   @Prop({ type: String })
   paypalCustomerId: string;
 
@@ -67,20 +55,35 @@ export class User {
   @Prop({ type: Number, default: 0 })
   requestsExecuted: number;
 
+  @Prop({ type: String })
+  stripeCustomerId: string;
+
+  company: TCompanyDocument;
+
+  // CONFIG
+
+  // TODO should be renamed to 'externalConnections'
+  @Prop({ type: Object })
+  apiConnections: TApiUserApiConnections;
+
+  @Prop({ type: ApiKeyParamsSchema })
+  apiKeyParams: IApiKeyParams;
+
+  @Prop({ type: String, required: true })
+  fullname: string;
+
+  @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
+  language: LanguageTypeEnum;
+
   // TODO should be renamed to 'studyTours'
   @Prop({ type: Object, default: { ...initialShowTour } })
   showTour: ApiShowTour;
-
-  @Prop({ type: String })
-  stripeCustomerId: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
     ...foreignIdGetSet,
   })
   templateSnapshotId: string;
-
-  company?: TCompanyDocument;
 
   // OLD
 
@@ -116,10 +119,10 @@ export class User {
   parentId: string;
 
   @Prop({ type: Object })
-  poiIcons?: IApiUserPoiIcons;
+  poiIcons: IApiUserPoiIcons;
 
-  parentUser?: UserDocument;
-  subscription?: SubscriptionDocument;
+  parentUser: UserDocument;
+  subscription: SubscriptionDocument;
 }
 
 export const retrieveTotalRequestContingent = (
@@ -152,7 +155,12 @@ UserSchema.virtual(COMPANY_PATH, {
   justOne: true,
 });
 
-UserSchema.virtual('subscription');
+UserSchema.virtual(SUBSCRIPTION_PATH, {
+  ref: Subscription.name,
+  localField: '_id',
+  foreignField: 'userId',
+  justOne: true,
+});
 
 // Left as an example
 // UserSchema.pre('save', function (this: UserDocument, next): void {

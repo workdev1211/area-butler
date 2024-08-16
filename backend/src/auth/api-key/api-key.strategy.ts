@@ -17,7 +17,7 @@ export class ApiKeyStrategy extends PassportStrategy(
       },
       true,
       async (apiKey: string, verified, req): Promise<void> => {
-        const user = await this.userService.fetchByApiKey(apiKey);
+        const user = await this.userService.findByApiKey(apiKey);
         const routePath = req.route.path;
 
         if (

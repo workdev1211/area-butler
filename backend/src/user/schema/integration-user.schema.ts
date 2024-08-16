@@ -4,24 +4,24 @@ import * as dayjs from 'dayjs';
 
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
-  IApiIntegrationUserSchema,
+  IIntegrationUserSchema,
   IApiIntUserOnOfficeParams,
   IApiIntUserPropstackParams,
   IIntUserSubscription,
-  TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProductContingents,
   TApiIntegrationUserProductsUsed,
 } from '@area-butler-types/integration-user';
 import { IntUserSubscriptionSchema } from './int-user-subscription.schema';
-import { IApiUserPoiIcons } from '@area-butler-types/types';
-import { IntUserConfigSchema } from './int-user-config.schema';
+import { UserConfigSchema } from './user-config.schema';
 import {
   COMPANY_PATH,
   foreignIdGetSet,
   PARENT_USER_PATH,
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
+import { IApiUserPoiIcons } from '@area-butler-types/types';
+import { IUserConfig } from '@area-butler-types/user';
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
@@ -30,18 +30,12 @@ export type TIntegrationUserDocument = IntegrationUser & Document;
   toJSON: { getters: true, virtuals: true },
   toObject: { getters: true, virtuals: true },
 })
-export class IntegrationUser implements IApiIntegrationUserSchema {
+export class IntegrationUser implements IIntegrationUserSchema {
   @Prop({ required: true, type: String })
   accessToken: string; // for AreaButler internal identification purposes
 
-  @Prop({
-    type: SchemaTypes.ObjectId,
-    ...foreignIdGetSet,
-  })
-  companyId?: string;
-
-  @Prop({ type: IntUserConfigSchema })
-  config?: TApiIntegrationUserConfig;
+  @Prop({ type: UserConfigSchema })
+  config: IUserConfig;
 
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
   integrationType: IntegrationTypesEnum;
@@ -49,11 +43,14 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ required: true, type: String })
   integrationUserId: string;
 
-  @Prop({ type: Object })
-  parameters?: TApiIntegrationUserParameters;
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    ...foreignIdGetSet,
+  })
+  companyId?: string;
 
   @Prop({ type: Object })
-  poiIcons?: IApiUserPoiIcons;
+  parameters?: TApiIntegrationUserParameters;
 
   company?: TCompanyDocument;
 
@@ -67,6 +64,9 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
     ...foreignIdGetSet,
   })
   parentId?: string;
+
+  @Prop({ type: Object })
+  poiIcons?: IApiUserPoiIcons;
 
   @Prop({ type: Object })
   productContingents?: TApiIntegrationUserProductContingents;

@@ -1,7 +1,13 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
-import { Model, ProjectionFields, UpdateQuery } from 'mongoose';
+import {
+  FilterQuery,
+  Model,
+  ProjectionFields,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 import { plainToInstance } from 'class-transformer';
@@ -24,7 +30,11 @@ import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import ApiUserDto from './dto/api-user.dto';
-import { PARENT_USER_PATH } from '../shared/constants/schema';
+import {
+  COMPANY_PATH,
+  PARENT_USER_PATH,
+  SUBSCRIPTION_PATH,
+} from '../shared/constants/schema';
 
 @Injectable()
 export class UserService {
@@ -41,7 +51,7 @@ export class UserService {
     fullname: string,
     withAssets = false,
   ): Promise<UserDocument> {
-    const existingUser = await this.userModel.findOne({ email });
+    const existingUser = await this.findByEmail(email);
 
     if (existingUser) {
       if (!withAssets) {
@@ -89,11 +99,71 @@ export class UserService {
     return newUser;
   }
 
+  async findById({
+    userId,
+    projectQuery,
+    withAssets,
+    withSubscription,
+  }: {
+    userId: string;
+    projectQuery?: ProjectionFields<UserDocument>;
+    withAssets?: boolean;
+    withSubscription?: boolean;
+  }): Promise<UserDocument> {
+    const user = await this.findOneCore(
+      { _id: new Types.ObjectId(userId) },
+      projectQuery,
+    );
+
+    if (!user || (!withAssets && !withSubscription)) {
+      return user;
+    }
+
+    if (withAssets) {
+      const poiIcons = user.poiIcons;
+
+      if (
+        poiIcons &&
+        Object.keys(poiIcons).some((key) => poiIcons[key]?.length)
+      ) {
+        user.poiIcons = poiIcons;
+      }
+    }
+
+    if (withSubscription) {
+      user.subscription = await this.subscriptionService.findActiveByUserId(
+        user.parentId || user.id,
+      );
+    }
+
+    return user;
+  }
+
+  async findByEmail(email: string): Promise<UserDocument> {
+    return this.findOneCore({ email });
+  }
+
+  async findByApiKey(apiKey: string): Promise<UserDocument> {
+    return this.findOneCore({ 'apiKeyParams.apiKey': apiKey });
+  }
+
+  async findByStripeCustomerId(
+    stripeCustomerId: string,
+  ): Promise<UserDocument> {
+    return this.findOneCore({ stripeCustomerId });
+  }
+
+  async findByPaypalCustomerId(
+    paypalCustomerId: string,
+  ): Promise<UserDocument> {
+    return this.findOneCore({ paypalCustomerId });
+  }
+
   async patchUser(
     email: string,
     { fullname }: ApiUpsertUserDto,
   ): Promise<UserDocument> {
-    const user = await this.userModel.findOne({ email });
+    const user = await this.findByEmail(email);
 
     if (!user) {
       throw new HttpException('Unknown user!', 400);
@@ -165,61 +235,6 @@ export class UserService {
     );
 
     return this.findById({ userId });
-  }
-
-  async findByEmail(email: string): Promise<UserDocument> {
-    return this.userModel.findOne({ email });
-  }
-
-  async findByStripeCustomerId(
-    stripeCustomerId: string,
-  ): Promise<UserDocument> {
-    return this.userModel.findOne({ stripeCustomerId });
-  }
-
-  async findByPaypalCustomerId(
-    paypalCustomerId: string,
-  ): Promise<UserDocument> {
-    return this.userModel.findOne({ paypalCustomerId });
-  }
-
-  async findById({
-    userId,
-    projectQuery,
-    withAssets,
-    withSubscription,
-  }: {
-    userId: string;
-    projectQuery?: ProjectionFields<UserDocument>;
-    withAssets?: boolean;
-    withSubscription?: boolean;
-  }): Promise<UserDocument> {
-    const user = await this.userModel
-      .findById(userId, projectQuery)
-      .populate(PARENT_USER_PATH);
-
-    if (!user || (!withAssets && !withSubscription)) {
-      return user;
-    }
-
-    if (withAssets) {
-      const poiIcons = user.poiIcons;
-
-      if (
-        poiIcons &&
-        Object.keys(poiIcons).some((key) => poiIcons[key]?.length)
-      ) {
-        user.poiIcons = poiIcons;
-      }
-    }
-
-    if (withSubscription) {
-      user.subscription = await this.subscriptionService.findActiveByUserId(
-        user.parentId || user.id,
-      );
-    }
-
-    return user;
   }
 
   async incrementExecutedRequestCount(user: UserDocument): Promise<void> {
@@ -405,12 +420,6 @@ export class UserService {
     return user;
   }
 
-  async fetchByApiKey(apiKey: string): Promise<UserDocument> {
-    return this.userModel
-      .findOne({ 'apiKeyParams.apiKey': apiKey })
-      .populate(PARENT_USER_PATH);
-  }
-
   async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
     if (user.parentId && !user.parentUser) {
       user.parentUser = await this.findById({
@@ -420,20 +429,44 @@ export class UserService {
       });
     }
 
-    if (
-      user.parentUser &&
-      (!user.subscription ||
-        user.subscription.id !== user.parentUser.subscription?.id)
-    ) {
-      user.subscription = user.parentUser.subscription;
+    const userObj = user.toObject();
+    let userSubscription =
+      userObj.parentUser?.subscription || userObj.subscription;
+
+    if (!userSubscription) {
+      userSubscription = (
+        await this.subscriptionService.findActiveByUserId(user.id)
+      )?.toObject();
     }
 
-    if (!user.subscription && !user.parentUser) {
-      user.subscription = await this.subscriptionService.findActiveByUserId(
-        user.id,
-      );
-    }
+    userObj.subscription = userSubscription;
 
-    return plainToInstance(ApiUserDto, user, { exposeUnsetFields: false });
+    return plainToInstance(ApiUserDto, userObj, {
+      exposeUnsetFields: false,
+    });
+  }
+
+  private async findOneCore(
+    filterQuery: FilterQuery<UserDocument>,
+    projectQuery?: ProjectionFields<UserDocument>,
+  ): Promise<UserDocument> {
+    return this.userModel
+      .findOne(filterQuery, projectQuery)
+      .sort({ updatedAt: -1 })
+      .populate(COMPANY_PATH)
+      .populate({
+        path: PARENT_USER_PATH,
+        populate: [
+          {
+            path: COMPANY_PATH,
+            justOne: true,
+          },
+          {
+            path: SUBSCRIPTION_PATH,
+            justOne: true,
+          },
+        ],
+      })
+      .populate(SUBSCRIPTION_PATH);
   }
 }

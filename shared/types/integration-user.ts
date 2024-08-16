@@ -13,14 +13,14 @@ import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import { TIntegrationUserDocument } from "../../backend/src/user/schema/integration-user.schema";
 import { TCompanyDocument } from "../../backend/src/company/schema/company.schema";
 
-export interface IApiIntegrationUserSchema {
+export interface IIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
+  config: IIntUserConfig;
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
 
   company?: TCompanyDocument;
   companyId?: string;
-  config?: TApiIntegrationUserConfig;
   parameters?: TApiIntegrationUserParameters;
 
   // OLD
@@ -35,7 +35,7 @@ export interface IApiIntegrationUserSchema {
 
 export interface IApiIntegrationUser {
   accessToken: string;
-  config: TApiIntegrationUserConfig;
+  config: IIntUserConfig;
   integrationUserId: string;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
@@ -111,7 +111,7 @@ export interface IApiIntegrationUserProductContingent {
 export interface IApiIntUserUpdateParamsAndConfig {
   accessToken: string;
   parameters: TApiIntegrationUserParameters;
-  config?: Partial<TApiIntegrationUserConfig>;
+  config?: Partial<IIntUserConfig>;
 }
 
 export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
@@ -131,20 +131,21 @@ export type TApiIntegrationUserProductContingents = Partial<
 export type TApiIntegrationUserProductsUsed = Partial<
   Record<TApiIntUserProdContType, number>
 >;
-export type TApiIntegrationUserConfig = {
+export interface IIntUserConfig {
+  language?: LanguageTypeEnum;
+  showTour?: ApiShowTour;
+  templateSnapshotId?: string;
+
+  // OLD
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
   color?: string;
   exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
   extraMapboxStyles?: IApiMapboxStyle[];
-  hideProductPage?: boolean;
   isSpecialLink?: boolean;
-  language?: LanguageTypeEnum;
   logo?: string;
   mapboxAccessToken?: string;
   mapIcon?: string;
-  showTour?: ApiShowTour;
-  templateSnapshotId?: string;
-};
+}
 
 export interface IIntUserExpMatchParams {
   fieldId: string;
@@ -153,7 +154,7 @@ export interface IIntUserExpMatchParams {
 
 export interface IApiIntUserLoginRes {
   accessToken: string;
-  config: TApiIntegrationUserConfig;
+  config: IIntUserConfig;
   integrationUserId: string;
   isChild: boolean;
   realEstate: ApiRealEstateListing;

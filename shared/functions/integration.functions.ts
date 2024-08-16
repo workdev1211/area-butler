@@ -6,9 +6,6 @@ import {
   propstackProdContWithAct,
 } from "../types/integration";
 import {
-  IApiIntegrationUserSchema,
-  IApiIntUserOnOfficeParams,
-  IApiIntUserPropstackParams,
   TApiIntUserAvailProdContingents,
   TApiIntUserProdContType,
 } from "../types/integration-user";
@@ -75,34 +72,6 @@ export const getAvailProdContType = (
 //     }
 //   }
 // };
-
-export const checkIsParent = (
-  integrationUser: IApiIntegrationUserSchema,
-  parentUser: IApiIntegrationUserSchema
-): boolean => {
-  if (integrationUser.integrationType !== parentUser.integrationType) {
-    return false;
-  }
-
-  switch (integrationUser.integrationType) {
-    case IntegrationTypesEnum.ON_OFFICE: {
-      return (
-        (integrationUser.parameters as IApiIntUserOnOfficeParams)
-          .customerWebId ===
-        (parentUser.parameters as IApiIntUserOnOfficeParams).customerWebId
-      );
-    }
-
-    case IntegrationTypesEnum.PROPSTACK: {
-      return (
-        (integrationUser.parameters as IApiIntUserPropstackParams).shopId ===
-        (parentUser.parameters as IApiIntUserPropstackParams).shopId
-      );
-    }
-  }
-
-  return false;
-};
 
 export const checkIsSearchNotUnlocked = ({
   iframeEndsAt,

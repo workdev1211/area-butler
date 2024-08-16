@@ -5,22 +5,27 @@ import {
   ApiShowTour,
   IApiMapboxStyle,
   LanguageTypeEnum,
+  TApiUserApiConnections,
   TAreaButlerExportTypes,
 } from '@area-butler-types/types';
-import {
-  IIntUserExpMatchParams,
-  TApiIntegrationUserConfig,
-} from '@area-butler-types/integration-user';
-import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
-import { availableCountries } from '../../../../shared/constants/location';
 import { intUserInitShowTour } from '../../../../shared/constants/integration';
 import { foreignIdGetSet } from '../../shared/constants/schema';
+import { IUserConfig } from '@area-butler-types/user';
+import { IApiKeyParams } from '../../shared/types/external-api';
+import { availableCountries } from '../../../../shared/constants/location';
+import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
+import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
 
 @Schema({ _id: false })
-class IntUserConfig implements TApiIntegrationUserConfig {
-  // TODO remove?
-  @Prop({ type: Boolean })
-  hideProductPage?: boolean;
+class UserConfig implements IUserConfig {
+  @Prop({ type: Object })
+  apiKeyParams?: IApiKeyParams;
+
+  @Prop({ type: Object })
+  externalConnections?: TApiUserApiConnections;
+
+  @Prop({ type: String })
+  fullname?: string;
 
   @Prop({
     type: String,
@@ -29,12 +34,11 @@ class IntUserConfig implements TApiIntegrationUserConfig {
   })
   language?: LanguageTypeEnum;
 
-  // TODO should be renamed to 'studyTours'
   @Prop({
     type: Object,
     default: { ...intUserInitShowTour },
   })
-  showTour?: ApiShowTour;
+  studyTours?: ApiShowTour;
 
   @Prop({
     type: SchemaTypes.ObjectId,
@@ -72,6 +76,9 @@ class IntUserConfig implements TApiIntegrationUserConfig {
 
   @Prop({ type: String })
   mapIcon?: string;
+
+  @Prop({ type: Object })
+  showTour?: ApiShowTour;
 }
 
-export const IntUserConfigSchema = SchemaFactory.createForClass(IntUserConfig);
+export const UserConfigSchema = SchemaFactory.createForClass(UserConfig);

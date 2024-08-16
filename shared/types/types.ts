@@ -60,23 +60,28 @@ export enum LanguageTypeEnum {
 export interface ApiUser {
   fullname: string;
   email: string;
-  subscription?: ApiUserSubscription;
-  requestsExecuted: number;
-  consentGiven?: Date;
   requestContingents: ApiRequestContingent[];
+  requestsExecuted: number;
   showTour: ApiShowTour;
+
+  accessToken?: string; // only on the frontend and MyVivenda specific for the moment
+  apiConnections?: TApiUserApiConnections;
+  consentGiven?: Date;
+  language: LanguageTypeEnum;
+  subscription?: ApiUserSubscription;
+  templateSnapshotId?: string;
+
+  // OLD CONFIG
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  color?: string;
+  exportFonts?: IApiUserExportFont[];
+  extraMapboxStyles: IApiMapboxStyle[];
   logo?: string;
   mapIcon?: string;
-  color?: string;
-  extraMapboxStyles: IApiMapboxStyle[];
-  isChild: boolean;
   poiIcons?: IApiUserPoiIcons;
-  exportFonts?: IApiUserExportFont[];
-  apiConnections?: TApiUserApiConnections;
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
-  templateSnapshotId?: string;
-  language: LanguageTypeEnum;
-  accessToken?: string; // only on the frontend and MyVivenda specific for the moment
+
+  // OLD
+  isChild: boolean;
 }
 
 export type TApiUserApiConnectSettings = Partial<

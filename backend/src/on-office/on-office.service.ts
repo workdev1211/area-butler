@@ -54,7 +54,6 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
-  IApiIntegrationUserSchema,
   IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
 } from '@area-butler-types/integration-user';
@@ -63,7 +62,6 @@ import {
   onOfficeOpenAiFieldMapper,
 } from '../../../shared/constants/on-office/on-office-constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
-import { checkIsParent } from '../../../shared/functions/integration.functions';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import {
   buildOnOfficeQueryString,
@@ -406,7 +404,7 @@ export class OnOfficeService {
       ? await this.integrationUserService.findByDbId(integrationUser.parentId)
       : undefined;
 
-    if (parentUser && checkIsParent(integrationUser, parentUser)) {
+    if (parentUser) {
       integrationUser.parentUser = parentUser;
     }
 
@@ -894,7 +892,7 @@ export class OnOfficeService {
         extendedClaim,
       });
 
-      const updateQuery: UpdateQuery<IApiIntegrationUserSchema> = {
+      const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
         $set: {
           accessToken: extendedClaim,
           'config.color': color ? `#${color}` : parentUser?.config.color,

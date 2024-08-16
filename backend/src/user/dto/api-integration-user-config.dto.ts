@@ -5,40 +5,48 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
-import { TApiIntegrationUserConfig } from '@area-butler-types/integration-user';
+import { IIntUserConfig } from '@area-butler-types/integration-user';
 
-class ApiIntegrationUserConfigDto
-  implements Partial<TApiIntegrationUserConfig>
-{
+@Exclude()
+class ApiIntegrationUserConfigDto implements Partial<IIntUserConfig> {
+  @Expose()
   @IsOptional()
   @IsString()
   mapboxAccessToken?: string;
 
+  @Expose()
   @IsOptional()
   @IsBoolean()
   hideProductPage?: boolean;
 
+  @Expose()
   @IsOptional()
   @IsString()
   color?: string;
 
+  @Expose()
   @IsOptional()
   @IsString()
   logo?: string;
 
+  @Expose()
   @IsOptional()
   @IsString()
   mapIcon?: string;
 
+  // @Expose()
   // @IsNotEmpty()
   // @IsObject()
   // showTour: ApiShowTour;
 
+  // @Expose()
   // @IsOptional()
   // @IsObject()
   // exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
 
+  @Expose()
   @IsOptional()
   @IsString()
   templateSnapshotId?: string;

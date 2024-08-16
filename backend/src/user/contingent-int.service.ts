@@ -8,10 +8,7 @@ import {
   TApiIntUserAvailProdContingents,
   TApiIntUserProdContType,
 } from '@area-butler-types/integration-user';
-import {
-  checkIsParent,
-  getAvailProdContType,
-} from '../../../shared/functions/integration.functions';
+import { getAvailProdContType } from '../../../shared/functions/integration.functions';
 import { IntegrationUserService } from './integration-user.service';
 import { IntegrationActionTypeEnum } from '@area-butler-types/integration';
 
@@ -71,14 +68,6 @@ export class ContingentIntService {
         (await this.integrationUserService.findByDbId(
           integrationUser.parentId,
         ));
-
-      if (!checkIsParent(integrationUser, parentUser)) {
-        const errorMessage = 'The user info is incorrect!';
-        let logMessage = `${errorMessage}\nIntegration user id: ${integrationUser.integrationUserId}\n`;
-        logMessage += `Parent user id: ${parentUser.integrationUserId}.`;
-        this.logger.error(logMessage);
-        throw new HttpException(errorMessage, 400);
-      }
 
       ({ productContingents, productsUsed } = parentUser);
     }
