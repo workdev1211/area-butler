@@ -442,6 +442,8 @@ export const IntlKeys = {
     addNewLocationModalBtn: "snapshotEditor.addNewLocationModalBtn",
     addNewLocationModalSuccess: "snapshotEditor.addNewLocationModalSuccess",
     addNewLocationModalFailed: "snapshotEditor.addNewLocationModalFailed",
+    english: "snapshotEditor.english",
+    german: "snapshotEditor.german",
   },
 
   realEstate: {

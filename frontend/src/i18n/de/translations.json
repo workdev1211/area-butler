@@ -402,7 +402,9 @@
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",
     "addNewLocationModalBtn": "Hinzufügen",
     "addNewLocationModalSuccess": "Objekt erfolgreich hinzugefügt!",
-    "addNewLocationModalFailed": "Fehler beim Speichern des Objektes"
+    "addNewLocationModalFailed": "Fehler beim Speichern des Objektes",
+    "german": "Deutsch",
+    "english": "Englisch"
   },
   "realEstate": {
     "sync": "Sync-Immobilien",

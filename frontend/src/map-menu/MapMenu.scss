@@ -65,7 +65,7 @@
 
   .tab-bar {
     height: var(--menu-item-h);
-    padding: calc(var(--menu-item-pl) / 4) 0;
+    padding: calc(var(--menu-item-pl) / 4) var(--menu-item-pr) calc(var(--menu-item-pl) / 4) 0;
     @apply text-base bg-white rounded-t-lg;
 
     .tab-container {
@@ -100,10 +100,10 @@
   .map-menu-header {
     height: var(--menu-item-h);
     background: var(--base-anthracite);
-    padding: 0 var(--menu-item-pr) 0 13px !important;
+    padding: 0 17px 0 13px !important;
     border-bottom: none;
 
-    @apply flex flex-col justify-center;
+    @apply flex flex-row justify-between items-center;
 
     .toggle {
       scale: 0.7;
@@ -116,6 +116,10 @@
 
     .map-menu-header-text {
       @apply text-base;
+    }
+
+    .dropdown-content {
+      top: 30px;
     }
   }
 

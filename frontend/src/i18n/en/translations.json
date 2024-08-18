@@ -304,7 +304,9 @@
     "addNewLocationModalTitle": "Add new location",
     "addNewLocationModalBtn": "Add",
     "addNewLocationModalSuccess": "Object successfully added!",
-    "addNewLocationModalFailed": "Error when saving the object"
+    "addNewLocationModalFailed": "Error when saving the object",
+    "german": "German",
+    "english": "English"
   },
   "common": {
     "showMore": "Show more",

@@ -448,6 +448,7 @@ export interface ApiSearchResultSnapshotConfig {
   realEstateStatus?: string; // move to 'realEstateSettings'
   realEstateStatus2?: string; // move to 'realEstateSettings'
 
+  language?: LanguageTypeEnum;
   showAddress?: boolean;
   showLocation?: boolean;
   showStreetViewLink?: boolean;

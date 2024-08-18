@@ -95,7 +95,7 @@ const Localities: FC<ILocalitiesProps> = ({
           <input
             type="checkbox"
             checked={groupedEntries.some((e) => e.active)}
-            className="checkbox checkbox-sm z-2500"
+            className="checkbox checkbox-sm z-1"
             onClick={(e) => {
               e.stopPropagation();
             }}

@@ -14,6 +14,7 @@ import {
   ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
   IApiUserPoiIcon,
+  LanguageTypeEnum,
   MapDisplayModesEnum,
   MeansOfTransportation,
 } from "../../../shared/types/types";
@@ -22,6 +23,8 @@ import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
 import fileIcon from "../assets/icons/file.svg";
+import germanyFlagIcon from "../assets/icons/germany-flag.svg";
+import englandFlagIcon from "../assets/icons/england-flag.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import DataTab from "./data-tab/DataTab";
@@ -103,12 +106,24 @@ const MapMenu: FC<IMapMenuProps> = ({
   const isEditorTab = activeTab === TabsEnum.Editor;
   const isDataTab = activeTab === TabsEnum.Data;
   const isShownAddress = !!config?.showAddress || !config;
+  const exportLanguage = config?.language || LanguageTypeEnum.de;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const toggleShowAddress = () => {
     editorTabProps?.onConfigChange({
       ...responseConfig,
       showAddress: !responseConfig!.showAddress,
+    });
+  };
+
+  const toggleLanguageChange = (language: LanguageTypeEnum) => {
+    const elem = document.activeElement as HTMLElement;
+    if (elem) {
+      elem?.blur();
+    }
+    editorTabProps?.onConfigChange({
+      ...responseConfig,
+      language: language,
     });
   };
 
@@ -195,6 +210,38 @@ const MapMenu: FC<IMapMenuProps> = ({
               : t(IntlKeys.snapshotEditor.addressNotPublished)}
           </span>
         </label>
+
+        <div>
+          <div className="dropdown dropdown-end">
+            <div tabIndex={1} role="button">
+              <img
+                src={
+                  exportLanguage === LanguageTypeEnum.de
+                    ? germanyFlagIcon
+                    : englandFlagIcon
+                }
+                alt="flag"
+                width={25}
+              />
+            </div>
+            <ul tabIndex={0} className="dropdown-content w-36 p-4 shadow">
+              <li
+                className="flex flex-row cursor-pointer"
+                onClick={() => toggleLanguageChange(LanguageTypeEnum.de)}
+              >
+                <img src={germanyFlagIcon} alt="germany-flag" width={25} />
+                {t(IntlKeys.snapshotEditor.german)}
+              </li>
+              <li
+                className="mt-2 flex flex-row cursor-pointer"
+                onClick={() => toggleLanguageChange(LanguageTypeEnum.en)}
+              >
+                <img src={englandFlagIcon} alt="england-flag" width={25} />
+                {t(IntlKeys.snapshotEditor.german)}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       <div
