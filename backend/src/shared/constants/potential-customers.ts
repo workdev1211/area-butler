@@ -7,11 +7,11 @@ import { PotentialCustomerDocument } from '../../potential-customer/schema/poten
 
 export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
   {
-    name: 'Aktive Senioren',
+    name: 'Immobilieninteressent',
     routingProfiles: [
       {
         type: MeansOfTransportation.WALK,
-        amount: 10,
+        amount: 8,
         unit: UnitsOfTransportation.MINUTES,
       },
       {
@@ -21,12 +21,54 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       },
       {
         type: MeansOfTransportation.CAR,
-        amount: 20,
+        amount: 40,
         unit: UnitsOfTransportation.MINUTES,
       },
     ],
     preferredAmenities: [
       OsmName.bus_stop,
+      OsmName.motorway_link,
+      OsmName.hospital,
+      OsmName.park,
+      OsmName.restaurant,
+      OsmName.station,
+      OsmName.supermarket,
+      OsmName.bar,
+      OsmName.doctors,
+      OsmName.fitness_centre,
+      OsmName.fuel,
+      OsmName.post_office,
+      OsmName.restaurant,
+      OsmName.sports_centre,
+      OsmName.sports_hall,
+      OsmName.supermarket,
+      // OsmName.swimming_pool,
+      OsmName.theatre,
+      OsmName.charging_station,
+    ],
+  },
+  {
+    name: 'Kapitalanleger',
+    routingProfiles: [
+      {
+        type: MeansOfTransportation.WALK,
+        amount: 10,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+      {
+        type: MeansOfTransportation.BICYCLE,
+        amount: 20,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+      {
+        type: MeansOfTransportation.CAR,
+        amount: 30,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+    ],
+    preferredAmenities: [
+      OsmName.bus_stop,
+      OsmName.motorway_link,
       OsmName.chemist,
       OsmName.clinic,
       OsmName.dentist,
@@ -36,12 +78,49 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       OsmName.restaurant,
       OsmName.station,
       OsmName.supermarket,
-      // OsmName.swimming_pool,
       OsmName.theatre,
+      OsmName.attraction,
+      OsmName.charging_station,
+      OsmName.university,
     ],
   },
   {
-    name: 'Etablierte Performer',
+    name: 'Senioren',
+    routingProfiles: [
+      {
+        type: MeansOfTransportation.WALK,
+        amount: 8,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+      {
+        type: MeansOfTransportation.BICYCLE,
+        amount: 15,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+      {
+        type: MeansOfTransportation.CAR,
+        amount: 40,
+        unit: UnitsOfTransportation.MINUTES,
+      },
+    ],
+    preferredAmenities: [
+      OsmName.bus_stop,
+      OsmName.motorway_link,
+      OsmName.chemist,
+      OsmName.clinic,
+      OsmName.dentist,
+      OsmName.doctors,
+      OsmName.hospital,
+      OsmName.park,
+      OsmName.restaurant,
+      OsmName.station,
+      OsmName.supermarket,
+      OsmName.theatre,
+      OsmName.attraction,
+    ],
+  },
+  {
+    name: 'Double Income No Kids',
     routingProfiles: [
       {
         type: MeansOfTransportation.WALK,
@@ -55,7 +134,7 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       },
       {
         type: MeansOfTransportation.CAR,
-        amount: 20,
+        amount: 45,
         unit: UnitsOfTransportation.MINUTES,
       },
     ],
@@ -70,12 +149,11 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       OsmName.sports_centre,
       OsmName.sports_hall,
       OsmName.supermarket,
-      // OsmName.swimming_pool,
       OsmName.theatre,
     ],
   },
   {
-    name: 'Young Professionals',
+    name: 'Singles',
     routingProfiles: [
       {
         type: MeansOfTransportation.WALK,
@@ -84,12 +162,12 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       },
       {
         type: MeansOfTransportation.BICYCLE,
-        amount: 15,
+        amount: 20,
         unit: UnitsOfTransportation.MINUTES,
       },
       {
         type: MeansOfTransportation.CAR,
-        amount: 20,
+        amount: 40,
         unit: UnitsOfTransportation.MINUTES,
       },
     ],
@@ -108,7 +186,7 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
     ],
   },
   {
-    name: '(Junge) Familien',
+    name: 'Familien',
     routingProfiles: [
       {
         type: MeansOfTransportation.WALK,
@@ -139,11 +217,13 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       OsmName.school,
       OsmName.station,
       OsmName.supermarket,
+      OsmName.sports_hall,
+      OsmName.sports_centre,
       // OsmName.swimming_pool,
     ],
   },
   {
-    name: 'Konservative / Pragmatische Mitte',
+    name: 'XXXXX ex pragmatische Mitte',
     routingProfiles: [
       {
         type: MeansOfTransportation.WALK,
@@ -186,7 +266,7 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       },
       {
         type: MeansOfTransportation.BICYCLE,
-        amount: 15,
+        amount: 25,
         unit: UnitsOfTransportation.MINUTES,
       },
     ],
@@ -197,7 +277,6 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
       OsmName.park,
       OsmName.post_office,
       OsmName.sports_centre,
-      OsmName.sports_hall,
       OsmName.station,
       OsmName.supermarket,
       // OsmName.swimming_pool,
