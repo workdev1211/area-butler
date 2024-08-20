@@ -11,10 +11,14 @@ import { PlaceModule } from '../place/place.module';
 import { ClientModule } from '../client/client.module';
 import { HttpModule } from '@nestjs/axios';
 import { OpenAiModule } from '../open-ai/open-ai.module';
+import { PropstackConnectStrategy } from './auth/propstack-connect.strategy';
+import { PropstackWebhookIntStrategy } from './auth/propstack-webhook-int.strategy';
+import { CompanyModule } from '../company/company.module';
 
 @Module({
   imports: [
     ClientModule,
+    CompanyModule,
     HttpModule,
     LocationModule,
     OpenAiModule,
@@ -26,6 +30,11 @@ import { OpenAiModule } from '../open-ai/open-ai.module';
     PropstackWebhookController,
     PropstackWebhookIntController,
   ],
-  providers: [PropstackService, PropstackWebhookService],
+  providers: [
+    PropstackService,
+    PropstackWebhookService,
+    PropstackConnectStrategy,
+    PropstackWebhookIntStrategy,
+  ],
 })
 export class PropstackModule {}

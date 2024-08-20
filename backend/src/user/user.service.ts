@@ -35,14 +35,16 @@ import {
   PARENT_USER_PATH,
   SUBSCRIPTION_PATH,
 } from '../shared/constants/schema';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    private readonly subscriptionService: SubscriptionService,
+    private readonly companyService: CompanyService,
     private readonly eventEmitter: EventEmitter2,
     private readonly mapboxService: MapboxService,
+    private readonly subscriptionService: SubscriptionService,
     private readonly userSubscriptionPipe: UserSubscriptionPipe,
   ) {}
 
@@ -70,7 +72,10 @@ export class UserService {
       return existingUser;
     }
 
+    const { id: companyId } = await this.companyService.create();
+
     const newUser = await new this.userModel({
+      companyId,
       email,
       fullname,
       consentGiven: null,

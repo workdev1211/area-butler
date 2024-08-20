@@ -16,7 +16,7 @@ import { InjectUser } from '../user/inject-user.decorator';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackWebhookService } from './propstack-webhook.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { PropstackWebhookIntGuard } from '../auth/propstack/propstack-webhook-int.guard';
+import { PropstackWebhookIntGuard } from './auth/propstack-webhook-int.guard';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -46,7 +46,10 @@ export class PropstackWebhookIntController {
       integrationUser.integrationUserId
     })-${propstackPropertyDto.id}-${nowDate.getTime()}`;
 
-    this.logger.verbose(`Event ${eventId} was triggered.`);
+    this.logger.verbose(
+      `Event ${eventId} was triggered.\n`,
+      propstackPropertyDto,
+    );
 
     void this.propstackWebhookService
       .handlePropertyCreated(integrationUser, propstackPropertyDto, eventId)
@@ -74,7 +77,10 @@ export class PropstackWebhookIntController {
       integrationUser.integrationUserId
     })-${propstackPropertyDto.id}-${nowDate.getTime()}`;
 
-    this.logger.verbose(`Event ${eventId} was triggered.`);
+    this.logger.verbose(
+      `Event ${eventId} was triggered.\n`,
+      propstackPropertyDto,
+    );
 
     void this.propstackWebhookService
       .handlePropertyUpdated(integrationUser, propstackPropertyDto)

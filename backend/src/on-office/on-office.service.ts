@@ -74,6 +74,7 @@ import { ContingentIntService } from '../user/contingent-int.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
+import { CompanyService } from '../company/company.service';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -95,6 +96,7 @@ export class OnOfficeService {
   constructor(
     @InjectModel(OnOfficeTransaction.name)
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
+    private readonly companyService: CompanyService,
     private readonly contingentIntService: ContingentIntService,
     private readonly fetchSnapshotService: FetchSnapshotService, // private readonly locationIntService: LocationIntService,
     private readonly integrationUserService: IntegrationUserService,
@@ -103,13 +105,17 @@ export class OnOfficeService {
     private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
 
-  async getRenderData({
-    customerWebId,
-    userId,
-    parameterCacheId,
-    apiClaim: extendedClaim,
-    apiToken: token,
-  }: IApiOnOfficeActivationReq): Promise<IApiOnOfficeActivationRes> {
+  async activate(
+    activationParams: IApiOnOfficeActivationReq,
+  ): Promise<IApiOnOfficeActivationRes> {
+    const {
+      customerWebId,
+      userId,
+      parameterCacheId,
+      apiClaim: extendedClaim,
+      apiToken: token,
+    } = activationParams;
+
     const integrationUserId = `${customerWebId}-${userId}`;
 
     const parameters = {
@@ -138,17 +144,48 @@ export class OnOfficeService {
           'parameters.apiKey': { $exists: true },
           isParent: true,
         },
-        { _id: 1, 'config.color': 1, 'config.logo': 1, 'config.mapIcon': 1 },
+        {
+          _id: 1,
+          companyId: 1,
+          'config.color': 1,
+          'config.logo': 1,
+          'config.mapIcon': 1,
+        },
       );
 
+      let companyId = parentUser?.companyId;
+
+      if (!parentUser) {
+        ({ id: companyId } = await this.companyService.upsert(
+          {
+            [`integrationParams.${this.integrationType}.customerWebId`]:
+              customerWebId,
+          },
+          {
+            [`integrationParams.${this.integrationType}`]: {
+              [this.integrationType]: { customerWebId },
+            },
+          },
+        ));
+      }
+
+      if (!companyId) {
+        this.logger.debug(this.activate.name, activationParams, parentUser);
+
+        throw new UnprocessableEntityException(
+          'The onOffice user is corrupted!',
+        );
+      }
+
       await this.integrationUserService.create({
+        companyId,
         integrationUserId,
         parameters,
         accessToken: extendedClaim,
         config: {
-          color: parentUser?.config.color,
-          logo: parentUser?.config.logo,
-          mapIcon: parentUser?.config.mapIcon,
+          color: parentUser?.config?.color,
+          logo: parentUser?.config?.logo,
+          mapIcon: parentUser?.config?.mapIcon,
         },
         integrationType: this.integrationType,
         isContingentProvided: true,
@@ -925,7 +962,7 @@ export class OnOfficeService {
             'parameters.token': { $exists: true },
             'parameters.apiKey': { $exists: true },
           },
-          { parameters: 1 },
+          { companyId: 1, parameters: 1 },
         ));
 
       if (groupUser) {
@@ -945,8 +982,16 @@ export class OnOfficeService {
 
         integrationUser = await this.integrationUserService.create({
           integrationUserId,
-          integrationType: this.integrationType,
           accessToken: extendedClaim,
+          companyId: groupUser.companyId,
+          config: {
+            color: color ? `#${color}` : parentUser?.config.color,
+            logo: logo
+              ? convertBase64ContentToUri(logo)
+              : parentUser?.config.logo,
+            mapIcon: parentUser?.config.mapIcon,
+          },
+          integrationType: this.integrationType,
           parameters: {
             parameterCacheId,
             customerName,
@@ -957,13 +1002,6 @@ export class OnOfficeService {
             extendedClaim,
             apiKey: groupUserParams.apiKey,
             token: groupUserParams.token,
-          },
-          config: {
-            color: color ? `#${color}` : parentUser?.config.color,
-            logo: logo
-              ? convertBase64ContentToUri(logo)
-              : parentUser?.config.logo,
-            mapIcon: parentUser?.config.mapIcon,
           },
           parentId: parentUser?.id,
         });

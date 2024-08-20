@@ -14,7 +14,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { PropstackService } from './propstack.service';
-import { PropstackConnectGuard } from '../auth/propstack/propstack-connect.guard';
+import { PropstackConnectGuard } from './auth/propstack-connect.guard';
 import ApiPropstackConnectReqDto from './dto/api-propstack-connect-req.dto';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { InjectUser } from '../user/inject-user.decorator';

@@ -21,9 +21,12 @@ import {
   UsageStatisticsSchema,
 } from './schema/usage-statistics.schema';
 import { ContingentIntService } from './contingent-int.service';
+import { CompanyModule } from '../company/company.module';
 
 @Module({
   imports: [
+    ClientModule,
+    CompanyModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       {
@@ -36,7 +39,6 @@ import { ContingentIntService } from './contingent-int.service';
         schema: UsageStatisticsSchema,
       },
     ]),
-    ClientModule,
   ],
   providers: [
     ContingentIntService,

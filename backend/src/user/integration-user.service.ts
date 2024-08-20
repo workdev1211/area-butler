@@ -40,6 +40,7 @@ export class IntegrationUserService {
 
   async create({
     accessToken,
+    companyId,
     config,
     integrationType,
     integrationUserId,
@@ -52,6 +53,7 @@ export class IntegrationUserService {
 
     const integrationUser = await this.integrationUserModel.create({
       accessToken,
+      companyId,
       integrationType,
       integrationUserId,
       isParent,
@@ -74,7 +76,7 @@ export class IntegrationUserService {
     return integrationUser;
   }
 
-  async findOne(
+  findOne(
     integrationType: IntegrationTypesEnum,
     filterQuery: FilterQuery<TIntegrationUserDocument>,
     projectQuery?: ProjectionFields<TIntegrationUserDocument>,
@@ -117,7 +119,7 @@ export class IntegrationUserService {
     return existingUser;
   }
 
-  async findByDbId(
+  findByDbId(
     integrationUserDbId: string,
     projectQuery?: ProjectionFields<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
@@ -127,33 +129,31 @@ export class IntegrationUserService {
     );
   }
 
-  async findOneAndUpdate(
+  findOneAndUpdate(
     integrationType: IntegrationTypesEnum,
     filterQuery: FilterQuery<TIntegrationUserDocument>,
     updateQuery: UpdateQuery<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel.findOneAndUpdate(
+    return this.findOneAndUpdateCore(
       {
         ...filterQuery,
         integrationType,
       },
       updateQuery,
-      { new: true },
     );
   }
 
-  async findByDbIdAndUpdate(
+  findByDbIdAndUpdate(
     integrationUserDbId: string,
     updateQuery: UpdateQuery<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUserDbId,
+    return this.findOneAndUpdateCore(
+      { _id: new Types.ObjectId(integrationUserDbId) },
       updateQuery,
-      { new: true },
     );
   }
 
-  async updateConfig(
+  updateConfig(
     integrationUser: TIntegrationUserDocument,
     config: Partial<IIntUserConfig>,
   ): Promise<TIntegrationUserDocument> {
@@ -165,7 +165,7 @@ export class IntegrationUserService {
     return integrationUser.save();
   }
 
-  async bulkWrite(writes: any[]): Promise<BulkWriteResult> {
+  bulkWrite(writes: any[]): Promise<BulkWriteResult> {
     return this.integrationUserModel.bulkWrite(writes);
   }
 
@@ -185,7 +185,7 @@ export class IntegrationUserService {
     });
   }
 
-  async hideTour(
+  hideTour(
     integrationUser: TIntegrationUserDocument,
     tour?: ApiTourNamesEnum,
   ): Promise<TIntegrationUserDocument> {
@@ -233,6 +233,16 @@ export class IntegrationUserService {
     return this.integrationUserModel
       .findOne(filterQuery, projectQuery)
       .sort({ updatedAt: -1 })
+      .populate(PARENT_USER_PATH)
+      .populate(COMPANY_PATH);
+  }
+
+  private async findOneAndUpdateCore(
+    filterQuery: FilterQuery<TIntegrationUserDocument>,
+    updateQuery: UpdateQuery<TIntegrationUserDocument>,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserModel
+      .findOneAndUpdate(filterQuery, updateQuery, { new: true })
       .populate(PARENT_USER_PATH)
       .populate(COMPANY_PATH);
   }

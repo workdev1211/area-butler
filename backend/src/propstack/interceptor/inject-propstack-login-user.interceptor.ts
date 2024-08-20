@@ -70,8 +70,8 @@ export class InjectPropstackLoginUserInterceptor implements NestInterceptor {
     // with parent user
     const integrationUser = await this.propstackService.getIntegrationUser({
       apiKey,
-      shopId: reqBody.shopId as string,
       brokerId: reqBody.brokerId as string,
+      shopId: reqBody.shopId as string,
       teamId: reqBody.teamId as string,
     });
 

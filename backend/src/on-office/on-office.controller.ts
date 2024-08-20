@@ -56,7 +56,7 @@ export class OnOfficeController {
   renderActivationIframe(
     @Query() activationData: ApiOnOfficeActivationReqDto,
   ): Promise<IApiOnOfficeActivationRes> {
-    return this.onOfficeService.getRenderData(activationData);
+    return this.onOfficeService.activate(activationData);
   }
 
   @ApiOperation({ description: 'Activates user in the AreaButler app' })

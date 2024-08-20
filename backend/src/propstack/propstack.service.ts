@@ -1,14 +1,13 @@
 import {
   Injectable,
   Logger,
-  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 import { firstValueFrom } from 'rxjs';
-import { Types } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
@@ -56,6 +55,7 @@ import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { ContingentIntService } from '../user/contingent-int.service';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class PropstackService {
@@ -63,6 +63,7 @@ export class PropstackService {
   private static readonly logger = new Logger(PropstackService.name);
 
   constructor(
+    private readonly companyService: CompanyService,
     private readonly contingentIntService: ContingentIntService,
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly httpService: HttpService,
@@ -99,8 +100,18 @@ export class PropstackService {
       return;
     }
 
+    const { id: companyId } = await this.companyService.upsert(
+      { [`integrationParams.${this.integrationType}.shopId`]: shopId },
+      {
+        [`integrationParams.${this.integrationType}`]: {
+          [this.integrationType]: { shopId },
+        },
+      },
+    );
+
     await this.integrationUserService.create({
       accessToken,
+      companyId,
       integrationUserId,
       integrationType: this.integrationType,
       isContingentProvided: true,
@@ -411,28 +422,22 @@ export class PropstackService {
     >,
   ): Promise<TIntegrationUserDocument> {
     const { apiKey, shopId, brokerId, teamId } = getIntUserParams;
-    let integrationUser: TIntegrationUserDocument;
 
-    if (teamId) {
-      integrationUser = await this.integrationUserService.findOne(
-        this.integrationType,
-        {
+    const filterQuery: FilterQuery<TIntegrationUserDocument> = teamId
+      ? {
           integrationUserId: `${shopId}-${teamId}`,
           'parameters.apiKey': apiKey,
-        },
-      );
+        }
+      : {
+          integrationUserId: `${shopId}`,
+          isParent: true,
+          'parameters.apiKey': apiKey,
+        };
 
-      if (integrationUser?.parentId) {
-        integrationUser.parentUser = await this.integrationUserService.findOne(
-          this.integrationType,
-          {
-            _id: new Types.ObjectId(integrationUser.parentId),
-            isParent: true,
-            'parameters.apiKey': apiKey,
-          },
-        );
-      }
-    }
+    let integrationUser = await this.integrationUserService.findOne(
+      this.integrationType,
+      filterQuery,
+    );
 
     if (teamId && !integrationUser) {
       const parentUser = await this.integrationUserService.findOne(
@@ -448,69 +453,44 @@ export class PropstackService {
         return;
       }
 
-      integrationUser = await this.integrationUserService.findOneAndUpdate(
-        this.integrationType,
-        {
+      integrationUser = await this.integrationUserService
+        .create({
+          accessToken: PropstackService.encryptAccessToken(
+            `${apiKey}-${teamId}`,
+          ),
+          companyId: parentUser.companyId,
+          config: {
+            color: parentUser.config?.color,
+            logo: parentUser.config?.logo,
+            mapIcon: parentUser.config?.mapIcon,
+          },
+          integrationType: this.integrationType,
           integrationUserId: `${shopId}-${teamId}`,
-        },
-        { 'parameters.apiKey': apiKey },
-      );
+          parameters: {
+            apiKey,
+            shopId: parseInt(shopId, 10),
+            teamId: parseInt(teamId, 10),
+          } as IApiIntUserPropstackParams,
+          parentId: parentUser.id,
+        })
+        .catch((e) => {
+          PropstackService.logger.error(this.getIntegrationUser.name, e);
 
-      if (!integrationUser) {
-        integrationUser = await this.integrationUserService
-          .create({
-            accessToken: PropstackService.encryptAccessToken(
-              `${apiKey}-${teamId}`,
-            ),
-            config: {
-              color: parentUser?.config.color,
-              logo: parentUser?.config.logo,
-              mapIcon: parentUser?.config.mapIcon,
-            },
-            integrationType: this.integrationType,
-            integrationUserId: `${shopId}-${teamId}`,
-            parameters: {
-              apiKey,
-              shopId: parseInt(shopId, 10),
-              teamId: parseInt(teamId, 10),
-            } as IApiIntUserPropstackParams,
-            parentId: parentUser.id,
-          })
-          .catch((e) => {
-            PropstackService.logger.error(this.getIntegrationUser.name, e);
+          PropstackService.logger.debug(
+            this.getIntegrationUser.name,
+            `\nAPI key: ${apiKey}` +
+              `\nShop id: ${shopId}` +
+              `\nTeam id: ${teamId}`,
+          );
 
-            PropstackService.logger.debug(
-              this.getIntegrationUser.name,
-              `\nAPI key: ${apiKey}` +
-                `\nShop id: ${shopId}` +
-                `\nTeam id: ${teamId}`,
-            );
-
-            return undefined;
-          });
-      }
+          return undefined;
+        });
 
       integrationUser.parentUser = parentUser;
     }
 
-    if (!teamId && !integrationUser) {
-      integrationUser = await this.integrationUserService.findOne(
-        this.integrationType,
-        {
-          integrationUserId: `${shopId}`,
-          isParent: true,
-          'parameters.apiKey': apiKey,
-        },
-      );
-    }
-
     if (!integrationUser) {
-      PropstackService.logger.error(
-        this.getIntegrationUser.name,
-        getIntUserParams,
-      );
-
-      throw new NotFoundException('Unable to find the integration user!');
+      return;
     }
 
     const parsedBrokerId = parseInt(brokerId, 10);
