@@ -31,7 +31,11 @@ export class OnOfficeWebhookController {
     @Param('endpoint') endpoint: OnOfficeWebhookUrlEnum,
     @Query() onOfficeQueryParams: ApiOnOfficeLoginQueryParamsDto,
   ): void {
-    this.logger.verbose(endpoint, onOfficeQueryParams);
+    this.logger.log(
+      `\nWebhook: ${endpoint}` +
+        `\nUser: ${onOfficeQueryParams.customerWebId}-${onOfficeQueryParams.userId}` +
+        `\nEstate: ${onOfficeQueryParams.estateId}`,
+    );
 
     void this.onOfficeWebhookService.handleWebhook(
       endpoint,
