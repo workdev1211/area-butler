@@ -37,6 +37,7 @@ export const openAiTranslationDictionary: Record<
   [OsmName.school]: { singular: "Schule", plural: "Schulen" },
   [OsmName.sports_centre]: { singular: "Sportstätte", plural: "Sportstätten" },
   [OsmName.station]: { singular: "Bahnstation", plural: "Bahnstationen" },
+  [OsmName.tram_stop]: { singular: "Tram-Station", plural: "Tram-Stationen" },
   [OsmName.supermarket]: { singular: "Supermarkt", plural: "Supermärkte" },
   [OsmName.swimming_pool]: { singular: "Schwimmbad", plural: "Schwimmbäder" },
   [OsmName.theatre]: { singular: "Theater", plural: "Theater" },

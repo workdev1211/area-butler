@@ -264,6 +264,7 @@ export enum OsmType {
   parking = "parking",
   "generator:method" = "generator:method",
   power = "power",
+  railway = "railway",
 }
 
 export enum OsmName {
@@ -305,6 +306,7 @@ export enum OsmName {
   tower = "tower",
   pole = "pole",
   pub = "pub",
+  tram_stop = "tram_stop",
 }
 
 export enum PoiGroupEnum {

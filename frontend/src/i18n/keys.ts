@@ -356,6 +356,7 @@ export const IntlKeys = {
       tourism: "snapshotEditor.pointsOfInterest.tourism",
       description: "snapshotEditor.pointsOfInterest.description",
       station: "snapshotEditor.pointsOfInterest.station",
+      tram_stop: "snapshotEditor.pointsOfInterest.station",
       bus_stop: "snapshotEditor.pointsOfInterest.bus_stop",
       motorway_link: "snapshotEditor.pointsOfInterest.motorway_link",
       charging_station: "snapshotEditor.pointsOfInterest.charging_station",

@@ -18,6 +18,15 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     uniqueThreshold: 0.4,
   },
   {
+    type: OsmType.railway,
+    name: OsmName.tram_stop,
+    groupName: OsmName.station,
+    label: "Tram-Station",
+    category: ApiOsmEntityCategory.TRAFFIC,
+    uniqueRadius: 200,
+    uniqueThreshold: 0.4,
+  },
+  {
     type: OsmType.highway,
     name: OsmName.bus_stop,
     groupName: OsmName.bus_stop,
@@ -230,7 +239,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.amenity,
     name: OsmName.dentist,
-    groupName: OsmName.dentist,
+    groupName: OsmName.doctors,
     label: "Zahnarzt",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 100,
@@ -239,7 +248,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.amenity,
     name: OsmName.clinic,
-    groupName: OsmName.clinic,
+    groupName: OsmName.hospital,
     label: "Klinik",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 500,
@@ -266,7 +275,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.parking,
     name: OsmName["multi-storey"],
-    groupName: PoiGroupEnum.parking_garage,
+    groupName: OsmName.surface,
     label: "Parkhaus",
     category: ApiOsmEntityCategory.INFRASTRUCTURE,
     uniqueRadius: 100,
@@ -275,7 +284,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.parking,
     name: OsmName.underground,
-    groupName: PoiGroupEnum.parking_garage,
+    groupName: OsmName.surface,
     label: "Parkhaus",
     category: ApiOsmEntityCategory.INFRASTRUCTURE,
     uniqueRadius: 100,
