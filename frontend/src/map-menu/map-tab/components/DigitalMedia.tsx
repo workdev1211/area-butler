@@ -38,6 +38,7 @@ import { useTools } from "../../../hooks/tools";
 import {
   AreaButlerExportTypesEnum,
   FeatureTypeEnum,
+  LanguageTypeEnum,
   OsmName,
 } from "../../../../../shared/types/types";
 import { IntlKeys } from "i18n/keys";
@@ -64,11 +65,15 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
       printingZipActive,
       responseGroupedEntities,
       responseActiveMeans,
+      responseConfig,
     },
     searchContextDispatch,
   } = useContext(SearchContext);
 
   const { t } = useTranslation();
+  const { t: outputT } = useTranslation("", {
+    lng: responseConfig?.language || LanguageTypeEnum.de,
+  });
   const { sendToIntegration } = useIntegrationTools();
   const { checkIsFeatAvailable, createCodeSnippet, createDirectLink } =
     useTools();
@@ -81,10 +86,19 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
     }
 
     const downloadZipArchive = async (): Promise<void> => {
-      const entityGroups = entityGroupsByActMeans.filter(
-        ({ items, name }: EntityGroup) =>
-          name !== OsmName.property && items.length > 0
-      );
+      const entityGroups = entityGroupsByActMeans
+        .filter(
+          ({ items, name }: EntityGroup) =>
+            name !== OsmName.property && items.length > 0
+        )
+        .map((group) => ({
+          ...group,
+          title: outputT(
+            (
+              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+            )[group.name]
+          ),
+        }));
 
       const legend = getFilteredLegend(entityGroups);
       const zip = new JsZip();
@@ -126,8 +140,10 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
     ]
   );
 
-  const codeSnippet = createCodeSnippet();
-  const directLink = createDirectLink();
+  const codeSnippet = createCodeSnippet({ language: responseConfig?.language });
+  const directLink = createDirectLink({
+    language: responseConfig?.language,
+  });
 
   return (
     <div
@@ -211,9 +227,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
             <div>
               <div>
                 <img src={legendIcon} alt="download-legend" />
-                <span>
-                  {t(IntlKeys.snapshotEditor.dataTab.legendPOIIcons)}
-                </span>
+                <span>{t(IntlKeys.snapshotEditor.dataTab.legendPOIIcons)}</span>
               </div>
               <div
                 onClick={() => {

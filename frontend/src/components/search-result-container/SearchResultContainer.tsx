@@ -519,6 +519,7 @@ const SearchResultContainer = forwardRef<
         {/*)}*/}
         {mapClipping && (
           <MapClipCropModal
+            outputLanguage={responseConfig?.language}
             entityGroups={(entityGroupsByActMeans ?? []).filter(
               (ge) =>
                 ge.items.length && ge.name !== OsmName.property && ge.active

@@ -305,8 +305,7 @@
     "addNewLocationModalBtn": "Add",
     "addNewLocationModalSuccess": "Object successfully added!",
     "addNewLocationModalFailed": "Error when saving the object",
-    "german": "German",
-    "english": "English"
+    "outputLanguage": "Output language"
   },
   "common": {
     "showMore": "Show more",
@@ -372,7 +371,15 @@
     "userDefined": "User-defined",
     "custom": "User-defined",
     "addressExpired": "This map is no longer available. Please contact AreaButler.",
-    "help": "Help"
+    "help": "Help",
+    "languages": {
+      "de": "German",
+      "en": "English",
+      "nl": "Dutch",
+      "fr": "French",
+      "it": "Italian",
+      "es": "Spanish"
+    }
   },
   "environmentalAnalysis": {
     "createBtn": "Create map",

@@ -9,6 +9,7 @@ import {
   ApiUser,
   FeatureTypeEnum,
   IIframeTokens,
+  LanguageTypeEnum,
 } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import { useHttp } from "./http";
@@ -22,6 +23,7 @@ import { IntlKeys } from "../i18n/keys";
 interface IGetTokenDataParams {
   isAddressShown?: boolean;
   tokens?: Partial<IIframeTokens>;
+  language?: LanguageTypeEnum;
 }
 
 interface IGetTokenDataResult {
@@ -53,7 +55,7 @@ export const useTools = () => {
       systemEnv !== "local"
         ? origin
         : `${origin.replace(/^(https?:\/\/\w*)(:.*)?$/, "$1")}:3002`
-    }/embed?token=${token}`;
+    }/embed?token=${token}&language=${tokenDataParams?.language || LanguageTypeEnum.de}`;
 
     if (typeof resIsAddressShown === "boolean") {
       url += `&isAddressShown=${resIsAddressShown}`;

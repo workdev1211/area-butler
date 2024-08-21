@@ -23,8 +23,6 @@ import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
 import fileIcon from "../assets/icons/file.svg";
-import germanyFlagIcon from "../assets/icons/germany-flag.svg";
-import englandFlagIcon from "../assets/icons/england-flag.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import DataTab from "./data-tab/DataTab";
@@ -211,37 +209,33 @@ const MapMenu: FC<IMapMenuProps> = ({
           </span>
         </label>
 
-        <div>
+        {isEditorMode && (
           <div className="dropdown dropdown-end">
-            <div tabIndex={1} role="button">
-              <img
-                src={
-                  exportLanguage === LanguageTypeEnum.de
-                    ? germanyFlagIcon
-                    : englandFlagIcon
-                }
-                alt="flag"
-                width={25}
-              />
+            <div
+              tabIndex={1}
+              role="button"
+              className="uppercase text-white text-center rounded border border-white text-sm p-2"
+            >
+              {exportLanguage}
             </div>
             <ul tabIndex={0} className="dropdown-content w-36 p-4 shadow">
-              <li
-                className="flex flex-row cursor-pointer"
-                onClick={() => toggleLanguageChange(LanguageTypeEnum.de)}
-              >
-                <img src={germanyFlagIcon} alt="germany-flag" width={25} />
-                {t(IntlKeys.snapshotEditor.german)}
-              </li>
-              <li
-                className="mt-2 flex flex-row cursor-pointer"
-                onClick={() => toggleLanguageChange(LanguageTypeEnum.en)}
-              >
-                <img src={englandFlagIcon} alt="england-flag" width={25} />
-                {t(IntlKeys.snapshotEditor.german)}
-              </li>
+              <h4 className="text-sm mb-1">
+                {t(IntlKeys.snapshotEditor.outputLanguage)}
+              </h4>
+              {Object.values(LanguageTypeEnum).map((lang) => (
+                <li
+                  className="flex flex-row cursor-pointer items-center mb-1"
+                  onClick={() => toggleLanguageChange(lang)}
+                >
+                  <span className="uppercase text-white text-center rounded border border-white text-sm p-2 mr-2">
+                    {lang}
+                  </span>
+                  {t(IntlKeys.common.languages[lang])}
+                </li>
+              ))}
             </ul>
           </div>
-        </div>
+        )}
       </div>
 
       <div

@@ -3,12 +3,13 @@
 }
 
 .show-menu-btn {
-  width: 46px !important;
-  height: 46px !important;
-  top: 17px;
-  z-index: 2499;
+  width: 22px !important;
+  height: 40px !important;
+  top: 50%;
+  z-index: 800;
   background-color: var(--primary) !important;
-  @apply btn absolute;
+  @apply absolute;
+  border-radius: var(--rounded-btn, .5rem) 0 0 var(--rounded-btn, .5rem);
 
   img {
     width: 2rem;
@@ -17,10 +18,15 @@
 
   &.embed-mode {
     top: 17px;
+    width: 46px !important;
+    height: 46px !important;
+    right: 18px !important;
+    z-index: 1100;
+    @apply btn
   }
 
   &.map-menu-btn {
-    right: 18px;
+    right: 410px;
   }
 
   &.filter-menu-btn {
@@ -32,7 +38,7 @@
   top: 24px;
   right: 10px;
   left: 10px;
-  z-index: 999;
+  z-index: 700;
   @apply absolute flex;
 }
 

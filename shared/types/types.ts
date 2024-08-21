@@ -53,8 +53,12 @@ export interface IApiUserExportFont {
 }
 
 export enum LanguageTypeEnum {
+  nl = "nl",
   en = "en",
+  fr = "fr",
   de = "de",
+  it = "it",
+  es = "es",
 }
 
 export interface ApiUser {

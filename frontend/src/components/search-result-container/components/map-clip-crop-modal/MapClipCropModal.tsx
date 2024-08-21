@@ -27,6 +27,7 @@ import { EntityGroup } from "../../../../shared/search-result.types";
 import { realEstateListingsTitle } from "../../../../../../shared/constants/real-estate";
 import {
   IApiUserPoiIcon,
+  LanguageTypeEnum,
   MeansOfTransportation,
   TransportationParam,
   UnitsOfTransportation,
@@ -108,6 +109,7 @@ interface IMapClipCropModalProps {
   mapClipping: string;
   activeMeans?: MeansOfTransportation[];
   color?: string;
+  outputLanguage?: LanguageTypeEnum;
   directLink?: string;
   transportationParams?: TransportationParam[];
   userMenuPoiIcons?: IApiUserPoiIcon[];
@@ -149,12 +151,14 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   userMenuPoiIcons,
   activeMeans,
   transportationParams,
+  outputLanguage = LanguageTypeEnum.de,
 }) => {
   const [imgRef, setImgRef] = useState<HTMLImageElement | null>(null);
   const [overlayRef, setOverlayRef] = useState<HTMLDivElement | null>(null);
 
   const { integrationType } = useContext(ConfigContext);
   const { t } = useTranslation();
+  const { t: outputT } = useTranslation("", { lng: outputLanguage });
 
   const fourToThreeCropParams = {
     name: "4:3",
@@ -367,14 +371,25 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
               </div>
               {qrCode && isShownQrCode && (
                 <div className="qrCodeContainer">
-                  <MapClipQrCode qrCodeImage={qrCode} color={color} />
+                  <MapClipQrCode language={outputLanguage} qrCodeImage={qrCode} color={color} />
                 </div>
               )}
               {isShownLegend && entityGroups.length && (
                 <div className="mapMenu">
                   <ul className="menu-desktop">
                     {entityGroups.map((ge) => (
-                      <ListItem key={ge.name} {...ge} />
+                      <ListItem
+                        key={ge.name}
+                        {...ge}
+                        title={outputT(
+                          (
+                            IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                              string,
+                              string
+                            >
+                          )[ge.name]
+                        )}
+                      />
                     ))}
                   </ul>
                 </div>

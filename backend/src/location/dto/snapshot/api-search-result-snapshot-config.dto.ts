@@ -17,7 +17,7 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   IApiSnapshotConfigRealEstSettings,
   IApiSnapshotIconSizes,
-  IApiSnapshotPoiFilter,
+  IApiSnapshotPoiFilter, LanguageTypeEnum,
   MeansOfTransportation,
   OsmName,
   PoiGroupEnum,
@@ -169,6 +169,12 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsIn(['DEFAULT', 'KF'])
   theme?: ApiSearchResultSnapshotConfigTheme;
+
+  @Expose()
+  @IsOptional()
+  @IsEnum(LanguageTypeEnum)
+  language?: LanguageTypeEnum;
+  
 
   @Expose()
   @IsOptional()

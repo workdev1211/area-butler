@@ -66,6 +66,14 @@ export const IntlKeys = {
     description: "common.description",
     addressExpired: "common.addressExpired",
     help: "common.help",
+    languages: {
+      en: "common.languages.en",
+      de: "common.languages.de",
+      fr: "common.languages.fr",
+      nl: "common.languages.nl",
+      it: "common.languages.it",
+      es: "common.languages.es",
+    }
   },
 
   imageUpload: {
@@ -444,6 +452,7 @@ export const IntlKeys = {
     addNewLocationModalFailed: "snapshotEditor.addNewLocationModalFailed",
     english: "snapshotEditor.english",
     german: "snapshotEditor.german",
+    outputLanguage: "snapshotEditor.outputLanguage",
   },
 
   realEstate: {

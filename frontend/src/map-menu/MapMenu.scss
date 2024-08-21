@@ -40,6 +40,7 @@
 
     .map-menu-header {
       @apply rounded-t-lg;
+      padding-right: var(--menu-item-pr);
     }
   }
 
@@ -65,7 +66,7 @@
 
   .tab-bar {
     height: var(--menu-item-h);
-    padding: calc(var(--menu-item-pl) / 4) var(--menu-item-pr) calc(var(--menu-item-pl) / 4) 0;
+    padding: calc(var(--menu-item-pl) / 4) 0;
     @apply text-base bg-white rounded-t-lg;
 
     .tab-container {
@@ -100,7 +101,7 @@
   .map-menu-header {
     height: var(--menu-item-h);
     background: var(--base-anthracite);
-    padding: 0 17px 0 13px !important;
+    padding: 0 17px 0 13px;
     border-bottom: none;
 
     @apply flex flex-row justify-between items-center;
@@ -120,6 +121,11 @@
 
     .dropdown-content {
       top: 30px;
+    }
+
+    .dropdown {
+      min-width: 30px;
+      min-height: 30px;
     }
   }
 

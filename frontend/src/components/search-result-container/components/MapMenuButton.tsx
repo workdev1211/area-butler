@@ -24,14 +24,21 @@ const MapMenuButton: FunctionComponent<IMapMenuButtonProps> = ({
       onMouseDown={() => {
         setIsMenuOpen(!isMenuOpen);
       }}
+      style={{
+        right: 409 * Number(isMenuOpen),
+      }}
     >
-      {!isMenuOpen && <img src={openMenuIcon} alt="map-menu-icon" />}
-      {isMenuOpen && (
+      {!isEditorMode && !isMenuOpen && (
+        <img src={openMenuIcon} alt="map-menu-icon" />
+      )}
+      {(isEditorMode || isMenuOpen) && (
         <img
           src={closeMenuIcon}
           alt="icon-menu-close"
           style={{
-            transform: "rotate(270deg)",
+            transform: `rotate(${90 + 180 * Number(isMenuOpen)}deg)`,
+            width: 14,
+            margin: "auto",
           }}
         />
       )}

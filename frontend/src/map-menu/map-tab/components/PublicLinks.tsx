@@ -32,7 +32,7 @@ const PublicLinks: FC = () => {
   const addressLinkTitle = "Mit Adresse - AreaButler Link";
   const unaddressLinkTitle = "Anonym - AreaButler Link ohne Adresse";
 
-  const directLink = createDirectLink();
+  const directLink = createDirectLink({ language: responseConfig?.language });
   const isLinkEntity = integrationUser?.config.isSpecialLink;
   const isSentBothAvail = !!(
     integrationType &&
