@@ -9,11 +9,11 @@ import { Expose, Exclude, Transform } from 'class-transformer';
 
 import {
   IApiIntegrationUser,
-  IIntUserConfig,
   IIntUserSubscription,
   TApiIntUserAvailProdContingents,
 } from '@area-butler-types/integration-user';
 import { TIntegrationUserDocument } from '../schema/integration-user.schema';
+import { IUserConfig } from '@area-butler-types/user';
 
 @Exclude()
 class ApiIntegrationUserDto implements IApiIntegrationUser {
@@ -25,7 +25,7 @@ class ApiIntegrationUserDto implements IApiIntegrationUser {
   @Expose()
   @IsNotEmpty()
   @IsObject()
-  config: IIntUserConfig;
+  config: IUserConfig;
 
   @Expose()
   @IsNotEmpty()

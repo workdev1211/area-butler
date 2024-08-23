@@ -20,4 +20,10 @@ export class MigrationController extends AuthenticatedController {
   createCompanies(): void {
     void this.migrationService.createCompanies();
   }
+
+  @ApiOperation({ description: 'Update user configs' })
+  @Post('update-user-configs')
+  updateUserConfigs(): void {
+    void this.migrationService.updateUserConfigs();
+  }
 }

@@ -2,7 +2,10 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { ApiShowTour, ApiTourNamesEnum } from "../../../shared/types/types";
+import {
+  ApiTourNamesEnum,
+  TApiUserStudyTours,
+} from "../../../shared/types/types";
 import StartTourModal from "./StartTourModal";
 
 import RealEstatesSteps from "./RealEstatesPageSteps";
@@ -31,26 +34,26 @@ export const defaultStyles: Styles = {
   },
 };
 
-const fallbackShowTour: ApiShowTour = {
-  [ApiTourNamesEnum.SEARCH]: false,
-  [ApiTourNamesEnum.RESULT]: false,
-  [ApiTourNamesEnum.REAL_ESTATES]: false,
+const fallbackShowTour: TApiUserStudyTours = {
   [ApiTourNamesEnum.CUSTOMERS]: false,
-  [ApiTourNamesEnum.PROFILE]: false,
   [ApiTourNamesEnum.EDITOR]: false,
   [ApiTourNamesEnum.INT_MAP]: false,
   [ApiTourNamesEnum.INT_SEARCH]: false,
+  [ApiTourNamesEnum.PROFILE]: false,
+  [ApiTourNamesEnum.REAL_ESTATES]: false,
+  [ApiTourNamesEnum.RESULT]: false,
+  [ApiTourNamesEnum.SEARCH]: false,
 };
 
 const tourSteps: Record<ApiTourNamesEnum, Step[]> = {
-  [ApiTourNamesEnum.SEARCH]: SearchSteps,
-  [ApiTourNamesEnum.RESULT]: SearchResulSteps,
-  [ApiTourNamesEnum.REAL_ESTATES]: RealEstatesSteps,
   [ApiTourNamesEnum.CUSTOMERS]: CustomersSteps,
-  [ApiTourNamesEnum.PROFILE]: ProfileSteps,
   [ApiTourNamesEnum.EDITOR]: SnippetEditorSteps,
   [ApiTourNamesEnum.INT_MAP]: IntMapPageSteps,
   [ApiTourNamesEnum.INT_SEARCH]: IntSearchPageSteps,
+  [ApiTourNamesEnum.PROFILE]: ProfileSteps,
+  [ApiTourNamesEnum.REAL_ESTATES]: RealEstatesSteps,
+  [ApiTourNamesEnum.RESULT]: SearchResulSteps,
+  [ApiTourNamesEnum.SEARCH]: SearchSteps,
 };
 
 const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
@@ -64,7 +67,9 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
   } = useContext(UserContext);
 
   const showTour =
-    user?.showTour || integrationUser?.config.showTour || fallbackShowTour;
+    user?.config.studyTours ||
+    integrationUser?.config.studyTours ||
+    fallbackShowTour;
   const isTourToBePlayed = showTour[tour];
 
   const [isRunTour, setIsRunTour] = useState(false);

@@ -3,17 +3,11 @@ import { HydratedDocument, SchemaTypes } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
-  ApiShowTour,
   IApiMapboxStyle,
   IApiUserExportFont,
   IApiUserPoiIcons,
-  TApiUserApiConnections,
-  LanguageTypeEnum,
 } from '@area-butler-types/types';
-import { initialShowTour } from '../../../../shared/constants/constants';
 import { Subscription, SubscriptionDocument } from './subscription.schema';
-import { ApiKeyParamsSchema } from './api-key-params.schema';
-import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 import { availableCountries } from '../../../../shared/constants/location';
 import {
@@ -23,6 +17,8 @@ import {
   SUBSCRIPTION_PATH,
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
+import { UserConfigSchema } from './user-config.schema';
+import { IUserConfig } from '@area-butler-types/user';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -33,9 +29,13 @@ export type UserDocument = HydratedDocument<User>;
 export class User {
   @Prop({
     type: SchemaTypes.ObjectId,
+    required: true,
     ...foreignIdGetSet,
   })
   companyId: string;
+
+  @Prop({ type: UserConfigSchema })
+  config: IUserConfig;
 
   @Prop({ type: Date })
   consentGiven: Date;
@@ -59,31 +59,6 @@ export class User {
   stripeCustomerId: string;
 
   company: TCompanyDocument;
-
-  // CONFIG
-
-  // TODO should be renamed to 'externalConnections'
-  @Prop({ type: Object })
-  apiConnections: TApiUserApiConnections;
-
-  @Prop({ type: ApiKeyParamsSchema })
-  apiKeyParams: IApiKeyParams;
-
-  @Prop({ type: String, required: true })
-  fullname: string;
-
-  @Prop({ type: String, enum: LanguageTypeEnum, default: LanguageTypeEnum.de })
-  language: LanguageTypeEnum;
-
-  // TODO should be renamed to 'studyTours'
-  @Prop({ type: Object, default: { ...initialShowTour } })
-  showTour: ApiShowTour;
-
-  @Prop({
-    type: SchemaTypes.ObjectId,
-    ...foreignIdGetSet,
-  })
-  templateSnapshotId: string;
 
   // OLD
 

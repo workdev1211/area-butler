@@ -24,7 +24,7 @@ export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
   return (
     <Formik
       initialValues={{
-        fullname: inputUser?.fullname,
+        fullname: inputUser?.config?.fullname,
         email: inputUser?.email,
       }}
       validationSchema={Yup.object({

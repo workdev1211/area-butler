@@ -34,6 +34,13 @@ export class IntegrationUser implements IIntegrationUserSchema {
   @Prop({ required: true, type: String })
   accessToken: string; // for AreaButler internal identification purposes
 
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    ...foreignIdGetSet,
+  })
+  companyId: string;
+
   @Prop({ type: UserConfigSchema })
   config: IUserConfig;
 
@@ -42,12 +49,6 @@ export class IntegrationUser implements IIntegrationUserSchema {
 
   @Prop({ required: true, type: String })
   integrationUserId: string;
-
-  @Prop({
-    type: SchemaTypes.ObjectId,
-    ...foreignIdGetSet,
-  })
-  companyId?: string;
 
   @Prop({ type: Object })
   parameters?: TApiIntegrationUserParameters;

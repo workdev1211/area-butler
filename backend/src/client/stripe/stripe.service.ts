@@ -81,7 +81,7 @@ export class StripeService {
     const stripeCustomer: Stripe.Customer =
       await this.stripeClient.customers.create({
         email: user.email,
-        name: user.fullname,
+        name: user.config.fullname,
       });
 
     return stripeCustomer.id;

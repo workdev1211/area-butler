@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 
 import { ConfigContext } from "../context/ConfigContext";
-import { UserContext } from "../context/UserContext";
+import { UserActionTypes, UserContext } from "../context/UserContext";
 import {
   ApiTourNamesEnum,
   ApiUser,
@@ -34,6 +34,7 @@ interface IGetTokenDataResult {
 export const useTools = () => {
   const { systemEnv } = useContext(ConfigContext);
   const {
+    userDispatch,
     userState: { user, integrationUser },
   } = useContext(UserContext);
   const {
@@ -64,7 +65,9 @@ export const useTools = () => {
     return url;
   };
 
-  const createCodeSnippet = (tokenDataParams?: IGetTokenDataParams): string => `<iframe
+  const createCodeSnippet = (
+    tokenDataParams?: IGetTokenDataParams
+  ): string => `<iframe
   style="border: none"
   width="100%"
   height="100%"
@@ -168,7 +171,20 @@ export const useTools = () => {
       ? "/api/integration-users/config"
       : "/api/users/me/settings";
 
-    await patch<ApiUser | IApiIntegrationUser>(url, settings);
+    const user = (await patch<ApiUser | IApiIntegrationUser>(url, settings))
+      .data;
+
+    if (isIntegrationUser) {
+      userDispatch({
+        type: UserActionTypes.SET_INTEGRATION_USER,
+        payload: user as IApiIntegrationUser,
+      });
+    } else {
+      userDispatch({
+        type: UserActionTypes.SET_USER,
+        payload: user as ApiUser,
+      });
+    }
   };
 
   const hideTour = async (

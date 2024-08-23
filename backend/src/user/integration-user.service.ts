@@ -19,13 +19,13 @@ import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntUserCreate,
-  IIntUserConfig,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
 import { getUnitedMapboxStyles } from '../shared/functions/shared';
 import { COMPANY_PATH, PARENT_USER_PATH } from '../shared/constants/schema';
+import { IUserConfig } from '@area-butler-types/user';
 
 @Injectable()
 export class IntegrationUserService {
@@ -155,7 +155,7 @@ export class IntegrationUserService {
 
   updateConfig(
     { _id: intUserDbId }: TIntegrationUserDocument,
-    config: Partial<IIntUserConfig>,
+    config: Partial<IUserConfig>,
   ): void {
     const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
       $set: {},
@@ -197,24 +197,24 @@ export class IntegrationUserService {
     integrationUser: TIntegrationUserDocument,
     tour?: ApiTourNamesEnum,
   ): Promise<TIntegrationUserDocument> {
-    const showTour = { ...integrationUser.config.showTour };
+    const studyTours = { ...integrationUser.config.studyTours };
 
     if (tour) {
-      showTour[tour] = false;
+      studyTours[tour] = false;
     } else {
-      Object.keys(integrationUser.config.showTour).forEach((tour) => {
-        showTour[tour] = false;
+      Object.keys(studyTours).forEach((tour) => {
+        studyTours[tour] = false;
       });
     }
 
     return this.findByDbIdAndUpdate(integrationUser.id, {
-      'config.showTour': showTour,
+      'config.studyTours': studyTours,
     });
   }
 
   getIntUserResultConfig(
     integrationUser: TIntegrationUserDocument,
-  ): IIntUserConfig {
+  ): IUserConfig {
     const { config, isParent, parentUser } = integrationUser.toObject();
 
     if (isParent || !parentUser) {

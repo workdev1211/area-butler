@@ -4,7 +4,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
-  IApiUserApiConnectSettingsReq,
+  IApiUserExtConnectSettingsReq,
 } from "../../../shared/types/types";
 import {
   IApiIntegrationUser,
@@ -49,7 +49,7 @@ export enum UserActionTypes {
   SET_MAP_ICON = "SET_MAP_ICON",
   SET_COLOR = "SET_COLOR",
   SET_TEMPLATE_SNAPSHOT_ID = "SET_TEMPLATE_SNAPSHOT_ID",
-  SET_API_CONNECTION = "SET_API_CONNECTION",
+  SET_EXT_CONNECTION = "SET_EXT_CONNECTION",
 }
 
 type UserActionsPayload = {
@@ -72,7 +72,7 @@ type UserActionsPayload = {
   [UserActionTypes.SET_MAP_ICON]: string | undefined;
   [UserActionTypes.SET_COLOR]: string | undefined;
   [UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID]: string | undefined;
-  [UserActionTypes.SET_API_CONNECTION]: IApiUserApiConnectSettingsReq;
+  [UserActionTypes.SET_EXT_CONNECTION]: IApiUserExtConnectSettingsReq;
 };
 
 export type UserActions =
@@ -181,13 +181,13 @@ export const userReducer = (
     case UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID: {
       return updateUserSetting("templateSnapshotId", action.payload);
     }
-    case UserActionTypes.SET_API_CONNECTION: {
+    case UserActionTypes.SET_EXT_CONNECTION: {
       const { connectType, ...connectSettings } = action.payload;
 
       const user = {
         ...state.user!,
         apiConnections: {
-          ...(state.user!.apiConnections || {}),
+          ...(state.user!.config.externalConnections || {}),
           [action.payload.connectType]: { ...connectSettings },
         },
       };

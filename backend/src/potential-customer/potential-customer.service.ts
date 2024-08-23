@@ -253,8 +253,8 @@ export class PotentialCustomerService {
     };
 
     if (questionnaire.userInCopy) {
-      mailProps.cc = [{ name: user.fullname, email: user.email }];
-      mailProps.replyTo = { name: user.fullname, email: user.email };
+      mailProps.cc = [{ name: user.config.fullname, email: user.email }];
+      mailProps.replyTo = { name: user.config.fullname, email: user.email };
     }
 
     await this.mailSender.sendMail(mailProps);
@@ -297,7 +297,7 @@ export class PotentialCustomerService {
       const newCustomer = await this.createPotentialCustomer(user, upsertData);
 
       const mailProps: IMailProps = {
-        to: [{ name: user.fullname, email: user.email }],
+        to: [{ name: user.config.fullname, email: user.email }],
         templateId: questionnaireSubmissionTemplateId,
         params: {
           href: `${configService.getBaseAppUrl()}/potential-customers/${

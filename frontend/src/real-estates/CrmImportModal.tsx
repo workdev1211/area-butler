@@ -1,24 +1,24 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { useHttp } from "../hooks/http";
 import { ApiRealEstateExtSourcesEnum } from "../../../shared/types/real-estate";
 import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
-import { TApiUserApiConnections } from "../../../shared/types/types";
 import { apiConnectTypeNames } from "../../../shared/constants/real-estate";
 import { useRealEstateData } from "../hooks/realestatedata";
+import { TApiUserExtConnections } from "../../../shared/types/types";
 
 interface ICrmImportModalProps {
-  apiConnections: TApiUserApiConnections;
+  externalConnections: TApiUserExtConnections;
   closeModal: () => void;
 }
 
 const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
-  apiConnections,
+  externalConnections,
   closeModal,
 }) => {
   const { t } = useTranslation();
@@ -44,7 +44,9 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
     <>
       {isShownBusyModal && (
         <BusyModal
-          items={[{ key: "crm-import", text: t(IntlKeys.realEstate.crmImported) }]}
+          items={[
+            { key: "crm-import", text: t(IntlKeys.realEstate.crmImported) },
+          ]}
         />
       )}
       <div
@@ -62,7 +64,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
               style={{ color: "var(--primary)" }}
             />
           </div>
-          {Object.keys(apiConnections).map((connectType) => (
+          {Object.keys(externalConnections).map((connectType) => (
             <button
               key={connectType}
               className="btn btn-xs btn-primary"
@@ -79,7 +81,9 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                   await fetchRealEstates({ isForceFetch: true });
 
                   if (errorIds.length) {
-                    const errorIdsText = `${t(IntlKeys.realEstate.crmImportSuccess)} ${
+                    const errorIdsText = `${t(
+                      IntlKeys.realEstate.crmImportSuccess
+                    )} ${
                       apiConnectTypeNames[
                         connectType as ApiRealEstateExtSourcesEnum
                       ]

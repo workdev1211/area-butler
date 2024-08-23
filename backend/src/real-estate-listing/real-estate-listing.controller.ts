@@ -35,7 +35,7 @@ import { CsvFileFormatEnum } from '@area-butler-types/types';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 import { Role, Roles } from '../auth/role/roles.decorator';
-import ApiUserApiConnectSettingsReqDto from '../dto/api-user-api-connect-settings-req.dto';
+import ApiUserExtConnectSettingsReqDto from '../user/dto/api-user-ext-connect-settings-req.dto';
 import { replaceValInObj } from '../../../shared/functions/shared.functions';
 
 @ApiTags('real-estate-listing')
@@ -186,12 +186,12 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Test a specified CRM connection' })
   @Post('crm-test')
-  testApiConnection(
+  testExtConnection(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
-    connectSettings: ApiUserApiConnectSettingsReqDto,
+    connectSettings: ApiUserExtConnectSettingsReqDto,
   ): Promise<void> {
-    return this.realEstateCrmImportService.testApiConnection(
+    return this.realEstateCrmImportService.testExtConnection(
       user,
       connectSettings,
     );

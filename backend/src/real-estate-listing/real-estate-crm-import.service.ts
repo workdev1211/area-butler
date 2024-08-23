@@ -14,7 +14,6 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
 import { createChunks } from '../../../shared/functions/shared.functions';
 import { GeoJsonPoint } from '../shared/types/geo-json';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
@@ -49,6 +48,7 @@ import { getProcUpdateQuery } from '../shared/functions/shared';
 import { PlaceService } from '../place/place.service';
 import ApiPropstackWebhookToAreaButlerDto from './dto/api-propstack-webhook-to-area-butler.dto';
 import { propertyFields } from '../on-office/shared/on-office.constants';
+import { IApiUserExtConnectSettingsReq } from '@area-butler-types/types';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -75,7 +75,7 @@ export class RealEstateCrmImportService {
       'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
     );
 
-    const connectSettings = user.apiConnections[connectType];
+    const connectSettings = user.config.externalConnections[connectType];
 
     if (!connectSettings) {
       throw new HttpException('Unknown connection type is provided!', 400);
@@ -106,9 +106,9 @@ export class RealEstateCrmImportService {
     return errorIds;
   }
 
-  async testApiConnection(
+  async testExtConnection(
     user: UserDocument,
-    { connectType, ...connectSettings }: IApiUserApiConnectSettingsReq,
+    { connectType, ...connectSettings }: IApiUserExtConnectSettingsReq,
   ): Promise<void> {
     this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
@@ -210,7 +210,8 @@ export class RealEstateCrmImportService {
 
     const apiKey = isIntegrationUser
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
-      : user.apiConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]?.apiKey;
+      : user.config.externalConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]
+          ?.apiKey;
 
     if (!apiKey) {
       throw new HttpException('Propstack authentication failed!', 401);
@@ -343,7 +344,7 @@ export class RealEstateCrmImportService {
 
     const resConnectSettings = isIntegrationUser
       ? { token: intUserParams.token, secret: intUserParams.apiKey }
-      : user.apiConnections[ApiRealEstateExtSourcesEnum.ON_OFFICE];
+      : user.config.externalConnections[ApiRealEstateExtSourcesEnum.ON_OFFICE];
 
     const { token, secret } = resConnectSettings || {};
 

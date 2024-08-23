@@ -1,26 +1,19 @@
 import { IntegrationTypesEnum } from "./integration";
-import {
-  ApiSearchResultSnapshotResponse,
-  ApiShowTour,
-  IApiMapboxStyle,
-  IApiUserPoiIcons,
-  LanguageTypeEnum,
-  TAreaButlerExportTypes,
-} from "./types";
+import { ApiSearchResultSnapshotResponse, IApiUserPoiIcons } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
-import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import { TIntegrationUserDocument } from "../../backend/src/user/schema/integration-user.schema";
 import { TCompanyDocument } from "../../backend/src/company/schema/company.schema";
+import { IUserConfig } from "./user";
 
 export interface IIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
-  config: IIntUserConfig;
+  companyId: string;
+  config: IUserConfig;
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
 
   company?: TCompanyDocument;
-  companyId?: string;
   parameters?: TApiIntegrationUserParameters;
 
   // OLD
@@ -35,7 +28,7 @@ export interface IIntegrationUserSchema {
 
 export interface IApiIntegrationUser {
   accessToken: string;
-  config: IIntUserConfig;
+  config: IUserConfig;
   integrationUserId: string;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
@@ -111,7 +104,7 @@ export interface IApiIntegrationUserProductContingent {
 export interface IApiIntUserUpdateParamsAndConfig {
   accessToken: string;
   parameters: TApiIntegrationUserParameters;
-  config?: Partial<IIntUserConfig>;
+  config?: Partial<IUserConfig>;
 }
 
 export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
@@ -133,21 +126,6 @@ export type TApiIntegrationUserProductContingents = Partial<
 export type TApiIntegrationUserProductsUsed = Partial<
   Record<TApiIntUserProdContType, number>
 >;
-export interface IIntUserConfig {
-  language?: LanguageTypeEnum;
-  showTour?: ApiShowTour;
-  templateSnapshotId?: string;
-
-  // OLD
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
-  color?: string;
-  exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
-  extraMapboxStyles?: IApiMapboxStyle[];
-  isSpecialLink?: boolean;
-  logo?: string;
-  mapboxAccessToken?: string;
-  mapIcon?: string;
-}
 
 export interface IIntUserExpMatchParams {
   fieldId: string;
@@ -156,7 +134,7 @@ export interface IIntUserExpMatchParams {
 
 export interface IApiIntUserLoginRes {
   accessToken: string;
-  config: IIntUserConfig;
+  config: IUserConfig;
   integrationUserId: string;
   isChild: boolean;
   realEstate: ApiRealEstateListing;

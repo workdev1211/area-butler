@@ -1,10 +1,10 @@
 import { IsOptional, IsString } from 'class-validator';
 import { Expose, Exclude } from 'class-transformer';
 
-import { TApiUserApiConnectSettings } from '@area-butler-types/types';
+import { TApiUserExtConnectSettings } from '@area-butler-types/types';
 
 @Exclude()
-class ApiUserApiConnectSettingsDto implements TApiUserApiConnectSettings {
+class ApiUserExtConnectSettingsDto implements TApiUserExtConnectSettings {
   @Expose()
   @IsOptional()
   @IsString()
@@ -21,4 +21,4 @@ class ApiUserApiConnectSettingsDto implements TApiUserApiConnectSettings {
   secret?: string;
 }
 
-export default ApiUserApiConnectSettingsDto;
+export default ApiUserExtConnectSettingsDto;

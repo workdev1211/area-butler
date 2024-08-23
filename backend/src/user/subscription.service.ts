@@ -311,7 +311,11 @@ export class SubscriptionService {
   }
 
   async upsertTrialForUser(
-    { id: userId, fullname: userName, email: userEmail }: UserDocument,
+    {
+      id: userId,
+      config: { fullname: userName },
+      email: userEmail,
+    }: UserDocument,
     endsAt: Date,
   ): Promise<SubscriptionDocument> {
     // just in case
@@ -339,7 +343,11 @@ export class SubscriptionService {
   }
 
   async upsertForUser({
-    user: { id: userId, fullname: userName, email: userEmail },
+    user: {
+      id: userId,
+      config: { fullname: userName },
+      email: userEmail,
+    },
     endsAt,
     type,
     priceId,

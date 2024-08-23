@@ -1,7 +1,7 @@
 import {
-  ApiShowTour,
   ApiTourNamesEnum,
   MeansOfTransportation,
+  TApiUserStudyTours,
   TPlaceholderSelectOptionKey,
   UnitsOfTransportation,
 } from "../types/types";
@@ -19,15 +19,15 @@ export const kudibaCompany = {
   vat: "DE349350290",
 };
 
-export const initialShowTour: ApiShowTour = {
-  [ApiTourNamesEnum.SEARCH]: true,
-  [ApiTourNamesEnum.RESULT]: true,
-  [ApiTourNamesEnum.REAL_ESTATES]: true,
+export const userInitStudyTours: TApiUserStudyTours = {
   [ApiTourNamesEnum.CUSTOMERS]: true,
-  [ApiTourNamesEnum.PROFILE]: true,
   [ApiTourNamesEnum.EDITOR]: true,
-  [ApiTourNamesEnum.INT_MAP]: false,
-  [ApiTourNamesEnum.INT_SEARCH]: false,
+  [ApiTourNamesEnum.INT_MAP]: true,
+  [ApiTourNamesEnum.INT_SEARCH]: true,
+  [ApiTourNamesEnum.PROFILE]: true,
+  [ApiTourNamesEnum.REAL_ESTATES]: true,
+  [ApiTourNamesEnum.RESULT]: true,
+  [ApiTourNamesEnum.SEARCH]: true,
 };
 
 export const localStorageConsentGivenKey = "ab-cg";

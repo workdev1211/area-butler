@@ -23,7 +23,7 @@ import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
-  IApiUserApiConnectSettingsReq,
+  IApiUserExtConnectSettingsReq,
 } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
@@ -174,14 +174,14 @@ export class UserService {
       throw new HttpException('Unknown user!', 400);
     }
 
-    user.fullname = fullname;
+    user.set('config.fullname', fullname);
 
     return user.save();
   }
 
   async updateApiConnections(
     userId: string,
-    { connectType, ...connectSettings }: IApiUserApiConnectSettingsReq,
+    { connectType, ...connectSettings }: IApiUserExtConnectSettingsReq,
   ): Promise<UserDocument> {
     const updateQuery: UpdateQuery<UserDocument> = Object.keys(connectSettings)
       .length
@@ -217,15 +217,17 @@ export class UserService {
       throw new HttpException('Unknown user!', 400);
     }
 
-    const showTour = { ...user.showTour };
+    const studyTours = { ...user.config.studyTours };
 
     if (tour) {
-      showTour[tour] = false;
+      studyTours[tour] = false;
     } else {
-      Object.keys(user.showTour).forEach((tour) => (showTour[tour] = false));
+      Object.keys(studyTours).forEach((tour) => {
+        studyTours[tour] = false;
+      });
     }
 
-    user.showTour = showTour;
+    user.set('config.studyTours', studyTours);
 
     return user.save();
   }
@@ -393,7 +395,7 @@ export class UserService {
 
   async updateSettings(
     email: string,
-    settings: ApiUserSettingsDto,
+    { templateSnapshotId, ...settings }: ApiUserSettingsDto,
   ): Promise<UserDocument> {
     const user = await this.findByEmail(email);
     await this.userSubscriptionPipe.transform(user);
@@ -409,6 +411,8 @@ export class UserService {
     Object.keys(settings).forEach((key) => {
       user[key] = settings[key] || undefined;
     });
+
+    user.set('config.templateSnapshotId', templateSnapshotId);
 
     return user.save();
   }

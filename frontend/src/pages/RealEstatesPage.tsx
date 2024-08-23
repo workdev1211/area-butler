@@ -1,8 +1,8 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import DefaultLayout from "../layout/defaultLayout";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
@@ -53,7 +53,7 @@ const RealEstatesPage: FunctionComponent = () => {
   const hasHtmlSnippet =
     isIntegration ||
     (hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet);
-  const hasApiConnections = !!user?.apiConnections;
+  const hasApiConnections = !!user?.config.externalConnections;
 
   useEffect(() => {
     if (!hasHtmlSnippet) {
@@ -100,7 +100,8 @@ const RealEstatesPage: FunctionComponent = () => {
       <>
         <li>
           <Link to="/real-estates/new" className="btn btn-link">
-            <img src={plusIcon} alt="pdf-icon" /> {t(IntlKeys.realEstate.createObject)}
+            <img src={plusIcon} alt="pdf-icon" />{" "}
+            {t(IntlKeys.realEstate.createObject)}
           </Link>
         </li>
 
@@ -112,7 +113,9 @@ const RealEstatesPage: FunctionComponent = () => {
             }}
           >
             <img className="invert" src={uploadIcon} alt="upload-icon" />
-            <div className="cursor-pointer">{t(IntlKeys.realEstate.importCSV)}</div>
+            <div className="cursor-pointer">
+              {t(IntlKeys.realEstate.importCSV)}
+            </div>
           </button>
         </li>
 
@@ -125,7 +128,9 @@ const RealEstatesPage: FunctionComponent = () => {
               }}
             >
               <img className="invert" src={uploadIcon} alt="import-icon" />
-              <div className="cursor-pointer">{t(IntlKeys.realEstate.syncCRM)}</div>
+              <div className="cursor-pointer">
+                {t(IntlKeys.realEstate.syncCRM)}
+              </div>
             </button>
           </li>
         )}
@@ -176,7 +181,7 @@ const RealEstatesPage: FunctionComponent = () => {
 
       {isShownCrmImportModal && (
         <CrmImportModal
-          apiConnections={user.apiConnections!}
+          externalConnections={user.config.externalConnections!}
           closeModal={() => {
             setIsShownCrmImportModal(false);
           }}

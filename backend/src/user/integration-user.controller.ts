@@ -15,7 +15,7 @@ import { InjectUser } from './inject-user.decorator';
 import { IntegrationUserService } from './integration-user.service';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import ApiIntegrationUserDto from './dto/api-integration-user.dto';
-import ApiIntegrationUserConfigDto from './dto/api-integration-user-config.dto';
+import ApiUserConfigDto from './dto/api-user-config.dto';
 import { TIntegrationUserDocument } from './schema/integration-user.schema';
 import { ContingentIntService } from './contingent-int.service';
 
@@ -55,7 +55,7 @@ export class IntegrationUserController {
   @Patch('config')
   updateConfig(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() config: ApiIntegrationUserConfigDto,
+    @Body() config: ApiUserConfigDto,
   ): void {
     void this.integrationUserService.updateConfig(integrationUser, config);
   }

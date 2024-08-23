@@ -1,19 +1,19 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./UserCrmSettings.scss";
 
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import { useHttp } from "../hooks/http";
-import {
-  IApiUserApiConnectSettingsReq,
-  TApiUserApiConnections,
-} from "../../../shared/types/types";
 import { ApiRealEstateExtSourcesEnum } from "../../../shared/types/real-estate";
 import { apiConnectTypeNames } from "../../../shared/constants/real-estate";
 import { toastError, toastSuccess } from "../shared/shared.functions";
+import {
+  IApiUserExtConnectSettingsReq,
+  TApiUserExtConnections,
+} from "../../../shared/types/types";
 
 const UserCrmSettings: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -21,7 +21,8 @@ const UserCrmSettings: FunctionComponent = () => {
   const { post } = useHttp();
 
   const apiConnections =
-    userState.user?.apiConnections || ({} as TApiUserApiConnections);
+    userState.user?.config.externalConnections ||
+    ({} as TApiUserExtConnections);
 
   const [propstackApiKey, setPropstackApiKey] = useState<string>(
     apiConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]?.apiKey || ""
@@ -35,10 +36,10 @@ const UserCrmSettings: FunctionComponent = () => {
 
   return (
     <div className="flex flex-col mt-10 gap-3">
-      <h1 className="text-xl font-bold">{t(IntlKeys.yourProfile.CRMSettings)}</h1>
-      <div>
-        {t(IntlKeys.yourProfile.CRMSettingsDescription)}
-      </div>
+      <h1 className="text-xl font-bold">
+        {t(IntlKeys.yourProfile.CRMSettings)}
+      </h1>
+      <div>{t(IntlKeys.yourProfile.CRMSettingsDescription)}</div>
       <div className="api-connections-grid grid items-center gap-5">
         {/* PROPSTACK */}
         <div className="font-bold pt-4">
@@ -72,15 +73,17 @@ const UserCrmSettings: FunctionComponent = () => {
                   apiKey: propstackApiKey,
                 };
 
-                await post<void, IApiUserApiConnectSettingsReq>(
+                await post<void, IApiUserExtConnectSettingsReq>(
                   "/api/real-estate-listing/crm-test",
                   connectSettings
                 );
 
-                toastSuccess(t(IntlKeys.yourProfile.connectionTestedSuccessfully));
+                toastSuccess(
+                  t(IntlKeys.yourProfile.connectionTestedSuccessfully)
+                );
 
                 userDispatch({
-                  type: UserActionTypes.SET_API_CONNECTION,
+                  type: UserActionTypes.SET_EXT_CONNECTION,
                   payload: connectSettings,
                 });
               } catch (e) {
@@ -137,15 +140,17 @@ const UserCrmSettings: FunctionComponent = () => {
                   secret: onOfficeSecret,
                 };
 
-                await post<void, IApiUserApiConnectSettingsReq>(
+                await post<void, IApiUserExtConnectSettingsReq>(
                   "/api/real-estate-listing/crm-test",
                   connectSettings
                 );
 
-                toastSuccess(t(IntlKeys.yourProfile.connectionTestedSuccessfully));
+                toastSuccess(
+                  t(IntlKeys.yourProfile.connectionTestedSuccessfully)
+                );
 
                 userDispatch({
-                  type: UserActionTypes.SET_API_CONNECTION,
+                  type: UserActionTypes.SET_EXT_CONNECTION,
                   payload: connectSettings,
                 });
               } catch (e) {

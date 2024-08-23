@@ -2,43 +2,47 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { SchemaTypes } from 'mongoose';
 
 import {
-  ApiShowTour,
+  TApiUserStudyTours,
   IApiMapboxStyle,
   LanguageTypeEnum,
-  TApiUserApiConnections,
+  TApiUserExtConnections,
   TAreaButlerExportTypes,
 } from '@area-butler-types/types';
-import { intUserInitShowTour } from '../../../../shared/constants/integration';
 import { foreignIdGetSet } from '../../shared/constants/schema';
 import { IUserConfig } from '@area-butler-types/user';
 import { IApiKeyParams } from '../../shared/types/external-api';
 import { availableCountries } from '../../../../shared/constants/location';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
+import { userInitStudyTours } from '../../../../shared/constants/constants';
 
-@Schema({ _id: false })
+@Schema({
+  _id: false,
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 class UserConfig implements IUserConfig {
-  @Prop({ type: Object })
-  apiKeyParams?: IApiKeyParams;
-
-  @Prop({ type: Object })
-  externalConnections?: TApiUserApiConnections;
-
-  @Prop({ type: String })
-  fullname?: string;
-
   @Prop({
     type: String,
     enum: LanguageTypeEnum,
     default: LanguageTypeEnum.de,
   })
-  language?: LanguageTypeEnum;
+  language: LanguageTypeEnum;
 
   @Prop({
     type: Object,
-    default: { ...intUserInitShowTour },
+    default: { ...userInitStudyTours },
   })
-  studyTours?: ApiShowTour;
+  studyTours: TApiUserStudyTours;
+
+  @Prop({ type: Object })
+  apiKeyParams?: IApiKeyParams;
+
+  @Prop({ type: Object })
+  externalConnections?: TApiUserExtConnections;
+
+  @Prop({ type: String })
+  fullname?: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
@@ -78,7 +82,7 @@ class UserConfig implements IUserConfig {
   mapIcon?: string;
 
   @Prop({ type: Object })
-  showTour?: ApiShowTour;
+  showTour?: TApiUserStudyTours;
 }
 
 export const UserConfigSchema = SchemaFactory.createForClass(UserConfig);

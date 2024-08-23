@@ -56,7 +56,7 @@ export class PropstackWebhookService {
     const isIntegrationUser = 'integrationUserId' in user;
     const propstackApiKey = isIntegrationUser
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
-      : user.apiConnections?.PROPSTACK.apiKey;
+      : user.config.externalConnections?.PROPSTACK.apiKey;
 
     const place = await this.placeService.fetchPlaceOrFail({
       isNotLimitCountries: true,

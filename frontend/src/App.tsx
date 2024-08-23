@@ -142,7 +142,7 @@ function App() {
 
     const fetchUser = async () => {
       const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
-      await i18n.changeLanguage(user.language);
+      await i18n.changeLanguage(user.config.language);
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
 
       const latestUserRequests: ApiUserRequests = (

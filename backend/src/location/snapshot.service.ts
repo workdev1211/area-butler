@@ -311,16 +311,10 @@ export class SnapshotService {
       false,
     );
 
-    const isIntegrationUser = 'integrationUserId' in user;
-    const templateSnapshotId = isIntegrationUser
-      ? user.config.templateSnapshotId
-      : user.templateSnapshotId;
+    const templateSnapshotId = user.config.templateSnapshotId;
 
     if (templateSnapshotId === snapshotId) {
-      user.set(
-        isIntegrationUser ? 'config.templateSnapshotId' : 'templateSnapshotId',
-        undefined,
-      );
+      user.set('config.templateSnapshotId', undefined);
 
       await user.save();
     }
@@ -332,11 +326,7 @@ export class SnapshotService {
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<ApiSearchResultSnapshotConfig> {
     const isIntegrationUser = 'integrationUserId' in user;
-
-    const userTemplateId = isIntegrationUser
-      ? user.config.templateSnapshotId
-      : user.templateSnapshotId;
-
+    const userTemplateId = user.config.templateSnapshotId;
     let parentUser = user.parentUser;
     const parentUserId = user.parentId;
     let parentTemplateId: string;
@@ -353,7 +343,7 @@ export class SnapshotService {
           : await this.userService.findById({
               userId: parentUserId,
               projectQuery: {
-                templateSnapshotId: 1,
+                'config.templateSnapshotId': 1,
               },
             });
       }
@@ -363,10 +353,7 @@ export class SnapshotService {
           parentUser.subscription = user.subscription;
         }
 
-        parentTemplateId =
-          'integrationUserId' in parentUser
-            ? parentUser.config.templateSnapshotId
-            : parentUser.templateSnapshotId;
+        parentTemplateId = parentUser.config.templateSnapshotId;
       }
     }
 

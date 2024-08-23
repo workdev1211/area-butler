@@ -15,6 +15,7 @@ import {
 import { IntegrationTypesEnum } from "./integration";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import { OpenAiQueryTypeEnum } from "./open-ai";
+import { IUserConfig } from "./user";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -62,18 +63,14 @@ export enum LanguageTypeEnum {
 }
 
 export interface ApiUser {
-  fullname: string;
+  config: IUserConfig;
   email: string;
   requestContingents: ApiRequestContingent[];
   requestsExecuted: number;
-  showTour: ApiShowTour;
 
   accessToken?: string; // only on the frontend and MyVivenda specific for the moment
-  apiConnections?: TApiUserApiConnections;
   consentGiven?: Date;
-  language: LanguageTypeEnum;
   subscription?: ApiUserSubscription;
-  templateSnapshotId?: string;
 
   // OLD CONFIG
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
@@ -88,17 +85,17 @@ export interface ApiUser {
   isChild: boolean;
 }
 
-export type TApiUserApiConnectSettings = Partial<
+export type TApiUserExtConnectSettings = Partial<
   IApiPropstackConSettings & IApiOnOfficeConSettings
 >;
 
-export interface IApiUserApiConnectSettingsReq
-  extends TApiUserApiConnectSettings {
+export interface IApiUserExtConnectSettingsReq
+  extends TApiUserExtConnectSettings {
   connectType: ApiRealEstateExtSourcesEnum;
 }
 
-export type TApiUserApiConnections = Partial<
-  Record<ApiRealEstateExtSourcesEnum, TApiUserApiConnectSettings>
+export type TApiUserExtConnections = Partial<
+  Record<ApiRealEstateExtSourcesEnum, TApiUserExtConnectSettings>
 >;
 
 export interface ApiUpsertUser {
@@ -117,17 +114,17 @@ export interface ApiUserRequests {
 }
 
 export enum ApiTourNamesEnum {
-  SEARCH = "search",
-  RESULT = "result", // is not used currently
-  REAL_ESTATES = "realEstates",
   CUSTOMERS = "customers",
-  PROFILE = "profile",
   EDITOR = "editor",
   INT_MAP = "intMap",
   INT_SEARCH = "intSearch",
+  PROFILE = "profile",
+  REAL_ESTATES = "realEstates",
+  RESULT = "result", // is not used currently
+  SEARCH = "search",
 }
 
-export type ApiShowTour = Record<ApiTourNamesEnum, boolean>;
+export type TApiUserStudyTours = Record<ApiTourNamesEnum, boolean>;
 
 export interface ApiInsertFeedback {
   description: string;

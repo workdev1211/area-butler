@@ -1,6 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery, Query, HydratedDocument } from 'mongoose';
+import {
+  Model,
+  FilterQuery,
+  Query,
+  HydratedDocument,
+  ProjectionFields,
+} from 'mongoose';
 
 import { Company, TCompanyDocument } from '../company/schema/company.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
@@ -15,6 +21,13 @@ import {
   IApiIntUserOnOfficeParams,
   IApiIntUserPropstackParams,
 } from '@area-butler-types/integration-user';
+import { IUserConfig } from '@area-butler-types/user';
+import {
+  LanguageTypeEnum,
+  TApiUserExtConnections,
+  TApiUserStudyTours,
+} from '@area-butler-types/types';
+import { IApiKeyParams } from '../shared/types/external-api';
 
 interface IBulkProcMainParams<T extends HydratedDocument<unknown>> {
   findQuery: Query<T[], T>;
@@ -24,6 +37,7 @@ interface IBulkProcMainParams<T extends HydratedDocument<unknown>> {
 type TBulkProcessParams<T extends HydratedDocument<unknown>> =
   IBulkProcMainParams<T> & {
     model: Model<T>;
+    bulkWriteOptions?: object;
   } & (
       | {
           processDocument: (doc: T) => object;
@@ -208,6 +222,95 @@ export class MigrationService {
     this.logger.log(`${this.createCompanies.name} migration finished.`);
   }
 
+  async updateUserConfigs(): Promise<void> {
+    this.logger.log(`${this.updateUserConfigs.name} migration started.`);
+
+    // WebApp users
+
+    const userProjectQuery: ProjectionFields<UserDocument> = {
+      apiConnections: 1,
+      apiKeyParams: 1,
+      fullname: 1,
+      language: 1,
+      showTour: 1,
+      templateSnapshotId: 1,
+    };
+
+    const processUser = (user: UserDocument): object => {
+      const {
+        apiConnections,
+        apiKeyParams,
+        fullname,
+        language,
+        showTour,
+        templateSnapshotId,
+      } = (
+        user as UserDocument & {
+          apiConnections: TApiUserExtConnections;
+          apiKeyParams: IApiKeyParams;
+          fullname: string;
+          language: LanguageTypeEnum;
+          showTour: TApiUserStudyTours;
+          templateSnapshotId: string;
+        }
+      ).toObject();
+
+      const config: IUserConfig = {
+        apiKeyParams,
+        fullname,
+        language,
+        templateSnapshotId,
+        externalConnections: apiConnections,
+        studyTours: showTour,
+      };
+
+      return {
+        updateOne: {
+          filter: { _id: user._id },
+          update: {
+            $set: { config },
+            $unset: userProjectQuery,
+          },
+        },
+      };
+    };
+
+    await this.bulkProcess<UserDocument>({
+      bulkWriteOptions: { strict: false },
+      findQuery: this.userModel.find(undefined, userProjectQuery),
+      model: this.userModel,
+      processDocument: processUser,
+      total: await this.userModel.count(),
+    });
+
+    // Integration users
+
+    const processIntUser = (
+      integrationUser: TIntegrationUserDocument,
+    ): object => {
+      return {
+        updateOne: {
+          filter: { _id: integrationUser._id },
+          update: {
+            $rename: { 'config.showTour': 'config.studyTours' },
+          },
+        },
+      };
+    };
+
+    await this.bulkProcess<TIntegrationUserDocument>({
+      findQuery: this.integrationUserModel.find(
+        { 'config.showTour': 1 },
+        { id: 1 },
+      ),
+      model: this.integrationUserModel,
+      processDocument: processIntUser,
+      total: await this.integrationUserModel.count(),
+    });
+
+    this.logger.log(`${this.updateUserConfigs.name} migration finished.`);
+  }
+
   private async batchProcess<T extends HydratedDocument<unknown>>({
     findQuery,
     processDocumentAsync,
@@ -233,6 +336,7 @@ export class MigrationService {
   }
 
   private async bulkProcess<T extends HydratedDocument<unknown>>({
+    bulkWriteOptions,
     findQuery,
     model,
     processDocument,
@@ -259,7 +363,7 @@ export class MigrationService {
         );
       }
 
-      await model.bulkWrite(bulkOperations);
+      await model.bulkWrite(bulkOperations, bulkWriteOptions);
     }
 
     this.logger.log(`Bulk processing of ${total} documents has finished.`);

@@ -25,9 +25,6 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
-  const templateSnapshotId = isIntegrationUser
-    ? user.config.templateSnapshotId
-    : user.templateSnapshotId;
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -101,7 +98,6 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
               key={`embeddable-map-${snapshot.id}`}
               snapshot={snapshot}
               openCodeSnippetModal={openCodeSnippetModal}
-              templateSnapshotId={templateSnapshotId}
             />
           ))}
           {isIntegrationUser &&
@@ -118,7 +114,6 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
               key={`embeddable-map-${snapshot.id}`}
               snapshot={snapshot}
               openCodeSnippetModal={openCodeSnippetModal}
-              templateSnapshotId={templateSnapshotId}
             />
           ))}
         </tbody>

@@ -21,7 +21,7 @@ export class ApiKeyStrategy extends PassportStrategy(
         const routePath = req.route.path;
 
         if (
-          !user?.apiKeyParams.allowedFeatures.includes(
+          !user?.config.apiKeyParams.allowedFeatures.includes(
             apiRouteToFeatTypeMap[routePath],
           )
         ) {

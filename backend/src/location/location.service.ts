@@ -365,15 +365,11 @@ export class LocationService {
         : await this.userService.findById({
             userId: parentUserId,
             projectQuery: {
-              templateSnapshotId: 1,
+              'config.templateSnapshotId': 1,
             },
           });
 
-      const isParentIntUser = 'integrationUserId' in parentUser;
-
-      parentTemplateSnapId = isParentIntUser
-        ? parentUser.config.templateSnapshotId
-        : parentUser.templateSnapshotId;
+      parentTemplateSnapId = parentUser.config.templateSnapshotId;
 
       if (parentTemplateSnapId) {
         pipelines.push({
@@ -395,9 +391,7 @@ export class LocationService {
       }
     }
 
-    const userTemplateSnapId = isIntegrationUser
-      ? user.config.templateSnapshotId
-      : user.templateSnapshotId;
+    const userTemplateSnapId = user.config.templateSnapshotId;
 
     if (userTemplateSnapId) {
       matchQuery['$and'].push({

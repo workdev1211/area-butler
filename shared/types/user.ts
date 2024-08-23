@@ -1,8 +1,8 @@
 import {
-  ApiShowTour,
   IApiMapboxStyle,
   LanguageTypeEnum,
-  TApiUserApiConnections,
+  TApiUserExtConnections,
+  TApiUserStudyTours,
   TAreaButlerExportTypes,
 } from "./types";
 import { IApiKeyParams } from "../../backend/src/shared/types/external-api";
@@ -10,11 +10,11 @@ import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import { IIntUserExpMatchParams } from "./integration-user";
 
 export interface IUserConfig {
+  language: LanguageTypeEnum;
+  studyTours: TApiUserStudyTours;
   apiKeyParams?: IApiKeyParams;
-  externalConnections?: TApiUserApiConnections;
+  externalConnections?: TApiUserExtConnections;
   fullname?: string;
-  language?: LanguageTypeEnum;
-  studyTours?: ApiShowTour;
   templateSnapshotId?: string;
 
   // OLD
@@ -26,5 +26,4 @@ export interface IUserConfig {
   logo?: string;
   mapboxAccessToken?: string;
   mapIcon?: string;
-  showTour?: ApiShowTour;
 }

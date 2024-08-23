@@ -21,13 +21,11 @@ import { useLocationData } from "../hooks/locationdata";
 interface ISnapshotsTableRowProps {
   snapshot: ApiSearchResultSnapshotResponse;
   openCodeSnippetModal: (snapshot: ApiSearchResultSnapshotResponse) => void;
-  templateSnapshotId?: string;
 }
 
 const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   snapshot,
   openCodeSnippetModal,
-  templateSnapshotId,
 }) => {
   const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
@@ -35,6 +33,10 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   const history = useHistory();
   const { duplicateSnapshot, deleteSnapshot } = useLocationData();
   const { createDirectLink, updateUserSettings } = useTools();
+  const { getActualUser } = useTools();
+  const {
+    config: { templateSnapshotId },
+  } = getActualUser();
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);

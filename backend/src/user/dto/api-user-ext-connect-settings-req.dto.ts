@@ -1,11 +1,11 @@
 import { IsString, IsOptional, IsEnum, IsNotEmpty } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
 import { ApiRealEstateExtSourcesEnum } from '@area-butler-types/real-estate';
+import { IApiUserExtConnectSettingsReq } from '@area-butler-types/types';
 
 @Exclude()
-class ApiUserApiConnectSettingsReqDto implements IApiUserApiConnectSettingsReq {
+class ApiUserExtConnectSettingsReqDto implements IApiUserExtConnectSettingsReq {
   @Expose()
   @IsNotEmpty()
   @IsEnum(ApiRealEstateExtSourcesEnum)
@@ -27,4 +27,4 @@ class ApiUserApiConnectSettingsReqDto implements IApiUserApiConnectSettingsReq {
   secret?: string;
 }
 
-export default ApiUserApiConnectSettingsReqDto;
+export default ApiUserExtConnectSettingsReqDto;

@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsEmail,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -13,16 +14,12 @@ import {
 import { Type, Transform, Expose, Exclude } from 'class-transformer';
 
 import {
-  ApiShowTour,
   ApiUser,
   IApiMapboxStyle,
   IApiUserExportFont,
   IApiUserPoiIcons,
-  LanguageTypeEnum,
-  TApiUserApiConnections,
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
-import ApiShowTourDto from './api-show-tour.dto';
 import { mapSubscriptionToApiSubscription } from '../mapper/subscription.mapper';
 import {
   retrieveTotalRequestContingent,
@@ -36,60 +33,24 @@ import {
   ApiUserSubscription,
 } from '@area-butler-types/subscription-plan';
 import ApiMapboxStyleDto from '../../dto/api-mapbox-style.dto';
-import ApiUserApiConnectionsDto from './api-user-api-connections.dto';
 import { getUnitedMapboxStyles } from '../../shared/functions/shared';
 import { SubscriptionDocument } from '../schema/subscription.schema';
+import ApiUserConfigDto from './api-user-config.dto';
+import { IUserConfig } from '@area-butler-types/user';
 
 @Exclude()
 class ApiUserDto implements ApiUser {
   @Expose()
-  @Type(() => ApiMapboxStyleDto)
-  @Transform(
-    ({
-      obj: { additionalMapBoxStyles, parentUser },
-    }: {
-      obj: UserDocument;
-    }): IApiMapboxStyle[] =>
-      getUnitedMapboxStyles(
-        parentUser?.additionalMapBoxStyles,
-        additionalMapBoxStyles,
-      ),
-    { toClassOnly: true },
-  )
+  @Type(() => ApiUserConfigDto)
   @IsNotEmpty()
-  @IsArray()
-  @ValidateNested({ each: true })
-  extraMapboxStyles: IApiMapboxStyle[];
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  color?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsDate()
-  consentGiven?: Date;
+  @IsObject()
+  @ValidateNested()
+  config: IUserConfig;
 
   @Expose()
   @IsNotEmpty()
-  @IsString()
+  @IsEmail()
   email: string;
-
-  @Expose()
-  @IsNotEmpty()
-  @IsString()
-  fullname: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  logo?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  mapIcon?: string;
 
   @Expose()
   @Type(() => ApiRequestContingentDto)
@@ -121,11 +82,9 @@ class ApiUserDto implements ApiUser {
   requestsExecuted: number;
 
   @Expose()
-  @Type(() => ApiShowTourDto)
-  @IsNotEmpty()
-  @IsObject()
-  @ValidateNested()
-  showTour: ApiShowTour;
+  @IsOptional()
+  @IsDate()
+  consentGiven?: Date;
 
   // 'ApiUserSubscriptionDto' entity differs from a 'SubscriptionDocument' one
   @Expose()
@@ -138,54 +97,7 @@ class ApiUserDto implements ApiUser {
   @IsObject()
   subscription?: ApiUserSubscription;
 
-  @Expose({ name: 'parentId', toClassOnly: true })
-  @Transform(({ value }: { value: boolean }): boolean => !!value, {
-    toClassOnly: true,
-  })
-  @IsNotEmpty()
-  @IsBoolean()
-  isChild: boolean;
-
-  @Expose()
-  @Type(() => ApiUserPoiIconsDto)
-  @Transform(
-    ({
-      value,
-      obj: { parentUser },
-    }: {
-      obj: UserDocument;
-      value: IApiUserPoiIcons;
-    }): IApiUserPoiIcons => value || parentUser?.poiIcons,
-    { toClassOnly: true },
-  )
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  poiIcons?: IApiUserPoiIcons;
-
-  @Expose()
-  @Type(() => ApiUserExportFontDto)
-  @Transform(
-    ({
-      value,
-      obj: { parentUser },
-    }: {
-      obj: UserDocument;
-      value: IApiUserExportFont[];
-    }): IApiUserExportFont[] => value || parentUser?.exportFonts,
-    { toClassOnly: true },
-  )
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  exportFonts?: IApiUserExportFont[];
-
-  @Expose()
-  @Type(() => ApiUserApiConnectionsDto)
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  apiConnections?: TApiUserApiConnections;
+  // OLD
 
   @Expose()
   @Transform(
@@ -206,19 +118,78 @@ class ApiUserDto implements ApiUser {
   @Expose()
   @IsOptional()
   @IsString()
-  templateSnapshotId?: string;
+  color?: string;
 
   @Expose()
+  @Type(() => ApiUserExportFontDto)
   @Transform(
-    ({ value }: { value: LanguageTypeEnum }): LanguageTypeEnum =>
-      value || LanguageTypeEnum.de,
-    {
-      toClassOnly: true,
-    },
+    ({
+      value,
+      obj: { parentUser },
+    }: {
+      obj: UserDocument;
+      value: IApiUserExportFont[];
+    }): IApiUserExportFont[] => value || parentUser?.exportFonts,
+    { toClassOnly: true },
+  )
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  exportFonts?: IApiUserExportFont[];
+
+  @Expose()
+  @Type(() => ApiMapboxStyleDto)
+  @Transform(
+    ({
+      obj: { additionalMapBoxStyles, parentUser },
+    }: {
+      obj: UserDocument;
+    }): IApiMapboxStyle[] =>
+      getUnitedMapboxStyles(
+        parentUser?.additionalMapBoxStyles,
+        additionalMapBoxStyles,
+      ),
+    { toClassOnly: true },
   )
   @IsNotEmpty()
-  @IsEnum(LanguageTypeEnum)
-  language: LanguageTypeEnum;
+  @IsArray()
+  @ValidateNested({ each: true })
+  extraMapboxStyles: IApiMapboxStyle[];
+
+  @Expose({ name: 'parentId', toClassOnly: true })
+  @Transform(({ value }: { value: boolean }): boolean => !!value, {
+    toClassOnly: true,
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  isChild: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  logo?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  mapIcon?: string;
+
+  @Expose()
+  @Type(() => ApiUserPoiIconsDto)
+  @Transform(
+    ({
+      value,
+      obj: { parentUser },
+    }: {
+      obj: UserDocument;
+      value: IApiUserPoiIcons;
+    }): IApiUserPoiIcons => value || parentUser?.poiIcons,
+    { toClassOnly: true },
+  )
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  poiIcons?: IApiUserPoiIcons;
 }
 
 export default ApiUserDto;

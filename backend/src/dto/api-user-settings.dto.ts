@@ -3,6 +3,8 @@ import { Exclude, Expose } from 'class-transformer';
 
 import { ApiUserSettings } from '@area-butler-types/types';
 
+// TODO Update the dto after moving the settings to the 'Company' entity
+
 @Exclude()
 class ApiUserSettingsDto implements ApiUserSettings {
   @Expose()
