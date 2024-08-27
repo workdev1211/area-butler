@@ -29,14 +29,12 @@ export class Company implements ICompanySchema {
   @Prop({ type: Object })
   productContingents?: TCompProdContingents;
 
-  @Prop({ type: CompanySubscriptionSchema })
+  @Prop({
+    type: CompanySubscriptionSchema,
+    get: (subscription: ICompanySubscription): ICompanySubscription =>
+      dayjs().isBefore(subscription?.expiresAt) ? subscription : undefined,
+  })
   subscription?: ICompanySubscription;
-
-  isSubscriptionActive: boolean;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
-
-CompanySchema.virtual('isSubscriptionActive').get(function (): boolean {
-  return dayjs().isBefore(this.subscription?.expiresAt);
-});

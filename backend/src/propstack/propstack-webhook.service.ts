@@ -109,7 +109,7 @@ export class PropstackWebhookService {
       return;
     }
 
-    if (isIntegrationUser && !user.isSubscriptionActive) {
+    if (isIntegrationUser && !user.subscription) {
       return;
     }
 

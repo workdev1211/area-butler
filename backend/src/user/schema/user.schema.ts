@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes } from 'mongoose';
+import { HydratedDocument, FilterQuery, SchemaTypes } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
@@ -135,6 +135,11 @@ UserSchema.virtual(SUBSCRIPTION_PATH, {
   localField: '_id',
   foreignField: 'userId',
   justOne: true,
+  match: (): FilterQuery<SubscriptionDocument> => ({
+    endsAt: { $gt: new Date() },
+  }),
+}).get(function (userSubscription: SubscriptionDocument): SubscriptionDocument {
+  return this.parentUser?.subscription || userSubscription;
 });
 
 // Left as an example

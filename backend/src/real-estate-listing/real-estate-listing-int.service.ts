@@ -161,7 +161,7 @@ export class RealEstateListingIntService {
     integrationUser: TIntegrationUserDocument,
     { actionType, integrationId }: IApiUnlockIntProductReq,
   ): Promise<void> {
-    if (integrationUser.isSubscriptionActive) {
+    if (integrationUser.subscription) {
       throw new UnprocessableEntityException();
     }
 

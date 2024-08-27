@@ -270,7 +270,7 @@ export class FetchSnapshotService {
     integrationUser: TIntegrationUserDocument,
     snapshotDoc: SearchResultSnapshotDocument,
   ): Promise<void> {
-    if (integrationUser.isSubscriptionActive) {
+    if (integrationUser.subscription) {
       return;
     }
 

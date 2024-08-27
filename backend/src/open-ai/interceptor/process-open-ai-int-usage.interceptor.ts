@@ -28,7 +28,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
 
     let realEstate: RealEstateListingDocument;
 
-    if (!integrationUser.isSubscriptionActive) {
+    if (!integrationUser.subscription) {
       realEstate =
         await this.realEstateListingIntService.findOneOrFailByIntParams({
           integrationId,
@@ -56,7 +56,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap(async (): Promise<void> => {
-        if (integrationUser.isSubscriptionActive) {
+        if (integrationUser.subscription) {
           return;
         }
 

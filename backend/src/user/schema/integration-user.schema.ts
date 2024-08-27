@@ -77,15 +77,21 @@ export class IntegrationUser implements IIntegrationUserSchema {
 
   @Prop({
     type: IntUserSubscriptionSchema,
-    get: function (subscription: IIntUserSubscription): IIntUserSubscription {
-      return this.parentUser && !this.isParent
-        ? this.parentUser.subscription
-        : subscription;
+    get: function (
+      userSubscription: IIntUserSubscription,
+    ): IIntUserSubscription {
+      const subscription =
+        this.parentUser && !this.isParent
+          ? this.parentUser.subscription
+          : userSubscription;
+
+      return dayjs().isBefore(subscription?.expiresAt)
+        ? subscription
+        : undefined;
     },
   })
   subscription?: IIntUserSubscription;
 
-  isSubscriptionActive?: boolean;
   parentUser?: TIntegrationUserDocument;
 }
 
@@ -103,10 +109,6 @@ IntegrationUserSchema.index(
 );
 
 IntegrationUserSchema.index({ updatedAt: -1 });
-
-IntegrationUserSchema.virtual('isSubscriptionActive').get(function (): boolean {
-  return dayjs().isBefore(this.subscription?.expiresAt);
-});
 
 IntegrationUserSchema.virtual(PARENT_USER_PATH, {
   ref: IntegrationUser.name,

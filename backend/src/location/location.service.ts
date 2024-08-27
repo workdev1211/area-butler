@@ -218,11 +218,11 @@ export class LocationService {
     }
 
     // Checks if Search (creating the snapshots) is available for the integration user
-    if (isIntegrationUser && !user.isSubscriptionActive) {
-      let iframeEndsAt;
-      let isOnePageExportActive;
-      let isStatsFullExportActive;
-      let openAiRequestQuantity;
+    if (isIntegrationUser && !user.subscription) {
+      let iframeEndsAt: Date | string;
+      let isOnePageExportActive: boolean;
+      let isStatsFullExportActive: boolean;
+      let openAiRequestQuantity: number;
 
       if (realEstate) {
         ({

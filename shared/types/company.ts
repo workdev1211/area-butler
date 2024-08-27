@@ -50,8 +50,6 @@ export interface ICompanyConfig {
 }
 
 export interface ICompanySchema {
-  isSubscriptionActive: boolean;
-
   config?: ICompanyConfig;
   productContingents?: TCompProdContingents;
   subscription?: ICompanySubscription;

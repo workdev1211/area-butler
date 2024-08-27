@@ -430,27 +430,7 @@ export class UserService {
   }
 
   async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
-    if (user.parentId && !user.parentUser) {
-      user.parentUser = await this.findById({
-        userId: user.parentId,
-        withAssets: true,
-        withSubscription: true,
-      });
-    }
-
-    const userObj = user.toObject();
-    let userSubscription =
-      userObj.parentUser?.subscription || userObj.subscription;
-
-    if (!userSubscription) {
-      userSubscription = (
-        await this.subscriptionService.findActiveByUserId(user.id)
-      )?.toObject();
-    }
-
-    userObj.subscription = userSubscription;
-
-    return plainToInstance(ApiUserDto, userObj, {
+    return plainToInstance(ApiUserDto, user.toObject(), {
       exposeUnsetFields: false,
     });
   }

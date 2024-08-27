@@ -18,7 +18,6 @@ export interface IIntegrationUserSchema {
 
   // OLD
   isParent?: boolean;
-  isSubscriptionActive?: boolean;
   parentId?: string;
   parentUser?: TIntegrationUserDocument;
   productContingents?: TApiIntegrationUserProductContingents;
