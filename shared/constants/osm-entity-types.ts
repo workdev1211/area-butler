@@ -109,6 +109,15 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   },
   {
     type: OsmType.amenity,
+    name: OsmName.childcare,
+    groupName: OsmName.kindergarten,
+    label: "Kinderbetreuung",
+    category: ApiOsmEntityCategory.EDUCATION,
+    uniqueRadius: 100,
+    uniqueThreshold: 0.4,
+  },
+  {
+    type: OsmType.amenity,
     name: OsmName.school,
     groupName: OsmName.school,
     label: "Schule",

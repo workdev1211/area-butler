@@ -307,6 +307,7 @@ export enum OsmName {
   pole = "pole",
   pub = "pub",
   tram_stop = "tram_stop",
+  childcare = "childcare",
 }
 
 export enum PoiGroupEnum {

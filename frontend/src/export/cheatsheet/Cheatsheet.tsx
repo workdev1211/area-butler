@@ -83,14 +83,6 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
   const particlePollutionData = props.particlePollutionData;
-  const translatedLegend = props.legend.map(({ title, ...rest }) => ({
-    ...rest,
-    title: t(
-      (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-        title
-      ]
-    ),
-  }));
 
   let page = 0;
   const nextPageNumber = (): string => {
@@ -146,9 +138,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               {responseConfig?.isDetailsShown &&
                 props.realEstateListing?.costStructure && (
                   <div>
-                    <strong>
-                      {t(IntlKeys.snapshotEditor.dataTab.costs)}:
-                    </strong>{" "}
+                    <strong>{t(IntlKeys.snapshotEditor.dataTab.costs)}:</strong>{" "}
                     {getRealEstateCost(props.realEstateListing?.costStructure)}{" "}
                     (
                     {t(
@@ -241,7 +231,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           leftHeaderElement={qrCodeElement}
         >
           <div className="ml-10 mt-3">
-            <Legend legend={translatedLegend} />
+            <Legend legend={props.legend} />
           </div>
         </PdfPage>
       )}

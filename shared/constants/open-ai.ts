@@ -26,6 +26,10 @@ export const openAiTranslationDictionary: Record<
   [OsmName.hospital]: { singular: "Krankenhaus", plural: "Krankenhäuser" },
   [OsmName.clinic]: { singular: "Spezialklinik", plural: "Spezialkliniken" },
   [OsmName.kindergarten]: { singular: "Kindergarten", plural: "Kindergärten" },
+  [OsmName.childcare]: {
+    singular: "Kindertagestätte",
+    plural: "Kindertagesstätten",
+  },
   [OsmName.motorway_link]: {
     singular: "Autobahnauffahrt",
     plural: "Autobahnauffahrten",
