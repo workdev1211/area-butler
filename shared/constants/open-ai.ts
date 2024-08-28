@@ -23,7 +23,7 @@ export const openAiTranslationDictionary: Record<
     plural: "Fitnessstudios",
   },
   [OsmName.fuel]: { singular: "Tankstelle", plural: "Tankstellen" },
-  [OsmName.hospital]: { singular: "Krankenhaus", plural: "Krankenhäuser" },
+  [OsmName.hospital]: { singular: "Klink", plural: "Klinken" },
   [OsmName.clinic]: { singular: "Spezialklinik", plural: "Spezialkliniken" },
   [OsmName.kindergarten]: { singular: "Kindergarten", plural: "Kindergärten" },
   [OsmName.childcare]: {

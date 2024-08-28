@@ -223,7 +223,7 @@ export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
     ],
   },
   {
-    name: 'XXXXX ex pragmatische Mitte',
+    name: 'Bürgerliche Haushalte',
     routingProfiles: [
       {
         type: MeansOfTransportation.WALK,
