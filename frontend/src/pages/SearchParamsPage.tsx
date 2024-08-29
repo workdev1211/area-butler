@@ -492,7 +492,6 @@ const SearchParamsPage: FC = () => {
             onClick={async () => {
               if (checkIsFeatAvailable(FeatureTypeEnum.SEARCH)) {
                 await performAnalysis();
-                return;
               }
 
               if (isIntegrationUser) {
