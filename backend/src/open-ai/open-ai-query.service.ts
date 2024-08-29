@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotResponse,
+  LanguageTypeEnum,
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
@@ -83,7 +84,14 @@ export class OpenAiQueryService {
     const {
       snapshotRes: { snapshot, config = { ...defaultSnapshotConfig } },
       targetGroupName = defaultTargetGroupName,
+      language,
     } = queryParams;
+
+    queryParams.language = (
+      queryParams.snapshotRes.config.language ||
+      language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     return (
       `Du bist ein erfahrener Immobilienmakler. Schreibe eine werbliche Lagebeschreibung für eine Wohnimmobilie` +
@@ -110,7 +118,14 @@ export class OpenAiQueryService {
       realEstate,
       snapshotRes: { config },
       targetGroupName = defaultTargetGroupName,
+      language,
     } = locRealEstDescQueryParams;
+
+    locRealEstDescQueryParams.language = (
+      locRealEstDescQueryParams.snapshotRes.config.language ||
+      language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse` +
@@ -120,6 +135,7 @@ export class OpenAiQueryService {
     return this.getLocRealEstDesc(user, initialText, locRealEstDescQueryParams);
   }
 
+  // TODO translate this also
   getRealEstDescQuery(queryParams: IRealEstDescQueryParams): string {
     const {
       realEstate,
@@ -165,11 +181,19 @@ export class OpenAiQueryService {
       realEstate,
       snapshotRes: { config },
       targetGroupName = defaultTargetGroupName,
+      language,
     } = locRealEstDescQueryParams;
+
+    const lang = (
+      locRealEstDescQueryParams.snapshotRes.config.language ||
+      language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe einen für Facebook optimierten social media Post für unser Objekt` +
       (config.showAddress ? ` an der Adresse ${realEstate.address}.` : '.') +
+      `verwende als Ausgabesprache ${lang} (BCP 47)` +
       `Der Text soll ${targetGroupName} ansprechen. Verwende Emoticons aber sehr sparsam. Verzichte auf Übertreibungen, Beschönigungen. Strukturierte den Post in Abschnitte. Vermeide Referenzierungen und Quellenangaben.`;
 
     return this.getLocRealEstDesc(user, initialText, locRealEstDescQueryParams);
@@ -183,11 +207,19 @@ export class OpenAiQueryService {
       realEstate,
       snapshotRes: { config },
       targetGroupName = defaultTargetGroupName,
+      language,
     } = locRealEstDescQueryParams;
+    
+    const lang = (
+      locRealEstDescQueryParams.snapshotRes.config.language ||
+      language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe eine Instagram Caption für unser Objekt an der Adresse` +
       (config.showAddress ? ` an der Adresse ${realEstate.address}.` : '.') +
+      `verwende als Ausgabesprache ${lang} (BCP 47)` +
       `Der Text soll ${targetGroupName} ansprechen. Verwende Emoticons aber sehr sparsam. Verzichte auf Übertreibungen, Beschönigungen. Strukturierte den Post in Abschnitte. Vermeide Referenzierungen und Quellenangaben.`;
 
     return this.getLocRealEstDesc(user, initialText, locRealEstDescQueryParams);
@@ -199,6 +231,12 @@ export class OpenAiQueryService {
   ): Promise<string> {
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
+    
+    const lang = (
+      locDescQueryParams.snapshotRes.config.language ||
+      locDescQueryParams.language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     const initialText = `Führe eine umfangreiche Online-Recherche durchführen, um eine detaillierte und präzise Makrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
@@ -207,6 +245,7 @@ Der Text soll:
 - keine Sonderzeichen oder Emoticons verwenden.
 - keine Referenzierungen und Quellenangaben enthalten.
 - Do not include any explanation
+- verwende als Ausgabesprache ${lang} (BCP 47)
 
 **Inhalt der Makrolagenbeschreibung**:
 
@@ -271,6 +310,12 @@ Zudem verwende diese vom AreaButler generierten Daten:
   ): Promise<string> {
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
+    
+    const lang = (
+      locDescQueryParams.snapshotRes.config.language ||
+      locDescQueryParams.language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     const initialText = `Führe eine umfangreiche Online-Recherche durch, um eine detaillierte und präzise Mikrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
@@ -278,6 +323,7 @@ Der Text soll:
 - keine Sonderzeichen oder Emoticons verwenden.
 - keine Referenzierungen und Quellenangaben enthalten.
 - Do not include any explanation
+- verwende als Ausgabesprache ${lang} (BCP 47)
 
 Die Beschreibung sollte folgende Punkte umfassen:
 
@@ -345,11 +391,18 @@ Zudem verwende diese vom AreaButler generierten Daten:
         snapshot: {
           placesLocation: { label: address },
         },
+        config
       },
       targetGroupName = defaultTargetGroupName,
       textLength = OpenAiTextLengthEnum.MEDIUM,
       tonality,
+      language
     } = locDescQueryParams;
+    const lang = (
+      config.language ||
+      language ||
+      LanguageTypeEnum.de
+    ).toUpperCase();
 
     const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse ${address} liegt. Der Name des Stadtteils soll im Text genannt werden. Der Text soll die Zielgruppe ${targetGroupName} ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.
 
@@ -363,6 +416,8 @@ Der Text soll:
 - darlegen, warum dieser Stadtteil für diese Zielgruppe optimal ist.
 - Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen.
 - Do not include any explanation
+- verwende als Ausgabesprache ${lang} (BCP 47)
+
 
 Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe ${targetGroupName} für diesen Stadtteil:
 
