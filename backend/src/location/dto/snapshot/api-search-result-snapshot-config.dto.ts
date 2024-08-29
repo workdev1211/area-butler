@@ -17,7 +17,8 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   IApiSnapshotConfigRealEstSettings,
   IApiSnapshotIconSizes,
-  IApiSnapshotPoiFilter, LanguageTypeEnum,
+  IApiSnapshotPoiFilter,
+  LanguageTypeEnum,
   MeansOfTransportation,
   OsmName,
   PoiGroupEnum,
@@ -174,7 +175,6 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsEnum(LanguageTypeEnum)
   language?: LanguageTypeEnum;
-  
 
   @Expose()
   @IsOptional()

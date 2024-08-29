@@ -37,7 +37,7 @@ export const QrCode: FC<IQrCodeProps> = ({
   imageClasses = "h-20",
   outputLanguage,
 }) => {
-  const { t } = useTranslation('', { lng: outputLanguage });
+  const { t } = useTranslation("", { lng: outputLanguage });
   const { createDirectLink } = useTools();
   const [qrCodeImage, setQrCodeImage] = useState<string>();
 

@@ -73,7 +73,7 @@ export const IntlKeys = {
       nl: "common.languages.nl",
       it: "common.languages.it",
       es: "common.languages.es",
-    }
+    },
   },
 
   imageUpload: {

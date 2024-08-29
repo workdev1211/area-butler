@@ -209,7 +209,7 @@ export class OpenAiQueryService {
       targetGroupName = defaultTargetGroupName,
       language,
     } = locRealEstDescQueryParams;
-    
+
     const lang = (
       locRealEstDescQueryParams.snapshotRes.config.language ||
       language ||
@@ -231,7 +231,7 @@ export class OpenAiQueryService {
   ): Promise<string> {
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
-    
+
     const lang = (
       locDescQueryParams.snapshotRes.config.language ||
       locDescQueryParams.language ||
@@ -310,7 +310,7 @@ Zudem verwende diese vom AreaButler generierten Daten:
   ): Promise<string> {
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
-    
+
     const lang = (
       locDescQueryParams.snapshotRes.config.language ||
       locDescQueryParams.language ||
@@ -391,12 +391,12 @@ Zudem verwende diese vom AreaButler generierten Daten:
         snapshot: {
           placesLocation: { label: address },
         },
-        config
+        config,
       },
       targetGroupName = defaultTargetGroupName,
       textLength = OpenAiTextLengthEnum.MEDIUM,
       tonality,
-      language
+      language,
     } = locDescQueryParams;
     const lang = (
       config.language ||

@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./EntityTable.scss";
 
@@ -10,7 +10,10 @@ import {
   PollutionData,
 } from "map-menu/data-tab/data/ParticlePollutionTable";
 import { deriveColorPalette } from "shared/shared.functions";
-import { ApiGeojsonFeature, LanguageTypeEnum } from "../../../shared/types/types";
+import {
+  ApiGeojsonFeature,
+  LanguageTypeEnum,
+} from "../../../shared/types/types";
 
 interface IPartPollutSumProps {
   particlePollutionData?: ApiGeojsonFeature[];
@@ -56,7 +59,10 @@ const ParticlePollutionSummary: FunctionComponent<IPartPollutSumProps> = ({
             <td>{averageParticlePollution.mean} g/m3</td>
           </tr>
           <tr key="pollution-table-days-above-threshold">
-            <td>{t(IntlKeys.snapshotEditor.environmentInfo.daysAboveLimit)} (50 g/m3)</td>
+            <td>
+              {t(IntlKeys.snapshotEditor.environmentInfo.daysAboveLimit)} (50
+              g/m3)
+            </td>
             <td>{pollutionData.daysAboveThreshold}</td>
             <td>{averageParticlePollution.daysAboveThreshold}</td>
           </tr>

@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { getRealEstateCost } from "../../../../shared/real-estate.functions";
 import { allRealEstateCostTypes } from "../../../../../../shared/constants/real-estate";
@@ -21,7 +21,7 @@ const OnePageLogoAddress: FunctionComponent<IOnePageLogoAddressProps> = ({
   realEstateListing,
   listingAddress,
 }) => {
-  const { t } = useTranslation('', { lng: snapshotConfig.language });
+  const { t } = useTranslation("", { lng: snapshotConfig.language });
   return (
     <div className="flex flex-col gap-1.5">
       <img className="self-start h-14" src={logo} alt="Logo" />

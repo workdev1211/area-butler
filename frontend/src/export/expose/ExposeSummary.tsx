@@ -1,7 +1,7 @@
 import { FC, useContext } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import EntityGridSummary from "export/EntityGridSummary";
 import { deriveColorPalette } from "shared/shared.functions";
@@ -47,9 +47,9 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
   primaryColor,
   qrCode,
   isFirstPage,
-  outputLanguage
+  outputLanguage,
 }) => {
-  const { t } = useTranslation('', { lng: outputLanguage });
+  const { t } = useTranslation("", { lng: outputLanguage });
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
@@ -86,17 +86,31 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
                         key={routingProfile.type}
                       >
                         <span>
-                          {
-                            t((IntlKeys.common.transportationTypes as Record<string, string>)[meansOfTransportations.find(
-                              (means) => means.type === routingProfile.type
-                            )?.type || ''])
-                          }{" "}
+                          {t(
+                            (
+                              IntlKeys.common.transportationTypes as Record<
+                                string,
+                                string
+                              >
+                            )[
+                              meansOfTransportations.find(
+                                (means) => means.type === routingProfile.type
+                              )?.type || ""
+                            ]
+                          )}{" "}
                           ({routingProfile.amount}{" "}
-                          {
-                            t((IntlKeys.common.transportationUnits as Record<string, string>)[unitsOfTransportation.find(
-                              (unit) => unit.type === routingProfile.unit
-                            )?.type || ''])
-                          }
+                          {t(
+                            (
+                              IntlKeys.common.transportationUnits as Record<
+                                string,
+                                string
+                              >
+                            )[
+                              unitsOfTransportation.find(
+                                (unit) => unit.type === routingProfile.unit
+                              )?.type || ""
+                            ]
+                          )}
                           )
                         </span>
                       </div>
@@ -118,14 +132,23 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
                   {responseConfig?.isDetailsShown &&
                     realEstateListing?.costStructure && (
                       <div className="text-justify">
-                        <strong>{t(IntlKeys.snapshotEditor.dataTab.costs)}:</strong>{" "}
+                        <strong>
+                          {t(IntlKeys.snapshotEditor.dataTab.costs)}:
+                        </strong>{" "}
                         {getRealEstateCost(realEstateListing?.costStructure)} (
-                        {
-                          t((IntlKeys.realEstate.costTypes as Record<string, string>)[allRealEstateCostTypes.find(
-                            (t) =>
-                              t.type === realEstateListing.costStructure?.type
-                          )?.type || ''])
-                        }
+                        {t(
+                          (
+                            IntlKeys.realEstate.costTypes as Record<
+                              string,
+                              string
+                            >
+                          )[
+                            allRealEstateCostTypes.find(
+                              (t) =>
+                                t.type === realEstateListing.costStructure?.type
+                            )?.type || ""
+                          ]
+                        )}
                         )
                       </div>
                     )}

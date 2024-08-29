@@ -19,7 +19,6 @@ export const OnePage = forwardRef<unknown, IOnePageDownProps>(
       realEstateListing,
       color,
       logo,
-      legend,
       mapClippings,
       qrCodeImage,
       snapshotConfig,

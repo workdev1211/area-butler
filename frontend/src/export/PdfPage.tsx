@@ -1,10 +1,10 @@
 import { FunctionComponent, CSSProperties, ReactNode } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import areaButlerLogo from "../assets/img/logo.svg";
-import { LanguageTypeEnum } from '../../../shared/types/types';
+import { LanguageTypeEnum } from "../../../shared/types/types";
 
 interface IPdfPageProps {
   nextPageNumber?: () => string;

@@ -1,13 +1,13 @@
 import { FunctionComponent } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./EntityTable.scss";
 import { deriveColorPalette } from "shared/shared.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { averageCensusData } from "../../../shared/constants/data-provision";
-import { LanguageTypeEnum } from '../../../shared/types/types';
+import { LanguageTypeEnum } from "../../../shared/types/types";
 
 interface ICensusSummaryProps {
   censusData: TCensusData;
@@ -18,7 +18,7 @@ interface ICensusSummaryProps {
 export const CensusSummary: FunctionComponent<ICensusSummaryProps> = ({
   censusData,
   primaryColor = "#aa0c54",
-  outputLanguage
+  outputLanguage,
 }) => {
   const { t } = useTranslation("", { lng: outputLanguage });
   const censusCenter =

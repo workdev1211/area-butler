@@ -371,7 +371,11 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
               </div>
               {qrCode && isShownQrCode && (
                 <div className="qrCodeContainer">
-                  <MapClipQrCode language={outputLanguage} qrCodeImage={qrCode} color={color} />
+                  <MapClipQrCode
+                    language={outputLanguage}
+                    qrCodeImage={qrCode}
+                    color={color}
+                  />
                 </div>
               )}
               {isShownLegend && entityGroups.length && (

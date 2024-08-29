@@ -6,7 +6,7 @@ import { PdfPage } from "./PdfPage";
 import { QrCode } from "./QrCode";
 import { IQrCodeState } from "../../../shared/types/export";
 import { IntlKeys } from "i18n/keys";
-import { LanguageTypeEnum } from '../../../shared/types/types';
+import { LanguageTypeEnum } from "../../../shared/types/types";
 
 interface IMapClippingsProps {
   mapClippings: ISelectableMapClipping[];
@@ -21,7 +21,7 @@ export const MapClippings: FC<IMapClippingsProps> = ({
   logo,
   nextPageNumber = () => "01",
   qrCode,
-  outputLanguage
+  outputLanguage,
 }) => {
   const { t } = useTranslation("", { lng: outputLanguage });
 
@@ -53,7 +53,9 @@ export const MapClippings: FC<IMapClippingsProps> = ({
           logo={logo}
           title={t(IntlKeys.snapshotEditor.dataTab.mapSection)}
           key={pairIndex}
-          leftHeaderElement={qrCode.isShownQrCode && <QrCode outputLanguage={outputLanguage} />}
+          leftHeaderElement={
+            qrCode.isShownQrCode && <QrCode outputLanguage={outputLanguage} />
+          }
         >
           <div id="expose-map-clippings" className="m-10 flex flex-col gap-10">
             {pair.map((clipping, clippingIndex) => (
