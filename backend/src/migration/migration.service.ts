@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery, Query } from 'mongoose';
+import { Model, FilterQuery, Query, HydratedDocument } from 'mongoose';
 
 import { Company, TCompanyDocument } from '../company/schema/company.schema';
 import { User, UserDocument } from '../user/schema/user.schema';
@@ -16,27 +16,31 @@ import {
   IApiIntUserPropstackParams,
 } from '@area-butler-types/integration-user';
 
-interface IBulkProcMainParams<T> {
+interface IBulkProcMainParams<T extends HydratedDocument<unknown>> {
   findQuery: Query<T[], T>;
-  model: Model<T>;
   total: number;
 }
 
-type TBulkProcessParams<T> = IBulkProcMainParams<T> &
-  (
-    | {
-        processDocument: (doc: T) => object;
-        processDocumentAsync?: never;
-      }
-    | {
-        processDocument?: never;
-        processDocumentAsync: (doc: T) => Promise<object>;
-      }
-  );
+type TBulkProcessParams<T extends HydratedDocument<unknown>> =
+  IBulkProcMainParams<T> & {
+    model: Model<T>;
+  } & (
+      | {
+          processDocument: (doc: T) => object;
+          processDocumentAsync?: never;
+        }
+      | {
+          processDocument?: never;
+          processDocumentAsync: (doc: T) => Promise<object>;
+        }
+    );
 
-type TBatchProcessParams<T> = IBulkProcMainParams<T> & {
-  processDocumentAsync: (doc: T) => Promise<object>;
-};
+type TBatchProcessParams<T extends HydratedDocument<unknown>> =
+  IBulkProcMainParams<T> & {
+    processDocumentAsync: (doc: T) => Promise<void>;
+  };
+
+const BATCH_LIMIT = 100;
 
 @Injectable()
 export class MigrationService {
@@ -56,43 +60,15 @@ export class MigrationService {
 
     // WebApp users
 
-    const processParentUser = async (user: UserDocument): Promise<object> => {
-      // Left for the future iteration
-      // const {
-      //   additionalMapBoxStyles,
-      //   allowedCountries,
-      //   color,
-      //   exportFonts,
-      //   logo,
-      //   mapboxAccessToken,
-      //   mapIcon,
-      //   poiIcons,
-      //   templateSnapshotId,
-      // } = user.toObject();
+    const processParentUser = async (user: UserDocument): Promise<void> => {
+      const { id: companyId } = await this.companyModel.create({});
 
-      const { id: companyId } = await this.companyModel.create({
-        // Left for the future iteration
-        // config: {
-        //   allowedCountries,
-        //   color,
-        //   exportFonts,
-        //   logo,
-        //   mapboxAccessToken,
-        //   mapIcon,
-        //   poiIcons,
-        //   templateSnapshotId,
-        //   extraMapboxStyles: additionalMapBoxStyles,
-        // },
-      });
-
-      return {
-        updateOne: {
-          filter: { _id: user._id },
-          update: {
-            $set: { companyId },
-          },
+      await this.userModel.updateOne(
+        { _id: user._id },
+        {
+          $set: { companyId },
         },
-      };
+      );
     };
 
     const parentUserFilter: FilterQuery<UserDocument> = {
@@ -102,26 +78,23 @@ export class MigrationService {
       ],
     };
 
-    await this.bulkProcess<UserDocument>({
+    await this.batchProcess<UserDocument>({
       findQuery: this.userModel.find(parentUserFilter, { id: 1 }),
-      model: this.userModel,
       processDocumentAsync: processParentUser,
       total: await this.userModel.count(parentUserFilter),
     });
 
-    const processChildUser = (user: UserDocument): object => {
+    const processChildUser = async (user: UserDocument): Promise<void> => {
       const {
         parentUser: { companyId },
       } = user.toObject();
 
-      return {
-        updateOne: {
-          filter: { _id: user._id },
-          update: {
-            $set: { companyId },
-          },
+      await this.userModel.updateOne(
+        { _id: user._id },
+        {
+          $set: { companyId },
         },
-      };
+      );
     };
 
     const childUserFilter: FilterQuery<UserDocument> = {
@@ -131,12 +104,11 @@ export class MigrationService {
       ],
     };
 
-    await this.bulkProcess<UserDocument>({
+    await this.batchProcess<UserDocument>({
       findQuery: this.userModel
         .find(childUserFilter, { parentId: 1 })
         .populate(PARENT_USER_PATH, { companyId: 1 }),
-      model: this.userModel,
-      processDocument: processChildUser,
+      processDocumentAsync: processChildUser,
       total: await this.userModel.count(childUserFilter),
     });
 
@@ -144,10 +116,8 @@ export class MigrationService {
 
     const processParentIntUser = async (
       integrationUser: TIntegrationUserDocument,
-    ): Promise<object> => {
-      const { config, integrationType, parameters } =
-        integrationUser.toObject();
-
+    ): Promise<void> => {
+      const { integrationType, parameters } = integrationUser.toObject();
       let integrationParams: ICompanyIntParams;
 
       switch (integrationType) {
@@ -177,43 +147,16 @@ export class MigrationService {
         }
       }
 
-      // Left for the future iteration
-      // const {
-      //   allowedCountries,
-      //   color,
-      //   exportMatching,
-      //   extraMapboxStyles,
-      //   isSpecialLink,
-      //   logo,
-      //   mapboxAccessToken,
-      //   mapIcon,
-      //   templateSnapshotId,
-      // } = config;
-
       const { id: companyId } = await this.companyModel.create({
         integrationParams,
-        // Left for the future iteration
-        // config: {
-        //   allowedCountries,
-        //   color,
-        //   exportMatching,
-        //   extraMapboxStyles,
-        //   isSpecialLink,
-        //   logo,
-        //   mapboxAccessToken,
-        //   mapIcon,
-        //   templateSnapshotId,
-        // },
       });
 
-      return {
-        updateOne: {
-          filter: { _id: integrationUser._id },
-          update: {
-            $set: { companyId },
-          },
+      await this.integrationUserModel.updateOne(
+        { _id: integrationUser._id },
+        {
+          $set: { companyId },
         },
-      };
+      );
     };
 
     const parentIntUserFilter: FilterQuery<TIntegrationUserDocument> = {
@@ -223,31 +166,28 @@ export class MigrationService {
       ],
     };
 
-    await this.bulkProcess<TIntegrationUserDocument>({
+    await this.batchProcess<TIntegrationUserDocument>({
       findQuery: this.integrationUserModel.find(parentIntUserFilter, {
         integrationType: 1,
         parameters: 1,
       }),
-      model: this.integrationUserModel,
       processDocumentAsync: processParentIntUser,
       total: await this.integrationUserModel.count(parentIntUserFilter),
     });
 
-    const processChildIntUser = (
+    const processChildIntUser = async (
       integrationUser: TIntegrationUserDocument,
-    ): object => {
+    ): Promise<void> => {
       const {
         parentUser: { companyId },
       } = integrationUser.toObject();
 
-      return {
-        updateOne: {
-          filter: { _id: integrationUser._id },
-          update: {
-            $set: { companyId },
-          },
+      await this.integrationUserModel.updateOne(
+        { _id: integrationUser._id },
+        {
+          $set: { companyId },
         },
-      };
+      );
     };
 
     const childIntUserFilter: FilterQuery<TIntegrationUserDocument> = {
@@ -257,49 +197,61 @@ export class MigrationService {
       ],
     };
 
-    await this.bulkProcess<TIntegrationUserDocument>({
+    await this.batchProcess<TIntegrationUserDocument>({
       findQuery: this.integrationUserModel
         .find(childIntUserFilter, { parentId: 1 })
         .populate(PARENT_USER_PATH, { companyId: 1 }),
-      model: this.integrationUserModel,
-      processDocument: processChildIntUser,
+      processDocumentAsync: processChildIntUser,
       total: await this.integrationUserModel.count(childIntUserFilter),
     });
 
     this.logger.log(`${this.createCompanies.name} migration finished.`);
   }
 
-  private async batchProcess<T>({
+  private async batchProcess<T extends HydratedDocument<unknown>>({
     findQuery,
     processDocumentAsync,
     total,
   }: TBatchProcessParams<T>): Promise<void> {
-    const limit = 20;
+    this.logger.log(`Batch processing of ${total} documents has started.`);
+    const limit = BATCH_LIMIT;
 
     for (let i = 0; i < total; i += limit) {
+      this.logger.log(`Batch processing documents from ${i} to ${i + limit}.`);
       const docs = await findQuery.limit(limit).skip(i).clone();
 
       for (const doc of docs) {
+        this.logger.log(
+          `Batch processing ${doc.id} document ('${doc.collection.name}' collection).`,
+        );
+
         await processDocumentAsync(doc);
       }
     }
+
+    this.logger.log(`Batch processing of ${total} documents has finished.`);
   }
 
-  private async bulkProcess<T>({
+  private async bulkProcess<T extends HydratedDocument<unknown>>({
     findQuery,
     model,
     processDocument,
     processDocumentAsync,
     total,
   }: TBulkProcessParams<T>): Promise<void> {
-    const limit = 20;
+    this.logger.log(`Bulk processing of ${total} documents has started.`);
+    const limit = BATCH_LIMIT;
 
     for (let i = 0; i < total; i += limit) {
+      this.logger.log(`Bulk processing documents from ${i} to ${i + limit}.`);
       const bulkOperations = [];
-
       const docs = await findQuery.limit(limit).skip(i).clone();
 
       for (const doc of docs) {
+        this.logger.log(
+          `Bulk processing ${doc.id} document ('${doc.collection.name}' collection).`,
+        );
+
         bulkOperations.push(
           processDocument
             ? processDocument(doc)
@@ -309,5 +261,7 @@ export class MigrationService {
 
       await model.bulkWrite(bulkOperations);
     }
+
+    this.logger.log(`Bulk processing of ${total} documents has finished.`);
   }
 }

@@ -7,7 +7,8 @@ import { HttpService } from '@nestjs/axios';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 import { firstValueFrom } from 'rxjs';
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery } from 'mongoose';
+import structuredClone from '@ungap/structured-clone';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
@@ -493,11 +494,9 @@ export class PropstackService {
       return;
     }
 
+    const updateQuery: UpdateQuery<TIntegrationUserDocument> = { $set: {} };
     const parsedBrokerId = parseInt(brokerId, 10);
-    const intUserParams =
-      integrationUser.parameters as IApiIntUserPropstackParams;
-    intUserParams.brokerId = parsedBrokerId;
-    integrationUser.markModified('parameters.brokerId');
+    updateQuery.$set['parameters.brokerId'] = parsedBrokerId;
 
     const {
       email,
@@ -527,17 +526,14 @@ export class PropstackService {
       });
 
       if (logoData) {
-        integrationUser.config.logo = convertBase64ContentToUri(
+        updateQuery.$set['config.logo'] = convertBase64ContentToUri(
           Buffer.from(logoData).toString('base64'),
         );
-
-        integrationUser.markModified('config.logo');
       }
     }
 
     if (shop?.color) {
-      integrationUser.config.color = shop.color;
-      integrationUser.markModified('config.color');
+      updateQuery.$set['config.color'] = shop.color;
     }
 
     const broker: IApiPropstackStoredBroker = {
@@ -546,23 +542,29 @@ export class PropstackService {
       email: publicEmail || email,
     };
 
-    if (!intUserParams.brokers) {
-      intUserParams.brokers = [];
-    }
-
-    const storedBroker = intUserParams.brokers.find(
+    const storedBrokers = (
+      integrationUser.parameters as IApiIntUserPropstackParams
+    ).brokers;
+    const brokers: IApiPropstackStoredBroker[] = storedBrokers?.length
+      ? structuredClone(storedBrokers)
+      : [];
+    const storedBroker = brokers.find(
       ({ brokerId: storedBrokerId }) => storedBrokerId === parsedBrokerId,
     );
 
     if (storedBroker) {
       Object.assign(storedBroker, broker);
     } else {
-      intUserParams.brokers.push(broker);
+      brokers.push(broker);
     }
 
-    integrationUser.markModified('parameters.brokers');
+    updateQuery.$set['parameters.brokers'] = brokers;
 
-    return integrationUser.save();
+    return this.integrationUserService.findOneAndUpdate(
+      this.integrationType,
+      { _id: integrationUser._id },
+      updateQuery,
+    );
   }
 
   static encryptAccessToken(apiKey: string): string {

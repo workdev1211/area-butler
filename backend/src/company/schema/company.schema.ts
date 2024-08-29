@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { CompanyConfigSchema } from './company-config.schema';
@@ -12,7 +12,7 @@ import {
   TCompProdContingents,
 } from '@area-butler-types/company';
 
-export type TCompanyDocument = Company & Document;
+export type TCompanyDocument = HydratedDocument<Company>;
 
 @Schema({
   timestamps: true,

@@ -53,13 +53,11 @@ export class IntegrationUserController {
   @ApiProperty({ description: "Update the user's config" })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('config')
-  async updateConfig(
+  updateConfig(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() config: ApiIntegrationUserConfigDto,
-  ): Promise<IApiIntegrationUser> {
-    return this.convertIntUserToApiIntUser(
-      await this.integrationUserService.updateConfig(integrationUser, config),
-    );
+  ): void {
+    void this.integrationUserService.updateConfig(integrationUser, config);
   }
 
   private async convertIntUserToApiIntUser(

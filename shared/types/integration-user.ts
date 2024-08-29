@@ -15,12 +15,12 @@ import { TCompanyDocument } from "../../backend/src/company/schema/company.schem
 
 export interface IIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
-  companyId: string;
   config: IIntUserConfig;
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
 
   company?: TCompanyDocument;
+  companyId?: string;
   parameters?: TApiIntegrationUserParameters;
 
   // OLD

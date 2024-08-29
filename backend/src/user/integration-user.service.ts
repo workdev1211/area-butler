@@ -154,15 +154,23 @@ export class IntegrationUserService {
   }
 
   updateConfig(
-    integrationUser: TIntegrationUserDocument,
+    { _id: intUserDbId }: TIntegrationUserDocument,
     config: Partial<IIntUserConfig>,
-  ): Promise<TIntegrationUserDocument> {
-    Object.keys(config).forEach((key) => {
-      // 'set' is used because we update properties of a nested object
-      integrationUser.set(`config.${key}`, config[key] || undefined);
+  ): void {
+    const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
+      $set: {},
+      $unset: {},
+    };
+
+    Object.entries(config).forEach(([key, value]) => {
+      if (value) {
+        updateQuery.$set[`config.${key}`] = value;
+      } else {
+        updateQuery.$unset[`config.${key}`] = 1;
+      }
     });
 
-    return integrationUser.save();
+    void this.integrationUserModel.updateOne({ _id: intUserDbId }, updateQuery);
   }
 
   bulkWrite(writes: any[]): Promise<BulkWriteResult> {

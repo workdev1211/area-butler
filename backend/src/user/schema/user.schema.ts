@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes } from 'mongoose';
+import { HydratedDocument, SchemaTypes } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
@@ -24,7 +24,7 @@ import {
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 
-export type UserDocument = User & Document;
+export type UserDocument = HydratedDocument<User>;
 
 @Schema({
   toJSON: { getters: true, virtuals: true },

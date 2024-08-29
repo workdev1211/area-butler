@@ -17,7 +17,7 @@ export class MigrationController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Create companies' })
   @Post('create-companies')
-  setCompanyConfigs(): void {
+  createCompanies(): void {
     void this.migrationService.createCompanies();
   }
 }
