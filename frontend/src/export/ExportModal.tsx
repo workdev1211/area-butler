@@ -42,8 +42,12 @@ const ExportModal: FC<IExportModalProps> = ({
 }) => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
+  const outputLanguage = searchContextState.responseConfig?.language;
 
   const { t } = useTranslation();
+  const { t: outputT } = useTranslation("", {
+    lng: outputLanguage,
+  });
   const { getActualUser } = useTools();
 
   const user = getActualUser();
@@ -87,11 +91,20 @@ const ExportModal: FC<IExportModalProps> = ({
 
   const entityGroups: EntityGroup[] = useMemo(
     () =>
-      searchContextState.entityGroupsByActMeans.filter(
-        ({ name, items }: EntityGroup) =>
-          name !== OsmName.property && items.length > 0
-      ),
-    [searchContextState.entityGroupsByActMeans]
+      searchContextState.entityGroupsByActMeans
+        .filter(
+          ({ name, items }: EntityGroup) =>
+            name !== OsmName.property && items.length > 0
+        )
+        .map((entity) => ({
+          ...entity,
+          title: outputT(
+            (
+              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+            )[entity.name]
+          ),
+        })),
+    [outputT, searchContextState.entityGroupsByActMeans]
   );
 
   const [filteredEntities, setFilteredEntities] =
@@ -128,7 +141,18 @@ const ExportModal: FC<IExportModalProps> = ({
   }, []);
 
   useEffect(() => {
-    setLegend(getFilteredLegend(filteredEntities));
+    setLegend(
+      getFilteredLegend(
+        filteredEntities.map((entity) => ({
+          ...entity,
+          title: outputT(
+            (
+              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+            )[entity.name]
+          ),
+        }))
+      )
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredEntities]);
 
@@ -248,9 +272,9 @@ const ExportModal: FC<IExportModalProps> = ({
                   isTrial={isTrial}
                   legend={legend}
                   qrCode={qrCodeState}
+                  outputLanguage={outputLanguage}
                 />
               )}
-
               {exportType === ExportTypeEnum.CHEATSHEET && (
                 <CheatsheetDownload
                   groupedEntries={filteredEntities!}
@@ -277,9 +301,9 @@ const ExportModal: FC<IExportModalProps> = ({
                   isTrial={isTrial}
                   legend={legend}
                   qrCode={qrCodeState}
+                  outputLanguage={outputLanguage}
                 />
               )}
-
               {exportType === ExportTypeEnum.EXPOSE_DOCX && (
                 <DocxExpose
                   activeMeans={activeMeans}

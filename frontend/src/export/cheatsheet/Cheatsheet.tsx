@@ -13,6 +13,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
+  LanguageTypeEnum,
   OsmName,
   TransportationParam,
 } from "../../../../shared/types/types";
@@ -45,17 +46,22 @@ interface ICheatsheetProps {
   legend: ILegendItem[];
   qrCode: IQrCodeState;
   style: string;
+  outputLanguage: LanguageTypeEnum;
 }
 
 const chunkSize = 25;
 
 export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("", { lng: props.outputLanguage });
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
 
-  const qrCodeElement = props.qrCode.isShownQrCode ? <QrCode /> : <div />;
+  const qrCodeElement = props.qrCode.isShownQrCode ? (
+    <QrCode outputLanguage={props.outputLanguage} />
+  ) : (
+    <div />
+  );
 
   const filteredGroups = props.groupedEntries.filter(
     (group: EntityGroup) =>
@@ -112,6 +118,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       )}
 
       <PdfPage
+        outputLanguage={props.outputLanguage}
         title={t(IntlKeys.snapshotEditor.dataTab.summary)}
         logo={props.logo}
         nextPageNumber={nextPageNumber}
@@ -192,6 +199,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       {chunkedGroupes.length > 1 &&
         chunkedGroupes.slice(1).map((chunk, i) => (
           <PdfPage
+            outputLanguage={props.outputLanguage}
             title={t(IntlKeys.snapshotEditor.dataTab.summary)}
             logo={props.logo}
             nextPageNumber={nextPageNumber}
@@ -216,6 +224,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
       {mapClippings.length > 0 && (
         <MapClippings
+          outputLanguage={props.outputLanguage}
           mapClippings={mapClippings}
           logo={props.logo}
           nextPageNumber={nextPageNumber}
@@ -225,6 +234,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
       {mapClippings.length > 0 && props.legend.length > 0 && (
         <PdfPage
+          outputLanguage={props.outputLanguage}
           nextPageNumber={nextPageNumber}
           logo={props.logo}
           title={t(IntlKeys.snapshotEditor.dataTab.cardLegend)}
@@ -238,6 +248,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
       {(censusData || federalElectionData || particlePollutionData) && (
         <PdfPage
+          outputLanguage={props.outputLanguage}
           title={t(IntlKeys.snapshotEditor.dataTab.insights)}
           logo={props.logo}
           nextPageNumber={nextPageNumber}
@@ -251,6 +262,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               <CensusSummary
                 primaryColor={props.color}
                 censusData={censusData}
+                outputLanguage={props.outputLanguage}
               />
             </>
           )}
@@ -263,6 +275,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               <FederalElectionSummary
                 primaryColor={props.color}
                 federalElectionDistrict={federalElectionData}
+                outputLanguage={props.outputLanguage}
               />
             </>
           )}
@@ -278,6 +291,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               <ParticlePollutionSummary
                 primaryColor={props.color}
                 particlePollutionData={particlePollutionData}
+                outputLanguage={props.outputLanguage}
               />
             </>
           )}

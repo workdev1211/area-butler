@@ -1,7 +1,7 @@
 import { FunctionComponent, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import ReactToPrint from "react-to-print";
 
@@ -10,6 +10,7 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
+  LanguageTypeEnum,
   MeansOfTransportation,
   TransportationParam,
 } from "../../../../shared/types/types";
@@ -34,6 +35,7 @@ interface IExposeDownloadProps {
   color: string;
   logo: string;
   isTrial: boolean;
+  outputLanguage?: LanguageTypeEnum;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
 }
@@ -55,6 +57,7 @@ export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
   isTrial,
   legend,
   qrCode,
+  outputLanguage = LanguageTypeEnum.de,
 }) => {
   const { t } = useTranslation();
   const componentRef = useRef<HTMLDivElement>(null);
@@ -64,7 +67,9 @@ export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 
-  let documentTitle = `${t(IntlKeys.snapshotEditor.dataTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(
+    IntlKeys.snapshotEditor.dataTab.myLocation
+  )}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -130,6 +135,7 @@ export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
         legend={legend}
         qrCode={qrCode}
         style={exposeStyle}
+        outputLanguage={outputLanguage}
       />
     </div>
   );

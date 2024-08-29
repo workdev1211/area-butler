@@ -89,6 +89,9 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
 
   const { t } = useTranslation();
+  const { t: outputT } = useTranslation("", {
+    lng: searchContextState.responseConfig?.language,
+  });
   const { fetchOpenAiResponse } = useOpenAi();
   const { createDirectLink } = useTools();
 
@@ -208,13 +211,25 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
           )?.icon;
 
           const items = [...group.items].slice(0, 3);
-          result.push({ ...group, items, icon: groupIcon });
+          result.push({
+            ...group,
+            title: outputT(
+              (
+                IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                  string,
+                  string
+                >
+              )[group.name]
+            ),
+            items,
+            icon: groupIcon,
+          });
         }
 
         return result;
       }, [])
     );
-  }, [legend, filteredGroups]);
+  }, [legend, filteredGroups, outputT]);
 
   const fetchOpenAiLocDesc = async (): Promise<void> => {
     setIsOpenAiBusy(true);

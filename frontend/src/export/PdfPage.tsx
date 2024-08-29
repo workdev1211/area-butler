@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
 
 import areaButlerLogo from "../assets/img/logo.svg";
+import { LanguageTypeEnum } from '../../../shared/types/types';
 
 interface IPdfPageProps {
   nextPageNumber?: () => string;
   logo?: any;
   title?: string;
   leftHeaderElement?: ReactNode;
+  outputLanguage?: LanguageTypeEnum;
 }
 
 export const PdfPage: FunctionComponent<IPdfPageProps> = ({
@@ -18,8 +20,9 @@ export const PdfPage: FunctionComponent<IPdfPageProps> = ({
   children,
   logo = areaButlerLogo,
   leftHeaderElement = <div />,
+  outputLanguage,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("", { lng: outputLanguage });
   const style: CSSProperties = {
     pageBreakAfter: "always",
     minHeight: "29.6cm",

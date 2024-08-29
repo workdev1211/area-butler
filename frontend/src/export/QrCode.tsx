@@ -1,16 +1,18 @@
 import { FC, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { QRCodeToDataURLOptions, toDataURL } from "qrcode";
 
 import { useTools } from "../hooks/tools";
+import { LanguageTypeEnum } from "../../../shared/types/types";
 import { checkIsDarkColor } from '../shared/shared.functions';
 
 interface IQrCodeProps {
   containerClasses?: string;
   imageClasses?: string;
+  outputLanguage?: LanguageTypeEnum;
 }
 
 export const getQrCodeBase64 = async (
@@ -33,8 +35,9 @@ export const getQrCodeBase64 = async (
 export const QrCode: FC<IQrCodeProps> = ({
   containerClasses = "",
   imageClasses = "h-20",
+  outputLanguage,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('', { lng: outputLanguage });
   const { createDirectLink } = useTools();
   const [qrCodeImage, setQrCodeImage] = useState<string>();
 

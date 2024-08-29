@@ -11,6 +11,7 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
+  LanguageTypeEnum,
   MeansOfTransportation,
   OsmName,
   TransportationParam,
@@ -42,13 +43,14 @@ interface IExposeProps {
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   style: string;
+  outputLanguage: LanguageTypeEnum;
 }
 
 const chunkSize = 24;
 
 export const Expose = forwardRef(
   (props: IExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation("", { lng: props.outputLanguage });
 
     const filteredGroups = props.groupedEntries.filter(
       (group) =>
@@ -113,6 +115,7 @@ export const Expose = forwardRef(
         )}
         {chunkedGroupes.map((chunk, i) => (
           <PdfPage
+            outputLanguage={props.outputLanguage}
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
@@ -131,11 +134,13 @@ export const Expose = forwardRef(
               primaryColor={props.color}
               qrCode={props.qrCode}
               isFirstPage={i === 0}
+              outputLanguage={props.outputLanguage}
             />
           </PdfPage>
         ))}
         {importantEntities?.items?.length && (
           <PdfPage
+            outputLanguage={props.outputLanguage}
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
@@ -147,6 +152,7 @@ export const Expose = forwardRef(
             {importantEntities && importantEntities.items.length > 0 && (
               <div className="m-10">
                 <EntityTable
+                  outputLanguage={props.outputLanguage}
                   activeMeans={activeMeans}
                   entityGroup={importantEntities!}
                   primaryColor={props.color}
@@ -157,6 +163,7 @@ export const Expose = forwardRef(
         )}
         {mapClippings.length > 0 && (
           <MapClippings
+            outputLanguage={props.outputLanguage}
             mapClippings={mapClippings}
             nextPageNumber={nextPageNumber}
             logo={props.logo}
@@ -165,6 +172,7 @@ export const Expose = forwardRef(
         )}
         {mapClippings.length > 0 && props.legend.length > 0 && (
           <PdfPage
+            outputLanguage={props.outputLanguage}
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
@@ -183,6 +191,7 @@ export const Expose = forwardRef(
           .map((group) => {
             return (
               <PdfPage
+                outputLanguage={props.outputLanguage}
                 nextPageNumber={nextPageNumber}
                 logo={props.logo}
                 leftHeaderElement={
@@ -192,6 +201,7 @@ export const Expose = forwardRef(
               >
                 <div className="m-10" key={`tab-content-${group.name}`}>
                   <EntityTable
+                    outputLanguage={props.outputLanguage}
                     activeMeans={activeMeans}
                     entityGroup={group}
                     primaryColor={props.color}
@@ -202,6 +212,7 @@ export const Expose = forwardRef(
           })}
         {(censusData || federalElectionData || particlePollutionData) && (
           <PdfPage
+            outputLanguage={props.outputLanguage}
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={

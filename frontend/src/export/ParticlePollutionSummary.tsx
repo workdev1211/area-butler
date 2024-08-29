@@ -10,18 +10,20 @@ import {
   PollutionData,
 } from "map-menu/data-tab/data/ParticlePollutionTable";
 import { deriveColorPalette } from "shared/shared.functions";
-import { ApiGeojsonFeature } from "../../../shared/types/types";
+import { ApiGeojsonFeature, LanguageTypeEnum } from "../../../shared/types/types";
 
 interface IPartPollutSumProps {
   particlePollutionData?: ApiGeojsonFeature[];
   primaryColor?: string;
+  outputLanguage?: LanguageTypeEnum;
 }
 
 const ParticlePollutionSummary: FunctionComponent<IPartPollutSumProps> = ({
   particlePollutionData,
   primaryColor = "#aa0c54",
+  outputLanguage,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("", { lng: outputLanguage });
   const colorPalette = deriveColorPalette(primaryColor);
 
   const tableHeaderStyle = {

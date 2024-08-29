@@ -7,17 +7,20 @@ import "./EntityTable.scss";
 import { deriveColorPalette } from "shared/shared.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { averageCensusData } from "../../../shared/constants/data-provision";
+import { LanguageTypeEnum } from '../../../shared/types/types';
 
 interface ICensusSummaryProps {
   censusData: TCensusData;
   primaryColor?: string;
+  outputLanguage?: LanguageTypeEnum;
 }
 
 export const CensusSummary: FunctionComponent<ICensusSummaryProps> = ({
   censusData,
   primaryColor = "#aa0c54",
+  outputLanguage
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("", { lng: outputLanguage });
   const censusCenter =
     censusData.addressData.find((c) =>
       (c.properties as any).some((p: any) => p.value !== "unbekannt")

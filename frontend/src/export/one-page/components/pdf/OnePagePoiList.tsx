@@ -8,13 +8,15 @@ import { distanceToHumanReadable } from "../../../../shared/shared.functions";
 import { truncateText } from "../../../../../../shared/functions/shared.functions";
 import { poiNameMaxLength } from "../../../../shared/shared.constants";
 import { ISortableEntityGroup } from "../../OnePageExportModal";
+import { LanguageTypeEnum } from '../../../../../../shared/types/types';
 
 interface IOnePagePoiListProps {
   filteredGroups: ISortableEntityGroup[];
+  language?: LanguageTypeEnum;
 }
 
-const OnePagePoiList: FC<IOnePagePoiListProps> = ({ filteredGroups }) => {
-  const { t } = useTranslation();
+const OnePagePoiList: FC<IOnePagePoiListProps> = ({ filteredGroups, language }) => {
+  const { t } = useTranslation('', { lng: language });
 
   return (
     <div className="flex flex-col gap-1.5">

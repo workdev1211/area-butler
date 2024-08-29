@@ -9,6 +9,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
+  LanguageTypeEnum,
   TransportationParam,
 } from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
@@ -36,6 +37,7 @@ interface ICheatsheetDownloadProps {
   isTrial: boolean;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
+  outputLanguage?: LanguageTypeEnum;
 }
 
 export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
@@ -55,6 +57,7 @@ export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
   isTrial,
   legend,
   qrCode,
+  outputLanguage = LanguageTypeEnum.de,
 }) => {
   const { t } = useTranslation();
   const componentRef = useRef();
@@ -134,6 +137,7 @@ export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
         legend={legend}
         qrCode={qrCode}
         style={cheatSheetStyle}
+        outputLanguage={outputLanguage}
       />
     </div>
   );

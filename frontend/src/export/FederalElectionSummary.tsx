@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./EntityTable.scss";
 import {
@@ -9,17 +9,18 @@ import {
   FederalElectionResult,
 } from "hooks/federalelectiondata";
 import { deriveColorPalette } from "shared/shared.functions";
-
+import { LanguageTypeEnum } from "../../../shared/types/types";
 
 export interface FederalElectionSummaryProps {
   federalElectionDistrict: FederalElectionDistrict;
   primaryColor?: string;
+  outputLanguage?: LanguageTypeEnum;
 }
 
 const FederalElectionSummary: FunctionComponent<
   FederalElectionSummaryProps
-> = ({ federalElectionDistrict, primaryColor = "#aa0c54" }) => {
-  const { t } = useTranslation();
+> = ({ federalElectionDistrict, primaryColor = "#aa0c54", outputLanguage }) => {
+  const { t } = useTranslation("", { lng: outputLanguage });
   if (!federalElectionDistrict.results?.length) {
     return null;
   }
@@ -37,7 +38,9 @@ const FederalElectionSummary: FunctionComponent<
         <table className="entity-table">
           <thead style={{ backgroundAttachment: "fixed" }}>
             <tr style={tableHeaderStyle}>
-              <th>{t(IntlKeys.snapshotEditor.socialDemographics.politicalParty)}</th>
+              <th>
+                {t(IntlKeys.snapshotEditor.socialDemographics.politicalParty)}
+              </th>
               <th>{t(IntlKeys.snapshotEditor.dataTab.resultSecondVote)}</th>
               <th>{t(IntlKeys.snapshotEditor.dataTab.resultLastElection)}</th>
             </tr>

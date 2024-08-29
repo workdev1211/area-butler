@@ -15,6 +15,7 @@ import {
 } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
+  LanguageTypeEnum,
   MeansOfTransportation,
   TransportationParam,
 } from "../../../../shared/types/types";
@@ -34,6 +35,7 @@ export interface ExposeSummaryProps {
   primaryColor: string;
   qrCode: IQrCodeState;
   isFirstPage: boolean;
+  outputLanguage: LanguageTypeEnum;
 }
 
 const ExposeSummary: FC<ExposeSummaryProps> = ({
@@ -45,8 +47,9 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
   primaryColor,
   qrCode,
   isFirstPage,
+  outputLanguage
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('', { lng: outputLanguage });
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
@@ -146,6 +149,7 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
 
               {qrCode.isShownQrCode && (
                 <QrCode
+                  outputLanguage={outputLanguage}
                   containerClasses={realEstateListing ? "mt-3" : ""}
                   imageClasses="h-28"
                 />
@@ -160,6 +164,7 @@ const ExposeSummary: FC<ExposeSummaryProps> = ({
           {t(IntlKeys.snapshotEditor.dataTab.surroundings)}
         </h3>
         <EntityGridSummary
+          outputLanguage={outputLanguage}
           groupedEntries={groupedEntries}
           activeMeans={activeMeans}
           transportationParams={transportationParams}

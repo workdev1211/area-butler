@@ -9,6 +9,7 @@ import {
   unitsOfTransportation,
 } from "../../../shared/constants/constants";
 import {
+  LanguageTypeEnum,
   MeansOfTransportation,
   TransportationParam,
 } from "../../../shared/types/types";
@@ -23,6 +24,7 @@ interface IEntityGridSummaryProps {
   transportationParams: TransportationParam[];
   activeMeans: MeansOfTransportation[];
   primaryColor?: string;
+  outputLanguage: LanguageTypeEnum;
 }
 
 export const routingProfileOrder = [
@@ -36,8 +38,9 @@ export const EntityGridSummary: FC<IEntityGridSummaryProps> = ({
   transportationParams,
   primaryColor = "#aa0c54",
   activeMeans,
+  outputLanguage,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("", { lng: outputLanguage });
 
   const byFootAvailable = transportationParams.some(
     (param) =>

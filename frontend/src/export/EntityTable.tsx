@@ -5,7 +5,10 @@ import { IntlKeys } from "i18n/keys";
 
 import "./EntityTable.scss";
 
-import { MeansOfTransportation } from "../../../shared/types/types";
+import {
+  LanguageTypeEnum,
+  MeansOfTransportation,
+} from "../../../shared/types/types";
 import {
   deriveColorPalette,
   distanceToHumanReadable,
@@ -20,6 +23,7 @@ export interface IEntityTableProps {
   limit?: number;
   showRoutingColumns?: boolean;
   primaryColor?: string;
+  outputLanguage: LanguageTypeEnum;
 }
 
 export const EntityTable: FC<IEntityTableProps> = ({
@@ -28,8 +32,9 @@ export const EntityTable: FC<IEntityTableProps> = ({
   activeMeans,
   showRoutingColumns = true,
   primaryColor = "#aa0c54",
+  outputLanguage,
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation("", { lng: outputLanguage });
 
   const items = [...entityGroup.items].slice(0, limit);
   const hasNames =

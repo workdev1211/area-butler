@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import areaButlerLogo from "../../assets/img/logo.svg";
 import PdfOnePage from "./PdfOnePage";
@@ -27,7 +27,7 @@ export const OnePage = forwardRef<unknown, IOnePageDownProps>(
     },
     ref
   ) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation("", { lng: snapshotConfig.language });
 
     return (
       <div
@@ -59,12 +59,17 @@ export const OnePage = forwardRef<unknown, IOnePageDownProps>(
             {/* Description */}
             {addressDescription && (
               <div className="flex flex-col gap-1.5">
-                <div className="text-2xl font-bold">{t(IntlKeys.snapshotEditor.dataTab.locationDescription)}</div>
+                <div className="text-2xl font-bold">
+                  {t(IntlKeys.snapshotEditor.dataTab.locationDescription)}
+                </div>
                 <div className="text-justify">{addressDescription}</div>
               </div>
             )}
 
-            <OnePagePoiList filteredGroups={entityGroups} />
+            <OnePagePoiList
+              filteredGroups={entityGroups}
+              language={snapshotConfig.language}
+            />
 
             {mapClippings.length > 0 && (
               <OnePageMapQrCode
