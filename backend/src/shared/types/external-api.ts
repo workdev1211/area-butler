@@ -4,7 +4,7 @@ import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   ApiCoordinates,
   ApiGeojsonType,
-  ApiOsmLocation,
+  ApiOsmLocation, LanguageTypeEnum,
   MeansOfTransportation,
   OsmName,
   ResultStatusEnum,

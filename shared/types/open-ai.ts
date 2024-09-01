@@ -1,4 +1,5 @@
-import { MeansOfTransportation } from "./types";
+import { LanguageTypeEnum, MeansOfTransportation } from "./types";
+import { ApiBcp47LanguageEnum } from './real-estate';
 
 export enum OpenAiTonalityEnum {
   FORMAL_SERIOUS = "FORMAL_SERIOUS",
@@ -37,6 +38,7 @@ export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {
 export interface IApiOpenAiRealEstDescQuery extends IOpenAiGeneralFormValues {
   realEstateId: string;
   realEstateType: string;
+  language?: LanguageTypeEnum | ApiBcp47LanguageEnum;
 }
 
 export interface IApiOpenAiLocRealEstDescQuery

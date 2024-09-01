@@ -25,6 +25,7 @@ import {
   CachingContext,
 } from "../../context/CachingContext";
 import OpenAiGeneralForm from "./OpenAiGeneralForm";
+import { SearchContext } from '../../context/SearchContext';
 
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
@@ -54,6 +55,10 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
     cachingState: { openAi: cachedOpenAi },
     cachingDispatch,
   } = useContext(CachingContext);
+  const {
+    searchContextState: { responseConfig },
+  } = useContext(SearchContext);
+  console.log(responseConfig?.language);
 
   const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
   const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
@@ -109,6 +114,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           realEstDescFormRef.current?.handleSubmit();
 
           query = {
+            language: responseConfig?.language,
             snapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
@@ -122,6 +128,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           realEstDescFormRef.current?.handleSubmit();
 
           query = {
+            language: responseConfig?.language,
             ...generalFormRef.current!.values,
             ...realEstDescFormRef.current!.values,
           };

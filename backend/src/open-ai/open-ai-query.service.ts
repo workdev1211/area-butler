@@ -13,6 +13,7 @@ import {
   openAiTranslationDictionary,
 } from '../../../shared/constants/open-ai';
 import {
+  ApiBcp47LanguageEnum,
   ApiFurnishing,
   ApiRealEstateCostType,
   ApiRealEstateListing,
@@ -37,7 +38,7 @@ import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 
 interface IGeneralQueryParams extends IOpenAiGeneralFormValues {
-  language?: string;
+  language?: LanguageTypeEnum | ApiBcp47LanguageEnum;
 }
 
 export interface ILocDescQueryParams
@@ -87,11 +88,10 @@ export class OpenAiQueryService {
       language,
     } = queryParams;
 
-    queryParams.language = (
+    queryParams.language =
       queryParams.snapshotRes.config.language ||
       language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+      LanguageTypeEnum.de;
 
     return (
       `Du bist ein erfahrener Immobilienmakler. Schreibe eine werbliche Lagebeschreibung für eine Wohnimmobilie` +
@@ -121,11 +121,10 @@ export class OpenAiQueryService {
       language,
     } = locRealEstDescQueryParams;
 
-    locRealEstDescQueryParams.language = (
+    locRealEstDescQueryParams.language =
       locRealEstDescQueryParams.snapshotRes.config.language ||
       language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+      LanguageTypeEnum.de;
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse` +
@@ -513,7 +512,9 @@ Nutze folgende Informationen und baue daraus positive Argumente für die Zielgru
               `Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen`,
             ]
           : []),
-        `verwende als Ausgabesprache ${language || 'DE'} (BCP 47)`,
+        `verwende als Ausgabesprache ${
+          language?.toUpperCase() || 'DE'
+        } (BCP 47)`,
         customText === 'Teaser Text für Portale und aufbauenden Text generieren'
           ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`
           : `bitte beachte folgenden Wunsch bei der Erstellung: ${customText}`,
