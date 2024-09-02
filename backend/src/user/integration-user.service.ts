@@ -23,9 +23,8 @@ import {
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
-import { getUnitedMapboxStyles } from '../shared/functions/shared';
 import { COMPANY_PATH, PARENT_USER_PATH } from '../shared/constants/schema';
-import { IUserConfig } from '@area-butler-types/user';
+import { IApiUserConfig, IUserConfig } from '@area-butler-types/user';
 
 @Injectable()
 export class IntegrationUserService {
@@ -153,10 +152,10 @@ export class IntegrationUserService {
     );
   }
 
-  updateConfig(
+  async updateConfig(
     { _id: intUserDbId }: TIntegrationUserDocument,
     config: Partial<IUserConfig>,
-  ): void {
+  ): Promise<void> {
     const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
       $set: {},
       $unset: {},
@@ -170,7 +169,10 @@ export class IntegrationUserService {
       }
     });
 
-    void this.integrationUserModel.updateOne({ _id: intUserDbId }, updateQuery);
+    await this.integrationUserModel.updateOne(
+      { _id: intUserDbId },
+      updateQuery,
+    );
   }
 
   bulkWrite(writes: any[]): Promise<BulkWriteResult> {
@@ -180,17 +182,18 @@ export class IntegrationUserService {
   async createMapboxAccessToken(
     integrationUser: TIntegrationUserDocument,
   ): Promise<TIntegrationUserDocument> {
-    if (integrationUser.config.mapboxAccessToken) {
+    if (integrationUser.company.config?.mapboxAccessToken) {
       return integrationUser;
     }
 
     const mapboxAccessToken = await this.mapboxService.createAccessToken(
-      integrationUser.id,
+      integrationUser.companyId,
     );
 
-    return this.findByDbIdAndUpdate(integrationUser.id, {
-      'config.mapboxAccessToken': mapboxAccessToken,
-    });
+    integrationUser.company.set('config.mapboxAccessToken', mapboxAccessToken);
+    await integrationUser.company.save();
+
+    return integrationUser;
   }
 
   hideTour(
@@ -214,23 +217,16 @@ export class IntegrationUserService {
 
   getIntUserResultConfig(
     integrationUser: TIntegrationUserDocument,
-  ): IUserConfig {
-    const { config, isParent, parentUser } = integrationUser.toObject();
-
-    if (isParent || !parentUser) {
-      return { ...config };
-    }
-
-    const { allowedCountries, extraMapboxStyles } = parentUser.config;
+  ): IApiUserConfig {
+    const {
+      config,
+      company: { config: companyConfig },
+    } = integrationUser.toObject();
 
     return {
+      ...companyConfig,
       ...config,
       language: config.language || LanguageTypeEnum.de,
-      allowedCountries: config.allowedCountries || allowedCountries,
-      extraMapboxStyles: getUnitedMapboxStyles(
-        extraMapboxStyles,
-        config.extraMapboxStyles,
-      ),
     };
   }
 

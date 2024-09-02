@@ -20,7 +20,6 @@ import {
   PARENT_USER_PATH,
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
-import { IApiUserPoiIcons } from '@area-butler-types/types';
 import { IUserConfig } from '@area-butler-types/user';
 
 export type TIntegrationUserDocument = HydratedDocument<IntegrationUser>;
@@ -65,9 +64,6 @@ export class IntegrationUser implements IIntegrationUserSchema {
     ...foreignIdGetSet,
   })
   parentId?: string;
-
-  @Prop({ type: Object })
-  poiIcons?: IApiUserPoiIcons;
 
   @Prop({ type: Object })
   productContingents?: TApiIntegrationUserProductContingents;

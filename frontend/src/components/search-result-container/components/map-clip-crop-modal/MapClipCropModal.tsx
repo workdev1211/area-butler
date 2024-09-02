@@ -26,7 +26,7 @@ import { IntlKeys } from "../../../../i18n/keys";
 import { EntityGroup } from "../../../../shared/search-result.types";
 import { realEstateListingsTitle } from "../../../../../../shared/constants/real-estate";
 import {
-  IApiUserPoiIcon,
+  IApiPoiIcon,
   LanguageTypeEnum,
   MeansOfTransportation,
   TransportationParam,
@@ -113,7 +113,7 @@ interface IMapClipCropModalProps {
   outputLanguage?: LanguageTypeEnum;
   directLink?: string;
   transportationParams?: TransportationParam[];
-  userMenuPoiIcons?: IApiUserPoiIcon[];
+  menuPoiIcons?: IApiPoiIcon[];
 }
 
 const getAspectCrop = (
@@ -150,7 +150,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   color,
   invertColor,
   directLink,
-  userMenuPoiIcons,
+  menuPoiIcons,
   activeMeans,
   transportationParams,
   outputLanguage = LanguageTypeEnum.de,
@@ -207,10 +207,10 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     const isPreferredLocation = group.items[0].name === preferredLocationsTitle;
 
     const groupIconInfo = isRealEstateListing
-      ? getRealEstateListingsIcon(userMenuPoiIcons)
+      ? getRealEstateListingsIcon(menuPoiIcons)
       : isPreferredLocation
-      ? getPreferredLocationsIcon(userMenuPoiIcons)
-      : deriveIconForPoiGroup(group.name, userMenuPoiIcons);
+      ? getPreferredLocationsIcon(menuPoiIcons)
+      : deriveIconForPoiGroup(group.name, menuPoiIcons);
 
     return (
       <li className={"active"} key={group.name}>

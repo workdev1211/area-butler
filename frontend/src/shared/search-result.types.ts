@@ -4,7 +4,7 @@ import {
   ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
   IApiMapboxStyle,
-  IApiUserPoiIcon,
+  IApiPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
@@ -103,5 +103,5 @@ export interface IMapTabProps {
   transitRoutes: EntityTransitRoute[];
   mapDisplayMode: MapDisplayModesEnum;
   performUnlock?: TUnlockIntProduct;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
+  menuPoiIcons?: IApiPoiIcon[];
 }

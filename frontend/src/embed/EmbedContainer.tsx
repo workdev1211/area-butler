@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 import "./EmbedContainer.scss";
 
 import {
-  IApiFetchedEmbeddedData, LanguageTypeEnum,
+  IApiFetchedEmbeddedData,
+  LanguageTypeEnum,
   MapDisplayModesEnum,
   ResultStatusEnum,
 } from "../../../shared/types/types";
@@ -33,7 +34,7 @@ const queryParamsSchema: Yup.ObjectSchema<IFetchEmbedMapQueryParams> =
   Yup.object({
     token: Yup.string().required(),
     isAddressShown: Yup.mixed<string>().oneOf(Object.keys(boolStringMapping)),
-    language: Yup.string().oneOf(Object.values(LanguageTypeEnum)).optional()
+    language: Yup.string().oneOf(Object.values(LanguageTypeEnum)).optional(),
   });
 
 window.addEventListener("resize", () => {
@@ -98,10 +99,10 @@ const EmbedContainer: FC = () => {
         await queryParamsSchema.validate(queryParamsAndUrl.queryParams);
 
         const {
-          queryParams: { token, isAddressShown, language = 'de' },
+          queryParams: { token, isAddressShown, language = "de" },
         } = queryParamsAndUrl;
 
-        await i18n.changeLanguage(language)
+        await i18n.changeLanguage(language);
 
         const resIsAddressShown = isAddressShown
           ? boolStringMapping[isAddressShown]
@@ -305,7 +306,7 @@ const EmbedContainer: FC = () => {
       <SearchResultContainer
         mapboxAccessToken={embeddedData.snapshotRes.mapboxAccessToken}
         isTrial={!!embeddedData.snapshotRes.isTrial}
-        userPoiIcons={embeddedData.userPoiIcons}
+        poiIcons={embeddedData.poiIcons}
         mapDisplayMode={mapDisplayMode}
         ref={mapRef}
       />

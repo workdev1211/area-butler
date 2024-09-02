@@ -30,9 +30,12 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import { IFetchEmbedMapQueryParams } from '@area-butler-types/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import {
+  COMPANY_PATH,
   PARENT_USER_PATH,
   SNAPSHOT_INT_USER_PATH,
   SNAPSHOT_REAL_EST_PATH,
+  SNAPSHOT_USER_PATH,
+  SUBSCRIPTION_PATH,
 } from '../shared/constants/schema';
 
 interface IFetchSnapshotMainParams {
@@ -124,19 +127,17 @@ export class FetchSnapshotService {
       filterQuery = { token };
     }
 
-    return (
-      this.searchResultSnapshotModel
-        .findOne(filterQuery, projectQuery)
-        .sort(sortQuery)
-        // TODO return after adding 'subscription' or 'subscriptionId' populated field to the user entity
-        // .populate(SNAPSHOT_USER_PATH)
-        .populate({
-          path: SNAPSHOT_INT_USER_PATH,
-          populate: {
-            path: PARENT_USER_PATH,
-          },
-        })
-    );
+    return this.searchResultSnapshotModel
+      .findOne(filterQuery, projectQuery)
+      .sort(sortQuery)
+      .populate({
+        path: SNAPSHOT_USER_PATH,
+        populate: [COMPANY_PATH, PARENT_USER_PATH, SUBSCRIPTION_PATH],
+      })
+      .populate({
+        path: SNAPSHOT_INT_USER_PATH,
+        populate: [COMPANY_PATH, PARENT_USER_PATH],
+      });
   }
 
   async getSnapshotRes(

@@ -14,7 +14,7 @@ import { ConfigContext } from "../../../context/ConfigContext";
 import {
   ApiCoordinates,
   ApiSearchResultSnapshotConfig,
-  IApiUserPoiIcons,
+  IApiPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
@@ -45,7 +45,7 @@ interface IMapMenuContainerProps {
   ) => void;
 
   saveConfig?: () => Promise<void>;
-  userPoiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
 }
 
 const MapMenuContainer: FC<IMapMenuContainerProps> = ({
@@ -56,7 +56,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   saveConfig,
   toggleRoutesToEntity,
   toggleTransitRoutesToEntity,
-  userPoiIcons,
+  poiIcons,
 }) => {
   const {
     searchContextDispatch,
@@ -90,10 +90,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   const resultLocation = mapCenter ?? location!;
 
   const user = getActualUser();
-  const isIntegrationUser = "integrationUserId" in user;
-  const extraMapboxStyles = isIntegrationUser
-    ? user.config.extraMapboxStyles
-    : user.extraMapboxStyles;
+  const extraMapboxStyles = user.config.extraMapboxStyles;
 
   useEffect(() => {
     if (
@@ -252,7 +249,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
     toggleTransitRoute: (item) =>
       toggleTransitRoutesToEntity(resultLocation, item),
     transitRoutes: responseTransitRoutes,
-    userMenuPoiIcons: userPoiIcons?.menuPoiIcons,
+    menuPoiIcons: poiIcons?.menuPoiIcons,
   };
 
   if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {

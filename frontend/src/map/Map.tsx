@@ -12,7 +12,7 @@ import center from "@turf/center";
 import { toPng } from "html-to-image";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import i18 from "i18n";
 import { IntlKeys } from "i18n/keys";
 
@@ -47,7 +47,7 @@ import {
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
-  IApiUserPoiIcon,
+  IApiPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
@@ -383,7 +383,7 @@ interface IMapProps {
   gotoMapCenter: IGotoMapCenter | undefined;
   setGotoMapCenter: (data: IGotoMapCenter | undefined) => void;
   isTrial: boolean;
-  userMapPoiIcons?: IApiUserPoiIcon[];
+  mapPoiIcons?: IApiPoiIcon[];
   isIntegration: boolean;
   allowedCountries: Iso3166_1Alpha2CountriesEnum[];
 }
@@ -421,9 +421,9 @@ const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
     JSON.stringify(prevProps.gotoMapCenter) ===
     JSON.stringify(nextProps.gotoMapCenter);
   const isTrialEqual = prevProps.isTrial === nextProps.isTrial;
-  const userMapPoiIconsEqual =
-    JSON.stringify(prevProps.userMapPoiIcons) ===
-    JSON.stringify(nextProps.userMapPoiIcons);
+  const mapPoiIconsEqual =
+    JSON.stringify(prevProps.mapPoiIcons) ===
+    JSON.stringify(nextProps.mapPoiIcons);
 
   return (
     mapboxTokenEqual &&
@@ -440,7 +440,7 @@ const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
     hideIsochronesEqual &&
     gotoMapCenterEqual &&
     isTrialEqual &&
-    userMapPoiIconsEqual
+    mapPoiIconsEqual
   );
 };
 
@@ -475,7 +475,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       gotoMapCenter,
       setGotoMapCenter,
       isTrial,
-      userMapPoiIcons,
+      mapPoiIcons,
       isIntegration,
       allowedCountries,
     },
@@ -1168,17 +1168,17 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                     config.primaryColor ?? getRealEstateListingsIcon().color,
                   isCustom: true,
                 }
-              : getRealEstateListingsIcon(userMapPoiIcons);
+              : getRealEstateListingsIcon(mapPoiIcons);
           }
 
           if (isPreferredLocation) {
-            markerIcon = getPreferredLocationsIcon(userMapPoiIcons);
+            markerIcon = getPreferredLocationsIcon(mapPoiIcons);
           }
 
           if (!markerIcon) {
             markerIcon = deriveIconForPoiGroup(
               osmEntityMapper.getGrpNameByOsmName(entity.osmName),
-              userMapPoiIcons
+              mapPoiIcons
             );
           }
 

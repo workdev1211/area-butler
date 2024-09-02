@@ -114,7 +114,6 @@ export class LocationService {
       if (user.parentId) {
         resultUser = await this.userService.findById({
           userId: user.parentId,
-          withSubscription: true,
         });
       }
 

@@ -13,7 +13,7 @@ import {
 import {
   ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
-  IApiUserPoiIcon,
+  IApiPoiIcon,
   LanguageTypeEnum,
   MapDisplayModesEnum,
   MeansOfTransportation,
@@ -62,7 +62,7 @@ export interface IMapMenuProps {
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   saveConfig?: () => Promise<void>;
   showInsights?: boolean;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
+  menuPoiIcons?: IApiPoiIcon[];
   // Stats START
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
@@ -82,7 +82,7 @@ const MapMenu: FC<IMapMenuProps> = ({
   mapDisplayMode,
   config,
   saveConfig,
-  userMenuPoiIcons,
+  menuPoiIcons,
   editorTabProps,
   dataTabProps,
 }) => {
@@ -250,7 +250,7 @@ const MapMenu: FC<IMapMenuProps> = ({
             toggleTransitRoute={toggleTransitRoute}
             transitRoutes={transitRoutes}
             mapDisplayMode={mapDisplayMode}
-            userMenuPoiIcons={userMenuPoiIcons}
+            menuPoiIcons={menuPoiIcons}
             performUnlock={performUnlock}
           />
         )}

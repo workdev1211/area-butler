@@ -1,29 +1,27 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 
 import Localities from "./components/Localities";
 import { SearchContext } from "../../context/SearchContext";
 import { useTools } from "../../hooks/tools";
-import MapScreenshots from './components/MapScreenshots';
-import DigitalMedia from './components/DigitalMedia';
-import OpenAiTexts from './components/OpenAiTexts';
-import {
-  IMapTabProps,
-} from "shared/search-result.types";
-import { MapDisplayModesEnum } from '../../../../shared/types/types';
+import MapScreenshots from "./components/MapScreenshots";
+import DigitalMedia from "./components/DigitalMedia";
+import OpenAiTexts from "./components/OpenAiTexts";
+import { IMapTabProps } from "shared/search-result.types";
+import { MapDisplayModesEnum } from "../../../../shared/types/types";
 
-import './MapTab.scss'
+import "./MapTab.scss";
 
-const MapTab: FunctionComponent<IMapTabProps> = ({
+const MapTab: FC<IMapTabProps> = ({
   toggleAllLocalities,
   toggleRoute,
   routes,
   toggleTransitRoute,
   transitRoutes,
   mapDisplayMode,
-  userMenuPoiIcons,
+  menuPoiIcons,
   performUnlock,
   searchAddress,
-  snapshotId
+  snapshotId,
 }) => {
   const {
     searchContextState: { responseConfig },
@@ -32,8 +30,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   const { getActualUser } = useTools();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
-  
-  
+
   const hasOpenAiFeature =
     isIntegrationUser || !!user?.subscription?.config.appFeatures.openAi;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
@@ -51,20 +48,24 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         transitRoutes={transitRoutes}
         mapDisplayMode={mapDisplayMode}
         backgroundColor={backgroundColor}
-        userMenuPoiIcons={userMenuPoiIcons}
+        menuPoiIcons={menuPoiIcons}
       />
-      
-      {isEditorMode && searchAddress && <MapScreenshots
-        searchAddress={searchAddress}
-        backgroundColor={backgroundColor}
-      />}
-      
-      {isEditorMode && searchAddress && <DigitalMedia
-        searchAddress={searchAddress}
-        backgroundColor={backgroundColor}
-        performUnlock={performUnlock}
-      />}
-      
+
+      {isEditorMode && searchAddress && (
+        <MapScreenshots
+          searchAddress={searchAddress}
+          backgroundColor={backgroundColor}
+        />
+      )}
+
+      {isEditorMode && searchAddress && (
+        <DigitalMedia
+          searchAddress={searchAddress}
+          backgroundColor={backgroundColor}
+          performUnlock={performUnlock}
+        />
+      )}
+
       {isEditorMode && hasOpenAiFeature && snapshotId && (
         <OpenAiTexts
           snapshotId={snapshotId}

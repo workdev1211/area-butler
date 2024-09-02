@@ -1,11 +1,11 @@
 import { EntityGroup } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
-import { IApiUserPoiIcon } from "../../../../shared/types/types";
+import { IApiPoiIcon } from "../../../../shared/types/types";
 import { deriveIconForPoiGroup } from "../../shared/shared.functions";
 
 export const getFilteredLegend = (
   entityGroups: EntityGroup[],
-  poiIcons?: IApiUserPoiIcon[]
+  poiIcons?: IApiPoiIcon[]
 ): ILegendItem[] => {
   return entityGroups.reduce<ILegendItem[]>(
     (result, { active, name, title }) => {

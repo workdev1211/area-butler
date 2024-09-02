@@ -136,11 +136,8 @@ const SnapshotEditorPage: FC = () => {
       }
 
       snapshotConfig.primaryColor =
-        snapshotConfig.primaryColor ??
-        (isIntegrationUser ? user.config : user).color;
-      snapshotConfig.mapIcon =
-        snapshotConfig.mapIcon ??
-        (isIntegrationUser ? user.config : user).mapIcon;
+        snapshotConfig.primaryColor ?? user.config.color;
+      snapshotConfig.mapIcon = snapshotConfig.mapIcon ?? user.config.mapIcon;
       snapshotConfig.showAddress = snapshotConfig.showAddress ?? true;
       snapshotConfig.showStreetViewLink =
         snapshotConfig.showStreetViewLink ?? true;

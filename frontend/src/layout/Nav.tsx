@@ -1,15 +1,9 @@
-import {
-  FunctionComponent,
-  useEffect,
-  useRef,
-  useState,
-  useContext,
-} from "react";
+import { FC, useEffect, useRef, useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth0, User } from "@auth0/auth0-react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./Nav.scss";
 import Logo from "assets/img/logo.svg";
@@ -18,8 +12,8 @@ import Authenticated from "auth/Authenticated";
 import LoginButton from "../components/LoginButton";
 import { UserContext } from "../context/UserContext";
 
-const Nav: FunctionComponent = () => {
-  const { t } = useTranslation()
+const Nav: FC = () => {
+  const { t } = useTranslation();
   const showNavBar = !RegExp(/questionnaire.+/).test(window.location.pathname);
 
   const [currentUser, setCurrentUser] = useState<User>();
@@ -175,7 +169,7 @@ const Nav: FunctionComponent = () => {
               >
                 <span className="sr-only">Benutzer Menü</span>
                 <img
-                  src={userData?.logo || currentUser.picture}
+                  src={userData?.config.logo || currentUser.picture}
                   referrerPolicy="no-referrer"
                   alt=""
                 />

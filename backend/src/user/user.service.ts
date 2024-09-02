@@ -48,27 +48,10 @@ export class UserService {
     private readonly userSubscriptionPipe: UserSubscriptionPipe,
   ) {}
 
-  async upsertUser(
-    email: string,
-    fullname: string,
-    withAssets = false,
-  ): Promise<UserDocument> {
+  async upsertUser(email: string, fullname: string): Promise<UserDocument> {
     const existingUser = await this.findByEmail(email);
 
     if (existingUser) {
-      if (!withAssets) {
-        return existingUser;
-      }
-
-      const poiIcons = existingUser.poiIcons;
-
-      if (
-        poiIcons &&
-        Object.keys(poiIcons).some((key) => poiIcons[key]?.length)
-      ) {
-        existingUser.poiIcons = poiIcons;
-      }
-
       return existingUser;
     }
 
@@ -107,41 +90,11 @@ export class UserService {
   async findById({
     userId,
     projectQuery,
-    withAssets,
-    withSubscription,
   }: {
     userId: string;
     projectQuery?: ProjectionFields<UserDocument>;
-    withAssets?: boolean;
-    withSubscription?: boolean;
   }): Promise<UserDocument> {
-    const user = await this.findOneCore(
-      { _id: new Types.ObjectId(userId) },
-      projectQuery,
-    );
-
-    if (!user || (!withAssets && !withSubscription)) {
-      return user;
-    }
-
-    if (withAssets) {
-      const poiIcons = user.poiIcons;
-
-      if (
-        poiIcons &&
-        Object.keys(poiIcons).some((key) => poiIcons[key]?.length)
-      ) {
-        user.poiIcons = poiIcons;
-      }
-    }
-
-    if (withSubscription) {
-      user.subscription = await this.subscriptionService.findActiveByUserId(
-        user.parentId || user.id,
-      );
-    }
-
-    return user;
+    return this.findOneCore({ _id: new Types.ObjectId(userId) }, projectQuery);
   }
 
   async findByEmail(email: string): Promise<UserDocument> {
@@ -418,13 +371,16 @@ export class UserService {
   }
 
   async createMapboxAccessToken(user: UserDocument): Promise<UserDocument> {
-    if (!user.mapboxAccessToken) {
-      user.mapboxAccessToken = await this.mapboxService.createAccessToken(
-        user.id,
-      );
-
-      return user.save();
+    if (user.company.config?.mapboxAccessToken) {
+      return user;
     }
+
+    const mapboxAccessToken = await this.mapboxService.createAccessToken(
+      user.companyId,
+    );
+
+    user.company.set('config.mapboxAccessToken', mapboxAccessToken);
+    await user.company.save();
 
     return user;
   }

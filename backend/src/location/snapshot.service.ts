@@ -78,17 +78,14 @@ export class SnapshotService {
     const isIntegrationUser = 'integrationUserId' in user;
     const addressToken = randomBytes(60).toString('hex');
     const unaddressToken = randomBytes(60).toString('hex');
-    let mapboxAccessToken;
+    let mapboxAccessToken = user.company.config?.mapboxAccessToken;
 
-    if (isIntegrationUser) {
+    if (!mapboxAccessToken) {
       mapboxAccessToken = (
-        await this.integrationUserService.createMapboxAccessToken(user)
-      ).config.mapboxAccessToken;
-    }
-
-    if (!isIntegrationUser) {
-      mapboxAccessToken = (await this.userService.createMapboxAccessToken(user))
-        .mapboxAccessToken;
+        isIntegrationUser
+          ? await this.integrationUserService.createMapboxAccessToken(user)
+          : await this.userService.createMapboxAccessToken(user)
+      ).company.config.mapboxAccessToken;
     }
 
     const snapshotConfig = config
@@ -100,15 +97,14 @@ export class SnapshotService {
       ({ type }) => type,
     );
 
-    const userColor = isIntegrationUser ? user.config.color : user.color;
-    const userMapIcon = isIntegrationUser ? user.config.mapIcon : user.mapIcon;
+    const companyColor = user.company.config.color;
+    const companyMapIcon = user.company.config.mapIcon;
 
-    if (!snapshotConfig.primaryColor && userColor) {
-      snapshotConfig.primaryColor = userColor;
+    if (!snapshotConfig.primaryColor && companyColor) {
+      snapshotConfig.primaryColor = companyColor;
     }
-
-    if (!snapshotConfig.mapIcon && userMapIcon) {
-      snapshotConfig.mapIcon = userMapIcon;
+    if (!snapshotConfig.mapIcon && companyMapIcon) {
+      snapshotConfig.mapIcon = companyMapIcon;
     }
 
     if (primaryColor) {

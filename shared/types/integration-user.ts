@@ -1,10 +1,10 @@
 import { IntegrationTypesEnum } from "./integration";
-import { ApiSearchResultSnapshotResponse, IApiUserPoiIcons } from "./types";
+import { ApiSearchResultSnapshotResponse, IApiPoiIcons } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
 import { TIntegrationUserDocument } from "../../backend/src/user/schema/integration-user.schema";
 import { TCompanyDocument } from "../../backend/src/company/schema/company.schema";
-import { IUserConfig } from "./user";
+import { IApiUserConfig, IUserConfig } from "./user";
 
 export interface IIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
@@ -27,12 +27,12 @@ export interface IIntegrationUserSchema {
 
 export interface IApiIntegrationUser {
   accessToken: string;
-  config: IUserConfig;
+  config: IApiUserConfig;
   integrationUserId: string;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
   subscription?: IIntUserSubscription;
-  poiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
 }
 
 export type TApiIntUserAvailProdContingents = Partial<
@@ -141,5 +141,5 @@ export interface IApiIntUserLoginRes {
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   openAiQueryType?: OpenAiQueryTypeEnum;
   subscription?: IIntUserSubscription;
-  poiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
 }

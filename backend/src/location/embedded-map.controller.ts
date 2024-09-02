@@ -18,7 +18,6 @@ import { FetchSnapshotService } from './fetch-snapshot.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
-import { UserService } from '../user/user.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import ApiFetchEmbeddedMapReqDto from './dto/api-fetch-embedded-map-req.dto';
@@ -32,7 +31,6 @@ export class EmbeddedMapController {
   constructor(
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly userService: UserService,
   ) {}
 
   @ApiOperation({ description: 'Fetch an embedded map' })
@@ -51,17 +49,10 @@ export class EmbeddedMapController {
       throw new NotFoundException('Snapshot not found!');
     }
 
-    const { integrationUser, userId } = snapshotDoc;
+    const { integrationUser, user } = snapshotDoc;
+    const resultUser = integrationUser || user;
 
-    const resultUser =
-      integrationUser ||
-      (await this.userService.findById({
-        userId,
-        withAssets: true,
-        withSubscription: true,
-      }));
-
-    if ((integrationUser && userId) || !resultUser) {
+    if ((integrationUser && user) || !resultUser) {
       throw new HttpException('Unknown user!', 400);
     }
 
@@ -133,7 +124,7 @@ export class EmbeddedMapController {
     return {
       realEstates,
       snapshotRes,
-      userPoiIcons: resultUser.poiIcons || resultUser.parentUser?.poiIcons,
+      poiIcons: resultUser.company.config?.poiIcons,
     };
   }
 

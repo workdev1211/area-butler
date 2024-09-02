@@ -24,4 +24,11 @@ export class CompanyService {
       upsert: true,
     });
   }
+
+  async updateOne(
+    filterQuery: FilterQuery<TCompanyDocument>,
+    updateQuery: UpdateQuery<TCompanyDocument>,
+  ): Promise<void> {
+    await this.companyModel.updateOne(filterQuery, updateQuery);
+  }
 }

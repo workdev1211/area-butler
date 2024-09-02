@@ -4,7 +4,7 @@ import { SchemaTypes } from 'mongoose';
 import {
   IApiMapboxStyle,
   IApiUserExportFont,
-  IApiUserPoiIcons,
+  IApiPoiIcons,
   TAreaButlerExportTypes,
 } from '@area-butler-types/types';
 import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
@@ -56,7 +56,7 @@ class CompanyConfig implements ICompanyConfig {
   name?: string;
 
   @Prop({ type: Object })
-  poiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
 
   @Prop({
     type: SchemaTypes.ObjectId,

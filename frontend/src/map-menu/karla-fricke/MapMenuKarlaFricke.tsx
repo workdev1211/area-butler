@@ -10,7 +10,7 @@ import {
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
 } from "../../shared/shared.functions";
-import { IApiUserPoiIcon, OsmName } from "../../../../shared/types/types";
+import { IApiPoiIcon, OsmName } from "../../../../shared/types/types";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -20,7 +20,7 @@ interface IMapMenuKarlaFrickeProps {
   isMapMenuOpen: boolean;
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
+  menuPoiIcons?: IApiPoiIcon[];
   userPrimaryColor?: string;
 }
 
@@ -36,7 +36,7 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
   isMapMenuOpen,
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
-  userMenuPoiIcons,
+  menuPoiIcons,
 }) => {
   const {
     searchContextState: { entityGroupsByActMeans },
@@ -60,10 +60,10 @@ const MapMenuKarlaFricke: FC<IMapMenuKarlaFrickeProps> = ({
     const isPreferredLocation = group.name === OsmName.favorite;
 
     const groupIconInfo = isRealEstateListing
-      ? getRealEstateListingsIcon(userMenuPoiIcons)
+      ? getRealEstateListingsIcon(menuPoiIcons)
       : isPreferredLocation
-      ? getPreferredLocationsIcon(userMenuPoiIcons)
-      : deriveIconForPoiGroup(group.name, userMenuPoiIcons);
+      ? getPreferredLocationsIcon(menuPoiIcons)
+      : deriveIconForPoiGroup(group.name, menuPoiIcons);
 
     return (
       <li

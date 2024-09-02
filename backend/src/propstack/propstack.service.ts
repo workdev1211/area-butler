@@ -125,16 +125,11 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { integrationId, publicLinkParams }: IApiIntSetPropPubLinksReq,
   ): Promise<void> {
-    const resExportMatching =
-      integrationUser.config?.exportMatching ||
-      integrationUser.parentUser?.config?.exportMatching;
-
+    const exportMatching = integrationUser.company.config?.exportMatching;
     const textFieldsParams: TUpdEstTextFieldParams[] = [];
 
     for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
-      const isExpMatchAvail = !!(
-        resExportMatching && resExportMatching[exportType]
-      );
+      const isExpMatchAvail = !!(exportMatching && exportMatching[exportType]);
 
       if (!isExpMatchAvail) {
         await this.createPropertyLink(integrationUser, {
@@ -245,8 +240,7 @@ export class PropstackService {
         target === PropstackActionTypeEnum.GENERATE_TEXT
           ? (propstackOpenAiFieldMapper.get(fieldName) as OpenAiQueryTypeEnum)
           : undefined,
-      poiIcons:
-        integrationUser.poiIcons || integrationUser.parentUser?.poiIcons,
+      poiIcons: integrationUser.company.config?.poiIcons,
     };
   }
 
@@ -277,25 +271,19 @@ export class PropstackService {
   // }
 
   async updatePropTextFields(
-    {
-      parameters,
-      parentUser,
-      config: { exportMatching },
-    }: TIntegrationUserDocument,
+    { company: { config }, parameters }: TIntegrationUserDocument,
     integrationId: string,
     textFieldsParams: TUpdEstTextFieldParams[],
   ): Promise<void> {
     const customFieldKey = 'partial_custom_fields';
     const defaultMaxTextLength = 2000;
-    const resExportMatching =
-      exportMatching || parentUser?.config?.exportMatching;
+    const exportMatching = config?.exportMatching;
 
     const processTextFieldParams = ({
       exportType,
       text,
     }: TUpdEstTextFieldParams): [string, string | object] => {
-      let exportMatchParams =
-        resExportMatching && resExportMatching[exportType];
+      let exportMatchParams = exportMatching && exportMatching[exportType];
 
       if (!exportMatchParams) {
         switch (exportType) {
@@ -460,11 +448,6 @@ export class PropstackService {
             `${apiKey}-${teamId}`,
           ),
           companyId: parentUser.companyId,
-          config: {
-            color: parentUser.config?.color,
-            logo: parentUser.config?.logo,
-            mapIcon: parentUser.config?.mapIcon,
-          },
           integrationType: this.integrationType,
           integrationUserId: `${shopId}-${teamId}`,
           parameters: {

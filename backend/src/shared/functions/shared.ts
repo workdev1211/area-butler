@@ -3,7 +3,6 @@ import { UpdateQuery } from 'mongoose';
 import {
   ApiCoordinates,
   ApiSearchResultSnapshotResponse,
-  IApiMapboxStyle,
 } from '@area-butler-types/types';
 import { configService } from '../../config/config.service';
 import { SearchResultSnapshotDocument } from '../../location/schema/search-result-snapshot.schema';
@@ -126,19 +125,4 @@ export const getProcUpdateQuery = <T = object>(
   });
 
   return updateQuery;
-};
-
-export const getUnitedMapboxStyles = (
-  parentStyles: IApiMapboxStyle[],
-  userStyles: IApiMapboxStyle[],
-): IApiMapboxStyle[] => {
-  return [
-    ...(parentStyles
-      ? parentStyles.map((parentStyle) => {
-          parentStyle.label = `Elternteil: ${parentStyle.label}`;
-          return parentStyle;
-        })
-      : []),
-    ...(userStyles || []),
-  ];
 };

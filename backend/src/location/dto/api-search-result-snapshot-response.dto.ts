@@ -7,7 +7,7 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-  IApiUserPoiIcons,
+  IApiPoiIcons,
 } from '@area-butler-types/types';
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
@@ -20,7 +20,7 @@ export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
   isAddressShown?: boolean;
   isEmbedded?: boolean;
   isTrial?: boolean;
-  userPoiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
 };
 
 @Exclude()

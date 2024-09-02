@@ -147,9 +147,6 @@ export class OnOfficeService {
         {
           _id: 1,
           companyId: 1,
-          'config.color': 1,
-          'config.logo': 1,
-          'config.mapIcon': 1,
         },
       );
 
@@ -182,11 +179,6 @@ export class OnOfficeService {
         integrationUserId,
         parameters,
         accessToken: extendedClaim,
-        config: {
-          color: parentUser?.config?.color,
-          logo: parentUser?.config?.logo,
-          mapIcon: parentUser?.config?.mapIcon,
-        },
         integrationType: this.integrationType,
         isContingentProvided: true,
         parentId: parentUser?.id,
@@ -318,8 +310,7 @@ export class OnOfficeService {
         realEstate.id,
       ),
       subscription: integrationUser.subscription,
-      poiIcons:
-        integrationUser.poiIcons || integrationUser.parentUser?.poiIcons,
+      poiIcons: integrationUser.company.config?.poiIcons,
     };
   }
 
@@ -474,11 +465,7 @@ export class OnOfficeService {
   }
 
   async updateEstTextFields(
-    {
-      parameters,
-      config: { exportMatching },
-      parentUser,
-    }: TIntegrationUserDocument,
+    { parameters, company: { config } }: TIntegrationUserDocument,
     integrationId: string,
     textFieldsParams: TUpdEstTextFieldParams[],
   ): Promise<void> {
@@ -495,8 +482,7 @@ export class OnOfficeService {
     );
 
     const defaultMaxTextLength = 2000;
-    const resExportMatching =
-      exportMatching || parentUser?.config?.exportMatching;
+    const resExportMatching = config?.exportMatching;
 
     const processTextFieldParams = ({
       exportType,
@@ -581,11 +567,7 @@ export class OnOfficeService {
   }
 
   async uploadEstateFile(
-    {
-      parameters,
-      config: { exportMatching },
-      parentUser,
-    }: TIntegrationUserDocument,
+    { parameters, company: { config } }: TIntegrationUserDocument,
     {
       base64Image,
       exportType,
@@ -676,12 +658,11 @@ export class OnOfficeService {
       },
     };
 
-    const resExportMatching =
-      exportMatching || parentUser?.config?.exportMatching;
+    const exportMatching = config?.exportMatching;
 
-    if (resExportMatching && resExportMatching[exportType]) {
+    if (exportMatching && exportMatching[exportType]) {
       finalRequest.request.actions[0].parameters.documentAttribute =
-        resExportMatching[exportType].fieldId;
+        exportMatching[exportType].fieldId;
     }
 
     const finalResponse = await this.onOfficeApiService.sendRequest(
@@ -929,14 +910,26 @@ export class OnOfficeService {
         extendedClaim,
       });
 
+      if (color || logo) {
+        await this.companyService.updateOne(
+          { _id: integrationUser.company._id },
+          {
+            $set: {
+              accessToken: extendedClaim,
+              'config.color': color
+                ? `#${color}`
+                : integrationUser.company.config?.color,
+              'config.logo': logo
+                ? convertBase64ContentToUri(logo)
+                : integrationUser.company.config?.logo,
+            },
+          },
+        );
+      }
+
       const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
         $set: {
           accessToken: extendedClaim,
-          'config.color': color ? `#${color}` : parentUser?.config.color,
-          'config.logo': logo
-            ? convertBase64ContentToUri(logo)
-            : parentUser?.config.logo,
-          'config.mapIcon': parentUser?.config.mapIcon,
           'parameters.extendedClaim': extendedClaim,
           'parameters.parameterCacheId': parameterCacheId,
           'parameters.customerName': customerName,
@@ -980,17 +973,26 @@ export class OnOfficeService {
           extendedClaim,
         });
 
+        if (color || logo) {
+          await this.companyService.updateOne(
+            { _id: groupUser.company._id },
+            {
+              $set: {
+                'config.color': color
+                  ? `#${color}`
+                  : groupUser.company.config?.color,
+                'config.logo': logo
+                  ? convertBase64ContentToUri(logo)
+                  : groupUser.company.config?.logo,
+              },
+            },
+          );
+        }
+
         integrationUser = await this.integrationUserService.create({
           integrationUserId,
           accessToken: extendedClaim,
           companyId: groupUser.companyId,
-          config: {
-            color: color ? `#${color}` : parentUser?.config.color,
-            logo: logo
-              ? convertBase64ContentToUri(logo)
-              : parentUser?.config.logo,
-            mapIcon: parentUser?.config.mapIcon,
-          },
           integrationType: this.integrationType,
           parameters: {
             parameterCacheId,

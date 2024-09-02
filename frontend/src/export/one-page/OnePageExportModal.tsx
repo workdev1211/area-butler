@@ -11,12 +11,7 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "context/SearchContext";
-import { UserContext } from "context/UserContext";
-import {
-  ApiUser,
-  OsmName,
-  TPoiGroupName,
-} from "../../../../shared/types/types";
+import { OsmName, TPoiGroupName } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../shared/search-result.types";
 import { setBackgroundColor } from "../../shared/shared.functions";
@@ -33,7 +28,6 @@ import {
 import OnePagePngDownload from "./OnePagePngDownloadButton";
 import { useOpenAi } from "../../hooks/openai";
 import { onePageCharacterLimit } from "../../../../shared/constants/constants";
-import { IApiIntegrationUser } from "../../../../shared/types/integration-user";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import {
@@ -79,7 +73,6 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
 }) => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { userState } = useContext(UserContext);
   const {
     cachingState: { onePage: cachedOnePage, openAi: cachedOpenAi },
     cachingDispatch,
@@ -93,13 +86,10 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     lng: searchContextState.responseConfig?.language,
   });
   const { fetchOpenAiResponse } = useOpenAi();
-  const { createDirectLink } = useTools();
+  const { createDirectLink, getActualUser } = useTools();
 
-  const user = userState.user as ApiUser;
-  const integrationUser = userState.integrationUser as IApiIntegrationUser;
-
-  const resultingPoiIcons =
-    user?.poiIcons?.menuPoiIcons || integrationUser?.poiIcons?.menuPoiIcons;
+  const user = getActualUser();
+  const resultingPoiIcons = user.config.poiIcons?.menuPoiIcons;
 
   const initSelectMapClippings = searchContextState.mapClippings.length
     ? searchContextState.mapClippings.map((c: MapClipping, i) => ({
@@ -261,11 +251,12 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     });
   };
 
-  const userColor = integrationUser
-    ? integrationUser.config.color
-    : user?.color;
-  const userLogo = integrationUser ? integrationUser.config.logo : user?.logo;
-  const isTrial = user?.subscription?.type === ApiSubscriptionPlanType.TRIAL;
+  const userColor = user.config.color;
+  const userLogo = user.config.logo;
+  const isTrial =
+    "integrationUserId" in user
+      ? false
+      : user.subscription?.type === ApiSubscriptionPlanType.TRIAL;
 
   const buttonTitle = t(IntlKeys.snapshotEditor.dataTab.generateLocationExpose);
   const snapshotConfig = searchContextState.responseConfig!;
@@ -275,7 +266,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     userColor ||
     "linear-gradient(to right, #aa0c54, #cd1543 40%)";
   const logo = userLogo || areaButlerLogo;
-  const exportFonts = user?.exportFonts;
+  const exportFonts = user.config.exportFonts;
 
   return (
     <div id="one-page-expose-modal" className="modal modal-open z-2000">

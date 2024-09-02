@@ -2,14 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, FilterQuery, SchemaTypes } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
-import {
-  IApiMapboxStyle,
-  IApiUserExportFont,
-  IApiUserPoiIcons,
-} from '@area-butler-types/types';
 import { Subscription, SubscriptionDocument } from './subscription.schema';
-import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
-import { availableCountries } from '../../../../shared/constants/location';
 import {
   COMPANY_PATH,
   foreignIdGetSet,
@@ -62,39 +55,11 @@ export class User {
 
   // OLD
 
-  // TODO should be renamed to 'extraMapboxStyles'
-  @Prop({ type: Array, default: [] })
-  additionalMapBoxStyles: IApiMapboxStyle[];
-
-  @Prop({
-    type: Array,
-    enum: availableCountries,
-  })
-  allowedCountries: Iso3166_1Alpha2CountriesEnum[];
-
-  @Prop({ type: String })
-  color: string;
-
-  @Prop({ type: Array })
-  exportFonts: IApiUserExportFont[];
-
-  @Prop({ type: String })
-  logo: string;
-
-  @Prop({ type: String })
-  mapboxAccessToken: string;
-
-  @Prop({ type: String })
-  mapIcon: string;
-
   @Prop({
     type: SchemaTypes.ObjectId,
     ...foreignIdGetSet,
   })
   parentId: string;
-
-  @Prop({ type: Object })
-  poiIcons: IApiUserPoiIcons;
 
   parentUser: UserDocument;
   subscription: SubscriptionDocument;

@@ -1,7 +1,7 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import ImageUpload from "../components/ImageUpload";
 import { UserActionTypes, UserContext } from "../context/UserContext";
@@ -9,19 +9,19 @@ import ColorPicker from "../components/ColorPicker";
 import { toastSuccess } from "../shared/shared.functions";
 import { useTools } from "../hooks/tools";
 
-const UserExportSettings: FunctionComponent = () => {
+const UserExportSettings: FC = () => {
   const { t } = useTranslation();
-  const {
-    userState: { user },
-    userDispatch,
-  } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
-  const { updateUserSettings } = useTools();
+  const { getActualUser, updateUserSettings } = useTools();
+  const user = getActualUser();
 
-  const [color, setColor] = useState<string | undefined>(user!.color || "");
-  const [logo, setLogo] = useState<string | undefined>(user!.logo || "");
+  const [color, setColor] = useState<string | undefined>(
+    user.config.color || ""
+  );
+  const [logo, setLogo] = useState<string | undefined>(user.config.logo || "");
   const [mapIcon, setMapIcon] = useState<string | undefined>(
-    user!.mapIcon || ""
+    user.config.mapIcon || ""
   );
 
   const updateLogo = async (logo: string | null): Promise<void> => {
@@ -86,10 +86,10 @@ const UserExportSettings: FunctionComponent = () => {
 
   return (
     <div className="mt-10">
-      <h1 className="font-bold text-xl mb-2">{t(IntlKeys.yourProfile.exportSettings)}</h1>
-      <p>
-        {t(IntlKeys.yourProfile.exportSettingsDescription)}
-      </p>
+      <h1 className="font-bold text-xl mb-2">
+        {t(IntlKeys.yourProfile.exportSettings)}
+      </h1>
+      <p>{t(IntlKeys.yourProfile.exportSettingsDescription)}</p>
       <ImageUpload image={logo} setImage={setLogo} onChange={updateLogo} />
       <ImageUpload
         image={mapIcon}
@@ -102,7 +102,7 @@ const UserExportSettings: FunctionComponent = () => {
       <div className="mt-5">
         <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
       </div>
-      {(!!user!.logo || !!user!.color || !!user!.mapIcon) && (
+      {(!!user.config.logo || !!user.config.color || !!user.config.mapIcon) && (
         <div className="mt-5">
           <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
             {t(IntlKeys.yourProfile.exportSettingsResetBtn)}

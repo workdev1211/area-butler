@@ -278,7 +278,6 @@ export class PotentialCustomerService {
 
     const user = await this.userService.findById({
       userId,
-      withSubscription: true,
     });
 
     const customers = await this.fetchPotentialCustomers(user);

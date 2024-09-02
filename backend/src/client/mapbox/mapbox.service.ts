@@ -18,12 +18,12 @@ export class MapboxService {
   // TODO move to the config service / env vars
   private readonly tokenCreateUrl =
     'https://api.mapbox.com/tokens/v2/kudiba-tech';
-  private readonly tileCache: any = {};
+  private readonly tileCache: object = {};
 
-  constructor(private readonly http: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
-  async createAccessToken(userId: string): Promise<string> {
-    const tokenTitle = `user-token-${userId}`;
+  async createAccessToken(companyId: string): Promise<string> {
+    const tokenTitle = `company-token-${companyId}`;
 
     const body = {
       note: tokenTitle,
@@ -37,7 +37,7 @@ export class MapboxService {
     try {
       const { token } = (
         await firstValueFrom(
-          this.http.post<{ token: string }>(tokenCreateUrl, body),
+          this.httpService.post<{ token: string }>(tokenCreateUrl, body),
         )
       ).data;
 
@@ -56,7 +56,9 @@ export class MapboxService {
     }
 
     const tile = (
-      await firstValueFrom(this.http.get(url, { responseType: 'arraybuffer' }))
+      await firstValueFrom(
+        this.httpService.get(url, { responseType: 'arraybuffer' }),
+      )
     ).data;
 
     this.tileCache[path] = tile;

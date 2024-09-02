@@ -85,8 +85,8 @@ export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
   let fontFamily = "archia";
   let cheatSheetStyle: string;
 
-  if (!isIntegrationUser && user?.exportFonts?.length) {
-    const exportFont = user.exportFonts[0];
+  if (!isIntegrationUser && user.config.exportFonts?.length) {
+    const exportFont = user.config.exportFonts[0];
     fontFamily = exportFont.fontFamily;
 
     cheatSheetStyle = `#cheatsheet-pdf { font-family: ${fontFamily}; } ${exportFont.fontFaces.join(

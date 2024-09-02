@@ -17,7 +17,7 @@ import {
   ApiCoordinates,
   ApiOsmLocation,
   AreaButlerExportTypesEnum,
-  IApiUserPoiIcons,
+  IApiPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
@@ -70,7 +70,7 @@ interface ISearchResultContainerProps {
   saveConfig?: () => Promise<void>;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
-  userPoiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
   isNewSnapshot?: boolean;
 }
 
@@ -88,7 +88,7 @@ const SearchResultContainer = forwardRef<
       saveConfig,
       onPoiAdd,
       isTrial,
-      userPoiIcons,
+      poiIcons,
       isNewSnapshot,
     },
     parentMapRef
@@ -487,7 +487,8 @@ const SearchResultContainer = forwardRef<
     let containerClasses = `search-result-container theme-${
       responseConfig?.theme
     } ${isDark ? "dark" : "bright"}-primary-color`;
-    const resUserPoiIcons = userPoiIcons || user.poiIcons;
+
+    const resPoiIcons = poiIcons || user.config.poiIcons;
 
     const isMapMenuKFPresent =
       isThemeKf && (!isEmbeddedMode || !responseConfig?.hideMapMenu);
@@ -537,7 +538,7 @@ const SearchResultContainer = forwardRef<
             color={primaryColor?.slice(1)}
             invertColor={responseConfig?.isInvertBaseColor}
             directLink={directLink}
-            userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
+            menuPoiIcons={resPoiIcons?.menuPoiIcons}
             transportationParams={transportationParams}
             activeMeans={hideIsochrones ? [] : responseActiveMeans}
           />
@@ -621,12 +622,10 @@ const SearchResultContainer = forwardRef<
               });
             }}
             isTrial={isTrial}
-            userMapPoiIcons={resUserPoiIcons?.mapPoiIcons}
+            mapPoiIcons={resPoiIcons?.mapPoiIcons}
             isIntegration={isIntegrationUser}
             allowedCountries={
-              (isIntegrationUser
-                ? user.config.allowedCountries
-                : user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE]
+              user.config.allowedCountries || [Iso3166_1Alpha2CountriesEnum.DE]
             }
             ref={mapRef}
           />
@@ -651,7 +650,7 @@ const SearchResultContainer = forwardRef<
             isMapMenuOpen={isMapMenuOpen}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-            userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
+            menuPoiIcons={resPoiIcons?.menuPoiIcons}
           />
         )}
         {isMapMenuPresent && (
@@ -663,7 +662,7 @@ const SearchResultContainer = forwardRef<
             saveConfig={saveConfig}
             toggleRoutesToEntity={toggleRoutesToEntity}
             toggleTransitRoutesToEntity={toggleTransitRoutesToEntity}
-            userPoiIcons={resUserPoiIcons}
+            poiIcons={resPoiIcons}
           />
         )}
         {responseConfig?.isFilterMenuAvail && (

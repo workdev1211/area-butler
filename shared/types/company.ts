@@ -8,8 +8,8 @@ import {
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import {
   IApiMapboxStyle,
+  IApiPoiIcons,
   IApiUserExportFont,
-  IApiUserPoiIcons,
   TAreaButlerExportTypes,
 } from "./types";
 import { IntegrationTypesEnum } from "./integration";
@@ -37,14 +37,16 @@ export interface ICompanyConfig {
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
   color?: string;
   exportFonts?: IApiUserExportFont[];
-  exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
+  exportMatching?: Partial<
+    Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
+  >;
   extraMapboxStyles?: IApiMapboxStyle[];
   isSpecialLink?: boolean;
   logo?: string;
   mapboxAccessToken?: string;
   mapIcon?: string;
   name?: string;
-  poiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
   // templateSnapshot?: SearchResultSnapshotDocument; // TODO currently buggy
   templateSnapshotId?: string;
 }

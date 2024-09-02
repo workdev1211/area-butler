@@ -58,7 +58,6 @@ export class MyVivendaHandleLoginInterceptor implements NestInterceptor {
 
       user = await this.userService.findById({
         userId,
-        withSubscription: true,
       });
     } catch (e) {}
 

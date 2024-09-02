@@ -13,9 +13,8 @@ import {
   systemEnvironments,
 } from "../constants/constants";
 import { IntegrationTypesEnum } from "./integration";
-import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import { OpenAiQueryTypeEnum } from "./open-ai";
-import { IUserConfig } from "./user";
+import { IApiUserConfig } from "./user";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -63,7 +62,7 @@ export enum LanguageTypeEnum {
 }
 
 export interface ApiUser {
-  config: IUserConfig;
+  config: IApiUserConfig;
   email: string;
   requestContingents: ApiRequestContingent[];
   requestsExecuted: number;
@@ -71,15 +70,6 @@ export interface ApiUser {
   accessToken?: string; // only on the frontend and MyVivenda specific for the moment
   consentGiven?: Date;
   subscription?: ApiUserSubscription;
-
-  // OLD CONFIG
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
-  color?: string;
-  exportFonts?: IApiUserExportFont[];
-  extraMapboxStyles: IApiMapboxStyle[];
-  logo?: string;
-  mapIcon?: string;
-  poiIcons?: IApiUserPoiIcons;
 
   // OLD
   isChild: boolean;
@@ -509,18 +499,14 @@ export enum CsvFileFormatEnum {
   ON_OFFICE = "ON_OFFICE",
 }
 
-export interface IApiUserPoiIcon {
+export interface IApiPoiIcon {
   name: TPoiGroupName;
   file: string;
 }
 
-export interface IApiUserPoiIcons {
-  mapPoiIcons?: IApiUserPoiIcon[];
-  menuPoiIcons?: IApiUserPoiIcon[];
-}
-
-export interface IApiUserAssets {
-  poiIcons: IApiUserPoiIcons;
+export interface IApiPoiIcons {
+  mapPoiIcons?: IApiPoiIcon[];
+  menuPoiIcons?: IApiPoiIcon[];
 }
 
 export enum ApiDataProvisionEnum {
@@ -556,7 +542,7 @@ export enum MapDisplayModesEnum {
 export interface IApiFetchedEmbeddedData {
   snapshotRes: ApiSearchResultSnapshotResponse;
   realEstates?: ApiRealEstateListing[];
-  userPoiIcons?: IApiUserPoiIcons;
+  poiIcons?: IApiPoiIcons;
 }
 
 export enum FeatureTypeEnum {
@@ -570,17 +556,27 @@ export enum FeatureTypeEnum {
 
 export enum AreaButlerExportTypesEnum {
   EMBEDDED_LINKS = "EMBEDDED_LINKS",
+  INLINE_FRAME = "INLINE_FRAME",
   LINK_WITH_ADDRESS = "LINK_WITH_ADDRESS",
   LINK_WO_ADDRESS = "LINK_WO_ADDRESS",
-  QR_CODE = "QR_CODE",
-  INLINE_FRAME = "INLINE_FRAME",
   ONE_PAGE_PNG = "ONE_PAGE_PNG",
+  QR_CODE = "QR_CODE",
   SCREENSHOT = "SCREENSHOT",
 }
 
 export type TAreaButlerExportTypes =
-  | OpenAiQueryTypeEnum
-  | AreaButlerExportTypesEnum;
+  | Extract<
+      OpenAiQueryTypeEnum,
+      | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+      | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+      | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+    >
+  | Extract<
+      AreaButlerExportTypesEnum,
+      | AreaButlerExportTypesEnum.INLINE_FRAME
+      | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+      | AreaButlerExportTypesEnum.LINK_WO_ADDRESS
+    >;
 
 export interface IApiUploadFileReq {
   base64Image: string;

@@ -21,7 +21,7 @@ export type TMyVivendaMapMenuProps = Pick<
   | "toggleTransitRoute"
   | "toggleAllLocalities"
   | "config"
-  | "userMenuPoiIcons"
+  | "menuPoiIcons"
 >;
 
 const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
@@ -34,7 +34,7 @@ const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
   toggleRoute,
   toggleTransitRoute,
   toggleAllLocalities,
-  userMenuPoiIcons,
+  menuPoiIcons,
 }) => {
   const {
     searchContextState: { responseConfig },
@@ -88,7 +88,7 @@ const MyVivendaMapMenu: FC<TMyVivendaMapMenuProps> = ({
           toggleRoute={toggleRoute}
           toggleTransitRoute={toggleTransitRoute}
           toggleAllLocalities={toggleAllLocalities}
-          userMenuPoiIcons={userMenuPoiIcons}
+          menuPoiIcons={menuPoiIcons}
         />
       </div>
     </div>

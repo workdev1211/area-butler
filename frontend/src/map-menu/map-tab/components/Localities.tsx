@@ -5,7 +5,7 @@ import { IntlKeys } from "i18n/keys";
 
 import { ResultEntity } from "../../../shared/search-result.types";
 import {
-  IApiUserPoiIcon,
+  IApiPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
@@ -24,9 +24,9 @@ import MapMenuListItem from "../../components/menu-item/MapMenuListItem";
 import { IPoiIcon } from "../../../shared/shared.types";
 import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
 import { SearchContext } from "../../../context/SearchContext";
-import { UserContext } from "../../../context/UserContext";
 import { OsmEntityMapper } from "../../../../../shared/types/osm-entity-mapper";
 import { getOsmCategories } from "../../../shared/pois.functions";
+import { useTools } from "../../../hooks/tools";
 
 interface ILocalitiesProps {
   toggleAllLocalities: () => void;
@@ -36,7 +36,7 @@ interface ILocalitiesProps {
   transitRoutes: EntityTransitRoute[];
   mapDisplayMode: MapDisplayModesEnum;
   backgroundColor: string;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
+  menuPoiIcons?: IApiPoiIcon[];
 }
 
 const Localities: FC<ILocalitiesProps> = ({
@@ -47,12 +47,9 @@ const Localities: FC<ILocalitiesProps> = ({
   transitRoutes,
   mapDisplayMode,
   backgroundColor,
-  userMenuPoiIcons,
+  menuPoiIcons,
 }) => {
   const { t } = useTranslation();
-  const {
-    userState: { user },
-  } = useContext(UserContext);
   const {
     searchContextState: {
       entityGroupsByActMeans: groupedEntries,
@@ -60,7 +57,10 @@ const Localities: FC<ILocalitiesProps> = ({
     },
   } = useContext(SearchContext);
 
-  const resultingPoiIcons = userMenuPoiIcons || user?.poiIcons?.menuPoiIcons;
+  const { getActualUser } = useTools();
+
+  const user = getActualUser();
+  const resultingPoiIcons = menuPoiIcons || user.config.poiIcons?.menuPoiIcons;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!isEditorMode);

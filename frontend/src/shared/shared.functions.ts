@@ -13,7 +13,7 @@ import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiUser,
-  IApiUserPoiIcon,
+  IApiPoiIcon,
   MeansOfTransportation,
   OsmName,
   PoiGroupEnum,
@@ -172,10 +172,7 @@ const checkIsCountryAllowed = ({
     availableCountries || allowedCountries;
 
   if (!resAllowedCountries && user) {
-    resAllowedCountries =
-      "integrationUserId" in user
-        ? user.config.allowedCountries
-        : user.allowedCountries;
+    resAllowedCountries = user.config.allowedCountries;
   }
 
   if (!resAllowedCountries) {
@@ -269,7 +266,7 @@ export const toastDefaultError = (): void => {
 // TODO think about uniting "getRealEstateListingsIcon", "getPreferredLocationsIcon" and "deriveIconForOsmName" into a single method
 export const preferredLocationsTitle = "Wichtige Adressen";
 export const getPreferredLocationsIcon = (
-  userPoiIcons?: IApiUserPoiIcon[]
+  userPoiIcons?: IApiPoiIcon[]
 ): IPoiIcon => {
   const customIcon = userPoiIcons?.find(
     ({ name }) => name === OsmName.favorite
@@ -281,9 +278,9 @@ export const getPreferredLocationsIcon = (
 };
 
 export const getRealEstateListingsIcon = (
-  userPoiIcons?: IApiUserPoiIcon[]
+  poiIcons?: IApiPoiIcon[]
 ): IPoiIcon => {
-  const customIcon = userPoiIcons?.find(
+  const customIcon = poiIcons?.find(
     ({ name }) => name === OsmName.property
   )?.file;
 
@@ -308,9 +305,9 @@ export const deriveColorPalette = (hexColor: string): IColorPalette => {
 
 export const deriveIconForPoiGroup = (
   groupName?: TPoiGroupName,
-  userPoiIcons?: IApiUserPoiIcon[]
+  poiIcons?: IApiPoiIcon[]
 ): IPoiIcon => {
-  const customIcon = userPoiIcons?.find(({ name }) => name === groupName)?.file;
+  const customIcon = poiIcons?.find(({ name }) => name === groupName)?.file;
 
   if (customIcon) {
     return { icon: customIcon, color: "transparent", isCustom: true };

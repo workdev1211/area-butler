@@ -17,6 +17,7 @@ import {
   availableCountries,
   defaultAllowedCountries,
 } from '../../../shared/constants/location';
+import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 
 interface IApiFetchPlaceByUser {
   user: UserDocument | TIntegrationUserDocument;
@@ -106,37 +107,22 @@ export class PlaceService {
   }
 
   static checkIsCountryAllowed(
-    user: UserDocument | TIntegrationUserDocument,
+    { company: { config } }: UserDocument | TIntegrationUserDocument,
     place: GeocodeResult,
     methodName?: string,
   ): boolean {
-    const isIntegrationUser = 'integrationUserId' in user;
-    let allowedCountries;
-
-    if (user.parentUser) {
-      allowedCountries = isIntegrationUser
-        ? user.parentUser.config.allowedCountries
-        : user.parentUser.allowedCountries;
-    }
-
-    if (!allowedCountries && !user.parentUser) {
-      allowedCountries = isIntegrationUser
-        ? user.config.allowedCountries
-        : user.allowedCountries;
-    }
-
-    const resAllowedCountries =
-      availableCountries || allowedCountries || defaultAllowedCountries;
+    const allowedCountries =
+      availableCountries || config?.allowedCountries || defaultAllowedCountries;
 
     const country = place.address_components.find(({ types }) =>
       types.includes(PlaceType2.country),
-    )?.short_name;
+    )?.short_name as Iso3166_1Alpha2CountriesEnum;
 
-    if (!resAllowedCountries.includes(country)) {
+    if (!allowedCountries.includes(country)) {
       PlaceService.logger.error(
         `\nMethod: ${methodName || PlaceService.checkIsCountryAllowed.name}.` +
           `\nMessage: ${`Country ${country} is not allowed!`}` +
-          `\nAllowed countries: [${resAllowedCountries.join(', ')}].`,
+          `\nAllowed countries: [${allowedCountries.join(', ')}].`,
       );
 
       return false;

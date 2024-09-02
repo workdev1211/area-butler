@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -40,7 +40,7 @@ interface IExposeDownloadProps {
   qrCode: IQrCodeState;
 }
 
-export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
+export const ExposeDownload: FC<IExposeDownloadProps> = ({
   groupedEntries = [],
   transportationParams = [],
   activeMeans,
@@ -84,8 +84,8 @@ export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
   let fontFamily = "archia";
   let exposeStyle: string;
 
-  if (!isIntegrationUser && user?.exportFonts?.length) {
-    const exportFont = user.exportFonts[0];
+  if (!isIntegrationUser && user.config.exportFonts?.length) {
+    const exportFont = user.config.exportFonts[0];
     fontFamily = exportFont.fontFamily;
 
     exposeStyle = `#expose-pdf { font-family: ${fontFamily}; } ${exportFont.fontFaces.join(

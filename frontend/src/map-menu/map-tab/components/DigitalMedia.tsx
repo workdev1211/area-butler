@@ -27,7 +27,6 @@ import {
   IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
-import { UserContext } from "../../../context/UserContext";
 import UnlockProductButton from "../../components/UnlockProductButton";
 import { EntityGroup } from "../../../shared/search-result.types";
 import { getFilteredLegend } from "../../../export/shared/shared.functions";
@@ -57,9 +56,6 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
 }) => {
   const { integrationType } = useContext(ConfigContext);
   const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-  const {
     searchContextState: {
       entityGroupsByActMeans,
       printingZipActive,
@@ -75,10 +71,16 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
     lng: responseConfig?.language || LanguageTypeEnum.de,
   });
   const { sendToIntegration } = useIntegrationTools();
-  const { checkIsFeatAvailable, createCodeSnippet, createDirectLink } =
-    useTools();
+  const {
+    checkIsFeatAvailable,
+    createCodeSnippet,
+    createDirectLink,
+    getActualUser,
+  } = useTools();
 
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
+
+  const user = getActualUser();
 
   useEffect(() => {
     if (!printingZipActive) {
@@ -137,10 +139,8 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
   const isIframeAvailable = checkIsFeatAvailable(FeatureTypeEnum.IFRAME);
 
   const isIntUserIframeExportAvail = !!(
-    integrationUser?.config.exportMatching &&
-    integrationUser?.config.exportMatching[
-      AreaButlerExportTypesEnum.INLINE_FRAME
-    ]
+    user.config.exportMatching &&
+    user.config.exportMatching[AreaButlerExportTypesEnum.INLINE_FRAME]
   );
 
   const codeSnippet = createCodeSnippet({ language: responseConfig?.language });
