@@ -23,7 +23,6 @@ import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import FileUploadDto from '../dto/file-upload.dto';
 import {
   ApiExampleFileTypeEnum,
@@ -52,7 +51,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiOperation({ description: 'Insert a new real estate listing' })
   @Post()
   async createRealEstateListing(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() realEstateListing: ApiUpsertRealEstateListingDto,
   ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
@@ -179,7 +178,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @Get('crm-import/:type')
   async importFromCrm(
     @Param('type') type: ApiRealEstateExtSourcesEnum,
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
   ): Promise<string[]> {
     return this.realEstateCrmImportService.importFromCrm(user, type);
   }
@@ -187,7 +186,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiOperation({ description: 'Test a specified CRM connection' })
   @Post('crm-test')
   testExtConnection(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     connectSettings: ApiUserExtConnectSettingsReqDto,
   ): Promise<void> {

@@ -10,12 +10,11 @@ import {
   TUnlockIntProduct,
 } from "../../../shared/types/integration";
 import { ConfigContext } from "../context/ConfigContext";
-
 import "./OpenAiModal.scss";
 import OpenAiChat from "./open-ai/OpenAiChat";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
-import { useTools } from "../hooks/tools";
 import { FeatureTypeEnum } from "../../../shared/types/types";
+import { useUserState } from "../hooks/userstate";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -33,7 +32,7 @@ const OpenAiModal: FC<IOpenAiModalProps> = ({
   const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { sendToIntegration } = useIntegrationTools();
-  const { checkIsFeatAvailable } = useTools();
+  const { checkIsFeatAvailable } = useUserState();
 
   const isIntegration = !!integrationType;
   const isSendToIntAllowed = (queryType: OpenAiQueryTypeEnum) => {

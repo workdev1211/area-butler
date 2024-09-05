@@ -1,11 +1,10 @@
 import { FC, ReactNode, useContext } from "react";
-
-import { useTranslation } from "react-i18next";
-import { IntlKeys } from "i18n/keys";
-
 import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { toastError, toastSuccess } from "shared/shared.functions";
@@ -17,6 +16,7 @@ import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useTools } from "../hooks/tools";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { useLocationData } from "../hooks/locationdata";
+import { useUserState } from "../hooks/userstate";
 
 interface ISnapshotsTableRowProps {
   snapshot: ApiSearchResultSnapshotResponse;
@@ -32,8 +32,8 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
 
   const history = useHistory();
   const { duplicateSnapshot, deleteSnapshot } = useLocationData();
-  const { createDirectLink, updateUserSettings } = useTools();
-  const { getActualUser } = useTools();
+  const { createDirectLink } = useTools();
+  const { getActualUser, updateUserConfig } = useUserState();
   const {
     config: { templateSnapshotId },
   } = getActualUser();
@@ -89,7 +89,7 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   const updateTemplateSnapshotId = async (
     updatedTemplateId: string | null
   ): Promise<void> => {
-    await updateUserSettings({ templateSnapshotId: updatedTemplateId });
+    await updateUserConfig({ templateSnapshotId: updatedTemplateId });
 
     userDispatch({
       type: UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID,

@@ -1,9 +1,8 @@
 import { FC, useRef, useState } from "react";
+import ReactToPrint from "react-to-print";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
-
-import ReactToPrint from "react-to-print";
 
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
@@ -16,9 +15,9 @@ import Cheatsheet from "./Cheatsheet";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
-import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
+import { useUserState } from "../../hooks/userstate";
 
 interface ICheatsheetDownloadProps {
   searchResponse: ApiSearchResponse;
@@ -63,7 +62,7 @@ export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
   const componentRef = useRef();
   const [activePrinting, setActivePrinting] = useState(false);
 
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 

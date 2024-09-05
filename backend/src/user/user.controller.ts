@@ -13,15 +13,18 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
-import { ApiTourNamesEnum } from '@area-butler-types/types';
+import { ApiTourNamesEnum, ApiUser } from '@area-butler-types/types';
 import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
 import { SubscriptionService } from './subscription.service';
 import { UserService } from './user.service';
-import ApiUserDto from './dto/api-user.dto';
-import ApiUserSubscriptionDto from './dto/api-user-subscription.dto';
-import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
+import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
+
+interface IUserRequest extends Request {
+  user: { email: string };
+}
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -34,89 +37,88 @@ export class UserController {
   ) {}
 
   @ApiProperty({ description: 'Get the current user' })
-  @Get('me')
-  async me(@Req() request): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-
-    const user = await this.userService.upsertUser(
-      requestUser.email,
-      requestUser.email,
+  @Get('login')
+  async login(@Req() { user: { email } }: IUserRequest): Promise<ApiUser> {
+    return this.userService.convertDocToApiUser(
+      await this.userService.upsertUser(email, email),
     );
-
-    return this.userService.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Get the current user subscriptions' })
-  @Get('me/subscriptions')
+  @Get('subscriptions')
   async fetchUserSubscriptions(
-    @Req() request,
-  ): Promise<ApiUserSubscriptionDto[]> {
-    const requestUser = request?.user;
-
-    const user = await this.userService.upsertUser(
-      requestUser.email,
-      requestUser.email,
-    );
+    @Req() { user: { email } }: IUserRequest,
+  ): Promise<ApiUserSubscription[]> {
+    const user = await this.userService.upsertUser(email, email);
 
     return (
       await this.subscriptionService.fetchUserSubscriptions(
         user.parentId || user.id,
       )
-    ).map((s) => mapSubscriptionToApiSubscription(s));
+    ).map((subscription) => mapSubscriptionToApiSubscription(subscription));
   }
 
   @ApiProperty({ description: 'Cancel trial subscription' })
-  @Delete('me/cancel-trial')
-  async cancelTrialSubscription(@Req() request): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-
-    const user = await this.userService.upsertUser(
-      requestUser.email,
-      requestUser.email,
-    );
+  @Delete('cancel-trial')
+  async cancelTrialSubscription(
+    @Req() { user: { email } }: IUserRequest,
+  ): Promise<ApiUser> {
+    const user = await this.userService.upsertUser(email, email);
 
     // TODO think about creating a trial service
     await this.subscriptionService.removeTrialSubscription(user.id);
 
-    return this.userService.transformToApiUser(user);
+    return this.userService.convertDocToApiUser(user);
   }
 
-  @ApiProperty({ description: 'Update the current user' })
-  @Post('me')
-  async patch(
-    @Req() request,
-    @Body() upsertUser: ApiUpsertUserDto,
-  ): Promise<ApiUserDto> {
-    const requestUser = request?.user;
+  @ApiProperty({ description: 'Update current user config' })
+  @Patch('config')
+  async config(
+    @Req() { user: { email } }: IUserRequest,
+    @Body() config: ApiUserSettingsDto,
+  ): Promise<ApiUser> {
+    if (config.logo) {
+      this.checkMimeType(config.logo);
+    }
 
-    const user = await this.userService.patchUser(
-      requestUser.email,
-      upsertUser,
+    if (config.mapIcon) {
+      this.checkMimeType(config.mapIcon);
+    }
+
+    return this.userService.convertDocToApiUser(
+      await this.userService.updateConfig(email, config),
     );
-
-    return this.userService.transformToApiUser(user);
   }
 
-  @ApiProperty({ description: 'Update the current user settings' })
-  @Patch('me/settings')
-  async settings(
-    @Req() request,
-    @Body() settings: ApiUserSettingsDto,
-  ): Promise<ApiUserDto> {
-    if (settings.logo) {
-      this.checkMimeType(settings.logo);
-    }
-
-    if (settings.mapIcon) {
-      this.checkMimeType(settings.mapIcon);
-    }
-
-    const user = await this.userService.updateSettings(
-      request?.user?.email,
-      settings,
+  @ApiProperty({ description: 'Set consent for the current user' })
+  @Post('consent')
+  async giveConsent(
+    @Req() { user: { email } }: IUserRequest,
+  ): Promise<ApiUser> {
+    return this.userService.convertDocToApiUser(
+      await this.userService.giveConsent(email),
     );
+  }
 
-    return this.userService.transformToApiUser(user);
+  @ApiProperty({ description: 'Hide single tour for current user' })
+  @Post('hide-tour/:tour')
+  async hideTour(
+    @Req() { user: { email } }: IUserRequest,
+    @Param('tour') tour: ApiTourNamesEnum,
+  ): Promise<ApiUser> {
+    return this.userService.convertDocToApiUser(
+      await this.userService.hideTour(email, tour),
+    );
+  }
+
+  @ApiProperty({ description: 'Hide tours for current user' })
+  @Post('hide-tour')
+  async hideAllTours(
+    @Req() { user: { email } }: IUserRequest,
+  ): Promise<ApiUser> {
+    return this.userService.convertDocToApiUser(
+      await this.userService.hideTour(email),
+    );
   }
 
   private checkMimeType(base64EncodedImage: string): void {
@@ -125,35 +127,5 @@ export class UserController {
     if (!mimeInfo.includes('image/')) {
       throw new HttpException('Unsupported mime type', HttpStatus.BAD_REQUEST);
     }
-  }
-
-  @ApiProperty({ description: 'Set consent for the current user' })
-  @Post('me/consent')
-  async giveConsent(@Req() request): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-    const user = await this.userService.giveConsent(requestUser.email);
-
-    return this.userService.transformToApiUser(user);
-  }
-
-  @ApiProperty({ description: 'Hide single tour for current user' })
-  @Post('me/hide-tour/:tour')
-  async hideTour(
-    @Req() request,
-    @Param('tour') tour: ApiTourNamesEnum,
-  ): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-    const user = await this.userService.hideTour(requestUser.email, tour);
-
-    return this.userService.transformToApiUser(user);
-  }
-
-  @ApiProperty({ description: 'Hide tours for current user' })
-  @Post('me/hide-tour')
-  async hideAllTours(@Req() request): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-    const user = await this.userService.hideTour(requestUser.email);
-
-    return this.userService.transformToApiUser(user);
   }
 }

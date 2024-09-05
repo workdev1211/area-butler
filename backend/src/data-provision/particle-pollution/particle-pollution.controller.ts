@@ -16,7 +16,6 @@ import { Roles, Role } from '../../auth/role/roles.decorator';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { ParticlePollutionDocument } from '../schemas/particle-pollution.schema';
 
 @ApiTags('particle-pollution')
@@ -48,7 +47,7 @@ export class ParticlePollutionController extends AuthenticatedController {
   @ApiOperation({ description: 'Query for particle pollution data' })
   @Post('query')
   async query(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() query: ApiGeometryDto,
   ): Promise<ParticlePollutionDocument[]> {
     return this.particlePollutionService.findIntersecting(user, query);

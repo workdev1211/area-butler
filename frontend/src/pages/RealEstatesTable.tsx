@@ -17,7 +17,7 @@ import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { IRealEstatesHistoryState } from "../shared/shared.types";
-import { useTools } from "../hooks/tools";
+import { useUserState } from "../hooks/userstate";
 
 interface IRealEstatesTableProps {
   openSnapshotsModal: (realEstate: ApiRealEstateListing) => void;
@@ -37,7 +37,7 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
   const history = useHistory<IRealEstatesHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;

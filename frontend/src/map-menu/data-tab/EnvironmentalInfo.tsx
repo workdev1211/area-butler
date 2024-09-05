@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 
 import { IntlKeys } from "i18n/keys";
 import { useTranslation } from "react-i18next";
@@ -11,8 +11,8 @@ import ParticlePollutionTable from "./data/ParticlePollutionTable";
 import environmentalInfoIcon from "../../assets/icons/map-menu/03-umweltinformationen.svg";
 import particlePollutionIcon from "../../assets/icons/particle-pollution.svg";
 import { TUnlockIntProduct } from "../../../../shared/types/integration";
-import { useTools } from "../../hooks/tools";
 import UnlockProductButton from "../components/UnlockProductButton";
+import { useUserState } from "../../hooks/userstate";
 
 interface IEnvironmentalInfoProps {
   isStatsDataAvailable: boolean;
@@ -22,7 +22,7 @@ interface IEnvironmentalInfoProps {
   particlePollutionData?: ApiGeojsonFeature[];
 }
 
-const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
+const EnvironmentalInfo: FC<IEnvironmentalInfoProps> = ({
   isStatsDataAvailable,
   performUnlock,
   backgroundColor,
@@ -30,7 +30,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
   particlePollutionData,
 }) => {
   const { t } = useTranslation();
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 

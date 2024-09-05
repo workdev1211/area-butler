@@ -67,11 +67,11 @@ import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import { useRealEstateData } from "../hooks/realestatedata";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { defaultTransportParams } from "../../../shared/constants/location";
-import { useTools } from "../hooks/tools";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 import { deriveInitialEntityGroups } from "../shared/pois.functions";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
+import { useUserState } from "../hooks/userstate";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -88,7 +88,7 @@ const SearchParamsPage: FC = () => {
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
   const { createLocation, createSnapshot } = useLocationData();
-  const { checkIsFeatAvailable, getActualUser } = useTools();
+  const { checkIsFeatAvailable, getActualUser } = useUserState();
   const { unlockProduct } = useIntegrationTools();
 
   const user = getActualUser();

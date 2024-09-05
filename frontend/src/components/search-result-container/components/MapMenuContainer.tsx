@@ -26,8 +26,8 @@ import {
   IEditorTabProps,
   ResultEntity,
 } from "../../../shared/search-result.types";
-import { useTools } from "../../../hooks/tools";
 import { deriveAvailableMeansFromResponse } from "../../../shared/shared.functions";
+import { useUserState } from "../../../hooks/userstate";
 
 interface IMapMenuContainerProps {
   isMapMenuOpen: boolean;
@@ -81,7 +81,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
 
   const { integrationType } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
 
   const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
   const [dataTabProps, setDataTabProps] = useState<IDataTabProps>();
@@ -142,7 +142,6 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
       locationIndexData,
       snapshotId,
       showInsights: mapDisplayMode === "EDITOR",
-      mapDisplayMode,
       openUpgradeSubscriptionModal: (message) => {
         userDispatch({
           type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,

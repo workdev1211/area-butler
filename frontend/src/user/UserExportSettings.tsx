@@ -7,13 +7,13 @@ import ImageUpload from "../components/ImageUpload";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import ColorPicker from "../components/ColorPicker";
 import { toastSuccess } from "../shared/shared.functions";
-import { useTools } from "../hooks/tools";
+import { useUserState } from "../hooks/userstate";
 
 const UserExportSettings: FC = () => {
   const { t } = useTranslation();
   const { userDispatch } = useContext(UserContext);
 
-  const { getActualUser, updateUserSettings } = useTools();
+  const { getActualUser, updateUserConfig } = useUserState();
   const user = getActualUser();
 
   const [color, setColor] = useState<string | undefined>(
@@ -25,7 +25,7 @@ const UserExportSettings: FC = () => {
   );
 
   const updateLogo = async (logo: string | null): Promise<void> => {
-    await updateUserSettings({ logo });
+    await updateUserConfig({ logo });
 
     userDispatch({
       type: UserActionTypes.SET_LOGO,
@@ -36,7 +36,7 @@ const UserExportSettings: FC = () => {
   };
 
   const updateMapIcon = async (mapIcon: string | null): Promise<void> => {
-    await updateUserSettings({ mapIcon });
+    await updateUserConfig({ mapIcon });
 
     userDispatch({
       type: UserActionTypes.SET_MAP_ICON,
@@ -47,7 +47,7 @@ const UserExportSettings: FC = () => {
   };
 
   const updateColor = async (color: string | null): Promise<void> => {
-    await updateUserSettings({ color });
+    await updateUserConfig({ color });
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
@@ -58,7 +58,7 @@ const UserExportSettings: FC = () => {
   };
 
   const rollbackSettings = async (): Promise<void> => {
-    await updateUserSettings({
+    await updateUserConfig({
       color: null,
       logo: null,
       mapIcon: null,

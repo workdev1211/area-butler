@@ -1,9 +1,8 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
-
+import { FC, useContext, useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
@@ -18,11 +17,12 @@ import UserExportSettings from "../user/UserExportSettings";
 import { deriveTotalRequestContingent } from "../shared/shared.functions";
 import UserCrmSettings from "../user/UserCrmSettings";
 
-const UserProfilePage: FunctionComponent = () => {
-  const { t } = useTranslation();
-  const [busy, setBusy] = useState(false);
-  const { get } = useHttp();
+const UserProfilePage: FC = () => {
   const { userState, userDispatch } = useContext(UserContext);
+  const { get } = useHttp();
+  const { t } = useTranslation();
+
+  const [busy, setBusy] = useState(false);
 
   const formId = `form-${uuid()}`;
   const beforeSubmit = () => setBusy(true);
@@ -41,8 +41,8 @@ const UserProfilePage: FunctionComponent = () => {
     hasSubscription && user.subscription!.config.appFeatures.canCustomizeExport;
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
+    const fetchUser = async (): Promise<void> => {
+      const user: ApiUser = (await get<ApiUser>("/api/users/login")).data;
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
     };
 
@@ -53,7 +53,7 @@ const UserProfilePage: FunctionComponent = () => {
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
-  const SubmitButton: FunctionComponent = () => {
+  const SubmitButton: FC = () => {
     const classes = `${baseClasses} ml-auto`;
 
     return (
@@ -69,7 +69,7 @@ const UserProfilePage: FunctionComponent = () => {
     );
   };
 
-  const SubscriptionLimitsOrSelection: FunctionComponent = () => {
+  const SubscriptionLimitsOrSelection: FC = () => {
     if (isChild) {
       return null;
     }

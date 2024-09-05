@@ -11,7 +11,6 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { MyVivendaService } from './my-vivenda.service';
 import { InjectUser } from '../user/inject-user.decorator';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { IApiMyVivendaLoginRes } from '@area-butler-types/my-vivenda';
 import { MyVivendaHandleLoginInterceptor } from './interceptor/my-vivenda-handle-login.interceptor';
@@ -40,7 +39,7 @@ export class MyVivendaController {
   @UseInterceptors(MyVivendaHandleLoginInterceptor)
   @Post('map-screenshot')
   uploadScreenshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() { base64Image }: ApiUploadFileReqDto,
   ): Promise<void> {
     return this.myVivendaService.uploadMapScreenshot(user, base64Image);

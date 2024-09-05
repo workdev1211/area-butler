@@ -4,7 +4,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { SubscriptionService } from '../user/subscription.service';
@@ -28,7 +27,7 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch Open AI location description' })
   @Post('loc-desc')
   async fetchLocDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
@@ -40,7 +39,7 @@ export class OpenAiController extends AuthenticatedController {
   })
   @Post('loc-real-est-desc')
   async fetchLocRealEstDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     locRealEstDescQueryDto: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
@@ -51,7 +50,7 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch Open AI real estate description' })
   @Post('real-est-desc')
   async fetchRealEstDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
@@ -63,7 +62,7 @@ export class OpenAiController extends AuthenticatedController {
   })
   @Post('improve-text')
   async fetchImprovedText(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() { originalText, customText }: ApiOpenAiImproveTextQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
@@ -73,7 +72,7 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch Open AI response' })
   @Post('query')
   async fetchQuery(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() { text, isFormalToInformal }: ApiOpenAiQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
@@ -89,7 +88,7 @@ export class OpenAiController extends AuthenticatedController {
   })
   @Post('facebook-post')
   async fetchFacebookPost(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
@@ -103,7 +102,7 @@ export class OpenAiController extends AuthenticatedController {
   })
   @Post('instagram-caption')
   async fetchInstagramCaption(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
@@ -118,7 +117,7 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch Open AI macro location description' })
   @Post('macro-loc-desc')
   async fetchMacroLocDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
@@ -128,7 +127,7 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch Open AI micro location description' })
   @Post('micro-loc-desc')
   async fetchMicroLocDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);
@@ -138,7 +137,7 @@ export class OpenAiController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch Open AI location district description' })
   @Post('district-desc')
   async fetchDistrictDesc(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() locDescQueryDto: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     this.checkIsOpenAiAvail(user);

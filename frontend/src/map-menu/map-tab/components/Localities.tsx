@@ -26,7 +26,7 @@ import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
 import { SearchContext } from "../../../context/SearchContext";
 import { OsmEntityMapper } from "../../../../../shared/types/osm-entity-mapper";
 import { getOsmCategories } from "../../../shared/pois.functions";
-import { useTools } from "../../../hooks/tools";
+import { useUserState } from "../../../hooks/userstate";
 
 interface ILocalitiesProps {
   toggleAllLocalities: () => void;
@@ -57,7 +57,7 @@ const Localities: FC<ILocalitiesProps> = ({
     },
   } = useContext(SearchContext);
 
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
 
   const user = getActualUser();
   const resultingPoiIcons = menuPoiIcons || user.config.poiIcons?.menuPoiIcons;

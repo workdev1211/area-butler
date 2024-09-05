@@ -42,6 +42,7 @@ import {
 } from "../../../../../shared/types/types";
 import { IntlKeys } from "i18n/keys";
 import PublicLinks from "./PublicLinks";
+import { useUserState } from "../../../hooks/userstate";
 
 interface IDigitalMediaProps {
   searchAddress: string;
@@ -71,12 +72,8 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
     lng: responseConfig?.language || LanguageTypeEnum.de,
   });
   const { sendToIntegration } = useIntegrationTools();
-  const {
-    checkIsFeatAvailable,
-    createCodeSnippet,
-    createDirectLink,
-    getActualUser,
-  } = useTools();
+  const { createCodeSnippet, createDirectLink } = useTools();
+  const { checkIsFeatAvailable, getActualUser } = useUserState();
 
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 

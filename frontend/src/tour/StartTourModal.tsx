@@ -1,13 +1,13 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { toastError } from "shared/shared.functions";
 import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
-import { useTools } from "../hooks/tools";
+import { useUserState } from "../hooks/userstate";
 
 interface IStartTourModalProps {
   tour: ApiTourNamesEnum;
@@ -27,7 +27,7 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
   const { t } = useTranslation();
 
   const isIntegrationUser = !!integrationUser;
-  const { hideTour, hideTours } = useTools();
+  const { hideTour, hideTours } = useUserState();
 
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
 

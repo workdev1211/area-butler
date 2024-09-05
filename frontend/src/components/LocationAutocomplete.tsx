@@ -2,8 +2,8 @@ import { FC, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { components } from "react-select";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./LocationAutocomplete.scss";
 
@@ -13,10 +13,10 @@ import {
 } from "../shared/shared.functions";
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 import { googleMapsApiOptions } from "../shared/shared.constants";
-import { useTools } from "../hooks/tools";
 import { useGoogleMapsApi } from "../hooks/google";
 import { LoadingMessage } from "./Loading";
 import { ApiCoordinates } from "../../../shared/types/types";
+import { useUserState } from "../hooks/userstate";
 
 export interface IOnLocAutoChangeProps {
   value: any;
@@ -48,7 +48,7 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
 }) => {
   const { t } = useTranslation();
   const isLoadedGoogleMapsApi = useGoogleMapsApi();
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const user = getActualUser();
 
   const [inputValue, setInputValue] = useState<string>();

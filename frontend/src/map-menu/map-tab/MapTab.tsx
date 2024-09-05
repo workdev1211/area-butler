@@ -1,15 +1,15 @@
 import { FC, useContext } from "react";
 
+import "./MapTab.scss";
+
 import Localities from "./components/Localities";
 import { SearchContext } from "../../context/SearchContext";
-import { useTools } from "../../hooks/tools";
 import MapScreenshots from "./components/MapScreenshots";
 import DigitalMedia from "./components/DigitalMedia";
 import OpenAiTexts from "./components/OpenAiTexts";
 import { IMapTabProps } from "shared/search-result.types";
 import { MapDisplayModesEnum } from "../../../../shared/types/types";
-
-import "./MapTab.scss";
+import { useUserState } from "../../hooks/userstate";
 
 const MapTab: FC<IMapTabProps> = ({
   toggleAllLocalities,
@@ -27,7 +27,7 @@ const MapTab: FC<IMapTabProps> = ({
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
 
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 

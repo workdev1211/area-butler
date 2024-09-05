@@ -185,12 +185,12 @@ export class RealEstateCrmImportService {
         }
       }
 
-      await this.userService.updateApiConnections(user.id, {
+      await this.userService.updateExtConnections(user.id, {
         connectType,
         ...connectSettings,
       });
     } catch (e) {
-      await this.userService.updateApiConnections(user.id, {
+      await this.userService.updateExtConnections(user.id, {
         connectType,
       });
 

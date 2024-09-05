@@ -19,7 +19,6 @@ import ApiUserRequestsDto from '../dto/api-user-requests.dto';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
@@ -44,7 +43,7 @@ export class LocationController extends AuthenticatedController {
   })
   @Post('search')
   searchLocation(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() searchData: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
     return this.locationService.searchLocation(user, searchData);
@@ -53,7 +52,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({ description: 'Duplicate an existing map snapshot' })
   @Post('snapshot/:id')
   duplicateSnapshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Param('id') snapshotId: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.snapshotService.duplicateSnapshot(user, snapshotId);
@@ -62,7 +61,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({ description: 'Create a new map snapshot' })
   @Post('snapshot')
   createSnapshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() createSnapshotReqDto: ApiCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.snapshotService.createSnapshot(user, {
@@ -73,7 +72,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({ description: 'Update an existing map snapshot' })
   @Put('snapshot/:id')
   updateSnapshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Param('id') snapshotId: string,
     @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
@@ -102,7 +101,7 @@ export class LocationController extends AuthenticatedController {
   })
   @Get('snapshots')
   fetchSnapshots(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query() fetchSnapshotsReq: ApiFetchSnapshotsReqDto,
   ): Promise<ApiSearchResultSnapshotResponse[]> {
     const {
@@ -140,7 +139,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({ description: 'Fetch a specific map snapshot' })
   @Get('snapshot/:id')
   fetchSnapshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Param('id') snapshotId: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.fetchSnapshotService.fetchSnapshotByIdOrFail(user, snapshotId);
@@ -152,7 +151,7 @@ export class LocationController extends AuthenticatedController {
   @Get('snapshots/configs')
   fetchLastSnapConfigs(
     @Query('limitNumber', ParseIntPipe) limitNumber = 5,
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
   ): Promise<IApiLateSnapConfigOption[]> {
     return this.locationService.fetchLastSnapConfigs(user, limitNumber);
   }

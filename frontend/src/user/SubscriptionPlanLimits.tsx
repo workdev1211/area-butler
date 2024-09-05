@@ -1,12 +1,11 @@
-import { FunctionComponent, useContext, useState } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
-
+import { FC, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { ApiUser } from "../../../shared/types/types";
 import { allSubscriptionTypes } from "../../../shared/constants/subscription-plan";
@@ -24,16 +23,15 @@ import { UserActionTypes, UserContext } from "../context/UserContext";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export interface SubscriptionPlanLimitsProps {
+interface ISubscriptionPlanLimitsProps {
   user: ApiUser;
 }
 
-const SubscriptionPlanLimits: FunctionComponent<
-  SubscriptionPlanLimitsProps
-> = ({ user }) => {
-  const { t } = useTranslation();
+const SubscriptionPlanLimits: FC<ISubscriptionPlanLimitsProps> = ({ user }) => {
   const { stripeEnv } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
+
+  const { t } = useTranslation();
   const history = useHistory();
   const { post, deleteRequest } = useHttp();
 
@@ -47,7 +45,7 @@ const SubscriptionPlanLimits: FunctionComponent<
 
   const cancelTrialSubscription = async () => {
     const user: ApiUser = (
-      await deleteRequest<ApiUser>("/api/users/me/cancel-trial")
+      await deleteRequest<ApiUser>("/api/users/cancel-trial")
     ).data;
 
     userDispatch({ type: UserActionTypes.SET_USER, payload: user });
@@ -127,7 +125,8 @@ const SubscriptionPlanLimits: FunctionComponent<
           data-tour="request-contingent"
         >
           <span className="w-64 flex items-center">
-            {t(IntlKeys.yourProfile.requestExecuted)} {user.requestsExecuted}/{totalRequestContingent}
+            {t(IntlKeys.yourProfile.requestExecuted)} {user.requestsExecuted}/
+            {totalRequestContingent}
             :
             <RequestContingentDropDown
               requestContingents={user.requestContingents}

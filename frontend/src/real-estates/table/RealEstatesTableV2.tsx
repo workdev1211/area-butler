@@ -20,8 +20,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./RealEstatesTableV2.scss";
 
@@ -45,7 +45,7 @@ import { LocIndexPropsEnum } from "../../../../shared/types/location-index";
 import { locationIndexNames } from "../../../../shared/constants/location-index";
 import TableV2Pagination from "./TableV2Pagination";
 import TableV2Filter from "./TableV2Filter";
-import { useTools } from "../../hooks/tools";
+import { useUserState } from "../../hooks/userstate";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line
@@ -82,7 +82,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
 
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -212,10 +212,21 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       >((result, indexName) => {
         const column = columnHelper.accessor(
           (row) =>
-            row.locationIndices ? row.locationIndices[(locationIndexNames as Record<string, string>)[indexName]] : undefined,
+            row.locationIndices
+              ? row.locationIndices[
+                  (locationIndexNames as Record<string, string>)[indexName]
+                ]
+              : undefined,
           {
             id: (locationIndexNames as Record<string, string>)[indexName],
-            header: t((IntlKeys.snapshotEditor.positionIndices as Record<string, string>)[indexName]),
+            header: t(
+              (
+                IntlKeys.snapshotEditor.positionIndices as Record<
+                  string,
+                  string
+                >
+              )[indexName]
+            ),
             cell: (props) => (props.getValue() ? `${props.getValue()}%` : null),
             size: 65,
             meta: {

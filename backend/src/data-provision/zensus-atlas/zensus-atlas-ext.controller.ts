@@ -4,11 +4,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ZensusAtlasService } from './zensus-atlas.service';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
-import {
-  ApiCoordinates,
-  ResultStatusEnum,
-} from '@area-butler-types/types';
+import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
 import {
@@ -38,7 +34,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
   @ApiOperation({ description: 'Query for zensus atlas data' })
   @Get('query')
   async query(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query() queryZensusAtlasReq: ApiCoordinatesOrAddressDto,
   ): Promise<IApiQueryZensusAtlasRes> {
     const { lat, lng, address } = queryZensusAtlasReq;

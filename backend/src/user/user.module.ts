@@ -8,7 +8,6 @@ import { UserService } from './user.service';
 import { Subscription, SubscriptionSchema } from './schema/subscription.schema';
 import { SubscriptionService } from './subscription.service';
 import { ClientModule } from '../client/client.module';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import {
   IntegrationUser,
   IntegrationUserSchema,
@@ -47,7 +46,6 @@ import { CompanyModule } from '../company/company.module';
     SubscriptionListener,
     UsageStatisticsService,
     UserService,
-    UserSubscriptionPipe,
   ],
   exports: [
     ContingentIntService,

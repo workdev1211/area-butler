@@ -36,12 +36,12 @@ import { useLocationData } from "../../hooks/locationdata";
 import { truncateText } from "../../../../shared/functions/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../../shared/types/location";
 import { useRealEstateData } from "../../hooks/realestatedata";
-import { useTools } from "../../hooks/tools";
 import {
   checkIsEntityHidden,
   toggleEntityVisibility,
 } from "../../shared/pois.functions";
 import { SearchContext } from "../../context/SearchContext";
+import { useUserState } from "../../hooks/userstate";
 
 const EditorTab: FC<IEditorTabProps> = ({
   availableMeans = [],
@@ -58,7 +58,7 @@ const EditorTab: FC<IEditorTabProps> = ({
   } = useContext(SearchContext);
 
   const { t } = useTranslation();
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const { fetchLateSnapConfigs } = useLocationData();
   const { fetchRealEstStatuses } = useRealEstateData();
 

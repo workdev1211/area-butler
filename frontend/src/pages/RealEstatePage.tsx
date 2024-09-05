@@ -2,8 +2,8 @@ import { FC, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import DefaultLayout from "../layout/defaultLayout";
 import BackButton from "../layout/BackButton";
@@ -12,8 +12,8 @@ import { RealEstateContext } from "../context/RealEstateContext";
 import { RealEstateFormHandler } from "../real-estates/RealEstateFormHandler";
 import { SearchContext } from "context/SearchContext";
 import RealEstateIntFormHandler from "../real-estates/RealEstateIntFormHandler";
-import { useTools } from "../hooks/tools";
 import { useRealEstateData } from "../hooks/realestatedata";
+import { useUserState } from "../hooks/userstate";
 
 interface IRealEstatePageRouterProps {
   realEstateId: string;
@@ -36,7 +36,7 @@ const RealEstatePage: FC = () => {
   };
 
   const { realEstateId } = useParams<IRealEstatePageRouterProps>();
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const { fetchRealEstates } = useRealEstateData();
 
   const user = getActualUser();

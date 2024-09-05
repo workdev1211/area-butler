@@ -18,7 +18,6 @@ import { RolesGuard } from '../../auth/role/roles.guard';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { FederalElectionDocument } from '../schemas/federal-election.schema';
 
 @ApiTags('federal-election')
@@ -49,7 +48,7 @@ export class FederalElectionController extends AuthenticatedController {
   @ApiOperation({ description: 'Query for federal election data' })
   @Post('query')
   async query(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() query: ApiGeometryDto,
   ): Promise<FederalElectionDocument[]> {
     return this.federalElectionService.findIntersecting(user, query);

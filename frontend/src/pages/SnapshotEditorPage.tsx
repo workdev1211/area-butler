@@ -7,7 +7,9 @@ import {
   useState,
 } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
+
 import { useTranslation } from "react-i18next";
+import { IntlKeys } from "../i18n/keys";
 
 import SearchResultContainer from "components/search-result-container/SearchResultContainer";
 import { ICurrentMapRef } from "shared/search-result.types";
@@ -38,7 +40,6 @@ import { defaultMapZoom } from "../shared/shared.constants";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
-import { useTools } from "../hooks/tools";
 import { Loading } from "../components/Loading";
 import { RealEstateContext } from "../context/RealEstateContext";
 import { filterRealEstates } from "../shared/real-estate.functions";
@@ -49,8 +50,8 @@ import {
   setTransportParamForResEntity,
 } from "../shared/pois.functions";
 import { IntegrationTypesEnum } from "../../../shared/types/integration";
-import { IntlKeys } from "../i18n/keys";
 import { OsmEntityMapper } from "../../../shared/types/osm-entity-mapper";
+import { useUserState } from "../hooks/userstate";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -71,7 +72,7 @@ const SnapshotEditorPage: FC = () => {
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnapshotEditorRouterProps>();
 
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
   const { t } = useTranslation();
@@ -436,6 +437,7 @@ const SnapshotEditorPage: FC = () => {
   return (
     <DefaultLayout withHorizontalPadding={false}>
       <TourStarter tour={ApiTourNamesEnum.EDITOR} />
+
       <div className="editor-container flex relative w-full" style={styles}>
         <SearchResultContainer
           mapboxAccessToken={mapboxAccessToken}

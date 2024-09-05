@@ -29,38 +29,40 @@ export class IntegrationUserController {
 
   @ApiProperty({ description: 'Hide single tour for current integration user' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('me/hide-tour/:tour')
+  @Post('hide-tour/:tour')
   async hideTour(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('tour') tour: ApiTourNamesEnum,
   ): Promise<IApiIntegrationUser> {
-    return this.convertIntUserToApiIntUser(
+    return this.convertDocToApiIntUser(
       await this.integrationUserService.hideTour(integrationUser, tour),
     );
   }
 
   @ApiProperty({ description: 'Hide tours for current integration user' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('me/hide-tour')
+  @Post('hide-tour')
   async hideAllTours(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiIntegrationUser> {
-    return this.convertIntUserToApiIntUser(
+    return this.convertDocToApiIntUser(
       await this.integrationUserService.hideTour(integrationUser),
     );
   }
 
-  @ApiProperty({ description: "Update the user's config" })
+  @ApiProperty({ description: 'Update current user config' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('config')
-  updateConfig(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
+  async updateConfig(
+    @InjectUser() { _id: intUserDbId }: TIntegrationUserDocument,
     @Body() config: ApiUserConfigDto,
-  ): void {
-    void this.integrationUserService.updateConfig(integrationUser, config);
+  ): Promise<IApiIntegrationUser> {
+    return this.convertDocToApiIntUser(
+      await this.integrationUserService.updateConfig(intUserDbId, config),
+    );
   }
 
-  private async convertIntUserToApiIntUser(
+  private async convertDocToApiIntUser(
     integrationUser: TIntegrationUserDocument,
   ): Promise<IApiIntegrationUser> {
     Object.assign(integrationUser, {

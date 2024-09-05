@@ -12,7 +12,6 @@ import * as duration from 'dayjs/plugin/duration';
 import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 import { InjectUser } from '../user/inject-user.decorator';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
@@ -39,7 +38,7 @@ export class PropstackWebhookController extends ApiKeyAuthController {
   @Post('property-created')
   @HttpCode(HttpStatus.OK)
   async handlePropertyCreated(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
@@ -68,7 +67,7 @@ export class PropstackWebhookController extends ApiKeyAuthController {
   @Post('property-updated')
   @HttpCode(HttpStatus.OK)
   async handlePropertyUpdated(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {

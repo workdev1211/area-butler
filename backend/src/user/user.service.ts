@@ -19,16 +19,13 @@ import {
 } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
-import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import {
-  ApiTourNamesEnum,
+  ApiTourNamesEnum, ApiUserSettings,
   IApiUserExtConnectSettingsReq,
 } from '@area-butler-types/types';
-import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import ApiUserDto from './dto/api-user.dto';
 import {
   COMPANY_PATH,
@@ -45,7 +42,6 @@ export class UserService {
     private readonly eventEmitter: EventEmitter2,
     private readonly mapboxService: MapboxService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly userSubscriptionPipe: UserSubscriptionPipe,
   ) {}
 
   async upsertUser(email: string, fullname: string): Promise<UserDocument> {
@@ -97,8 +93,11 @@ export class UserService {
     return this.findOneCore({ _id: new Types.ObjectId(userId) }, projectQuery);
   }
 
-  async findByEmail(email: string): Promise<UserDocument> {
-    return this.findOneCore({ email });
+  async findByEmail(
+    email: string,
+    projectQuery?: ProjectionFields<UserDocument>,
+  ): Promise<UserDocument> {
+    return this.findOneCore({ email }, projectQuery);
   }
 
   async findByApiKey(apiKey: string): Promise<UserDocument> {
@@ -117,22 +116,7 @@ export class UserService {
     return this.findOneCore({ paypalCustomerId });
   }
 
-  async patchUser(
-    email: string,
-    { fullname }: ApiUpsertUserDto,
-  ): Promise<UserDocument> {
-    const user = await this.findByEmail(email);
-
-    if (!user) {
-      throw new HttpException('Unknown user!', 400);
-    }
-
-    user.set('config.fullname', fullname);
-
-    return user.save();
-  }
-
-  async updateApiConnections(
+  async updateExtConnections(
     userId: string,
     { connectType, ...connectSettings }: IApiUserExtConnectSettingsReq,
   ): Promise<UserDocument> {
@@ -346,12 +330,11 @@ export class UserService {
     );
   }
 
-  async updateSettings(
+  async updateConfig(
     email: string,
-    { templateSnapshotId, ...settings }: ApiUserSettingsDto,
+    config: ApiUserSettings,
   ): Promise<UserDocument> {
-    const user = await this.findByEmail(email);
-    await this.userSubscriptionPipe.transform(user);
+    const user = await this.findByEmail(email, { id: 1, subscription: 1 });
 
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
@@ -361,13 +344,25 @@ export class UserService {
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
 
-    Object.keys(settings).forEach((key) => {
-      user[key] = settings[key] || undefined;
-    });
+    const updateQuery: UpdateQuery<UserDocument> = Object.entries(
+      config,
+    ).reduce(
+      (result, [key, value]) => {
+        if (value) {
+          result.$set[`config.${key}`] = value;
+        } else {
+          result.$unset[`config.${key}`] = 1;
+        }
 
-    user.set('config.templateSnapshotId', templateSnapshotId);
+        return result;
+      },
+      {
+        $set: {},
+        $unset: {},
+      },
+    );
 
-    return user.save();
+    return this.findOneAndUpdateCore({ _id: user._id }, updateQuery);
   }
 
   async createMapboxAccessToken(user: UserDocument): Promise<UserDocument> {
@@ -385,7 +380,7 @@ export class UserService {
     return user;
   }
 
-  async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
+  async convertDocToApiUser(user: UserDocument): Promise<ApiUserDto> {
     return plainToInstance(ApiUserDto, user.toObject(), {
       exposeUnsetFields: false,
     });
@@ -397,6 +392,30 @@ export class UserService {
   ): Promise<UserDocument> {
     return this.userModel
       .findOne(filterQuery, projectQuery)
+      .sort({ updatedAt: -1 })
+      .populate(COMPANY_PATH)
+      .populate({
+        path: PARENT_USER_PATH,
+        populate: [
+          {
+            path: COMPANY_PATH,
+            justOne: true,
+          },
+          {
+            path: SUBSCRIPTION_PATH,
+            justOne: true,
+          },
+        ],
+      })
+      .populate(SUBSCRIPTION_PATH);
+  }
+
+  private async findOneAndUpdateCore(
+    filterQuery: FilterQuery<UserDocument>,
+    updateQuery: UpdateQuery<UserDocument>,
+  ): Promise<UserDocument> {
+    return this.userModel
+      .findOneAndUpdate(filterQuery, updateQuery, { new: true })
       .sort({ updatedAt: -1 })
       .populate(COMPANY_PATH)
       .populate({

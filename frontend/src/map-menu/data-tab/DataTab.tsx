@@ -4,7 +4,6 @@ import "./DataTab.scss";
 
 import { IDataTabProps } from "shared/search-result.types";
 import { SearchContext } from "../../context/SearchContext";
-import { useTools } from "../../hooks/tools";
 import LocationExport from "./components/LocationExport";
 // import CustomerLinks from "./components/CustomerLinks";
 import CustomerData from "./components/CustomerData";
@@ -12,14 +11,12 @@ import LocationIndices from "./LocationIndices";
 import SocialDemographics from "./SocialDemographics";
 import EnvironmentalInfo from "./EnvironmentalInfo";
 import EconomicMetrics from "./EconomicMetrics";
-import {
-  FeatureTypeEnum,
-} from "../../../../shared/types/types";
+import { FeatureTypeEnum } from "../../../../shared/types/types";
+import { useUserState } from "../../hooks/userstate";
 
 const DataTab: FC<IDataTabProps> = ({
   snapshotId,
   performUnlock,
-  mapDisplayMode,
   locationIndexData,
   showInsights,
   censusData,
@@ -29,7 +26,7 @@ const DataTab: FC<IDataTabProps> = ({
 }) => {
   const { searchContextState } = useContext(SearchContext);
 
-  const { getActualUser, checkIsFeatAvailable } = useTools();
+  const { checkIsFeatAvailable, getActualUser } = useUserState();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 
@@ -79,6 +76,7 @@ const DataTab: FC<IDataTabProps> = ({
         openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
         particlePollutionData={particlePollutionData}
       />
+
       <EconomicMetrics />
 
       <CustomerData backgroundColor={backgroundColor} snapshotId={snapshotId} />

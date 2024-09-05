@@ -84,7 +84,6 @@ export interface IEditorTabProps {
 export interface IDataTabProps {
   snapshotId: string;
   performUnlock?: TUnlockIntProduct;
-  mapDisplayMode: MapDisplayModesEnum;
   locationIndexData?: TLocationIndexData;
   showInsights?: boolean;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;

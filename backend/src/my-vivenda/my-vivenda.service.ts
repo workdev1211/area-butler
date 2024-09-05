@@ -20,7 +20,7 @@ export class MyVivendaService {
   ): Promise<IApiMyVivendaLoginRes> {
     return {
       snapshotId,
-      user: await this.userService.transformToApiUser(user),
+      user: await this.userService.convertDocToApiUser(user),
     };
   }
 

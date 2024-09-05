@@ -4,7 +4,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocationIndexService } from './location-index.service';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
 import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
@@ -30,7 +29,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
   @ApiOperation({ description: 'Query for location index data' })
   @Get('query')
   async query(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query() queryLocIndicesReq: ApiQueryLocIndicesReqDto,
   ): Promise<IApiQueryLocIndicesRes> {
     const { lat, lng, address, type } = queryLocIndicesReq;

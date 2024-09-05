@@ -153,26 +153,28 @@ export class IntegrationUserService {
   }
 
   async updateConfig(
-    { _id: intUserDbId }: TIntegrationUserDocument,
+    intUserDbId: Types.ObjectId,
     config: Partial<IUserConfig>,
-  ): Promise<void> {
-    const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
-      $set: {},
-      $unset: {},
-    };
+  ): Promise<TIntegrationUserDocument> {
+    const updateQuery: UpdateQuery<TIntegrationUserDocument> = Object.entries(
+      config,
+    ).reduce(
+      (result, [key, value]) => {
+        if (value) {
+          result.$set[`config.${key}`] = value;
+        } else {
+          result.$unset[`config.${key}`] = 1;
+        }
 
-    Object.entries(config).forEach(([key, value]) => {
-      if (value) {
-        updateQuery.$set[`config.${key}`] = value;
-      } else {
-        updateQuery.$unset[`config.${key}`] = 1;
-      }
-    });
-
-    await this.integrationUserModel.updateOne(
-      { _id: intUserDbId },
-      updateQuery,
+        return result;
+      },
+      {
+        $set: {},
+        $unset: {},
+      },
     );
+
+    return this.findOneAndUpdateCore({ _id: intUserDbId }, updateQuery);
   }
 
   bulkWrite(writes: any[]): Promise<BulkWriteResult> {
@@ -247,6 +249,7 @@ export class IntegrationUserService {
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel
       .findOneAndUpdate(filterQuery, updateQuery, { new: true })
+      .sort({ updatedAt: -1 })
       .populate(PARENT_USER_PATH)
       .populate(COMPANY_PATH);
   }

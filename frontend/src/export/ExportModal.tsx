@@ -25,9 +25,9 @@ import { EntityGroup } from "../shared/search-result.types";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
 import areaButlerLogo from "../assets/img/logo.svg";
-import { useTools } from "../hooks/tools";
 import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
 import { TCensusData } from "../../../shared/types/data-provision";
+import { useUserState } from "../hooks/userstate";
 
 interface IExportModalProps {
   censusData?: TCensusData;
@@ -48,7 +48,7 @@ const ExportModal: FC<IExportModalProps> = ({
   const { t: outputT } = useTranslation("", {
     lng: outputLanguage,
   });
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -277,6 +277,7 @@ const ExportModal: FC<IExportModalProps> = ({
                   outputLanguage={outputLanguage}
                 />
               )}
+
               {exportType === ExportTypeEnum.CHEATSHEET && (
                 <CheatsheetDownload
                   groupedEntries={filteredEntities!}
@@ -306,6 +307,7 @@ const ExportModal: FC<IExportModalProps> = ({
                   outputLanguage={outputLanguage}
                 />
               )}
+
               {exportType === ExportTypeEnum.EXPOSE_DOCX && (
                 <DocxExpose
                   activeMeans={activeMeans}

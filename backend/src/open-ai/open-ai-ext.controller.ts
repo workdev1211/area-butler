@@ -3,7 +3,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectUser } from '../user/inject-user.decorator';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import ApiOpenAiExtQueryReqDto from './dto/api-open-ai-ext-query-req.dto';
 import { ResultStatusEnum } from '@area-butler-types/types';
@@ -28,7 +27,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
   @ApiOperation({ description: 'Fetch Open AI response' })
   @Get('query')
   async fetchQuery(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query()
     openAiQueryReqDto: ApiOpenAiExtQueryReqDto,
   ): Promise<IOpenAiExtQueryRes | string> {

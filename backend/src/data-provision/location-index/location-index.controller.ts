@@ -17,7 +17,6 @@ import { RolesGuard } from '../../auth/role/roles.guard';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { IApiLocIndexFeature } from '@area-butler-types/location-index';
 import { LocationIndexDocument } from '../schemas/location-index.schema';
 
@@ -49,7 +48,7 @@ export class LocationIndexController extends AuthenticatedController {
   @ApiOperation({ description: 'Query for location index data' })
   @Post('query')
   async query(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() queryData: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {
     return this.locationIndexService.queryWithUser(user, queryData);

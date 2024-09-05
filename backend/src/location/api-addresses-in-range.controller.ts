@@ -12,7 +12,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Language } from '@googlemaps/google-maps-services-js';
 
 import { InjectUser } from '../user/inject-user.decorator';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { ResultStatusEnum } from '@area-butler-types/types';
@@ -40,7 +39,7 @@ export class ApiAddressesInRangeController {
   })
   @Get()
   async fetchAddressesInRange(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
   ): Promise<{

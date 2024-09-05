@@ -13,9 +13,9 @@ import socialDemographicsIcon from "../../assets/icons/map-menu/02-soziales-und-
 import censusDataIcon from "../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../assets/icons/federal-election.svg";
 import { TUnlockIntProduct } from "../../../../shared/types/integration";
-import { useTools } from "../../hooks/tools";
 import { TCensusData } from "../../../../shared/types/data-provision";
 import UnlockProductButton from "../components/UnlockProductButton";
+import { useUserState } from "../../hooks/userstate";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -66,7 +66,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
   federalElectionData,
 }) => {
   const { t } = useTranslation();
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 

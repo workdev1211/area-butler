@@ -21,8 +21,8 @@ import {
   IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
-import { useTools } from "../../../hooks/tools";
 import { FeatureTypeEnum } from "../../../../../shared/types/types";
+import { useUserState } from "../../../hooks/userstate";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -40,7 +40,6 @@ const LocationExport: FC<ILocationExportProps> = ({
   backgroundColor,
   performUnlock,
 }) => {
-  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -50,7 +49,8 @@ const LocationExport: FC<ILocationExportProps> = ({
   const [exportType, setExportType] = useState<ExportTypeEnum>();
   const [isReportsOpen, setIsReportsOpen] = useState(false);
 
-  const { checkIsFeatAvailable } = useTools();
+  const { t } = useTranslation();
+  const { checkIsFeatAvailable } = useUserState();
   const isIntegration = !!integrationType;
 
   const performExport = (): void => {

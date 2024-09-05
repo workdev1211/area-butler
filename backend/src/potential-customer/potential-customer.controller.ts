@@ -19,7 +19,6 @@ import {
   mapQuestionnaireRequestToApiQuestionnaireRequest,
 } from './mapper/potential-customer.mapper';
 import { PotentialCustomerService } from './potential-customer.service';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import {
   ApiPotentialCustomer,
   ApiQuestionnaireRequest,
@@ -53,7 +52,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   @ApiOperation({ description: 'Create a potential customer' })
   @Post()
   async createPotentialCustomer(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
@@ -68,7 +67,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   @ApiOperation({ description: 'Add questionnaire' })
   @Post('/questionnaire-request')
   async insertQuestionnaireRequest(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body() questionnaireRequest: ApiUpsertQuestionnaireRequestDto,
   ): Promise<ApiQuestionnaireRequest> {
     return mapQuestionnaireRequestToApiQuestionnaireRequest(
@@ -101,7 +100,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   deletePotentialCustomer(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
-  ): Promise<void> {
-    return this.potentialCustomerService.deletePotentialCustomer(user, id);
+  ): void {
+    void this.potentialCustomerService.deletePotentialCustomer(user, id);
   }
 }

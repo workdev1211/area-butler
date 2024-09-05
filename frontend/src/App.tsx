@@ -126,7 +126,7 @@ function App() {
 
     const consumeConsentGiven = async () => {
       try {
-        const updatedUser = (await post<ApiUser>("/api/users/me/consent", {}))
+        const updatedUser = (await post<ApiUser>("/api/users/consent", {}))
           .data;
 
         userDispatch({
@@ -141,7 +141,7 @@ function App() {
     };
 
     const fetchUser = async () => {
-      const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
+      const user: ApiUser = (await get<ApiUser>("/api/users/login")).data;
       await i18n.changeLanguage(user.config.language);
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
 

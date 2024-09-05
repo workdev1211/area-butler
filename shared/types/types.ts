@@ -587,3 +587,7 @@ export interface IApiUploadFileReq {
   filename?: string;
   fileTitle?: string;
 }
+
+export type TNullable<T> = {
+  [P in keyof T]: T[P] | null;
+};

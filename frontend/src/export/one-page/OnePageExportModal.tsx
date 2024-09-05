@@ -40,6 +40,7 @@ import OnePageMediaFormat from "./components/OnePageMediaFormat";
 import OpenAiGeneralForm from "../../components/open-ai/OpenAiGeneralForm";
 import { getQrCodeBase64 } from "../QrCode";
 import { useTools } from "../../hooks/tools";
+import { useUserState } from "../../hooks/userstate";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;
@@ -86,7 +87,8 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     lng: searchContextState.responseConfig?.language,
   });
   const { fetchOpenAiResponse } = useOpenAi();
-  const { createDirectLink, getActualUser } = useTools();
+  const { createDirectLink } = useTools();
+  const { getActualUser } = useUserState();
 
   const user = getActualUser();
   const resultingPoiIcons = user.config.poiIcons?.menuPoiIcons;

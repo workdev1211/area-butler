@@ -63,6 +63,7 @@ import {
 } from "../../shared/pois.functions";
 import { saveAs } from "file-saver";
 import { checkIsDarkColor } from "shared/shared.functions";
+import { useUserState } from "../../hooks/userstate";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -140,8 +141,10 @@ const SearchResultContainer = forwardRef<
     } = useContext(SearchContext);
 
     const { integrationType } = useContext(ConfigContext);
+
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
-    const { createDirectLink, getActualUser } = useTools();
+    const { createDirectLink } = useTools();
+    const { getActualUser } = useUserState();
     const { sendToIntegration } = useIntegrationTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
     const { t } = useTranslation();

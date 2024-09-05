@@ -7,8 +7,8 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { ConfigContext } from "../context/ConfigContext";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 import OpenAiChat from "../components/open-ai/OpenAiChat";
-import { useTools } from "../hooks/tools";
 import { FeatureTypeEnum } from "../../../shared/types/types";
+import { useUserState } from "../hooks/userstate";
 
 // TODO could be the same content with a 'OpenAiModal' component
 const OpenAiPageContent: FC = () => {
@@ -16,7 +16,7 @@ const OpenAiPageContent: FC = () => {
   const { searchContextState } = useContext(SearchContext);
 
   const { sendToIntegration, unlockProduct } = useIntegrationTools();
-  const { checkIsFeatAvailable } = useTools();
+  const { checkIsFeatAvailable } = useUserState();
 
   const [queryType] = useState(searchContextState.openAiQueryType);
   const [unlockParams, setUnlockParams] = useState<{

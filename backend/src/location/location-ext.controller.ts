@@ -12,7 +12,6 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectUser } from '../user/inject-user.decorator';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
@@ -54,7 +53,7 @@ export class LocationExtController extends ApiKeyAuthController {
   })
   @Post('snapshot-from-template')
   async createSnapshotFromTemplate(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     { coordinates, address, snapshotId }: ApiCreateSnapshotFromTemplateDto,
   ): Promise<{ snapshotId: string; directLink: string }> {
@@ -78,7 +77,7 @@ export class LocationExtController extends ApiKeyAuthController {
   @UseGuards(ThrottlerGuard)
   @Throttle(1, 5) // ttl is given in seconds
   async fetchSnapshotData(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Body()
     fetchSnapshotDataReq: ApiFetchSnapshotDataReqDto,
   ): Promise<IApiFetchSnapshotDataRes> {
@@ -119,7 +118,7 @@ export class LocationExtController extends ApiKeyAuthController {
   })
   @Get('addresses-in-range')
   async fetchAddressesInRange(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
   ): Promise<IApiFetchAddrInRangeRes> {
@@ -188,7 +187,7 @@ export class LocationExtController extends ApiKeyAuthController {
   })
   @Get('poi-data')
   async fetchPoiData(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
     @Query()
     fetchPoiDataReq: ApiFetchPoiDataReqDto,
   ): Promise<IApiFetchPoiDataRes> {

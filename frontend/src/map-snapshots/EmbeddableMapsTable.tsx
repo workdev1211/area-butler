@@ -8,6 +8,7 @@ import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import { useTools } from "../hooks/tools";
 import SnapshotsTableRow from "./SnapshotsTableRow";
 import { SearchContext } from "../context/SearchContext";
+import { useUserState } from "../hooks/userstate";
 
 interface IEmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
@@ -21,7 +22,8 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
 
-  const { createDirectLink, createCodeSnippet, getActualUser } = useTools();
+  const { createDirectLink, createCodeSnippet } = useTools();
+  const { getActualUser } = useUserState();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;

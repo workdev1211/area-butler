@@ -1,49 +1,45 @@
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { FC } from "react";
 
-import { UserActionTypes, UserContext } from "context/UserContext";
-import { useHttp } from "hooks/http";
-import { useContext } from "react";
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import { toastError, toastSuccess } from "shared/shared.functions";
 import { ApiUpsertUser, ApiUser } from "../../../shared/types/types";
 import ProfileForm from "./ProfileForm";
+import { useUserState } from "../hooks/userstate";
 
-export const mapFormToApiUpsertUser = async (
+const mapFormToApiUpsertUser = async (
   values: any
 ): Promise<Partial<ApiUpsertUser>> => {
   return {
-    fullname: values.fullname
+    fullname: values.fullname,
   };
 };
 
-export interface ProfileFormHandlerProps {
+interface IProfileFormHandlerProps {
   user: Partial<ApiUser>;
   formId?: string;
   beforeSubmit?: () => void;
   postSubmit?: (success: boolean) => void;
 }
 
-const ProfileFormHandler: React.FunctionComponent<ProfileFormHandlerProps> = ({
+const ProfileFormHandler: FC<IProfileFormHandlerProps> = ({
   formId,
   user,
   beforeSubmit = () => {},
-  postSubmit = () => {}
+  postSubmit = () => {},
 }) => {
-  const { post } = useHttp();
+  const { updateUserConfig } = useUserState();
   const { t } = useTranslation();
 
-  const { userDispatch } = useContext(UserContext);
-
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: any): Promise<void> => {
     const mappedUser: Partial<ApiUpsertUser> = await mapFormToApiUpsertUser(
       values
     );
 
     try {
       beforeSubmit();
-      const updatedUser = (await post<ApiUser>("/api/users/me", mappedUser))
-        .data;
-      userDispatch({ type: UserActionTypes.SET_USER, payload: updatedUser });
+      await updateUserConfig(mappedUser);
       toastSuccess(t(IntlKeys.yourProfile.profileUpdated));
       postSubmit(true);
     } catch (err) {

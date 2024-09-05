@@ -16,9 +16,9 @@ import {
 } from "../../../../shared/types/types";
 import Expose from "./Expose";
 import { ILegendItem } from "../Legend";
-import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
+import { useUserState } from "../../hooks/userstate";
 
 interface IExposeDownloadProps {
   groupedEntries: any;
@@ -63,7 +63,7 @@ export const ExposeDownload: FC<IExposeDownloadProps> = ({
   const componentRef = useRef<HTMLDivElement>(null);
   const [activePrinting, setActivePrinting] = useState(false);
 
-  const { getActualUser } = useTools();
+  const { getActualUser } = useUserState();
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
 

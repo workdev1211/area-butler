@@ -17,7 +17,6 @@ import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { TApiDataProvision } from '@area-butler-types/types';
 
 interface ZensusDataGeojson {
@@ -82,7 +81,7 @@ export class ZensusAtlasController extends AuthenticatedController {
   @Post('query')
   async query(
     @Body() query: ApiGeometryDto,
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @InjectUser() user: UserDocument,
   ): Promise<TApiDataProvision> {
     return this.zensusAtlasService.query(user, query);
   }
