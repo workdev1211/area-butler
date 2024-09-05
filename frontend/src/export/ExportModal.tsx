@@ -91,19 +91,22 @@ const ExportModal: FC<IExportModalProps> = ({
 
   const entityGroups: EntityGroup[] = useMemo(
     () =>
-      searchContextState.entityGroupsByActMeans
-        .filter(
-          ({ name, items }: EntityGroup) =>
-            name !== OsmName.property && items.length > 0
-        )
-        .map((entity) => ({
-          ...entity,
-          title: outputT(
-            (
-              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
-            )[entity.name]
-          ),
-        })),
+      searchContextState.entityGroupsByActMeans.reduce((acc, group) => {
+        if (group.name !== OsmName.property && group.items.length > 0) {
+          acc.push({
+            ...group,
+            title: outputT(
+              (
+                IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                  string,
+                  string
+                >
+              )[group.name]
+            ),
+          });
+        }
+        return acc;
+      }, [] as EntityGroup[]),
     [outputT, searchContextState.entityGroupsByActMeans]
   );
 

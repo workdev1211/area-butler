@@ -104,7 +104,8 @@ const MapMenu: FC<IMapMenuProps> = ({
   const isEditorTab = activeTab === TabsEnum.Editor;
   const isDataTab = activeTab === TabsEnum.Data;
   const isShownAddress = !!config?.showAddress || !config;
-  const exportLanguage = config?.language || LanguageTypeEnum.de;
+  const exportLanguage =
+    config?.language || responseConfig?.language || LanguageTypeEnum.de;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const toggleShowAddress = () => {
@@ -115,10 +116,7 @@ const MapMenu: FC<IMapMenuProps> = ({
   };
 
   const toggleLanguageChange = (language: LanguageTypeEnum) => {
-    const elem = document.activeElement as HTMLElement;
-    if (elem) {
-      elem?.blur();
-    }
+    (document.activeElement as HTMLElement)?.blur();
     editorTabProps?.onConfigChange({
       ...responseConfig,
       language: language,
@@ -218,7 +216,7 @@ const MapMenu: FC<IMapMenuProps> = ({
             >
               {exportLanguage}
             </div>
-            <ul tabIndex={0} className="dropdown-content w-36 p-4 shadow">
+            <ul tabIndex={0} className="dropdown-content p-4 shadow">
               <h4 className="text-sm mb-1">
                 {t(IntlKeys.snapshotEditor.outputLanguage)}
               </h4>

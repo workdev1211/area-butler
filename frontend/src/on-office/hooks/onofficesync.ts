@@ -12,7 +12,14 @@ import {
 } from "../../../../shared/types/integration";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { toastError } from "../../shared/shared.functions";
-import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
+import {
+  AreaButlerExportTypesEnum,
+  LanguageTypeEnum,
+} from "../../../../shared/types/types";
+
+interface IApiIntUpdEstTxtOnOffice extends IApiIntUpdEstTextFieldReq {
+  estateLanguage?: LanguageTypeEnum;
+}
 
 export const useOnOfficeSync = () => {
   const { post, get, patch, put } = useHttp();
@@ -45,10 +52,10 @@ export const useOnOfficeSync = () => {
   const updateEstateTextField = (
     updEstTextFieldData: IApiIntUpdEstTextFieldReq
   ): Promise<AxiosResponse<void>> =>
-    patch<void, IApiIntUpdEstTextFieldReq>(
-      "/api/on-office/estate-text",
-      updEstTextFieldData
-    );
+    patch<void, IApiIntUpdEstTxtOnOffice>("/api/on-office/estate-text", {
+      ...updEstTextFieldData,
+      estateLanguage: updEstTextFieldData.language,
+    });
 
   const fetchAvailOnOfficeStatuses =
     async (): Promise<IApiRealEstAvailIntStatuses> => {

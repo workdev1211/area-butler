@@ -86,19 +86,22 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
     }
 
     const downloadZipArchive = async (): Promise<void> => {
-      const entityGroups = entityGroupsByActMeans
-        .filter(
-          ({ items, name }: EntityGroup) =>
-            name !== OsmName.property && items.length > 0
-        )
-        .map((group) => ({
-          ...group,
-          title: outputT(
-            (
-              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
-            )[group.name]
-          ),
-        }));
+      const entityGroups = entityGroupsByActMeans.reduce((acc, group) => {
+        if (group.name !== OsmName.property && group.items.length > 0) {
+          acc.push({
+            ...group,
+            title: outputT(
+              (
+                IntlKeys.snapshotEditor.pointsOfInterest as Record<
+                  string,
+                  string
+                >
+              )[group.name]
+            ),
+          });
+        }
+        return acc;
+      }, [] as EntityGroup[]);
 
       const legend = getFilteredLegend(entityGroups);
       const zip = new JsZip();

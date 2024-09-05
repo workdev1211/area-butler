@@ -6,6 +6,7 @@ import {
   OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
 import { Exclude, Expose } from 'class-transformer';
+import { LanguageTypeEnum } from '@area-butler-types/types';
 
 @Exclude()
 class ApiOpenAiGeneralQueryDto implements IOpenAiGeneralFormValues {
@@ -28,6 +29,11 @@ class ApiOpenAiGeneralQueryDto implements IOpenAiGeneralFormValues {
   @IsOptional()
   @IsEnum(OpenAiTextLengthEnum)
   textLength?: OpenAiTextLengthEnum;
+
+  @Expose()
+  @IsOptional()
+  @IsEnum(LanguageTypeEnum)
+  language?: LanguageTypeEnum;
 }
 
 export default ApiOpenAiGeneralQueryDto;

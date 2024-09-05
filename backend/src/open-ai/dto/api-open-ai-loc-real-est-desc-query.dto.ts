@@ -13,8 +13,8 @@ class ApiOpenAiLocRealEstDescQueryDto
   @Expose()
   @IsOptional()
   @IsEnum(LanguageTypeEnum)
-  language: LanguageTypeEnum;
-  
+  language?: LanguageTypeEnum;
+
   @Expose()
   @IsNotEmpty()
   @IsString()

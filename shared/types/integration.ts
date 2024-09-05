@@ -10,6 +10,7 @@ import {
   AreaButlerExportTypesEnum,
   IApiUploadFileReq,
   ISelectTextValue,
+  LanguageTypeEnum,
 } from "./types";
 
 export enum IntegrationTypesEnum {
@@ -142,6 +143,7 @@ export interface IApiIntUpdEstTextFieldReq {
     | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
   integrationId: string;
   text: string;
+  language?: LanguageTypeEnum;
 }
 
 export type TUpdEstTextFieldParams = Omit<

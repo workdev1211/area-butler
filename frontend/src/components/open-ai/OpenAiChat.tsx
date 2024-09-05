@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -27,6 +27,7 @@ import {
   openAiTonalities,
 } from "../../../../shared/constants/open-ai";
 import { toastSuccess } from "../../shared/shared.functions";
+import { SearchContext } from "../../context/SearchContext";
 
 interface IOpenAiChatProps {
   searchResultSnapshotId: string;
@@ -59,6 +60,9 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
   fixedQueryType,
 }) => {
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const {
+    searchContextState: { responseConfig },
+  } = useContext(SearchContext);
 
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
@@ -258,6 +262,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                                     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
                                     | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
                                   text: genText.queryResponse,
+                                  language: responseConfig?.language,
                                 });
                               }}
                             >

@@ -58,7 +58,6 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
-  console.log(responseConfig?.language);
 
   const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
   const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
@@ -99,6 +98,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           formRef.current?.handleSubmit();
 
           query = {
+            language: responseConfig?.language,
             snapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
@@ -141,6 +141,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           formRef.current?.handleSubmit();
 
           query = {
+            language: responseConfig?.language,
             ...formRef.current!.values,
             isFormalToInformal:
               queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,

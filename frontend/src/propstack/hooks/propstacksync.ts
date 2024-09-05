@@ -46,7 +46,10 @@ export const usePropstackSync = () => {
     updEstTextFieldData: IApiIntUpdEstTextFieldReq
   ): Promise<AxiosResponse<void>> =>
     patch<void, IApiIntUpdEstTextFieldReq>(
-      "/api/propstack/property-text",
+      "/api/propstack/property-text" +
+        (!!updEstTextFieldData.language
+          ? `?locale=${updEstTextFieldData.language}`
+          : ""),
       updEstTextFieldData
     );
 

@@ -23,7 +23,7 @@ class ApiOpenAiRealEstDescQueryDto
   @Expose()
   @IsOptional()
   @IsEnum(LanguageTypeEnum)
-  language: LanguageTypeEnum;
+  language?: LanguageTypeEnum;
 }
 
 export default ApiOpenAiRealEstDescQueryDto;

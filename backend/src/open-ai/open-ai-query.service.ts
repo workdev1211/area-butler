@@ -89,8 +89,8 @@ export class OpenAiQueryService {
     } = queryParams;
 
     queryParams.language =
-      queryParams.snapshotRes.config.language ||
       language ||
+      queryParams.snapshotRes.config.language ||
       LanguageTypeEnum.de;
 
     return (
@@ -122,8 +122,8 @@ export class OpenAiQueryService {
     } = locRealEstDescQueryParams;
 
     locRealEstDescQueryParams.language =
-      locRealEstDescQueryParams.snapshotRes.config.language ||
       language ||
+      locRealEstDescQueryParams.snapshotRes.config.language ||
       LanguageTypeEnum.de;
 
     const initialText =
@@ -183,11 +183,10 @@ export class OpenAiQueryService {
       language,
     } = locRealEstDescQueryParams;
 
-    const lang = (
-      locRealEstDescQueryParams.snapshotRes.config.language ||
+    const lang =
       language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+      locRealEstDescQueryParams.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe einen für Facebook optimierten social media Post für unser Objekt` +
@@ -209,11 +208,10 @@ export class OpenAiQueryService {
       language,
     } = locRealEstDescQueryParams;
 
-    const lang = (
-      locRealEstDescQueryParams.snapshotRes.config.language ||
+    const lang =
       language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+      locRealEstDescQueryParams.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe eine Instagram Caption für unser Objekt an der Adresse` +
@@ -231,11 +229,10 @@ export class OpenAiQueryService {
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
 
-    const lang = (
-      locDescQueryParams.snapshotRes.config.language ||
+    const lang =
       locDescQueryParams.language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+      locDescQueryParams.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
 
     const initialText = `Führe eine umfangreiche Online-Recherche durchführen, um eine detaillierte und präzise Makrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
@@ -310,11 +307,10 @@ Zudem verwende diese vom AreaButler generierten Daten:
     const address =
       locDescQueryParams.snapshotRes.snapshot.placesLocation.label;
 
-    const lang = (
-      locDescQueryParams.snapshotRes.config.language ||
+    const lang =
       locDescQueryParams.language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+      locDescQueryParams.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
 
     const initialText = `Führe eine umfangreiche Online-Recherche durch, um eine detaillierte und präzise Mikrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
@@ -397,11 +393,7 @@ Zudem verwende diese vom AreaButler generierten Daten:
       tonality,
       language,
     } = locDescQueryParams;
-    const lang = (
-      config.language ||
-      language ||
-      LanguageTypeEnum.de
-    ).toUpperCase();
+    const lang = language || config.language || LanguageTypeEnum.de;
 
     const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse ${address} liegt. Der Name des Stadtteils soll im Text genannt werden. Der Text soll die Zielgruppe ${targetGroupName} ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.
 
@@ -513,7 +505,7 @@ Nutze folgende Informationen und baue daraus positive Argumente für die Zielgru
             ]
           : []),
         `verwende als Ausgabesprache ${
-          language?.toUpperCase() || 'DE'
+          language || 'de'
         } (BCP 47)`,
         customText === 'Teaser Text für Portale und aufbauenden Text generieren'
           ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`
