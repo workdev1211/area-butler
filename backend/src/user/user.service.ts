@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import {
@@ -21,7 +21,7 @@ import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import {
-  ApiTourNamesEnum, ApiUserSettings,
+  ApiTourNamesEnum,
   IApiUserExtConnectSettingsReq,
 } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
@@ -33,6 +33,9 @@ import {
   SUBSCRIPTION_PATH,
 } from '../shared/constants/schema';
 import { CompanyService } from '../company/company.service';
+import { IApiUserConfig } from '@area-butler-types/user';
+import UserConfigDto from './dto/user-config.dto';
+import CompanyConfigDto from '../company/dto/company-config.dto';
 
 @Injectable()
 export class UserService {
@@ -134,7 +137,7 @@ export class UserService {
     const user = await this.upsertUser(email, email);
 
     if (!user) {
-      throw new HttpException('Unknown user!', 400);
+      throw new NotFoundException('Unknown user!');
     }
 
     if (!user.consentGiven) {
@@ -151,7 +154,7 @@ export class UserService {
     const user = await this.findByEmail(email);
 
     if (!user) {
-      throw new HttpException('Unknown user!', 400);
+      throw new NotFoundException('Unknown user!');
     }
 
     const studyTours = { ...user.config.studyTours };
@@ -332,9 +335,9 @@ export class UserService {
 
   async updateConfig(
     email: string,
-    config: ApiUserSettings,
+    config: Partial<IApiUserConfig>,
   ): Promise<UserDocument> {
-    const user = await this.findByEmail(email, { id: 1, subscription: 1 });
+    const user = await this.findByEmail(email, { id: 1, companyId: 1 });
 
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
@@ -344,8 +347,22 @@ export class UserService {
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
 
+    const companyConfig = plainToInstance(CompanyConfigDto, config, {
+      excludeExtraneousValues: true,
+      exposeDefaultValues: false,
+      exposeUnsetFields: false,
+    });
+
+    await this.companyService.updateConfig(user.company._id, companyConfig);
+
+    const userConfig = plainToInstance(UserConfigDto, config, {
+      excludeExtraneousValues: true,
+      exposeDefaultValues: false,
+      exposeUnsetFields: false,
+    });
+
     const updateQuery: UpdateQuery<UserDocument> = Object.entries(
-      config,
+      userConfig,
     ).reduce(
       (result, [key, value]) => {
         if (value) {
@@ -381,7 +398,13 @@ export class UserService {
   }
 
   async convertDocToApiUser(user: UserDocument): Promise<ApiUserDto> {
-    return plainToInstance(ApiUserDto, user.toObject(), {
+    const userObj = user.toObject();
+
+    if (userObj.company.config) {
+      userObj.config = { ...userObj.company.config, ...userObj.config };
+    }
+
+    return plainToInstance(ApiUserDto, userObj, {
       exposeUnsetFields: false,
     });
   }

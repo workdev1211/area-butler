@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -20,7 +18,7 @@ import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
 import { SubscriptionService } from './subscription.service';
 import { UserService } from './user.service';
 import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
-import ApiUserSettingsDto from '../dto/api-user-settings.dto';
+import ApiUserConfigDto from './dto/api-user-config.dto';
 
 interface IUserRequest extends Request {
   user: { email: string };
@@ -75,16 +73,8 @@ export class UserController {
   @Patch('config')
   async config(
     @Req() { user: { email } }: IUserRequest,
-    @Body() config: ApiUserSettingsDto,
+    @Body() config: ApiUserConfigDto,
   ): Promise<ApiUser> {
-    if (config.logo) {
-      this.checkMimeType(config.logo);
-    }
-
-    if (config.mapIcon) {
-      this.checkMimeType(config.mapIcon);
-    }
-
     return this.userService.convertDocToApiUser(
       await this.userService.updateConfig(email, config),
     );
@@ -119,13 +109,5 @@ export class UserController {
     return this.userService.convertDocToApiUser(
       await this.userService.hideTour(email),
     );
-  }
-
-  private checkMimeType(base64EncodedImage: string): void {
-    const mimeInfo = base64EncodedImage.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-
-    if (!mimeInfo.includes('image/')) {
-      throw new HttpException('Unsupported mime type', HttpStatus.BAD_REQUEST);
-    }
   }
 }

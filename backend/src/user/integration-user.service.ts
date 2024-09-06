@@ -10,6 +10,7 @@ import {
 import { BulkWriteResult } from 'mongodb';
 import { EventEmitter2 } from 'eventemitter2';
 import * as dayjs from 'dayjs';
+import { plainToInstance } from 'class-transformer';
 
 import {
   IntegrationUser,
@@ -24,7 +25,10 @@ import { MapboxService } from '../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
 import { COMPANY_PATH, PARENT_USER_PATH } from '../shared/constants/schema';
-import { IApiUserConfig, IUserConfig } from '@area-butler-types/user';
+import { IApiUserConfig } from '@area-butler-types/user';
+import CompanyConfigDto from '../company/dto/company-config.dto';
+import UserConfigDto from './dto/user-config.dto';
+import { CompanyService } from '../company/company.service';
 
 @Injectable()
 export class IntegrationUserService {
@@ -33,6 +37,7 @@ export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
+    private readonly companyService: CompanyService,
     private readonly eventEmitter: EventEmitter2,
     private readonly mapboxService: MapboxService,
   ) {}
@@ -153,11 +158,28 @@ export class IntegrationUserService {
   }
 
   async updateConfig(
-    intUserDbId: Types.ObjectId,
-    config: Partial<IUserConfig>,
+    {
+      _id: intUserDbId,
+      company: { _id: companyDbId },
+    }: TIntegrationUserDocument,
+    config: Partial<IApiUserConfig>,
   ): Promise<TIntegrationUserDocument> {
+    const companyConfig = plainToInstance(CompanyConfigDto, config, {
+      excludeExtraneousValues: true,
+      exposeDefaultValues: false,
+      exposeUnsetFields: false,
+    });
+
+    await this.companyService.updateConfig(companyDbId, companyConfig);
+
+    const userConfig = plainToInstance(UserConfigDto, config, {
+      excludeExtraneousValues: true,
+      exposeDefaultValues: false,
+      exposeUnsetFields: false,
+    });
+
     const updateQuery: UpdateQuery<TIntegrationUserDocument> = Object.entries(
-      config,
+      userConfig,
     ).reduce(
       (result, [key, value]) => {
         if (value) {

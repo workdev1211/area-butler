@@ -54,11 +54,11 @@ export class IntegrationUserController {
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('config')
   async updateConfig(
-    @InjectUser() { _id: intUserDbId }: TIntegrationUserDocument,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() config: ApiUserConfigDto,
   ): Promise<IApiIntegrationUser> {
     return this.convertDocToApiIntUser(
-      await this.integrationUserService.updateConfig(intUserDbId, config),
+      await this.integrationUserService.updateConfig(integrationUser, config),
     );
   }
 

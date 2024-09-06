@@ -20,7 +20,11 @@ import { ICompanyConfig } from '@area-butler-types/company';
 //   SearchResultSnapshotDocument,
 // } from '../../location/schema/search-result-snapshot.schema'; // TODO currently buggy
 
-@Schema({ _id: false })
+@Schema({
+  _id: false,
+  toJSON: { getters: true },
+  toObject: { getters: true },
+})
 class CompanyConfig implements ICompanyConfig {
   @Prop({
     type: Array,
