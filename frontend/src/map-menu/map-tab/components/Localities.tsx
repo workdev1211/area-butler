@@ -127,7 +127,7 @@ const Localities: FC<ILocalitiesProps> = ({
                 : deriveIconForPoiGroup(ge.name, resultingPoiIcons);
 
               return (
-                <div>
+                <div key={`${ge.name}-${geIndex}-map-menu-list-item-top`}>
                   <MapMenuListItem
                     entityGroup={ge}
                     groupIcon={groupIconInfo}
@@ -140,7 +140,6 @@ const Localities: FC<ILocalitiesProps> = ({
                     toggleRoute={toggleRoute}
                     transitRoutes={transitRoutes}
                     toggleTransitRoute={toggleTransitRoute}
-                    key={`${ge.name}-${geIndex}-map-menu-list-item-top`}
                   />
                 </div>
               );
