@@ -77,6 +77,16 @@ export const dateDiffInDays = (d1: Date, d2: Date = new Date()): number => {
   return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay));
 };
 
+export const checkIsDarkColor = (color: string) => {
+  const rgb = parseInt(color.substring(color[0] === "#" ? 1 : 0), 16);
+  const r = (rgb >> 16) & 0xff; // extract red
+  const g = (rgb >> 8) & 0xff; // extract green
+  const b = (rgb >> 0) & 0xff; // extract blue
+
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luma < 100;
+};
+
 export const deriveGeocodeByAddress = async (
   user: ApiUser | IApiIntegrationUser,
   address: string,

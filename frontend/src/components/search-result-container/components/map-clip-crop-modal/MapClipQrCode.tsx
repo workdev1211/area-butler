@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 
 import { useTranslation } from 'react-i18next';
 import { IntlKeys } from 'i18n/keys';
+import { checkIsDarkColor } from '../../../../shared/shared.functions';
 
 interface IMapClipQrCodeImage {
   qrCodeImage: string;
@@ -10,8 +11,9 @@ interface IMapClipQrCodeImage {
 
 export const MapClipQrCode: FunctionComponent<IMapClipQrCodeImage> = ({
   qrCodeImage,
-  color = "white",
+  color = "fff",
 }) => {
+  const isDark = checkIsDarkColor(color)
   const { t } = useTranslation();
   return (
     <div
@@ -33,7 +35,7 @@ export const MapClipQrCode: FunctionComponent<IMapClipQrCodeImage> = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          color: "white",
+          color: isDark ? "white" : 'black',
           fontSize: "1.3rem",
           lineHeight: "1.5rem",
           fontWeight: "bold",

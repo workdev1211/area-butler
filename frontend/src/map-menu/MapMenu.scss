@@ -177,13 +177,12 @@
       }
 
       &.collapse-open > .collapse-title {
-        color: white;
+        border: 1px solid var(--collapse-opened-text-color);
+        border-right: 0;
+        border-left: 0;
+        color: var(--collapse-opened-text-color);
 
         .collapse-title-container {
-          img {
-            @apply invert;
-          }
-
           .collapse-title-text {
             .collapse-title-text-2 {
               @apply text-gray-300;
@@ -192,22 +191,22 @@
         }
 
         .checkbox {
-          border-color: white;
+          border-color: var(--collapse-opened-text-color);
 
           &:checked {
             background-image: linear-gradient(
-                -45deg,
-                transparent 65%,
-                #ffffff 0
+                            -45deg,
+                            transparent 65%,
+                            #ffffff 0
             ),
             linear-gradient(45deg, transparent 75%, #ffffff 0),
             linear-gradient(-45deg, #ffffff 40%, transparent 0),
             linear-gradient(
-                44deg,
-                #ffffff 30%,
-                var(--primary) 0,
-                var(--primary) 40%,
-                transparent 0
+                            44deg,
+                            #ffffff 30%,
+                            var(--primary) 0,
+                            var(--primary) 40%,
+                            transparent 0
             ),
             linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
           }
@@ -219,18 +218,18 @@
 
         &:checked {
           background-image: linear-gradient(
-              -45deg,
-              transparent 65%,
-              var(--custom-primary) 0
+                          -45deg,
+                          transparent 65%,
+                          var(--custom-primary) 0
           ),
           linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
           linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
           linear-gradient(
-              44deg,
-              var(--custom-primary) 30%,
-              #ffffff 0,
-              #ffffff 40%,
-              transparent 0
+                          44deg,
+                          var(--custom-primary) 30%,
+                          #ffffff 0,
+                          #ffffff 40%,
+                          transparent 0
           ),
           linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
         }
@@ -346,11 +345,11 @@
         linear-gradient(45deg, transparent 75%, #ffffff 0),
         linear-gradient(-45deg, #ffffff 40%, transparent 0),
         linear-gradient(
-            44deg,
-            #ffffff 30%,
-            var(--primary) 0,
-            var(--primary) 40%,
-            transparent 0
+                        44deg,
+                        #ffffff 30%,
+                        var(--primary) 0,
+                        var(--primary) 40%,
+                        transparent 0
         ),
         linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
       }
@@ -361,18 +360,18 @@
 
       &:checked {
         background-image: linear-gradient(
-            -45deg,
-            transparent 65%,
-            var(--custom-primary) 0
+                        -45deg,
+                        transparent 65%,
+                        var(--custom-primary) 0
         ),
         linear-gradient(45deg, transparent 75%, var(--custom-primary) 0),
         linear-gradient(-45deg, var(--custom-primary) 40%, transparent 0),
         linear-gradient(
-            44deg,
-            var(--custom-primary) 30%,
-            #ffffff 0,
-            #ffffff 40%,
-            transparent 0
+                        44deg,
+                        var(--custom-primary) 30%,
+                        #ffffff 0,
+                        #ffffff 40%,
+                        transparent 0
         ),
         linear-gradient(-45deg, #ffffff 50%, var(--custom-primary) 0) !important;
       }
@@ -408,6 +407,54 @@
           @apply invert;
         }
       }
+    }
+  }
+}
+
+.dark-primary-color {
+  .collapse-open > .collapse-title {
+    .collapse-title-container {
+      img {
+        @apply invert;
+      }
+    }
+  }
+}
+
+.bright-primary-color {
+  .map-menu {
+    .checkbox, .checkbox-custom, .map-menu-content .view-option.collapse-closed > .collapse-title .checkbox {
+      border-color: var(--collapse-opened-text-color) !important;
+
+      &:checked {
+        background-image: linear-gradient(
+                        -45deg,
+                        transparent 65%,
+                        var(--collapse-opened-text-color) 0
+        ),
+        linear-gradient(45deg, transparent 75%, var(--collapse-opened-text-color) 0),
+        linear-gradient(-45deg, var(--collapse-opened-text-color) 40%, transparent 0),
+        linear-gradient(
+                        44deg,
+                        var(--collapse-opened-text-color) 30%,
+                        #ffffff 0,
+                        #ffffff 40%,
+                        transparent 0
+        ),
+        linear-gradient(-45deg, #ffffff 50%, var(--collapse-opened-text-color) 0) !important;
+      }
+    }
+  }
+
+  .toggle {
+    &:checked {
+      background: var(--collapse-opened-text-color) !important;
+    }
+  }
+
+  .show-menu-btn {
+    img {
+      @apply invert;
     }
   }
 }

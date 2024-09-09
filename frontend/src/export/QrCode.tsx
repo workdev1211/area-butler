@@ -6,6 +6,7 @@ import { IntlKeys } from 'i18n/keys';
 import { QRCodeToDataURLOptions, toDataURL } from "qrcode";
 
 import { useTools } from "../hooks/tools";
+import { checkIsDarkColor } from '../shared/shared.functions';
 
 interface IQrCodeProps {
   containerClasses?: string;
@@ -22,7 +23,8 @@ export const getQrCodeBase64 = async (
   };
 
   if (color) {
-    options.color = { dark: color };
+    const isDark = checkIsDarkColor(color)
+    options.color = { dark: color, light: isDark ? '#fff': '#000' };
   }
 
   return toDataURL(text, options);

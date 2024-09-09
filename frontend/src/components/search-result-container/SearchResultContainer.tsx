@@ -62,6 +62,7 @@ import {
   toggleEntityVisibility,
 } from "../../shared/pois.functions";
 import { saveAs } from "file-saver";
+import { checkIsDarkColor } from 'shared/shared.functions';
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -214,6 +215,13 @@ const SearchResultContainer = forwardRef<
       const r = containerRef;
       r?.style.setProperty("--primary", primaryColor);
       r?.style.setProperty("--custom-primary", primaryColor);
+
+      const isDark = checkIsDarkColor(primaryColor);
+      r?.style.setProperty(
+        "--collapse-opened-text-color",
+        isDark ? "#fff" : "#000"
+      );
+      //
     }, [responseConfig?.primaryColor, containerRef]);
 
     // consume search response and set active/available means
@@ -467,8 +475,10 @@ const SearchResultContainer = forwardRef<
 
       setMapClipping(undefined);
     };
-
-    const containerClasses = `search-result-container theme-${responseConfig?.theme}`;
+    const isDark = checkIsDarkColor(responseConfig?.primaryColor || defaultColor);
+    let containerClasses = `search-result-container theme-${
+      responseConfig?.theme
+    } ${isDark ? "dark" : "bright"}-primary-color`;
     const resUserPoiIcons = userPoiIcons || user.poiIcons;
 
     const isMapMenuKFPresent =
