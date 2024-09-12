@@ -42,7 +42,6 @@ export const up = async ({
   await MigrationService.batchProcess<UserDocument>({
     findQuery: userModel.find(parentUserFilter, { id: 1 }),
     processDocumentAsync: processParentUser,
-    total: await userModel.count(parentUserFilter),
   });
 
   const processChildUser = async (user: UserDocument): Promise<void> => {
@@ -67,7 +66,6 @@ export const up = async ({
       .find(childUserFilter, { parentId: 1 })
       .populate(PARENT_USER_PATH, { companyId: 1 }),
     processDocumentAsync: processChildUser,
-    total: await userModel.count(childUserFilter),
   });
 
   // Integration users
@@ -129,7 +127,6 @@ export const up = async ({
       parameters: 1,
     }),
     processDocumentAsync: processParentIntUser,
-    total: await intUserModel.count(parentIntUserFilter),
   });
 
   const processChildIntUser = async (
@@ -156,6 +153,5 @@ export const up = async ({
       .find(childIntUserFilter, { parentId: 1 })
       .populate(PARENT_USER_PATH, { companyId: 1 }),
     processDocumentAsync: processChildIntUser,
-    total: await intUserModel.count(childIntUserFilter),
   });
 };
