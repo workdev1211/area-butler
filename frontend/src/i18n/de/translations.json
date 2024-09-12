@@ -306,7 +306,7 @@
     "addNewLocationModalBtn": "Hinzufügen",
     "addNewLocationModalSuccess": "Objekt erfolgreich hinzugefügt!",
     "addNewLocationModalFailed": "Fehler beim Speichern des Objektes",
-    "outputLanguage": "Ausgabe Sprache"
+    "outputLanguage": "Ausgabesprache"
   },
   "common": {
     "showMore": "Mehr anzeigen",
