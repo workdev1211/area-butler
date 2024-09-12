@@ -87,7 +87,8 @@
     "rxjs": "^7.5.5",
     "sib-api-v3-sdk": "^8.3.0",
     "stripe": "^8.214.0",
-    "swagger-ui-express": "^4.3.0"
+    "swagger-ui-express": "^4.3.0",
+    "umzug": "~3.2.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.2.4",

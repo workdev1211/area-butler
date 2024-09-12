@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { json, urlencoded } from 'body-parser';
+import { json, urlencoded } from 'express';
 import { resolve } from 'path';
 import * as Sentry from '@sentry/node';
 
@@ -12,7 +12,7 @@ import { configService } from './config/config.service';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cloneBuffer = require('clone-buffer');
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger:
       configService.getSystemEnv() !== 'prod'
@@ -40,7 +40,7 @@ async function bootstrap() {
         return true;
       },
     }),
-    urlencoded({ limit: '20mb' }),
+    urlencoded({ extended: true, limit: '20mb' }),
   ]);
 
   if (process.env.NODE_ENV !== 'production') {

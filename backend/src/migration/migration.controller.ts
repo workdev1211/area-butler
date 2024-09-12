@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { MigrationService } from './migration.service';
@@ -15,15 +15,27 @@ export class MigrationController extends AuthenticatedController {
     super();
   }
 
-  @ApiOperation({ description: 'Create companies' })
-  @Post('create-companies')
-  createCompanies(): void {
-    void this.migrationService.createCompanies();
+  @ApiOperation({ description: 'Get a list of pending migrations' })
+  @Get()
+  getPendingMigrations(): Promise<string> {
+    return this.migrationService.getPendingMigrations();
   }
 
-  @ApiOperation({ description: 'Update user configs' })
-  @Post('update-user-configs')
-  updateUserConfigs(): void {
-    void this.migrationService.updateUserConfigs();
+  @ApiOperation({ description: 'Run pending migrations' })
+  @Post()
+  runPendingMigrations(): void {
+    void this.migrationService.runPendingMigrations();
+  }
+
+  @ApiOperation({ description: 'Run next pending migration' })
+  @Post('run-next')
+  runNextMigration(): void {
+    void this.migrationService.runNextMigration();
+  }
+
+  @ApiOperation({ description: 'Revert last migration' })
+  @Post('revert-last')
+  revertLastMigration(): void {
+    void this.migrationService.revertLastMigration();
   }
 }
