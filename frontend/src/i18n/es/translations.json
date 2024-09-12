@@ -306,8 +306,7 @@
     "addNewLocationModalBtn": "Añadir",
     "addNewLocationModalSuccess": "¡Objeto añadido correctamente!",
     "addNewLocationModalFailed": "Error al guardar el objeto",
-    "german": "Alemán",
-    "english": "Inglés"
+    "outputLanguage": "Idioma de salida"
   },
   "common": {
     "showMore": "Ver más",
@@ -373,7 +372,15 @@
     "custom": "Personalizado",
     "addressExpired": "Este mapa ya no está disponible. Póngase en contacto con AreaButler.",
     "discard": "Descartar",
-    "help": "Ayuda"
+    "help": "Ayuda",
+    "languages": {
+      "de": "Alemán",
+      "en": "Inglés",
+      "nl": "Holandés",
+      "fr": "Francés",
+      "it": "Italiano",
+      "es": "Español"
+    }
   },
   "environmentalAnalysis": {
     "createBtn": "Crear mapa",
