@@ -306,8 +306,7 @@
     "addNewLocationModalBtn": "Voeg  toe",
     "addNewLocationModalSuccess": "Object succesvol toegevoegd!",
     "addNewLocationModalFailed": "Fout bij het opslaan van het object",
-    "german": "Duits",
-    "english": "Engels"
+    "outputLanguage": "Uitvoertaal"
   },
   "common": {
     "showMore": "Meer tonen",
@@ -373,7 +372,15 @@
     "custom": "Aangepast",
     "addressExpired": "Deze kaart is niet langer beschikbaar. Neem contact op met AreaButler.",
     "discard": "Gooi weg",
-    "help": "Help"
+    "help": "Help",
+    "languages": {
+      "de": "Duits",
+      "en": "Engels",
+      "nl": "Nederlands",
+      "fr": "Frans",
+      "it": "Italiaans",
+      "es": "Spaans"
+    }
   },
   "environmentalAnalysis": {
     "createBtn": "Kaart maken",
