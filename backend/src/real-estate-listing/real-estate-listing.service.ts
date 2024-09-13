@@ -123,30 +123,30 @@ export class RealEstateListingService {
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<IApiRealEstStatusByUser> {
     const isIntegrationUser = 'integrationUserId' in user;
-    let filter;
+    let filterQuery: FilterQuery<RealEstateListingDocument>;
 
     if (isIntegrationUser) {
-      filter = {
+      filterQuery = {
         'integrationParams.integrationUserId': user.integrationUserId,
         'integrationParams.integrationType': user.integrationType,
       };
     }
 
     if (!isIntegrationUser) {
-      const userIds: string[] = [user.id];
+      const userIds: Types.ObjectId[] = [user._id];
 
-      if (user.parentId) {
-        userIds.push(user.parentId);
+      if (user.parentUser) {
+        userIds.push(user.parentUser._id);
       }
 
-      filter = {
+      filterQuery = {
         userId: { $in: userIds },
       };
     }
 
     return (
       await this.realEstateListingModel.aggregate([
-        { $match: filter },
+        { $match: filterQuery },
         {
           $facet: {
             status: [
