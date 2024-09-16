@@ -1,16 +1,22 @@
 import { FunctionComponent, useContext, useEffect } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
+import Input from "../inputs/formik/Input";
 import { SearchContext } from "../../context/SearchContext";
-import { meansOfTransportations } from "../../../../shared/constants/constants";
+import {
+  meansOfTransportations,
+  onePageCharacterLimit,
+} from "../../../../shared/constants/constants";
 import { IOpenAiLocDescFormValues } from "../../../../shared/types/open-ai";
 import { TFormikInnerRef } from "../../shared/shared.types";
+
+const DEFAULT_MAX_CHAR_LEN = onePageCharacterLimit;
 
 interface IOpenAiLocDescFormListenProps {
   onValuesChange: (values: IOpenAiLocDescFormValues) => void;
@@ -49,7 +55,11 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
 
   const meansOfTransportation = searchContextState.transportationParams.map(
     ({ type }) => {
-      const { label, type: value, mode } = meansOfTransportations.find(
+      const {
+        label,
+        type: value,
+        mode,
+      } = meansOfTransportations.find(
         ({ type: constantType }) => type === constantType
       )!;
 
@@ -60,6 +70,7 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
   const processedInitialValues = initialValues
     ? {
         ...initialValues,
+        maxCharactersLength: DEFAULT_MAX_CHAR_LEN,
         meanOfTransportation: meansOfTransportation.some(
           ({ value }) => value === initialValues?.meanOfTransportation
         )
@@ -68,6 +79,7 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
       }
     : {
         meanOfTransportation: meansOfTransportation[0].value,
+        maxCharactersLength: DEFAULT_MAX_CHAR_LEN,
       };
 
   const validationSchema = Yup.object({
@@ -96,10 +108,23 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
           >
             {meansOfTransportation.map(({ mode, value }) => (
               <option value={value} key={value}>
-                {t((IntlKeys.common.transportationTypes as Record<string, string>)[mode])}
+                {t(
+                  (
+                    IntlKeys.common.transportationTypes as Record<
+                      string,
+                      string
+                    >
+                  )[mode]
+                )}
               </option>
             ))}
           </Select>
+          <Input
+            label={t(IntlKeys.snapshotEditor.dataTab.maxCharactersLength)}
+            name="maxCharactersLength"
+            type="number"
+            className="input input-bordered w-full max-w-xs"
+          />
         </div>
 
         {typeof onValuesChange === "function" && (

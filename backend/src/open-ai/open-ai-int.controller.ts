@@ -12,6 +12,8 @@ import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import { UserDocument } from '../user/schema/user.schema';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai-int')
@@ -64,6 +66,22 @@ export class OpenAiIntController {
     @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
   ): Promise<string> {
     return this.openAiService.fetchRealEstDesc(
+      integrationUser,
+      realEstDescQueryDto,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description with image analyzing' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('real-est-desc-2')
+  async fetchRealEstDesc2(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchRealEstDesc2(
       integrationUser,
       realEstDescQueryDto,
     );

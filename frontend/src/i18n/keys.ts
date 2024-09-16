@@ -351,6 +351,7 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesOptionLabel.DISTRICT_DESC",
       },
       publicLinks: "snapshotEditor.dataTab.publicLinks",
+      maxCharactersLength: "snapshotEditor.dataTab.maxCharactersLength",
     },
     pointsOfInterest: {
       label: "snapshotEditor.pointsOfInterest.label",

@@ -197,6 +197,15 @@ interface IPropstackFurnishing {
   crane_runway?: boolean;
 }
 
+export type Image = {
+  url: string;
+  id: number;
+  title: string;
+  is_not_for_expose: boolean;
+  is_private: boolean;
+  is_floor_plan: boolean;
+};
+
 // obtained by fetching a property from Propstack
 export interface IPropstackProperty {
   id: number;
@@ -239,7 +248,7 @@ export interface IPropstackProperty {
   number_of_bed_rooms?: number;
   number_of_bath_rooms?: number;
   currency?: string;
-  images?: object[];
+  images?: Image[];
   fields?: IPropstackFields;
   hide_address?: boolean;
   floorplans?: object[];

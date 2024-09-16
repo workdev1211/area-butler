@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -16,6 +17,11 @@ class ApiOpenAiLocDescQueryDto
   extends ApiOpenAiGeneralQueryDto
   implements IApiOpenAiLocDescQuery
 {
+  @Expose()
+  @IsOptional()
+  @IsNumber()
+  maxCharactersLength?: number;
+
   @Expose()
   @IsNotEmpty()
   @IsString()

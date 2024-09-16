@@ -28,6 +28,7 @@ export interface IOpenAiGeneralFormValues {
 
 export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
   meanOfTransportation: MeansOfTransportation;
+  maxCharactersLength?: number;
 }
 
 export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {

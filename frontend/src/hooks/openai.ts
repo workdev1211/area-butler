@@ -19,7 +19,10 @@ import { ConfigContext } from "../context/ConfigContext";
 import { useIntegrationTools } from "./integration/integrationtools";
 import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/on-office-products";
 import { TApiIntUserProdContType } from "../../../shared/types/integration-user";
-import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
+import {
+  IntegrationActionTypeEnum,
+  IntegrationTypesEnum,
+} from "../../../shared/types/integration";
 
 export type TOpenAiQuery = { integrationId?: string } & (
   | IApiOpenAiLocDescQuery
@@ -40,6 +43,7 @@ export const useOpenAi = () => {
   const { post } = useHttp();
 
   const isIntegration = !!integrationType;
+  const isPropstack = integrationType === IntegrationTypesEnum.PROPSTACK;
   const realEstateListing = searchContextState.realEstateListing!;
 
   const fetchOpenAiResponse = async (
@@ -87,7 +91,9 @@ export const useOpenAi = () => {
 
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
         url = isIntegration
-          ? "/api/open-ai-int/real-est-desc"
+          ? isPropstack
+            ? "/api/open-ai-int/real-est-desc-2"
+            : "/api/open-ai-int/real-est-desc"
           : "/api/open-ai/real-est-desc";
         break;
       }

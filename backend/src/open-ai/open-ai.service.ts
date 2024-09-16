@@ -19,6 +19,8 @@ import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
+import { PropstackApiService } from '../client/propstack/propstack-api.service';
+import { LanguageTypeEnum } from '@area-butler-types/types';
 
 type TFetchLocDescParams =
   | (IApiOpenAiLocDescQuery & { snapshotRes?: never })
@@ -40,6 +42,7 @@ export class OpenAiService {
   constructor(
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly openAiApiService: OpenAiApiService,
+    private readonly propstackApiService: PropstackApiService,
     private readonly openAiQueryService: OpenAiQueryService,
     private readonly realEstateListingService: RealEstateListingService,
   ) {}
@@ -48,11 +51,18 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locDescParams: TFetchLocDescParams,
   ): Promise<string> {
+    const params = await this.processLocParams(user, locDescParams);
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
+
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getLocDescQuery(
-        user,
-        await this.processLocParams(user, locDescParams),
-      ),
+      await this.openAiQueryService.getLocDescQuery(user, params),
+      {
+        maxCharactersLength: locDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -88,6 +98,44 @@ export class OpenAiService {
         realEstate: resultRealEstate,
         ...realEstDescParams,
       }),
+    );
+  }
+
+  async fetchRealEstDesc2(
+    user: TIntegrationUserDocument,
+    { realEstateId, realEstate, ...realEstDescParams }: TFetchRealEstDescParams,
+  ): Promise<string> {
+    const resultRealEstate =
+      realEstate ||
+      mapRealEstateListingToApiRealEstateListing(
+        user,
+        await this.realEstateListingService.fetchById(user, realEstateId),
+      );
+
+    if (!resultRealEstate || !resultRealEstate.integrationId) {
+      throw new UnprocessableEntityException('Real estate not found!');
+    }
+
+    const {
+      parameters: { apiKey },
+    } = user;
+
+    const realEstateExtData = await this.propstackApiService.fetchPropertyById(
+      apiKey,
+      Number(resultRealEstate.integrationId),
+    );
+
+    const images = realEstateExtData.images.filter(
+      (image) => !image.is_not_for_expose,
+    );
+
+    return this.openAiApiService.fetchWithImagesResponse(
+      this.openAiQueryService.getRealEstDesc2Query({
+        realEstate: realEstateExtData,
+        images,
+        ...realEstDescParams,
+      }),
+      images,
     );
   }
 

@@ -36,6 +36,7 @@ import {
 } from '../../../shared/functions/census.functions';
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
+import { Image, IPropstackProperty } from '../shared/types/propstack';
 
 interface IGeneralQueryParams extends IOpenAiGeneralFormValues {
   language?: LanguageTypeEnum | ApiBcp47LanguageEnum;
@@ -51,6 +52,11 @@ export interface IRealEstDescQueryParams
   extends IGeneralQueryParams,
     Omit<IApiOpenAiRealEstDescQuery, 'realEstateId'> {
   realEstate: ApiRealEstateListing;
+}
+
+export interface IRealEstDesc2QueryParams extends IGeneralQueryParams {
+  realEstate: IPropstackProperty;
+  images: Image[];
 }
 
 export interface ILocRealEstDescQueryParams
@@ -154,6 +160,30 @@ export class OpenAiQueryService {
         realEstateType,
       })
     );
+  }
+
+  getRealEstDesc2Query(queryParams: IRealEstDesc2QueryParams): string {
+    const { realEstate, images, language } = queryParams;
+
+    const lang = language || LanguageTypeEnum.de;
+
+    return `
+      Erstelle eine ansprechende Beschreibung der Immobilie für die Zielgruppe Junge Familien. Nutze dabei die bereitgestellten Daten und Bilder. Die Bilder sollen analysiert werden und nicht im Text verlinkt werden. Gehe insbesondere auf die verwendeten Materialien, Helligkeit der Räume und weniger auf die Einrichtung ein. Der Text ist für ein Exposé gedacht.
+      
+      Daten und Fakten:
+      - Adresse: ${realEstate.address}
+      - Wohnfläche: ${realEstate.living_space} Quadratmetern
+      - Zimmeranzahl: ${realEstate.number_of_rooms}
+      - Immobilientyp: ${realEstate.rs_type}
+      - Preis: ${realEstate.price}
+      
+      Bitte kombiniere diese Informationen zu einer ansprechenden Objektbeschreibung.
+      
+      verwende als Ausgabesprache ${lang} (BCP 47)
+      
+      Die mitgegebenen Urls sind:
+      ${images?.map((image) => `- ${image.title}: ${image.url}`).join('\n')}
+    `;
   }
 
   getImprovedText(originalText: string, customText: string): string {
@@ -504,9 +534,7 @@ Nutze folgende Informationen und baue daraus positive Argumente für die Zielgru
               `Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen`,
             ]
           : []),
-        `verwende als Ausgabesprache ${
-          language || 'de'
-        } (BCP 47)`,
+        `verwende als Ausgabesprache ${language || 'de'} (BCP 47)`,
         customText === 'Teaser Text für Portale und aufbauenden Text generieren'
           ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`
           : `bitte beachte folgenden Wunsch bei der Erstellung: ${customText}`,

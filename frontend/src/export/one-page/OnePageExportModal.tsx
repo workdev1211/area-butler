@@ -239,6 +239,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     const openAiLocDesc = await fetchOpenAiResponse(
       OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
       {
+        language: searchContextState.responseConfig?.language,
         snapshotId,
         ...generalFormRef.current!.values,
         ...locDescFormRef.current!.values,
@@ -328,7 +329,10 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
               }}
             >
               1. {t(IntlKeys.snapshotEditor.dataTab.locationDescription)} (
-              {locationDescription.length}/{onePageCharacterLimit})
+              {locationDescription.length}/
+              {locDescFormRef.current?.values.maxCharactersLength ||
+                onePageCharacterLimit}
+              )
             </div>
 
             <div className="collapse-content textarea-content">
