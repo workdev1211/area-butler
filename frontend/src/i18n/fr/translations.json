@@ -301,7 +301,8 @@
         "FORMAL_TO_INFORMAL": "Transformation de la forme \"vous\" en forme \"tu\".",
         "DISTRICT_DESC": "Texte du quartier"
       },
-      "publicLinks": "Liens avec ou sans adresse"
+      "publicLinks": "Liens avec ou sans adresse",
+      "maxCharactersLength": "maxCharactersLength"
     },
     "addNewLocationModalTitle": "Ajouter un nouveau lieu",
     "addNewLocationModalBtn": "Ajouter",
