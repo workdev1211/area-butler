@@ -301,7 +301,8 @@
         "FORMAL_TO_INFORMAL": "Trasformazione di te-forma in te-forma",
         "DISTRICT_DESC": "Testo del distretto"
       },
-      "publicLinks": "Collegamenti con e senza indirizzo"
+      "publicLinks": "Collegamenti con e senza indirizzo",
+      "maxCharactersLength": "lunghezza massima dei caratteri"
     },
     "addNewLocationModalTitle": "Aggiungi una nuova posizione",
     "addNewLocationModalBtn": "Aggiungi",
