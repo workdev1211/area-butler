@@ -301,7 +301,8 @@
         "FORMAL_TO_INFORMAL": "Transformatie jij-vorm in jij-vorm",
         "DISTRICT_DESC": "Tekst van het district"
       },
-      "publicLinks": "Links met en zonder adres"
+      "publicLinks": "Links met en zonder adres",
+      "maxCharactersLength": "maxCharactersLength"
     },
     "addNewLocationModalTitle": "Nieuwe locatie toevoegen",
     "addNewLocationModalBtn": "Voeg  toe",
