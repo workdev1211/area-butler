@@ -301,7 +301,8 @@
         "FORMAL_TO_INFORMAL": "Transformation Sie-Form in Du-Form",
         "DISTRICT_DESC": "Stadtteiltext"
       },
-      "publicLinks": "Links mit und ohne Adresse"
+      "publicLinks": "Links mit und ohne Adresse",
+      "maxCharactersLength": "Zielzeichenlänge"
     },
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",
     "addNewLocationModalBtn": "Hinzufügen",
