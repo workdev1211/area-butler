@@ -301,7 +301,8 @@
         "FORMAL_TO_INFORMAL": "Transformación tú-forma en tú-forma",
         "DISTRICT_DESC": "Texto del distrito"
       },
-      "publicLinks": "Enlaces con y sin dirección"
+      "publicLinks": "Enlaces con y sin dirección",
+      "maxCharactersLength": "maxLongitudCaracteres"
     },
     "addNewLocationModalTitle": "Añadir nueva ubicación",
     "addNewLocationModalBtn": "Añadir",
