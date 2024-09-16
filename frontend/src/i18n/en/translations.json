@@ -301,7 +301,8 @@
         "FORMAL_TO_INFORMAL": "Transformation you-form into you-form",
         "DISTRICT_DESC": "District text"
       },
-      "publicLinks": "Links with and without address"
+      "publicLinks": "Links with and without address",
+      "maxCharactersLength": "maxCharactersLength"
     },
     "addNewLocationModalTitle": "Add new location",
     "addNewLocationModalBtn": "Add",
