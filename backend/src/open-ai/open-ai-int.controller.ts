@@ -12,8 +12,6 @@ import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import { UserDocument } from '../user/schema/user.schema';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai-int')
@@ -71,7 +69,9 @@ export class OpenAiIntController {
     );
   }
 
-  @ApiOperation({ description: 'Fetch Open AI real estate description with image analyzing' })
+  @ApiOperation({
+    description: 'Fetch Open AI real estate description with image analyzing',
+  })
   @UseInterceptors(
     InjectIntegrationUserInterceptor,
     ProcessOpenAiIntUsageInterceptor,

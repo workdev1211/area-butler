@@ -1,10 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OpenAI } from 'openai';
-import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
 // import { encoding_for_model, Tiktoken } from '@dqbd/tiktoken';
 
 import { configService } from '../../config/config.service';
-import { ChatCompletionCreateParamsBase } from 'openai/src/resources/chat/completions';
 import { LanguageTypeEnum } from '@area-butler-types/types';
 
 const MODEL_NAME = 'gpt-4o';
