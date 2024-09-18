@@ -4,17 +4,9 @@ import { OpenAI } from 'openai';
 
 import { configService } from '../../config/config.service';
 import { LanguageTypeEnum } from '@area-butler-types/types';
+import { TImage } from '../../shared/types/propstack';
 
 const MODEL_NAME = 'gpt-4o';
-
-export type Image = {
-  url: string;
-  id: number;
-  title: string;
-  is_not_for_expose: boolean;
-  is_private: boolean;
-  is_floor_plan: boolean;
-};
 
 interface IResponseCompressed {
   maxCharactersLength: number;
@@ -118,7 +110,7 @@ export class OpenAiApiService {
 
   async fetchWithImagesResponse(
     queryText: string,
-    images: Image[],
+    images: TImage[],
   ): Promise<string> {
     // let encoding: Tiktoken;
 

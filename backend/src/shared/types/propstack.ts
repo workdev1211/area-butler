@@ -197,7 +197,7 @@ interface IPropstackFurnishing {
   crane_runway?: boolean;
 }
 
-export type Image = {
+export type TImage = {
   url: string;
   id: number;
   title: string;
@@ -248,7 +248,7 @@ export interface IPropstackProperty {
   number_of_bed_rooms?: number;
   number_of_bath_rooms?: number;
   currency?: string;
-  images?: Image[];
+  images?: TImage[];
   fields?: IPropstackFields;
   hide_address?: boolean;
   floorplans?: object[];

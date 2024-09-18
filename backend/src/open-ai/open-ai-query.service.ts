@@ -36,7 +36,7 @@ import {
 } from '../../../shared/functions/census.functions';
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
-import { Image, IPropstackProperty } from '../shared/types/propstack';
+import { TImage, IPropstackProperty } from '../shared/types/propstack';
 
 interface IGeneralQueryParams extends IOpenAiGeneralFormValues {
   language?: LanguageTypeEnum | ApiBcp47LanguageEnum;
@@ -56,7 +56,7 @@ export interface IRealEstDescQueryParams
 
 export interface IRealEstDesc2QueryParams extends IGeneralQueryParams {
   realEstate: IPropstackProperty;
-  images: Image[];
+  images: TImage[];
 }
 
 export interface ILocRealEstDescQueryParams
@@ -534,7 +534,7 @@ Nutze folgende Informationen und baue daraus positive Argumente für die Zielgru
               `Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen`,
             ]
           : []),
-        `verwende als Ausgabesprache ${language || 'de'} (BCP 47)`,
+        `verwende als Ausgabesprache ${language || LanguageTypeEnum.de} (BCP 47)`,
         customText === 'Teaser Text für Portale und aufbauenden Text generieren'
           ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`
           : `bitte beachte folgenden Wunsch bei der Erstellung: ${customText}`,

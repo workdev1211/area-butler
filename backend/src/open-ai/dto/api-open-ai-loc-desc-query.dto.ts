@@ -1,9 +1,10 @@
 import {
   IsBoolean,
   IsEnum,
+  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
@@ -19,7 +20,8 @@ class ApiOpenAiLocDescQueryDto
 {
   @Expose()
   @IsOptional()
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   maxCharactersLength?: number;
 
   @Expose()
