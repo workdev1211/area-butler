@@ -750,5 +750,8 @@
       "cardStyles": "Card styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.\nCard styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.",
       "annualSubscription": "Annual subscription"
     }
+  },
+  "errors": {
+    "userNotFound": "User not found!"
   }
 }

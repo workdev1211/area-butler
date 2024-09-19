@@ -187,8 +187,12 @@ const SearchResultContainer = forwardRef<
     const [mapClipping, setMapClipping] = useState<string>();
     const [primaryColor, setPrimaryColor] = useState<string>();
 
-    const user = getActualUser();
-    const isIntegrationUser = "integrationUserId" in user;
+    const user =
+      mapDisplayMode !== MapDisplayModesEnum.EMBEDDED
+        ? getActualUser()
+        : undefined;
+    const isIntegrationUser = !!(user && "integrationUserId" in user);
+
     const directLink = createDirectLink();
     const screenshotName = t(IntlKeys.snapshotEditor.screenshotName);
     const searchAddress = placesLocation?.label;
@@ -343,7 +347,7 @@ const SearchResultContainer = forwardRef<
           MeansOfTransportation.CAR,
         ],
         origin: origin,
-        userEmail: !isIntegrationUser ? user.email : undefined,
+        userEmail: !isIntegrationUser ? user?.email : undefined,
       });
 
       if (routesResult.length) {
@@ -401,7 +405,7 @@ const SearchResultContainer = forwardRef<
           },
         ],
         origin: origin,
-        userEmail: !isIntegrationUser ? user.email : undefined,
+        userEmail: !isIntegrationUser ? user?.email : undefined,
       });
 
       if (routesResult.length) {
@@ -491,7 +495,7 @@ const SearchResultContainer = forwardRef<
       responseConfig?.theme
     } ${isDark ? "dark" : "bright"}-primary-color`;
 
-    const resPoiIcons = poiIcons || user.config.poiIcons;
+    const resPoiIcons = poiIcons || user?.config.poiIcons;
 
     const isMapMenuKFPresent =
       isThemeKf && (!isEmbeddedMode || !responseConfig?.hideMapMenu);
@@ -628,7 +632,7 @@ const SearchResultContainer = forwardRef<
             mapPoiIcons={resPoiIcons?.mapPoiIcons}
             isIntegration={isIntegrationUser}
             allowedCountries={
-              user.config.allowedCountries || [Iso3166_1Alpha2CountriesEnum.DE]
+              user?.config.allowedCountries || [Iso3166_1Alpha2CountriesEnum.DE]
             }
             ref={mapRef}
           />

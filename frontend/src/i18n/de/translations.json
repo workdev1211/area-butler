@@ -750,5 +750,8 @@
       "cardStyles": "Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.\nKartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.",
       "annualSubscription": "Jahres-Abo"
     }
+  },
+  "errors": {
+    "userNotFound": "Benutzer nicht gefunden!"
   }
 }

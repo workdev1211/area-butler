@@ -1,6 +1,9 @@
 import { useContext } from "react";
 import dayjs from "dayjs";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "../i18n/keys";
+
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import {
   ApiTourNamesEnum,
@@ -26,6 +29,7 @@ export const useUserState = () => {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
 
+  const { t } = useTranslation();
   const { patch, post } = useHttp();
   const { checkIsSubActive } = useIntegrationTools();
   const isIntegrationUser = !!integrationUser;
@@ -106,17 +110,14 @@ export const useUserState = () => {
     }
   };
 
-  // TODO think about refactoring to the same frontend interface
   const getActualUser = (): ApiUser | IApiIntegrationUser => {
-    if (user) {
-      return user;
+    const actualUser = user || integrationUser;
+
+    if (!actualUser) {
+      throw new Error(t(IntlKeys.errors.userNotFound));
     }
 
-    if (integrationUser) {
-      return integrationUser;
-    }
-
-    return {} as ApiUser;
+    return actualUser;
   };
 
   const hideTour = async (

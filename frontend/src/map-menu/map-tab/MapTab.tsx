@@ -28,8 +28,11 @@ const MapTab: FC<IMapTabProps> = ({
   } = useContext(SearchContext);
 
   const { getActualUser } = useUserState();
-  const user = getActualUser();
-  const isIntegrationUser = "integrationUserId" in user;
+  const user =
+    mapDisplayMode !== MapDisplayModesEnum.EMBEDDED
+      ? getActualUser()
+      : undefined;
+  const isIntegrationUser = !!(user && "integrationUserId" in user);
 
   const hasOpenAiFeature =
     isIntegrationUser || !!user?.subscription?.config.appFeatures.openAi;

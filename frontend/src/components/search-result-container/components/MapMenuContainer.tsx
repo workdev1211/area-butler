@@ -89,8 +89,11 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   const searchAddress = placesLocation?.label;
   const resultLocation = mapCenter ?? location!;
 
-  const user = getActualUser();
-  const extraMapboxStyles = user.config.extraMapboxStyles;
+  const user =
+    mapDisplayMode !== MapDisplayModesEnum.EMBEDDED
+      ? getActualUser()
+      : undefined;
+  const extraMapboxStyles = user?.config.extraMapboxStyles;
 
   useEffect(() => {
     if (

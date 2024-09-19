@@ -811,4 +811,8 @@ export const IntlKeys = {
       annualSubscription: "subscriptions.business.annualSubscription",
     },
   },
+
+  errors: {
+    userNotFound: "errors.userNotFound",
+  },
 };
