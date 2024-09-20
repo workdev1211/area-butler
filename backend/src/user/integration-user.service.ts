@@ -53,7 +53,7 @@ export class IntegrationUserService {
     parameters,
     parentId,
   }: IApiIntUserCreate): Promise<TIntegrationUserDocument> {
-    const processedConfig = config ? { ...config } : {};
+    const processedConfig = config ? { ...config } : undefined;
 
     const integrationUser = await this.integrationUserModel.create({
       accessToken,

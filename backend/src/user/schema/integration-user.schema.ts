@@ -21,6 +21,7 @@ import {
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 import { IUserConfig } from '@area-butler-types/user';
+import { defaultUserConfig } from '../../../../shared/constants/user';
 
 export type TIntegrationUserDocument = HydratedDocument<IntegrationUser>;
 
@@ -40,7 +41,10 @@ export class IntegrationUser implements IIntegrationUserSchema {
   })
   companyId: string;
 
-  @Prop({ type: UserConfigSchema })
+  @Prop({
+    type: UserConfigSchema,
+    default: { ...defaultUserConfig },
+  })
   config: IUserConfig;
 
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
@@ -74,6 +78,7 @@ export class IntegrationUser implements IIntegrationUserSchema {
   @Prop({
     type: IntUserSubscriptionSchema,
     get: function (
+      this: TIntegrationUserDocument,
       userSubscription: IIntUserSubscription,
     ): IIntUserSubscription {
       const subscription =

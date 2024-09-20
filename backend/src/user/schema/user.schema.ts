@@ -12,6 +12,7 @@ import {
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 import { UserConfigSchema } from './user-config.schema';
 import { IUserConfig } from '@area-butler-types/user';
+import { defaultUserConfig } from '../../../../shared/constants/user';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -27,7 +28,10 @@ export class User {
   })
   companyId: string;
 
-  @Prop({ type: UserConfigSchema })
+  @Prop({
+    type: UserConfigSchema,
+    default: { ...defaultUserConfig },
+  })
   config: IUserConfig;
 
   @Prop({ type: Date })

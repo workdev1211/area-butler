@@ -54,14 +54,16 @@ export class UserService {
       return existingUser;
     }
 
-    const { id: companyId } = await this.companyService.create();
+    const company = await this.companyService.create();
 
-    const newUser = await new this.userModel({
-      companyId,
+    const newUser = await this.userModel.create({
       email,
       fullname,
+      companyId: company.id,
       consentGiven: null,
-    }).save();
+    });
+
+    newUser.company = company;
 
     // creates a new Stripe customer and default potential customer records
     void this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, {
