@@ -490,13 +490,17 @@ const SearchParamsPage: FC = () => {
             type="button"
             disabled={isSearchButtonDisabled}
             onClick={async () => {
-              if (checkIsFeatAvailable(FeatureTypeEnum.SEARCH)) {
-                await performAnalysis();
+              const isAvailable = checkIsFeatAvailable(FeatureTypeEnum.SEARCH);
+
+              if (!isAvailable) {
+                if (isIntegrationUser) {
+                  await unlockProduct(IntegrationActionTypeEnum.UNLOCK_SEARCH);
+                } else {
+                  return;
+                }
               }
 
-              if (isIntegrationUser) {
-                await unlockProduct(IntegrationActionTypeEnum.UNLOCK_SEARCH);
-              }
+              await performAnalysis();
             }}
             className={
               searchContextState.searchBusy
