@@ -453,6 +453,7 @@ export const IntlKeys = {
     english: "snapshotEditor.english",
     german: "snapshotEditor.german",
     outputLanguage: "snapshotEditor.outputLanguage",
+    invertBaseColor: "snapshotEditor.invertBaseColor",
   },
 
   realEstate: {

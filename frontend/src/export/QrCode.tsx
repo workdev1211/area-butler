@@ -17,7 +17,8 @@ interface IQrCodeProps {
 
 export const getQrCodeBase64 = async (
   text: string,
-  color?: string
+  color?: string,
+  invert = false,
 ): Promise<string> => {
   const options: QRCodeToDataURLOptions = {
     type: "image/png",
@@ -25,7 +26,7 @@ export const getQrCodeBase64 = async (
   };
 
   if (color) {
-    const isDark = checkIsDarkColor(color);
+    const isDark = checkIsDarkColor(color, invert);
     options.color = { dark: color, light: isDark ? "#fff" : "#000" };
   }
 

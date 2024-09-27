@@ -454,6 +454,13 @@
         linear-gradient(-45deg, #ffffff 50%, var(--collapse-opened-text-color) 0) !important;
       }
     }
+    .tab-bar {
+      .tab-item {
+        &.tab-item-active {
+          border-bottom-color: black;
+        }
+      }
+    }
   }
 
   .toggle {

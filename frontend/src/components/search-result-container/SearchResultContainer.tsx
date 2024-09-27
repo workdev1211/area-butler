@@ -62,7 +62,7 @@ import {
   toggleEntityVisibility,
 } from "../../shared/pois.functions";
 import { saveAs } from "file-saver";
-import { checkIsDarkColor } from 'shared/shared.functions';
+import { checkIsDarkColor } from "shared/shared.functions";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -210,19 +210,24 @@ const SearchResultContainer = forwardRef<
     // Customize primary color
     useEffect(() => {
       const primaryColor = responseConfig?.primaryColor || defaultColor;
+      const invertColor = responseConfig?.invertBaseColor;
       setPrimaryColor(responseConfig?.primaryColor || defaultColor);
 
       const r = containerRef;
       r?.style.setProperty("--primary", primaryColor);
       r?.style.setProperty("--custom-primary", primaryColor);
 
-      const isDark = checkIsDarkColor(primaryColor);
+      const isDark = checkIsDarkColor(primaryColor, invertColor);
       r?.style.setProperty(
         "--collapse-opened-text-color",
         isDark ? "#fff" : "#000"
       );
       //
-    }, [responseConfig?.primaryColor, containerRef]);
+    }, [
+      responseConfig?.primaryColor,
+      containerRef,
+      responseConfig?.invertBaseColor,
+    ]);
 
     // consume search response and set active/available means
     useEffect(() => {
@@ -475,7 +480,10 @@ const SearchResultContainer = forwardRef<
 
       setMapClipping(undefined);
     };
-    const isDark = checkIsDarkColor(responseConfig?.primaryColor || defaultColor);
+    const isDark = checkIsDarkColor(
+      responseConfig?.primaryColor || defaultColor,
+      responseConfig?.invertBaseColor
+    );
     let containerClasses = `search-result-container theme-${
       responseConfig?.theme
     } ${isDark ? "dark" : "bright"}-primary-color`;
@@ -527,6 +535,7 @@ const SearchResultContainer = forwardRef<
             mapClipping={mapClipping}
             closeModal={handleMapClipCrop}
             color={primaryColor?.slice(1)}
+            invertColor={responseConfig?.invertBaseColor}
             directLink={directLink}
             userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
             transportationParams={transportationParams}

@@ -8,15 +8,17 @@ import { checkIsDarkColor } from "../../../../shared/shared.functions";
 interface IMapClipQrCodeImage {
   qrCodeImage: string;
   color?: string;
+  invertColor?: boolean
   language?: LanguageTypeEnum;
 }
 
 export const MapClipQrCode: FunctionComponent<IMapClipQrCodeImage> = ({
   qrCodeImage,
   color = "fff",
+  invertColor,
   language,
 }) => {
-  const isDark = checkIsDarkColor(color);
+  const isDark = checkIsDarkColor(color, invertColor);
   const { t } = useTranslation("", language && { lng: language });
   return (
     <div

@@ -65,9 +65,21 @@
   @apply justify-center items-center h-full w-full;
 }
 
+.dark-primary-color {
+  .real-estate-cta {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+  }
+}
+
+.bright-primary-color {
+  .real-estate-cta {
+    color: black !important;
+    border-color: black !important;
+  }
+}
+
 .real-estate-cta {
-  color: var(--primary) !important;
-  border-color: var(--primary) !important;
   @apply btn bg-white hover:bg-white;
 }
 

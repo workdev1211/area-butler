@@ -109,6 +109,7 @@ interface IMapClipCropModalProps {
   mapClipping: string;
   activeMeans?: MeansOfTransportation[];
   color?: string;
+  invertColor?: boolean;
   outputLanguage?: LanguageTypeEnum;
   directLink?: string;
   transportationParams?: TransportationParam[];
@@ -147,6 +148,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   entityGroups,
   closeModal,
   color,
+  invertColor,
   directLink,
   userMenuPoiIcons,
   activeMeans,
@@ -286,9 +288,9 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   };
 
   const setQrCodeFunc = useCallback(async () => {
-    const rawQrCodeImage = await getQrCodeBase64(directLink!, color);
+    const rawQrCodeImage = await getQrCodeBase64(directLink!, color, invertColor);
     setQrCode(rawQrCodeImage);
-  }, [directLink, color]);
+  }, [directLink, color, invertColor]);
 
   useEffect(() => {
     void setQrCodeFunc();
@@ -375,6 +377,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                     language={outputLanguage}
                     qrCodeImage={qrCode}
                     color={color}
+                    invertColor={invertColor}
                   />
                 </div>
               )}

@@ -11,10 +11,6 @@
     font-size: 12px !important;
     @apply font-medium bg-white border-none;
 
-    &.active {
-      border: 2px solid var(--primary);
-    }
-
     &:hover {
       background: white;
     }
@@ -42,6 +38,22 @@
       span {
         @apply label-text ml-2 font-normal text-base;
       }
+    }
+  }
+}
+
+.dark-primary-color {
+  .btn-link {
+    &.active {
+      border: 2px solid var(--primary);
+    }
+  }
+}
+
+.bright-primary-color {
+  .btn-link {
+    &.active {
+      border: 2px solid black;
     }
   }
 }

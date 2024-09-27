@@ -131,6 +131,11 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsString()
   primaryColor?: string;
+  
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  invertBaseColor?: boolean;
 
   @Expose()
   @Type(() => ApiSnapshotConfigRealEstSettingsDto)

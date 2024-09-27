@@ -809,25 +809,44 @@ const EditorTab: FC<IEditorTabProps> = ({
                 )}
 
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <ColorPicker
-                  label={t(IntlKeys.snapshotEditor.primaryColor)}
-                  color={color}
-                  setColor={setColor}
-                  onChange={(color) => {
-                    changeColor(color);
-                  }}
-                />
-                {config.primaryColor && (
-                  <button
-                    className="text-sm"
-                    onClick={() => {
-                      changeColor(undefined);
+              <div className="flex-col items-baseline">
+                <div className="flex items-center gap-6 py-1">
+                  <ColorPicker
+                    label={t(IntlKeys.snapshotEditor.primaryColor)}
+                    color={color}
+                    setColor={setColor}
+                    onChange={(color) => {
+                      changeColor(color);
                     }}
-                  >
-                    {t(IntlKeys.snapshotEditor.resetColor)}
-                  </button>
-                )}
+                  />
+                  {config.primaryColor && (
+                    <button
+                      className="text-sm"
+                      onClick={() => {
+                        changeColor(undefined);
+                      }}
+                    >
+                      {t(IntlKeys.snapshotEditor.resetColor)}
+                    </button>
+                  )}
+                </div>
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="invertBaseColor"
+                    checked={config.invertBaseColor}
+                    onChange={() => {
+                      changeConfigParam(
+                        "invertBaseColor",
+                        !config.invertBaseColor
+                      );
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    {t(IntlKeys.snapshotEditor.invertBaseColor)}
+                  </span>
+                </label>
               </div>
             </li>
             <li>
