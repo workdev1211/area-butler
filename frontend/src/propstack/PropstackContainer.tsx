@@ -42,6 +42,7 @@ const OpenAiPopup = lazy(() => import("../pages/OpenAiPageContent"));
 const ProductPage = lazy(() => import("../pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));
+const CompanyProfilePage = lazy(() => import("../pages/CompanyProfilePage"));
 
 const PropstackContainer: FC = () => {
   const {
@@ -143,29 +144,43 @@ const PropstackContainer: FC = () => {
           <Route path="/potential-customers/:customerId">
             <PotentialCustomerPage />
           </Route>
+
           <Route path="/potential-customers">
             <PotentialCustomersPage />
           </Route>
+
           <Route path="/real-estates/:realEstateId">
             <RealEstatePage />
           </Route>
+
           <Route path="/real-estates">
             <RealEstatesPage />
           </Route>
+
           <Route path={`/${snapshotEditorPath}/:snapshotId`}>
             <SnapshotEditorPage />
           </Route>
+
           <Route path="/map-snapshots">
             <MapSnapshotsPage />
           </Route>
+
           <Route path="/open-ai-popup">
             <OpenAiPopup />
           </Route>
+
           {!checkIsSubActive() && (
             <Route path="/products">
               <ProductPage />
             </Route>
           )}
+
+          {integrationUser.isAdmin && (
+            <Route path="/company-profile">
+              <CompanyProfilePage />
+            </Route>
+          )}
+
           <Route path={propstackRootEntries}>
             <SearchParamsPage />
           </Route>

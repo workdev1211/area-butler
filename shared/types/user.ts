@@ -4,7 +4,32 @@ import {
   TApiUserStudyTours,
 } from "./types";
 import { IApiKeyParams } from "../../backend/src/shared/types/external-api";
-import { ICompanyConfig } from "./company";
+import { IApiCompanyConfig } from "./company";
+import { TCompanyDocument } from "../../backend/src/company/schema/company.schema";
+import { ApiRequestContingent } from "./subscription-plan";
+import { SubscriptionDocument } from "../../backend/src/user/schema/subscription.schema";
+import { UserDocument } from "../../backend/src/user/schema/user.schema";
+
+export interface IUserSchema {
+  companyId: string;
+  config: IUserConfig;
+  createdAt: Date;
+  email: string;
+  isAdmin: boolean;
+  role: UserRoleEnum;
+
+  company?: TCompanyDocument;
+  consentGiven?: Date;
+  paypalCustomerId?: string;
+  stripeCustomerId?: string;
+
+  // OLD
+  requestsExecuted: number;
+  requestContingents: ApiRequestContingent[];
+  parentId?: string;
+  parentUser?: UserDocument;
+  subscription?: SubscriptionDocument;
+}
 
 export interface IUserConfig {
   language: LanguageTypeEnum;
@@ -16,4 +41,9 @@ export interface IUserConfig {
   templateSnapshotId?: string;
 }
 
-export interface IApiUserConfig extends IUserConfig, ICompanyConfig {}
+export interface IApiUserConfig extends IUserConfig, IApiCompanyConfig {}
+
+export enum UserRoleEnum {
+  admin = "admin",
+  user = "user",
+}

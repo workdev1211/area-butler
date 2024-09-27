@@ -1,16 +1,16 @@
 import { Exclude } from 'class-transformer';
-import { IntersectionType, PartialType } from '@nestjs/swagger';
+import { IntersectionType, OmitType } from '@nestjs/swagger';
 
-import CompanyConfigDto from '../../company/dto/company-config.dto';
 import UserConfigDto from './user-config.dto';
 import { IApiUserConfig } from '@area-butler-types/user';
+import ApiCompanyConfigDto from '../../company/dto/api-company-config.dto';
 
 @Exclude()
 class ApiUserConfigDto
   extends IntersectionType(
-    PartialType(UserConfigDto),
-    PartialType(CompanyConfigDto),
+    UserConfigDto,
+    OmitType(ApiCompanyConfigDto, ['templateSnapshotId']),
   )
-  implements Partial<IApiUserConfig> {}
+  implements IApiUserConfig {}
 
 export default ApiUserConfigDto;

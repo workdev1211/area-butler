@@ -52,6 +52,7 @@ const OpenAiPage = lazy(() => import("../pages/OpenAiPage"));
 const ProductPage = lazy(() => import("../pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));
+const CompanyProfilePage = lazy(() => import("../pages/CompanyProfilePage"));
 
 const OnOfficeContainer: FunctionComponent = () => {
   const {
@@ -152,29 +153,43 @@ const OnOfficeContainer: FunctionComponent = () => {
           <Route path="/potential-customers/:customerId">
             <PotentialCustomerPage />
           </Route>
+
           <Route path="/potential-customers">
             <PotentialCustomersPage />
           </Route>
+
           <Route path="/real-estates/:realEstateId">
             <RealEstatePage />
           </Route>
+
           <Route path="/real-estates">
             <RealEstatesPage />
           </Route>
+
           <Route path={`/${snapshotEditorPath}/:snapshotId`}>
             <SnapshotEditorPage />
           </Route>
+
           <Route path="/map-snapshots">
             <MapSnapshotsPage />
           </Route>
+
           <Route path="/open-ai">
             <OpenAiPage />
           </Route>
+
           {!checkIsSubActive() && (
             <Route path="/products">
               <ProductPage />
             </Route>
           )}
+
+          {integrationUser.isAdmin && (
+            <Route path="/company-profile">
+              <CompanyProfilePage />
+            </Route>
+          )}
+
           <Route path={onOfficeRootEntries}>
             <SearchParamsPage />
           </Route>

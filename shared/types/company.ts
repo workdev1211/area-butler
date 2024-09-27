@@ -66,3 +66,7 @@ export interface ICompanyIntParams {
 }
 
 export type TCompConfBase64Key = keyof Pick<ICompanyConfig, "logo" | "mapIcon">;
+
+export interface IApiCompanyConfig extends ICompanyConfig {
+  companyTemplateSnapshotId?: string;
+}

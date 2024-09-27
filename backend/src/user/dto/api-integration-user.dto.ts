@@ -40,6 +40,11 @@ class ApiIntegrationUserDto implements IApiIntegrationUser {
   integrationUserId: string;
 
   @Expose()
+  @IsNotEmpty()
+  @IsBoolean()
+  isAdmin: boolean;
+
+  @Expose()
   @Transform(
     ({
       value,

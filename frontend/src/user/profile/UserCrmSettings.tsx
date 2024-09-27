@@ -1,27 +1,29 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
 import "./UserCrmSettings.scss";
 
-import { UserActionTypes, UserContext } from "../context/UserContext";
-import { useHttp } from "../hooks/http";
-import { ApiRealEstateExtSourcesEnum } from "../../../shared/types/real-estate";
-import { apiConnectTypeNames } from "../../../shared/constants/real-estate";
-import { toastError, toastSuccess } from "../shared/shared.functions";
+import { UserActionTypes, UserContext } from "../../context/UserContext";
+import { useHttp } from "../../hooks/http";
+import { ApiRealEstateExtSourcesEnum } from "../../../../shared/types/real-estate";
+import { apiConnectTypeNames } from "../../../../shared/constants/real-estate";
+import { toastError, toastSuccess } from "../../shared/shared.functions";
 import {
   IApiUserExtConnectSettingsReq,
   TApiUserExtConnections,
-} from "../../../shared/types/types";
+} from "../../../../shared/types/types";
+import { useUserState } from "../../hooks/userstate";
 
-const UserCrmSettings: FunctionComponent = () => {
+const UserCrmSettings: FC = () => {
   const { t } = useTranslation();
-  const { userState, userDispatch } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
   const { post } = useHttp();
+  const { getActualUser } = useUserState();
 
   const apiConnections =
-    userState.user?.config.externalConnections ||
+    getActualUser().config.externalConnections ||
     ({} as TApiUserExtConnections);
 
   const [propstackApiKey, setPropstackApiKey] = useState<string>(
@@ -39,16 +41,20 @@ const UserCrmSettings: FunctionComponent = () => {
       <h1 className="text-xl font-bold">
         {t(IntlKeys.yourProfile.CRMSettings)}
       </h1>
+
       <div>{t(IntlKeys.yourProfile.CRMSettingsDescription)}</div>
+
       <div className="api-connections-grid grid items-center gap-5">
         {/* PROPSTACK */}
         <div className="font-bold pt-4">
           {apiConnectTypeNames[ApiRealEstateExtSourcesEnum.PROPSTACK]}
         </div>
+
         <div className="form-control">
           <label className="label">
             <span className="label-text">{t(IntlKeys.yourProfile.apiKey)}</span>
           </label>
+
           <input
             type="text"
             placeholder={t(IntlKeys.yourProfile.apiKey)}
@@ -59,6 +65,7 @@ const UserCrmSettings: FunctionComponent = () => {
             }}
           />
         </div>
+
         <div className="pt-4">
           <button
             className="btn btn-primary"
@@ -95,14 +102,17 @@ const UserCrmSettings: FunctionComponent = () => {
             {t(IntlKeys.yourProfile.testAndSave)}
           </button>
         </div>
+
         {/* ON_OFFICE */}
         <div className="font-bold pt-4">
           {apiConnectTypeNames[ApiRealEstateExtSourcesEnum.ON_OFFICE]}
         </div>
+
         <div className="form-control">
           <label className="label">
             <span className="label-text">{t(IntlKeys.yourProfile.token)}</span>
           </label>
+
           <input
             type="text"
             placeholder={t(IntlKeys.yourProfile.token)}
@@ -112,9 +122,11 @@ const UserCrmSettings: FunctionComponent = () => {
               setOnOfficeToken(value);
             }}
           />
+
           <label className="label">
             <span className="label-text">{t(IntlKeys.yourProfile.secret)}</span>
           </label>
+
           <input
             type="text"
             placeholder={t(IntlKeys.yourProfile.secret)}
@@ -125,6 +137,7 @@ const UserCrmSettings: FunctionComponent = () => {
             }}
           />
         </div>
+
         <div className="pt-4">
           <button
             className="btn btn-primary"

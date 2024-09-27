@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import {
@@ -33,9 +37,11 @@ import {
   SUBSCRIPTION_PATH,
 } from '../shared/constants/schema';
 import { CompanyService } from '../company/company.service';
-import { IApiUserConfig } from '@area-butler-types/user';
+import { IUserConfig } from '@area-butler-types/user';
 import UserConfigDto from './dto/user-config.dto';
+import ApiCompanyConfigDto from '../company/dto/api-company-config.dto';
 import CompanyConfigDto from '../company/dto/company-config.dto';
+import { IApiCompanyConfig } from '@area-butler-types/company';
 
 @Injectable()
 export class UserService {
@@ -335,11 +341,42 @@ export class UserService {
     );
   }
 
+  async updateCompanyConfig(
+    email: string,
+    config: Partial<IApiCompanyConfig>,
+  ): Promise<UserDocument> {
+    const {
+      _id: userDbId,
+      isAdmin,
+      company: { _id: companyDbId },
+    } = await this.findByEmail(email, {
+      id: 1,
+      companyId: 1,
+      role: 1,
+    });
+
+    if (!isAdmin) {
+      throw new ForbiddenException();
+    }
+
+    const companyConfigDto = plainToInstance(CompanyConfigDto, config, {
+      excludeExtraneousValues: true,
+      exposeDefaultValues: false,
+      exposeUnsetFields: false,
+    });
+
+    await this.companyService.updateConfig(companyDbId, companyConfigDto);
+
+    return this.findOneCore({ _id: userDbId });
+  }
+
   async updateConfig(
     email: string,
-    config: Partial<IApiUserConfig>,
+    config: Partial<IUserConfig>,
   ): Promise<UserDocument> {
-    const user = await this.findByEmail(email, { id: 1, companyId: 1 });
+    const user = await this.findByEmail(email, {
+      id: 1,
+    });
 
     this.subscriptionService.checkSubscriptionViolation(
       user.subscription?.type,
@@ -348,14 +385,6 @@ export class UserService {
         !subscriptionPlan.appFeatures.canCustomizeExport,
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
-
-    const companyConfig = plainToInstance(CompanyConfigDto, config, {
-      excludeExtraneousValues: true,
-      exposeDefaultValues: false,
-      exposeUnsetFields: false,
-    });
-
-    await this.companyService.updateConfig(user.company._id, companyConfig);
 
     const userConfig = plainToInstance(UserConfigDto, config, {
       excludeExtraneousValues: true,
@@ -404,7 +433,7 @@ export class UserService {
 
     if (userObj.company.config) {
       const companyConfigDto = plainToInstance(
-        CompanyConfigDto,
+        ApiCompanyConfigDto,
         userObj.company.config,
         { exposeUnsetFields: false },
       );

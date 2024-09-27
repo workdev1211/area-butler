@@ -18,7 +18,8 @@ import { checkIsSearchNotUnlocked } from "../../../shared/functions/integration.
 import { SearchContext } from "../context/SearchContext";
 import { useIntegrationTools } from "./integration/integrationtools";
 import { defaultErrorMessage } from "../../../shared/constants/error";
-import { IApiUserConfig } from "../../../shared/types/user";
+import { IUserConfig } from "../../../shared/types/user";
+import { IApiCompanyConfig } from "../../../shared/types/company";
 
 export const useUserState = () => {
   const {
@@ -29,8 +30,8 @@ export const useUserState = () => {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
 
-  const { t } = useTranslation();
-  const { patch, post } = useHttp();
+  const { i18n, t } = useTranslation();
+  const { get, patch, post } = useHttp();
   const { checkIsSubActive } = useIntegrationTools();
   const isIntegrationUser = !!integrationUser;
 
@@ -144,24 +145,55 @@ export const useUserState = () => {
     ).data;
   };
 
+  const setUser = async (): Promise<ApiUser> => {
+    const actualUser = (await get<ApiUser>("/api/users/login")).data;
+    await i18n.changeLanguage(actualUser.config.language);
+    userDispatch({ type: UserActionTypes.SET_USER, payload: actualUser });
+    return actualUser;
+  };
+
+  const updateCompanyConfig = async (
+    config: TNullable<Partial<IApiCompanyConfig>>
+  ): Promise<void> => {
+    const url = isIntegrationUser
+      ? "/api/integration-users/config/company"
+      : "/api/users/config/company";
+
+    const actualUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
+      .data;
+
+    if (isIntegrationUser) {
+      userDispatch({
+        type: UserActionTypes.SET_INTEGRATION_USER,
+        payload: actualUser as IApiIntegrationUser,
+      });
+    } else {
+      userDispatch({
+        type: UserActionTypes.SET_USER,
+        payload: actualUser as ApiUser,
+      });
+    }
+  };
+
   const updateUserConfig = async (
-    config: TNullable<Partial<IApiUserConfig>>
+    config: TNullable<Partial<IUserConfig>>
   ): Promise<void> => {
     const url = isIntegrationUser
       ? "/api/integration-users/config"
       : "/api/users/config";
 
-    const user = (await patch<ApiUser | IApiIntegrationUser>(url, config)).data;
+    const actualUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
+      .data;
 
     if (isIntegrationUser) {
       userDispatch({
         type: UserActionTypes.SET_INTEGRATION_USER,
-        payload: user as IApiIntegrationUser,
+        payload: actualUser as IApiIntegrationUser,
       });
     } else {
       userDispatch({
         type: UserActionTypes.SET_USER,
-        payload: user as ApiUser,
+        payload: actualUser as ApiUser,
       });
     }
   };
@@ -171,6 +203,8 @@ export const useUserState = () => {
     getActualUser,
     hideTour,
     hideTours,
+    setUser,
+    updateCompanyConfig,
     updateUserConfig,
   };
 };

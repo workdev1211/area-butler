@@ -11,7 +11,11 @@ import {
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
 import { UserConfigSchema } from './user-config.schema';
-import { IUserConfig } from '@area-butler-types/user';
+import {
+  IUserSchema,
+  IUserConfig,
+  UserRoleEnum,
+} from '@area-butler-types/user';
 import { defaultUserConfig } from '../../../../shared/constants/user';
 
 export type UserDocument = HydratedDocument<User>;
@@ -20,7 +24,7 @@ export type UserDocument = HydratedDocument<User>;
   toJSON: { getters: true, virtuals: true },
   toObject: { getters: true, virtuals: true },
 })
-export class User {
+export class User implements IUserSchema {
   @Prop({
     type: SchemaTypes.ObjectId,
     required: true,
@@ -34,38 +38,48 @@ export class User {
   })
   config: IUserConfig;
 
-  @Prop({ type: Date })
-  consentGiven: Date;
-
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 
   @Prop({ type: String, required: true, unique: true })
   email: string;
 
-  @Prop({ type: String })
-  paypalCustomerId: string;
+  @Prop({
+    type: String,
+    enum: UserRoleEnum,
+    default: function (this: UserDocument) {
+      return this.parentId ? UserRoleEnum.user : UserRoleEnum.admin;
+    },
+  })
+  role: UserRoleEnum;
 
-  @Prop({ type: Array, default: [] })
-  requestContingents: ApiRequestContingent[];
+  @Prop({ type: Date })
+  consentGiven?: Date;
+
+  @Prop({ type: String })
+  paypalCustomerId?: string;
+
+  @Prop({ type: String })
+  stripeCustomerId?: string;
+
+  isAdmin: boolean;
+  company?: TCompanyDocument;
+
+  // OLD
 
   @Prop({ type: Number, default: 0 })
   requestsExecuted: number;
 
-  @Prop({ type: String })
-  stripeCustomerId: string;
-
-  company: TCompanyDocument;
-
-  // OLD
+  @Prop({ type: Array, default: [] })
+  requestContingents: ApiRequestContingent[];
 
   @Prop({
     type: SchemaTypes.ObjectId,
     ...foreignIdGetSet,
   })
-  parentId: string;
+  parentId?: string;
 
-  parentUser: UserDocument;
+  parentUser?: UserDocument;
   subscription?: SubscriptionDocument;
 }
 
@@ -107,8 +121,15 @@ UserSchema.virtual(SUBSCRIPTION_PATH, {
   match: (): FilterQuery<SubscriptionDocument> => ({
     endsAt: { $gt: new Date() },
   }),
-}).get(function (userSubscription: SubscriptionDocument): SubscriptionDocument {
+}).get(function (
+  this: UserDocument,
+  userSubscription: SubscriptionDocument,
+): SubscriptionDocument {
   return this.parentUser?.subscription || userSubscription;
+});
+
+UserSchema.virtual('isAdmin').get(function (this: UserDocument): boolean {
+  return this.role === UserRoleEnum.admin;
 });
 
 // Left as an example

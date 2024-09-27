@@ -6,7 +6,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 import { IUserConfig } from '@area-butler-types/user';
 import ApiUserExtConnectionsDto from './api-user-ext-connections.dto';
@@ -20,13 +20,6 @@ import ApiUserStudyToursDto from './api-user-study-tours.dto';
 @Exclude()
 class UserConfigDto implements IUserConfig {
   @Expose()
-  @Transform(
-    ({ value }: { value: LanguageTypeEnum }): LanguageTypeEnum =>
-      value || LanguageTypeEnum.de,
-    {
-      toClassOnly: true,
-    },
-  )
   @IsNotEmpty()
   @IsEnum(LanguageTypeEnum)
   language: LanguageTypeEnum;

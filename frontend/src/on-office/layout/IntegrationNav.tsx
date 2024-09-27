@@ -1,20 +1,30 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
+import { UserContext } from "../../context/UserContext";
+
+// TODO translation required
 
 const IntegrationNav: FC = () => {
-  const { checkIsSubActive } = useIntegrationTools();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
 
-  let mobileMenuClass = "hidden";
-  if (mobileMenuOpen) {
-    mobileMenuClass = "nav-mobile-menu lg:hidden";
-  }
+  const { checkIsSubActive } = useIntegrationTools();
+  const { t } = useTranslation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const mobileMenuClass = !isMobileMenuOpen
+    ? "hidden"
+    : "nav-mobile-menu lg:hidden";
 
   return (
     <nav>
@@ -27,7 +37,7 @@ const IntegrationNav: FC = () => {
             aria-controls="mobile-menu"
             aria-expanded="false"
             onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpen);
+              setIsMobileMenuOpen(!isMobileMenuOpen);
             }}
           >
             <span className="sr-only">Menü</span>
@@ -99,9 +109,11 @@ const IntegrationNav: FC = () => {
               >
                 Umgebungsanalyse
               </NavLink>
+
               <NavLink to="/open-ai" className="nav-link" aria-current="page">
                 Mein KI-Assistent
               </NavLink>
+
               <NavLink
                 to="/real-estates"
                 className="nav-link"
@@ -109,6 +121,7 @@ const IntegrationNav: FC = () => {
               >
                 Meine Immobilien
               </NavLink>
+
               <NavLink
                 to="/potential-customers"
                 className="nav-link"
@@ -116,6 +129,7 @@ const IntegrationNav: FC = () => {
               >
                 Meine Zielgruppen
               </NavLink>
+
               <NavLink
                 to="/map-snapshots"
                 className="nav-link"
@@ -123,6 +137,7 @@ const IntegrationNav: FC = () => {
               >
                 Meine Karten
               </NavLink>
+
               {!checkIsSubActive() && (
                 <NavLink
                   to="/products"
@@ -130,6 +145,16 @@ const IntegrationNav: FC = () => {
                   aria-current="page"
                 >
                   Meine Produkte
+                </NavLink>
+              )}
+
+              {integrationUser?.isAdmin && (
+                <NavLink
+                  to="/company-profile"
+                  className="nav-link"
+                  aria-current="page"
+                >
+                  {t(IntlKeys.nav.companyProfile)}
                 </NavLink>
               )}
             </div>
@@ -150,6 +175,7 @@ const IntegrationNav: FC = () => {
           >
             Umgebungsanalyse
           </NavLink>
+
           <NavLink
             to="/open-ai"
             className="nav-mobile-menu-link"
@@ -157,6 +183,7 @@ const IntegrationNav: FC = () => {
           >
             Mein KI-Assistent
           </NavLink>
+
           <NavLink
             to="/real-estates"
             className="nav-mobile-menu-link"
@@ -164,6 +191,7 @@ const IntegrationNav: FC = () => {
           >
             Meine Immobilien
           </NavLink>
+
           <NavLink
             to="/potential-customers"
             className="nav-mobile-menu-link"
@@ -171,6 +199,7 @@ const IntegrationNav: FC = () => {
           >
             Meine Zielgruppen
           </NavLink>
+
           <NavLink
             to="/map-snapshots"
             className="nav-mobile-menu-link"
@@ -178,6 +207,7 @@ const IntegrationNav: FC = () => {
           >
             Meine Karten
           </NavLink>
+
           {!checkIsSubActive() && (
             <NavLink
               to="/products"
@@ -185,6 +215,16 @@ const IntegrationNav: FC = () => {
               aria-current="page"
             >
               Meine Produkte
+            </NavLink>
+          )}
+
+          {integrationUser?.isAdmin && (
+            <NavLink
+              to="/company-profile"
+              className="nav-mobile-menu-link"
+              aria-current="page"
+            >
+              {t(IntlKeys.nav.companyProfile)}
             </NavLink>
           )}
         </div>

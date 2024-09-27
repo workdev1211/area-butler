@@ -1,4 +1,8 @@
-import { FunctionComponent, createContext, useReducer, Dispatch } from "react";
+import { FC, createContext, useReducer, Dispatch } from "react";
+import structuredClone from "@ungap/structured-clone";
+
+import i18 from "i18n";
+import { IntlKeys } from "../i18n/keys";
 
 import {
   ApiSearchResultSnapshotResponse,
@@ -10,21 +14,21 @@ import {
   IApiIntegrationUser,
   TApiIntUserProdContType,
 } from "../../../shared/types/integration-user";
+import { toastError } from "../shared/shared.functions";
 
 export interface UserState {
-  user?: ApiUser;
-  latestUserRequests?: ApiUserRequests;
+  embeddableMaps: ApiSearchResultSnapshotResponse[];
+  startTour: boolean;
   upgradeSubscriptionModalProps: {
     open: boolean;
     message?: any;
   };
-  startTour: boolean;
-  embeddableMaps: ApiSearchResultSnapshotResponse[];
   integrationUser?: IApiIntegrationUser;
+  latestUserRequests?: ApiUserRequests;
+  user?: ApiUser;
 }
 
 export const initialState: UserState = {
-  user: undefined,
   latestUserRequests: { requests: [] },
   upgradeSubscriptionModalProps: {
     open: false,
@@ -32,7 +36,6 @@ export const initialState: UserState = {
   },
   startTour: false,
   embeddableMaps: [],
-  integrationUser: undefined,
 };
 
 export enum UserActionTypes {
@@ -183,13 +186,16 @@ export const userReducer = (
     }
     case UserActionTypes.SET_EXT_CONNECTION: {
       const { connectType, ...connectSettings } = action.payload;
+      const user = structuredClone(state.user);
 
-      const user = {
-        ...state.user!,
-        apiConnections: {
-          ...(state.user!.config.externalConnections || {}),
-          [action.payload.connectType]: { ...connectSettings },
-        },
+      if (!user) {
+        toastError(i18.t(IntlKeys.errors.userNotFound));
+        throw new Error(i18.t(IntlKeys.errors.userNotFound));
+      }
+
+      user.config.externalConnections = {
+        ...(user.config.externalConnections || {}),
+        [action.payload.connectType]: { ...connectSettings },
       };
 
       return { ...state, user };
@@ -207,7 +213,7 @@ export const UserContext = createContext<{
   userDispatch: () => undefined,
 });
 
-export const UserContextProvider: FunctionComponent = ({ children }) => {
+export const UserContextProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
   return (

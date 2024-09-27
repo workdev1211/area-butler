@@ -18,7 +18,8 @@ import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
 import { SubscriptionService } from './subscription.service';
 import { UserService } from './user.service';
 import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
-import ApiUserConfigDto from './dto/api-user-config.dto';
+import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
+import UpdateUserConfigDto from './dto/update-user-config.dto';
 
 interface IUserRequest extends Request {
   user: { email: string };
@@ -69,11 +70,22 @@ export class UserController {
     return this.userService.convertDocToApiUser(user);
   }
 
+  @ApiProperty({ description: 'Update current company config' })
+  @Patch('config/company')
+  async updateCompanyConfig(
+    @Req() { user: { email } }: IUserRequest,
+    @Body() config: UpdateApiCompanyConfigDto,
+  ): Promise<ApiUser> {
+    return this.userService.convertDocToApiUser(
+      await this.userService.updateCompanyConfig(email, config),
+    );
+  }
+
   @ApiProperty({ description: 'Update current user config' })
   @Patch('config')
-  async config(
+  async updateConfig(
     @Req() { user: { email } }: IUserRequest,
-    @Body() config: ApiUserConfigDto,
+    @Body() config: UpdateUserConfigDto,
   ): Promise<ApiUser> {
     return this.userService.convertDocToApiUser(
       await this.userService.updateConfig(email, config),

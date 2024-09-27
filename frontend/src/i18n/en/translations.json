@@ -5,6 +5,7 @@
     "potentialCustomers": "My target groups",
     "cards": "My maps",
     "profile": "Profile",
+    "companyProfile": "Company profile",
     "logout": "Log out",
     "menu": "Menu"
   },
@@ -562,6 +563,9 @@
     "defaultUploadLabel": "Upload logo",
     "sizeError": "Your logo must not be larger than 5 MB!"
   },
+  "companyProfile": {
+    "title": "Company profile"
+  },
   "yourProfile": {
     "title": "Your profile",
     "profileUpdated": "Profile updated!",
@@ -759,5 +763,9 @@
       "cardStyles": "Card styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.\nCard styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.",
       "annualSubscription": "Annual subscription"
     }
+  },
+  "errors": {
+    "userNotFound": "User not found!",
+    "wrongIntegration": "Wrong integration type!"
   }
 }

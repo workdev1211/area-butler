@@ -64,6 +64,7 @@ export enum LanguageTypeEnum {
 export interface ApiUser {
   config: IApiUserConfig;
   email: string;
+  isAdmin: boolean;
   requestContingents: ApiRequestContingent[];
   requestsExecuted: number;
 
@@ -87,17 +88,6 @@ export interface IApiUserExtConnectSettingsReq
 export type TApiUserExtConnections = Partial<
   Record<ApiRealEstateExtSourcesEnum, TApiUserExtConnectSettings>
 >;
-
-export interface ApiUpsertUser {
-  fullname: string;
-}
-
-export interface ApiUserSettings {
-  logo?: string;
-  mapIcon?: string;
-  color?: string;
-  templateSnapshotId?: string;
-}
 
 export interface ApiUserRequests {
   requests: ApiSearch[];

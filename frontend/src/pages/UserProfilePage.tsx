@@ -1,83 +1,94 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { v4 as uuid } from "uuid";
+import structuredClone from "@ungap/structured-clone";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
-import { UserActionTypes, UserContext } from "context/UserContext";
-import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import TourStarter from "tour/TourStarter";
-import ProfileFormHandler from "user/ProfileFormHandler";
-import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
-import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
-import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
-import UserExportSettings from "../user/UserExportSettings";
-import { deriveTotalRequestContingent } from "../shared/shared.functions";
-import UserCrmSettings from "../user/UserCrmSettings";
+import UserProfileFormHandler from "user/profile/UserProfileFormHandler";
+import { ApiTourNamesEnum } from "../../../shared/types/types";
+import UserCrmSettings from "../user/profile/UserCrmSettings";
+import { useUserState } from "../hooks/userstate";
+import {
+  IUserProfileFormData,
+  TUserProfileFormRef,
+} from "../user/profile/UserProfileForm";
+import { toastError, toastSuccess } from "../shared/shared.functions";
+import { IApiUserConfig } from "../../../shared/types/user";
+
+const mapFormDataToApiUserConfig = ({
+  fullname,
+}: IUserProfileFormData): Partial<IApiUserConfig> => ({
+  fullname,
+});
 
 const UserProfilePage: FC = () => {
-  const { userState, userDispatch } = useContext(UserContext);
-  const { get } = useHttp();
+  const { getActualUser, setUser, updateUserConfig } = useUserState();
   const { t } = useTranslation();
 
-  const [busy, setBusy] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
+  const formRef = useRef<TUserProfileFormRef>(null);
 
+  // was created here because of the previous implementation of the save button
+  // it was a submit button for the form with the following id
   const formId = `form-${uuid()}`;
-  const beforeSubmit = () => setBusy(true);
-  const postSubmit = (success: boolean) => {
-    setBusy(false);
-  };
 
-  const user: ApiUser = userState.user!;
-  const hasSubscription = !!user.subscription;
-  const totalRequestContingent = deriveTotalRequestContingent(user);
-  const hasReachedRequestLimit =
-    user.requestsExecuted >= totalRequestContingent;
-
-  const isChild = user.isChild;
-  const canCustomizeExport =
-    hasSubscription && user.subscription!.config.appFeatures.canCustomizeExport;
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
+  const isSubscriptionAvail = !!user.subscription;
 
   useEffect(() => {
-    const fetchUser = async (): Promise<void> => {
-      const user: ApiUser = (await get<ApiUser>("/api/users/login")).data;
-      userDispatch({ type: UserActionTypes.SET_USER, payload: user });
-    };
-
-    void fetchUser();
-
+    void setUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
+  const SaveButton: FC = () => {
+    const handleClick = async (): Promise<void> => {
+      const userProfileForm = formRef.current;
 
-  const SubmitButton: FC = () => {
-    const classes = `${baseClasses} ml-auto`;
+      if (!isIntegrationUser && !userProfileForm) {
+        return;
+      }
+
+      try {
+        setIsBusy(true);
+        const newUserConfig = structuredClone(user.config);
+
+        if (userProfileForm) {
+          const validErrors = await userProfileForm.validateForm();
+
+          if (validErrors && Object.keys(validErrors).length) {
+            toastError(t(IntlKeys.yourProfile.profileUpdateError));
+            return;
+          }
+
+          Object.assign(newUserConfig, {
+            ...mapFormDataToApiUserConfig(userProfileForm.values),
+          });
+        }
+
+        await updateUserConfig(newUserConfig);
+        toastSuccess(t(IntlKeys.yourProfile.profileUpdated));
+      } catch (err) {
+        toastError(t(IntlKeys.yourProfile.profileUpdateError));
+      } finally {
+        setIsBusy(false);
+      }
+    };
 
     return (
       <button
-        form={formId}
-        key="submit"
-        type="submit"
-        disabled={busy}
-        className={busy ? `busy ${classes}` : classes}
+        disabled={isBusy}
+        className={`btn bg-primary-gradient w-full sm:w-auto ml-auto${
+          isBusy ? " busy" : ""
+        }`}
+        onClick={handleClick}
       >
         {t(IntlKeys.common.save)}
       </button>
-    );
-  };
-
-  const SubscriptionLimitsOrSelection: FC = () => {
-    if (isChild) {
-      return null;
-    }
-
-    return !hasSubscription || hasReachedRequestLimit ? (
-      <SubscriptionPlanSelection />
-    ) : (
-      <SubscriptionPlanLimits user={userState.user!} />
     );
   };
 
@@ -86,22 +97,25 @@ const UserProfilePage: FC = () => {
       title={t(IntlKeys.yourProfile.title)}
       withHorizontalPadding={true}
       actionsBottom={[
-        <BackButton to="/" key="user-profile-back" />,
-        <SubmitButton key="user-profile-submit" />,
+        <BackButton key="user-profile-back" to="/" />,
+        <SaveButton key="user-profile-save" />,
       ]}
     >
-      {hasSubscription && <TourStarter tour={ApiTourNamesEnum.PROFILE} />}
-      <div className="mt-10" data-tour="profile-form">
-        <ProfileFormHandler
-          user={userState.user!}
-          formId={formId}
-          beforeSubmit={beforeSubmit}
-          postSubmit={postSubmit}
-        />
-      </div>
-      {canCustomizeExport && <UserExportSettings />}
-      <UserCrmSettings />
-      <SubscriptionLimitsOrSelection />
+      {!isIntegrationUser && isSubscriptionAvail && (
+        <TourStarter tour={ApiTourNamesEnum.PROFILE} />
+      )}
+
+      {!isIntegrationUser && (
+        <div className="mt-10" data-tour="profile-form">
+          <UserProfileFormHandler
+            formId={formId}
+            formRef={formRef}
+            user={user}
+          />
+        </div>
+      )}
+
+      {!isIntegrationUser && <UserCrmSettings />}
     </DefaultLayout>
   );
 };

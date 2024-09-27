@@ -50,6 +50,7 @@ import { ConvertIntUserService } from './convert-int-user.service';
     UserService,
   ],
   exports: [
+    CompanyModule,
     ContingentIntService,
     ConvertIntUserService,
     IntegrationUserService,

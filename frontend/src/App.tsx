@@ -33,6 +33,7 @@ import { LoadingMessage } from "./components/Loading";
 // import InformationModal from "./components/InformationModal";
 import BrowserWarningModal from "./components/BrowserWarningModal";
 import SupportLink from "./components/SupportLink";
+import { useUserState } from "./hooks/userstate";
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
@@ -81,17 +82,22 @@ const SnapshotEditorPage = lazy(() => import("./pages/SnapshotEditorPage"));
 
 const MapSnapshotsPage = lazy(() => import("./pages/MapSnapshotsPage"));
 
+const CompanyProfilePage = lazy(() => import("./pages/CompanyProfilePage"));
+
 // const infoKey = "is-seen-info-2024-08-07";
 
 function App() {
-  const { i18n } = useTranslation();
   const { paypalClientId } = useContext(ConfigContext);
-  const { userDispatch } = useContext(UserContext);
+  const {
+    userDispatch,
+    userState: { user },
+  } = useContext(UserContext);
 
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
   const { get, post } = useHttp();
   const history = useHistory();
   const { pathname } = useLocation();
+  const { setUser } = useUserState();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
@@ -124,7 +130,7 @@ function App() {
       }
     };
 
-    const consumeConsentGiven = async () => {
+    const consumeConsentGiven = async (): Promise<void> => {
       try {
         const updatedUser = (await post<ApiUser>("/api/users/consent", {}))
           .data;
@@ -140,10 +146,8 @@ function App() {
       }
     };
 
-    const fetchUser = async () => {
-      const user: ApiUser = (await get<ApiUser>("/api/users/login")).data;
-      await i18n.changeLanguage(user.config.language);
-      userDispatch({ type: UserActionTypes.SET_USER, payload: user });
+    const getUserData = async (): Promise<void> => {
+      await setUser();
 
       const latestUserRequests: ApiUserRequests = (
         await get<ApiUserRequests>("/api/location/latest-user-requests")
@@ -160,7 +164,7 @@ function App() {
     if (localStorage.getItem(localStorageConsentGivenKey) === "true") {
       void consumeConsentGiven();
     } else {
-      void fetchUser();
+      void getUserData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
@@ -255,69 +259,92 @@ function App() {
                       <Route path="/register">
                         <Auth0ConsentPage />
                       </Route>
+
                       <Route path="/verify">
                         <Authenticated>
                           <VerifyEmailPage />
                         </Authenticated>
                       </Route>
-                      {/*Subscription Selection*/}
-                      <Route path="/profile">
+
+                      <Route path="/user-profile">
                         <Authenticated>
                           <UserProfilePage />
                         </Authenticated>
                       </Route>
+
+                      {/* Subscription Selection */}
+                      {user?.isAdmin && (
+                        <Route path="/company-profile">
+                          <Authenticated>
+                            <CompanyProfilePage />
+                          </Authenticated>
+                        </Route>
+                      )}
+
                       <Route path="/callback">
                         <Authenticated>
                           <CallbackPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/impress">
                         <ImpressPage />
                       </Route>
+
                       <Route path="/privacy">
                         <PrivacyPage />
                       </Route>
+
                       <Route path="/terms">
                         <TermsPage />
                       </Route>
+
                       <Route path={`/${snapshotEditorPath}/:snapshotId`}>
                         <Authenticated>
                           <SnapshotEditorPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/potential-customers/:customerId">
                         <Authenticated>
                           <PotentialCustomerPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/potential-customers">
                         <Authenticated>
                           <PotentialCustomersPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/questionnaire/:inputToken">
                         <CustomerQuestionnairePage />
                       </Route>
+
                       <Route path="/real-estates/:realEstateId">
                         <Authenticated>
                           <RealEstatePage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/real-estates">
                         <Authenticated>
                           <RealEstatesPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/search">
                         <Authenticated>
                           <SearchParamsPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/map-snapshots">
                         <Authenticated>
                           <MapSnapshotsPage />
                         </Authenticated>
                       </Route>
+
                       <Route path="/">
                         <LoginPage />
                       </Route>

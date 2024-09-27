@@ -5,6 +5,7 @@
     "potentialCustomers": "Meine Zielgruppen",
     "cards": "Meine Karten",
     "profile": "Profil",
+    "companyProfile": "Unternehmensprofil",
     "logout": "Abmelden",
     "menu": "Menü"
   },
@@ -562,6 +563,9 @@
     "defaultUploadLabel": "Logo hochladen",
     "sizeError": "Dein Logo darf nicht größer als 5 MB sein!"
   },
+  "companyProfile": {
+    "title": "Unternehmensprofil"
+  },
   "yourProfile": {
     "title": "Ihr Profil",
     "profileUpdated": "Profil aktualisiert!",
@@ -759,5 +763,9 @@
       "cardStyles": "Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.\nKartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.",
       "annualSubscription": "Jahres-Abo"
     }
+  },
+  "errors": {
+    "userNotFound": "Benutzer nicht gefunden!",
+    "wrongIntegration": "Falscher Integrationstyp!"
   }
 }

@@ -20,7 +20,7 @@ import {
   PARENT_USER_PATH,
 } from '../../shared/constants/schema';
 import { Company, TCompanyDocument } from '../../company/schema/company.schema';
-import { IUserConfig } from '@area-butler-types/user';
+import { IUserConfig, UserRoleEnum } from '@area-butler-types/user';
 import { defaultUserConfig } from '../../../../shared/constants/user';
 
 export type TIntegrationUserDocument = HydratedDocument<IntegrationUser>;
@@ -53,14 +53,29 @@ export class IntegrationUser implements IIntegrationUserSchema {
   @Prop({ required: true, type: String })
   integrationUserId: string;
 
+  @Prop({
+    type: String,
+    enum: UserRoleEnum,
+    default: function (this: TIntegrationUserDocument) {
+      return this.parentId ? UserRoleEnum.user : UserRoleEnum.admin;
+    },
+  })
+  role: UserRoleEnum;
+
   @Prop({ type: Object })
   parameters?: TApiIntegrationUserParameters;
 
+  isAdmin: boolean;
   company?: TCompanyDocument;
 
   // OLD
 
-  @Prop({ type: Boolean })
+  @Prop({
+    type: Boolean,
+    default: function (this: TIntegrationUserDocument) {
+      return !this.parentId;
+    },
+  })
   isParent?: boolean;
 
   @Prop({
@@ -146,4 +161,10 @@ IntegrationUserSchema.virtual(COMPANY_PATH, {
   localField: 'companyId',
   foreignField: '_id',
   justOne: true,
+});
+
+IntegrationUserSchema.virtual('isAdmin').get(function (
+  this: TIntegrationUserDocument,
+): boolean {
+  return this.role === UserRoleEnum.admin;
 });

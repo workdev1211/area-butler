@@ -1,44 +1,50 @@
-import { FunctionComponent } from "react";
-
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
-
+import { FC } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+import { FormikProps } from "formik/dist/types";
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import Input from "components/inputs/formik/Input";
-import { ApiUpsertUser, ApiUser } from "../../../shared/types/types";
+import { ApiUser } from "../../../../shared/types/types";
+import { TFormikInnerRef } from "../../shared/shared.types";
 
-interface IProfileFormProps {
-  formId: string;
-  inputUser: Partial<ApiUser>;
-  onSubmit: (newValues: Partial<ApiUpsertUser>) => void;
+export interface IUserProfileFormData {
+  fullname: string;
 }
 
-export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
+export type TUserProfileFormRef = FormikProps<IUserProfileFormData> | null;
+
+interface IUserProfileFormProps {
+  formId: string;
+  formRef: TFormikInnerRef<IUserProfileFormData>;
+  user: ApiUser;
+}
+
+export const UserProfileForm: FC<IUserProfileFormProps> = ({
   formId,
-  inputUser,
-  onSubmit,
+  formRef,
+  user,
 }) => {
   const { t } = useTranslation();
+
   return (
     <Formik
       initialValues={{
-        fullname: inputUser?.config?.fullname,
-        email: inputUser?.email,
+        fullname: user.config.fullname!,
+        email: user.email,
       }}
       validationSchema={Yup.object({
-        fullname: Yup.string().required(t(IntlKeys.yourProfile.pleaseEnterName)),
+        fullname: Yup.string().required(
+          t(IntlKeys.yourProfile.pleaseEnterName)
+        ),
         email: Yup.string()
           .email()
           .required(t(IntlKeys.yourProfile.pleaseEnterEmail)),
       })}
-      onSubmit={(values) => {
-        const formValues = {
-          ...values,
-        };
-        onSubmit(formValues);
-      }}
+      onSubmit={() => {}}
+      innerRef={formRef}
     >
       <Form id={formId}>
         <div className="form-control">
@@ -51,6 +57,7 @@ export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
             className="input input-bordered w-full"
           />
         </div>
+
         <div className="form-control">
           <Input
             label={t(IntlKeys.yourProfile.yourName)}
@@ -65,4 +72,4 @@ export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
   );
 };
 
-export default ProfileForm;
+export default UserProfileForm;

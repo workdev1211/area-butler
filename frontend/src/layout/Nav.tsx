@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState, useContext } from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth0, User } from "@auth0/auth0-react";
 
@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
 import "./Nav.scss";
+
 import Logo from "assets/img/logo.svg";
 import useOnClickOutside from "../hooks/onclickoutside";
 import Authenticated from "auth/Authenticated";
@@ -13,36 +14,42 @@ import LoginButton from "../components/LoginButton";
 import { UserContext } from "../context/UserContext";
 
 const Nav: FC = () => {
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  const {
+    userState: { user },
+  } = useContext(UserContext);
+
+  const { logout, user: auth0User, isAuthenticated } = useAuth0();
   const { t } = useTranslation();
-  const showNavBar = !RegExp(/questionnaire.+/).test(window.location.pathname);
 
   const [currentUser, setCurrentUser] = useState<User>();
-  const {
-    userState: { user: userData },
-  } = useContext(UserContext);
-  const { logout, user, isAuthenticated } = useAuth0();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    setCurrentUser(user);
-  }, [user, isAuthenticated, setCurrentUser]);
+    setCurrentUser(auth0User);
+  }, [auth0User, isAuthenticated, setCurrentUser]);
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const isNavBarShown = !RegExp(/questionnaire.+/).test(
+    window.location.pathname
+  );
 
-  let mobileMenuClass = "hidden";
-  if (mobileMenuOpen) {
-    mobileMenuClass = "nav-mobile-menu lg:hidden";
-  }
+  const mobileMenuClass = !isMobileMenuOpen
+    ? "hidden"
+    : "nav-mobile-menu lg:hidden";
 
-  let userMenuClass = "hidden";
-  if (userMenuOpen) {
-    userMenuClass =
-      "origin-top-right absolute right-2 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-2500";
-  }
-  const userMenuRef = useRef(null);
-  useOnClickOutside(userMenuRef, () => userMenuOpen && setUserMenuOpen(false));
+  const userMenuClass = !isUserMenuOpen
+    ? "hidden"
+    : "origin-top-right absolute right-2 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-2500";
 
-  if (!showNavBar) {
+  useOnClickOutside(userMenuRef, () => {
+    if (isUserMenuOpen) {
+      setIsUserMenuOpen(false);
+    }
+  });
+
+  if (!isNavBarShown) {
     return null;
   }
 
@@ -57,10 +64,11 @@ const Nav: FC = () => {
             aria-controls="mobile-menu"
             aria-expanded="false"
             onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpen);
+              setIsMobileMenuOpen(!isMobileMenuOpen);
             }}
           >
             <span className="sr-only">{t(IntlKeys.nav.menu)}</span>
+
             <svg
               className="block h-6 w-6"
               xmlns="http://www.w3.org/2000/svg"
@@ -104,13 +112,15 @@ const Nav: FC = () => {
               src={Logo}
               alt="Logo"
             />
+
             <img
               className="hidden lg:block h-full w-auto"
               src={Logo}
               alt="Logo"
             />
           </NavLink>
-          {showNavBar && isAuthenticated && (
+
+          {isNavBarShown && isAuthenticated && (
             <div className="hidden lg:flex lg:items-center">
               <div className="nav-links">
                 <NavLink
@@ -121,6 +131,7 @@ const Nav: FC = () => {
                 >
                   {t(IntlKeys.nav.environmentalAnalysis)}
                 </NavLink>
+
                 <Authenticated>
                   <NavLink
                     to="/real-estates"
@@ -129,6 +140,7 @@ const Nav: FC = () => {
                   >
                     {t(IntlKeys.nav.realEstates)}
                   </NavLink>
+
                   <NavLink
                     to="/potential-customers"
                     className="nav-link"
@@ -136,6 +148,7 @@ const Nav: FC = () => {
                   >
                     {t(IntlKeys.nav.potentialCustomers)}
                   </NavLink>
+
                   <NavLink
                     to="/map-snapshots"
                     className="nav-link"
@@ -155,8 +168,9 @@ const Nav: FC = () => {
             <LoginButton />
           </div>
         )}
-        {showNavBar && isAuthenticated && currentUser && (
-          <div className="nav-usermenu">
+
+        {isNavBarShown && isAuthenticated && currentUser && (
+          <div className="nav-usermenu" ref={userMenuRef}>
             <div className="nav-usermenu-button">
               <button
                 type="button"
@@ -164,44 +178,60 @@ const Nav: FC = () => {
                 aria-expanded="false"
                 aria-haspopup="true"
                 onClick={() => {
-                  setUserMenuOpen(!userMenuOpen);
+                  setIsUserMenuOpen(!isUserMenuOpen);
                 }}
               >
+                {/* TODO translation required */}
                 <span className="sr-only">Benutzer Menü</span>
                 <img
-                  src={userData?.config.logo || currentUser.picture}
+                  src={user?.config.logo || currentUser.picture}
                   referrerPolicy="no-referrer"
-                  alt=""
+                  alt="user"
                 />
               </button>
             </div>
 
             <div
-              ref={userMenuRef}
               className={userMenuClass}
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="user-menu-button"
             >
               <NavLink
-                to="/profile"
+                to="/user-profile"
                 className="nav-usermenu-link"
                 role="menuitem"
                 exact={true}
                 onClick={() => {
-                  setUserMenuOpen(false);
+                  setIsUserMenuOpen(false);
                 }}
                 id="user-menu-item-1"
               >
                 {t(IntlKeys.nav.profile)}
               </NavLink>
+
+              {user?.isAdmin && (
+                <NavLink
+                  to="/company-profile"
+                  className="nav-usermenu-link"
+                  role="menuitem"
+                  exact={true}
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                  }}
+                  id="user-menu-item-1"
+                >
+                  {t(IntlKeys.nav.companyProfile)}
+                </NavLink>
+              )}
+
               <button
                 onClick={() => {
                   logout({
                     returnTo: window.location.origin,
                   });
 
-                  setUserMenuOpen(false);
+                  setIsUserMenuOpen(false);
                 }}
                 className="nav-usermenu-link"
                 role="menuitem"
@@ -225,6 +255,7 @@ const Nav: FC = () => {
           >
             {t(IntlKeys.nav.environmentalAnalysis)}
           </NavLink>
+
           <Authenticated>
             <NavLink
               to="/real-estates"
@@ -233,6 +264,7 @@ const Nav: FC = () => {
             >
               {t(IntlKeys.nav.realEstates)}
             </NavLink>
+
             <NavLink
               to="/potential-customers"
               className="nav-mobile-menu-link"
@@ -240,6 +272,7 @@ const Nav: FC = () => {
             >
               {t(IntlKeys.nav.potentialCustomers)}
             </NavLink>
+
             <NavLink
               to="/map-snapshots"
               className="nav-mobile-menu-link"
@@ -248,6 +281,7 @@ const Nav: FC = () => {
               {t(IntlKeys.nav.cards)}
             </NavLink>
           </Authenticated>
+
           {!isAuthenticated && <LoginButton />}
         </div>
       </div>

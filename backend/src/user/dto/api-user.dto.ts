@@ -41,6 +41,11 @@ class ApiUserDto implements ApiUser {
   email: string;
 
   @Expose()
+  @IsNotEmpty()
+  @IsBoolean()
+  isAdmin: boolean;
+
+  @Expose()
   @Type(() => ApiRequestContingentDto)
   @Transform(
     ({ obj }: { obj: UserDocument }): ApiRequestContingent[] =>

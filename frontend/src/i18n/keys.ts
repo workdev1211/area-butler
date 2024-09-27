@@ -93,6 +93,7 @@ export const IntlKeys = {
     potentialCustomers: "nav.potentialCustomers",
     cards: "nav.cards",
     profile: "nav.profile",
+    companyProfile: "nav.companyProfile",
     logout: "nav.logout",
     menu: "nav.menu",
   },
@@ -609,6 +610,9 @@ export const IntlKeys = {
     directLink: "mapSnapshots.directLink",
     htmlSnippet: "mapSnapshots.htmlSnippet",
   },
+  companyProfile: {
+    title: "companyProfile.title",
+  },
   yourProfile: {
     title: "yourProfile.title",
     profileUpdated: "yourProfile.profileUpdated",
@@ -825,5 +829,6 @@ export const IntlKeys = {
 
   errors: {
     userNotFound: "errors.userNotFound",
+    wrongIntegration: "errors.wrongIntegration",
   },
 };

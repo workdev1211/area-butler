@@ -4,7 +4,7 @@ import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
 import { TIntegrationUserDocument } from "../../backend/src/user/schema/integration-user.schema";
 import { TCompanyDocument } from "../../backend/src/company/schema/company.schema";
-import { IApiUserConfig, IUserConfig } from "./user";
+import { IApiUserConfig, IUserConfig, UserRoleEnum } from "./user";
 
 export interface IIntegrationUserSchema {
   accessToken: string; // for AreaButler internal identification purposes
@@ -12,6 +12,8 @@ export interface IIntegrationUserSchema {
   config: IUserConfig;
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
+  isAdmin: boolean;
+  role: UserRoleEnum;
 
   company?: TCompanyDocument;
   parameters?: TApiIntegrationUserParameters;
@@ -29,6 +31,7 @@ export interface IApiIntegrationUser {
   accessToken: string;
   config: IApiUserConfig;
   integrationUserId: string;
+  isAdmin: boolean;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
   poiIcons?: IApiPoiIcons;
@@ -111,7 +114,6 @@ export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
   integrationType: IntegrationTypesEnum;
   integrationUserId: string;
 
-  isParent?: boolean;
   isContingentProvided?: boolean;
   parentId?: string;
 }

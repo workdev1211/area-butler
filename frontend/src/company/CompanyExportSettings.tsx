@@ -9,11 +9,13 @@ import ColorPicker from "../components/ColorPicker";
 import { toastSuccess } from "../shared/shared.functions";
 import { useUserState } from "../hooks/userstate";
 
-const UserExportSettings: FC = () => {
-  const { t } = useTranslation();
+const CompanyExportSettings: FC = () => {
   const { userDispatch } = useContext(UserContext);
 
-  const { getActualUser, updateUserConfig } = useUserState();
+  const { t } = useTranslation();
+  const { getActualUser } = useUserState();
+  const { updateCompanyConfig } = useUserState();
+
   const user = getActualUser();
 
   const [color, setColor] = useState<string | undefined>(
@@ -25,7 +27,7 @@ const UserExportSettings: FC = () => {
   );
 
   const updateLogo = async (logo: string | null): Promise<void> => {
-    await updateUserConfig({ logo });
+    await updateCompanyConfig({ logo });
 
     userDispatch({
       type: UserActionTypes.SET_LOGO,
@@ -36,7 +38,7 @@ const UserExportSettings: FC = () => {
   };
 
   const updateMapIcon = async (mapIcon: string | null): Promise<void> => {
-    await updateUserConfig({ mapIcon });
+    await updateCompanyConfig({ mapIcon });
 
     userDispatch({
       type: UserActionTypes.SET_MAP_ICON,
@@ -47,7 +49,7 @@ const UserExportSettings: FC = () => {
   };
 
   const updateColor = async (color: string | null): Promise<void> => {
-    await updateUserConfig({ color });
+    await updateCompanyConfig({ color });
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
@@ -58,7 +60,7 @@ const UserExportSettings: FC = () => {
   };
 
   const rollbackSettings = async (): Promise<void> => {
-    await updateUserConfig({
+    await updateCompanyConfig({
       color: null,
       logo: null,
       mapIcon: null,
@@ -89,8 +91,11 @@ const UserExportSettings: FC = () => {
       <h1 className="font-bold text-xl mb-2">
         {t(IntlKeys.yourProfile.exportSettings)}
       </h1>
+
       <p>{t(IntlKeys.yourProfile.exportSettingsDescription)}</p>
+
       <ImageUpload image={logo} setImage={setLogo} onChange={updateLogo} />
+
       <ImageUpload
         image={mapIcon}
         setImage={setMapIcon}
@@ -99,9 +104,11 @@ const UserExportSettings: FC = () => {
         label={t(IntlKeys.snapshotEditor.cardsIcon)}
         uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
       />
+
       <div className="mt-5">
         <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
       </div>
+
       {(!!user.config.logo || !!user.config.color || !!user.config.mapIcon) && (
         <div className="mt-5">
           <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
@@ -113,4 +120,4 @@ const UserExportSettings: FC = () => {
   );
 };
 
-export default UserExportSettings;
+export default CompanyExportSettings;

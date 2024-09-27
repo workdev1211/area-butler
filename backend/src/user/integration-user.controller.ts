@@ -13,9 +13,10 @@ import { InjectIntegrationUserInterceptor } from './interceptor/inject-integrati
 import { InjectUser } from './inject-user.decorator';
 import { IntegrationUserService } from './integration-user.service';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
-import ApiUserConfigDto from './dto/api-user-config.dto';
 import { TIntegrationUserDocument } from './schema/integration-user.schema';
 import { ConvertIntUserService } from './convert-int-user.service';
+import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
+import UpdateUserConfigDto from './dto/update-user-config.dto';
 
 @ApiTags('users', 'integration')
 @Controller('api/integration-users')
@@ -48,12 +49,27 @@ export class IntegrationUserController {
     );
   }
 
+  @ApiProperty({ description: 'Update current company config' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Patch('config/company')
+  async updateCompanyConfig(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() config: UpdateApiCompanyConfigDto,
+  ): Promise<IApiIntegrationUser> {
+    return this.convertIntUserService.convertDocToApiIntUser(
+      await this.integrationUserService.updateCompanyConfig(
+        integrationUser,
+        config,
+      ),
+    );
+  }
+
   @ApiProperty({ description: 'Update current user config' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('config')
   async updateConfig(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() config: ApiUserConfigDto,
+    @Body() config: UpdateUserConfigDto,
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserService.convertDocToApiIntUser(
       await this.integrationUserService.updateConfig(integrationUser, config),
