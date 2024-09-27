@@ -55,8 +55,8 @@ import {
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
-import { ContingentIntService } from '../user/contingent-int.service';
 import { CompanyService } from '../company/company.service';
+import { ConvertIntUserService } from '../user/convert-int-user.service';
 
 @Injectable()
 export class PropstackService {
@@ -65,7 +65,7 @@ export class PropstackService {
 
   constructor(
     private readonly companyService: CompanyService,
-    private readonly contingentIntService: ContingentIntService,
+    private readonly convertIntUserService: ConvertIntUserService,
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly httpService: HttpService,
     private readonly integrationUserService: IntegrationUserService,
@@ -215,32 +215,21 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { propertyId, target, fieldName }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
-    const { accessToken, integrationUserId, parentId, subscription } =
-      integrationUser;
-
     const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
       integrationUser,
       propertyId,
     );
 
     return {
-      accessToken,
-      integrationUserId,
       latestSnapshot,
       realEstate,
-      subscription,
-      availProdContingents:
-        await this.contingentIntService.getAvailProdContingents(
-          integrationUser,
-        ),
-      config:
-        this.integrationUserService.getIntUserResultConfig(integrationUser),
-      isChild: !!parentId,
+      integrationUser: await this.convertIntUserService.convertDocToApiIntUser(
+        integrationUser,
+      ),
       openAiQueryType:
         target === PropstackActionTypeEnum.GENERATE_TEXT
           ? (propstackOpenAiFieldMapper.get(fieldName) as OpenAiQueryTypeEnum)
           : undefined,
-      poiIcons: integrationUser.company.config?.poiIcons,
     };
   }
 

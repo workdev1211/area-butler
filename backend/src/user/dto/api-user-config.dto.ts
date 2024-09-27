@@ -7,7 +7,10 @@ import { IApiUserConfig } from '@area-butler-types/user';
 
 @Exclude()
 class ApiUserConfigDto
-  extends IntersectionType(PartialType(UserConfigDto), CompanyConfigDto)
+  extends IntersectionType(
+    PartialType(UserConfigDto),
+    PartialType(CompanyConfigDto),
+  )
   implements Partial<IApiUserConfig> {}
 
 export default ApiUserConfigDto;

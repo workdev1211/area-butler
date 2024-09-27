@@ -31,8 +31,8 @@ export interface IApiIntegrationUser {
   integrationUserId: string;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
-  subscription?: IIntUserSubscription;
   poiIcons?: IApiPoiIcons;
+  subscription?: IIntUserSubscription;
 }
 
 export type TApiIntUserAvailProdContingents = Partial<
@@ -132,14 +132,8 @@ export interface IIntUserExpMatchParams {
 }
 
 export interface IApiIntUserLoginRes {
-  accessToken: string;
-  config: IUserConfig;
-  integrationUserId: string;
-  isChild: boolean;
+  integrationUser: IApiIntegrationUser;
   realEstate: ApiRealEstateListing;
-  availProdContingents?: TApiIntUserAvailProdContingents;
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   openAiQueryType?: OpenAiQueryTypeEnum;
-  subscription?: IIntUserSubscription;
-  poiIcons?: IApiPoiIcons;
 }

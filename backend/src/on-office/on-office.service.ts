@@ -75,6 +75,7 @@ import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 import { CompanyService } from '../company/company.service';
+import { ConvertIntUserService } from '../user/convert-int-user.service';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -98,7 +99,8 @@ export class OnOfficeService {
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
     private readonly companyService: CompanyService,
     private readonly contingentIntService: ContingentIntService,
-    private readonly fetchSnapshotService: FetchSnapshotService, // private readonly locationIntService: LocationIntService,
+    private readonly convertIntUserService: ConvertIntUserService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly integrationUserService: IntegrationUserService,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly placeService: PlaceService,
@@ -296,21 +298,13 @@ export class OnOfficeService {
 
     return {
       realEstate,
-      accessToken: integrationUser.accessToken,
-      availProdContingents:
-        await this.contingentIntService.getAvailProdContingents(
-          integrationUser,
-        ),
-      config:
-        this.integrationUserService.getIntUserResultConfig(integrationUser),
-      isChild: !!integrationUser.parentId,
-      integrationUserId: integrationUser.integrationUserId,
+      integrationUser: await this.convertIntUserService.convertDocToApiIntUser(
+        integrationUser,
+      ),
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
         realEstate.id,
       ),
-      subscription: integrationUser.subscription,
-      poiIcons: integrationUser.company.config?.poiIcons,
     };
   }
 
@@ -446,21 +440,14 @@ export class OnOfficeService {
     );
 
     return {
-      accessToken,
       realEstate,
-      availProdContingents:
-        await this.contingentIntService.getAvailProdContingents(
-          integrationUser,
-        ),
-      config:
-        this.integrationUserService.getIntUserResultConfig(integrationUser),
-      integrationUserId: integrationUser.integrationUserId,
-      isChild: !!integrationUser.parentId,
+      integrationUser: await this.convertIntUserService.convertDocToApiIntUser(
+        integrationUser,
+      ),
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
         realEstate.id,
       ),
-      subscription: integrationUser.subscription,
     };
   }
 

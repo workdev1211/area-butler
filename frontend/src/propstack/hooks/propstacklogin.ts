@@ -1,7 +1,5 @@
 import { useContext } from "react";
-
 import { useTranslation } from "react-i18next";
-
 import * as Yup from "yup";
 
 import { getQueryParamsAndUrl } from "../../shared/shared.functions";
@@ -90,29 +88,16 @@ export const usePropstackLogin = () => {
   };
 
   const dispatchContextData = async ({
-    accessToken,
-    availProdContingents,
-    config,
-    integrationUserId,
-    isChild,
+    integrationUser,
     latestSnapshot,
     openAiQueryType,
     realEstate,
-    subscription,
-    poiIcons,
   }: IApiIntUserLoginRes): Promise<void> => {
-    await i18n.changeLanguage(config.language);
+    await i18n.changeLanguage(integrationUser.config.language);
+
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
-      payload: {
-        accessToken,
-        availProdContingents,
-        config,
-        integrationUserId,
-        isChild,
-        subscription,
-        poiIcons,
-      },
+      payload: integrationUser,
     });
 
     searchContextDispatch({

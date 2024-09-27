@@ -403,7 +403,13 @@ export class UserService {
     const userObj = user.toObject();
 
     if (userObj.company.config) {
-      userObj.config = { ...userObj.company.config, ...userObj.config };
+      const companyConfigDto = plainToInstance(
+        CompanyConfigDto,
+        userObj.company.config,
+        { exposeUnsetFields: false },
+      );
+
+      userObj.config = { ...companyConfigDto, ...userObj.config };
     }
 
     return plainToInstance(ApiUserDto, userObj, {

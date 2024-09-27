@@ -21,6 +21,7 @@ import {
 } from './schema/usage-statistics.schema';
 import { ContingentIntService } from './contingent-int.service';
 import { CompanyModule } from '../company/company.module';
+import { ConvertIntUserService } from './convert-int-user.service';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CompanyModule } from '../company/company.module';
   ],
   providers: [
     ContingentIntService,
+    ConvertIntUserService,
     IntegrationUserService,
     SubscriptionService,
     SubscriptionListener,
@@ -49,6 +51,7 @@ import { CompanyModule } from '../company/company.module';
   ],
   exports: [
     ContingentIntService,
+    ConvertIntUserService,
     IntegrationUserService,
     SubscriptionService,
     UsageStatisticsService,

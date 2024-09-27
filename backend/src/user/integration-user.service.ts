@@ -22,7 +22,7 @@ import {
   IApiIntUserCreate,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
-import { ApiTourNamesEnum, LanguageTypeEnum } from '@area-butler-types/types';
+import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { EventType } from '../event/event.types';
 import { COMPANY_PATH, PARENT_USER_PATH } from '../shared/constants/schema';
 import { IApiUserConfig } from '@area-butler-types/user';
@@ -237,21 +237,6 @@ export class IntegrationUserService {
     return this.findByDbIdAndUpdate(integrationUser.id, {
       'config.studyTours': studyTours,
     });
-  }
-
-  getIntUserResultConfig(
-    integrationUser: TIntegrationUserDocument,
-  ): IApiUserConfig {
-    const {
-      config,
-      company: { config: companyConfig },
-    } = integrationUser.toObject();
-
-    return {
-      ...companyConfig,
-      ...config,
-      language: config.language || LanguageTypeEnum.de,
-    };
   }
 
   private async findOneCore(
