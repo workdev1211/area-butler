@@ -127,11 +127,16 @@ export class IntegrationUserService {
   }
 
   findByDbId(
-    integrationUserDbId: string,
+    intUserDbId: string | Types.ObjectId,
     projectQuery?: ProjectionFields<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {
     return this.findOneCore(
-      { _id: new Types.ObjectId(integrationUserDbId) },
+      {
+        _id:
+          typeof intUserDbId === 'string'
+            ? new Types.ObjectId(intUserDbId)
+            : intUserDbId,
+      },
       projectQuery,
     );
   }

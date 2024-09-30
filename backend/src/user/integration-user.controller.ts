@@ -1,9 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
-  Post,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
@@ -26,9 +26,21 @@ export class IntegrationUserController {
     private readonly integrationUserService: IntegrationUserService,
   ) {}
 
+  @ApiProperty({ description: 'Fetch current user' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('current')
+  async fetchCurrentUser(
+    @InjectUser()
+    { _id: intUserDbId }: TIntegrationUserDocument,
+  ): Promise<IApiIntegrationUser> {
+    return this.convertIntUserService.convertDocToApiIntUser(
+      await this.integrationUserService.findByDbId(intUserDbId),
+    );
+  }
+
   @ApiProperty({ description: 'Hide single tour for current integration user' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('hide-tour/:tour')
+  @Patch('hide-tour/:tour')
   async hideTour(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('tour') tour: ApiTourNamesEnum,
@@ -40,7 +52,7 @@ export class IntegrationUserController {
 
   @ApiProperty({ description: 'Hide tours for current integration user' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('hide-tour')
+  @Patch('hide-tour')
   async hideAllTours(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiIntegrationUser> {

@@ -31,9 +31,23 @@ export const useUserState = () => {
   } = useContext(SearchContext);
 
   const { i18n, t } = useTranslation();
-  const { get, patch, post } = useHttp();
+  const { get, patch } = useHttp();
   const { checkIsSubActive } = useIntegrationTools();
   const isIntegrationUser = !!integrationUser;
+
+  const setUserContext = (currentUser: ApiUser | IApiIntegrationUser): void => {
+    if ("integrationUserId" in currentUser) {
+      userDispatch({
+        type: UserActionTypes.SET_INTEGRATION_USER,
+        payload: currentUser,
+      });
+    } else {
+      userDispatch({
+        type: UserActionTypes.SET_USER,
+        payload: currentUser,
+      });
+    }
+  };
 
   const checkIsFeatAvailable = (featureType: FeatureTypeEnum): boolean => {
     if (isIntegrationUser && checkIsSubActive()) {
@@ -111,12 +125,23 @@ export const useUserState = () => {
     }
   };
 
-  const getEmbeddedUser = (): ApiUser | IApiIntegrationUser | undefined => {
+  const fetchCurrentUser = async (): Promise<void> => {
+    const currentUser = (
+      isIntegrationUser
+        ? await get<IApiIntegrationUser>("/api/integration-users/current")
+        : await get<ApiUser>("/api/users/login")
+    ).data;
+
+    await i18n.changeLanguage(currentUser.config.language);
+    setUserContext(currentUser);
+  };
+
+  const getUserForEmbedded = (): ApiUser | IApiIntegrationUser | undefined => {
     return user || integrationUser;
   };
 
   const getCurrentUser = (): ApiUser | IApiIntegrationUser => {
-    const currentUser = getEmbeddedUser();
+    const currentUser = getUserForEmbedded();
 
     if (!currentUser) {
       throw new Error(t(IntlKeys.errors.userNotFound));
@@ -129,7 +154,7 @@ export const useUserState = () => {
     tour: ApiTourNamesEnum
   ): Promise<ApiUser | IApiIntegrationUser> => {
     return (
-      await post<ApiUser | IApiIntegrationUser>(
+      await patch<ApiUser | IApiIntegrationUser>(
         isIntegrationUser
           ? `/api/integration-users/hide-tour/${tour}`
           : `/api/users/hide-tour/${tour}`,
@@ -140,20 +165,13 @@ export const useUserState = () => {
 
   const hideTours = async (): Promise<ApiUser | IApiIntegrationUser> => {
     return (
-      await post<ApiUser | IApiIntegrationUser>(
+      await patch<ApiUser | IApiIntegrationUser>(
         isIntegrationUser
           ? "/api/integration-users/hide-tour"
           : "/api/users/hide-tour",
         {}
       )
     ).data;
-  };
-
-  const setUser = async (): Promise<ApiUser> => {
-    const currentUser = (await get<ApiUser>("/api/users/login")).data;
-    await i18n.changeLanguage(currentUser.config.language);
-    userDispatch({ type: UserActionTypes.SET_USER, payload: currentUser });
-    return currentUser;
   };
 
   const updateCompanyConfig = async (
@@ -163,20 +181,17 @@ export const useUserState = () => {
       ? "/api/integration-users/config/company"
       : "/api/users/config/company";
 
-    const currentUser = (
-      await patch<ApiUser | IApiIntegrationUser>(url, config)
-    ).data;
+    let currentUser;
 
-    if (isIntegrationUser) {
-      userDispatch({
-        type: UserActionTypes.SET_INTEGRATION_USER,
-        payload: currentUser as IApiIntegrationUser,
-      });
-    } else {
-      userDispatch({
-        type: UserActionTypes.SET_USER,
-        payload: currentUser as ApiUser,
-      });
+    try {
+      currentUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
+        .data;
+
+      setUserContext(currentUser);
+    } catch (e) {
+      console.error(e);
+      toastError(t(IntlKeys.common.errorOccurred));
+      throw new Error(t(IntlKeys.common.errorOccurred));
     }
   };
 
@@ -187,30 +202,27 @@ export const useUserState = () => {
       ? "/api/integration-users/config"
       : "/api/users/config";
 
-    const currentUser = (
-      await patch<ApiUser | IApiIntegrationUser>(url, config)
-    ).data;
+    let currentUser;
 
-    if (isIntegrationUser) {
-      userDispatch({
-        type: UserActionTypes.SET_INTEGRATION_USER,
-        payload: currentUser as IApiIntegrationUser,
-      });
-    } else {
-      userDispatch({
-        type: UserActionTypes.SET_USER,
-        payload: currentUser as ApiUser,
-      });
+    try {
+      currentUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
+        .data;
+
+      setUserContext(currentUser);
+    } catch (e) {
+      console.error(e);
+      toastError(t(IntlKeys.common.errorOccurred));
+      throw new Error(t(IntlKeys.common.errorOccurred));
     }
   };
 
   return {
     checkIsFeatAvailable,
+    fetchCurrentUser,
     getCurrentUser,
-    getEmbeddedUser,
+    getUserForEmbedded,
     hideTour,
     hideTours,
-    setUser,
     updateCompanyConfig,
     updateUserConfig,
   };

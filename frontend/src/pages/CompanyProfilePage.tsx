@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect } from "react";
+import { FC, useEffect } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -10,12 +10,9 @@ import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import CompanyExportSettings from "../company/CompanyExportSettings";
 import { deriveTotalRequestContingent } from "../shared/shared.functions";
 import { useUserState } from "../hooks/userstate";
-import { ConfigContext } from "../context/ConfigContext";
-import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 const CompanyProfilePage: FC = () => {
-  const { integrationType } = useContext(ConfigContext);
-  const { getCurrentUser, setUser } = useUserState();
+  const { fetchCurrentUser, getCurrentUser } = useUserState();
   const { t } = useTranslation();
 
   const user = getCurrentUser();
@@ -31,32 +28,7 @@ const CompanyProfilePage: FC = () => {
       user.subscription!.config.appFeatures.canCustomizeExport);
 
   useEffect(() => {
-    if (!isIntegrationUser) {
-      void setUser();
-      return;
-    }
-
-    switch (integrationType) {
-      case IntegrationTypesEnum.PROPSTACK: {
-        // TODO refresh user / company info
-        break;
-      }
-
-      case IntegrationTypesEnum.ON_OFFICE: {
-        // TODO refresh user / company info
-        break;
-      }
-
-      default: {
-        console.error(
-          `${t(IntlKeys.errors.wrongIntegration)}: ${integrationType}.`
-        );
-
-        throw new Error(t(IntlKeys.errors.wrongIntegration));
-      }
-    }
-
-    void setUser();
+    void fetchCurrentUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

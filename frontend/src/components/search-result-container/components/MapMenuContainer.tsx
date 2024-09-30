@@ -81,7 +81,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
 
   const { integrationType } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
-  const { getEmbeddedUser } = useUserState();
+  const { getUserForEmbedded } = useUserState();
 
   const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
   const [dataTabProps, setDataTabProps] = useState<IDataTabProps>();
@@ -89,7 +89,7 @@ const MapMenuContainer: FC<IMapMenuContainerProps> = ({
   const searchAddress = placesLocation?.label;
   const resultLocation = mapCenter ?? location!;
 
-  const user = getEmbeddedUser();
+  const user = getUserForEmbedded();
   const extraMapboxStyles = user?.config.extraMapboxStyles;
 
   useEffect(() => {

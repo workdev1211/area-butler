@@ -27,8 +27,8 @@ const MapTab: FC<IMapTabProps> = ({
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
 
-  const { getEmbeddedUser } = useUserState();
-  const user = getEmbeddedUser();
+  const { getUserForEmbedded } = useUserState();
+  const user = getUserForEmbedded();
   const isIntegrationUser = !!(user && "integrationUserId" in user);
 
   const hasOpenAiFeature =

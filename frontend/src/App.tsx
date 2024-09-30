@@ -97,7 +97,7 @@ function App() {
   const { get, post } = useHttp();
   const history = useHistory();
   const { pathname } = useLocation();
-  const { setUser } = useUserState();
+  const { fetchCurrentUser } = useUserState();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
@@ -147,7 +147,7 @@ function App() {
     };
 
     const getUserData = async (): Promise<void> => {
-      await setUser();
+      await fetchCurrentUser();
 
       const latestUserRequests: ApiUserRequests = (
         await get<ApiUserRequests>("/api/location/latest-user-requests")

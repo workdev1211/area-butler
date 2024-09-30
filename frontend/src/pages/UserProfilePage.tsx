@@ -26,7 +26,7 @@ const mapFormDataToApiUserConfig = ({
 });
 
 const UserProfilePage: FC = () => {
-  const { getCurrentUser, setUser, updateUserConfig } = useUserState();
+  const { fetchCurrentUser, getCurrentUser, updateUserConfig } = useUserState();
   const { t } = useTranslation();
 
   const [isBusy, setIsBusy] = useState(false);
@@ -41,7 +41,7 @@ const UserProfilePage: FC = () => {
   const isSubscriptionAvail = !!user.subscription;
 
   useEffect(() => {
-    void setUser();
+    void fetchCurrentUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

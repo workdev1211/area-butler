@@ -103,7 +103,7 @@ export class UserController {
   }
 
   @ApiProperty({ description: 'Hide single tour for current user' })
-  @Post('hide-tour/:tour')
+  @Patch('hide-tour/:tour')
   async hideTour(
     @Req() { user: { email } }: IUserRequest,
     @Param('tour') tour: ApiTourNamesEnum,
@@ -114,7 +114,7 @@ export class UserController {
   }
 
   @ApiProperty({ description: 'Hide tours for current user' })
-  @Post('hide-tour')
+  @Patch('hide-tour')
   async hideAllTours(
     @Req() { user: { email } }: IUserRequest,
   ): Promise<ApiUser> {
