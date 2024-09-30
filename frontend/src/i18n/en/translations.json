@@ -139,6 +139,7 @@
     "showObjectType": "Show object type",
     "hideOtherPropertyFeatures": "Hide other property features",
     "primaryColor": "Primary color",
+    "invertBaseColor": "Invert base color",
     "cardsIcon": "Cards Icon",
     "uploadIcon": "Upload icon",
     "selectRatio": "Select aspect ratio",

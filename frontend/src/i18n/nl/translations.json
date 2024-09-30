@@ -139,6 +139,7 @@
     "showObjectType": "Objecttype weergeven",
     "hideOtherPropertyFeatures": "Andere eigenschappen verbergen",
     "primaryColor": "Primaire kleur",
+    "invertBaseColor": "Basiskleur omkeren",
     "cardsIcon": "Kaarten Pictogram",
     "uploadIcon": "Pictogram uploaden",
     "selectRatio": "Selecteer beeldverhouding",

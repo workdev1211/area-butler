@@ -139,6 +139,7 @@
     "showObjectType": "Objekttyp anzeigen",
     "hideOtherPropertyFeatures": "Weitere Objektmerkmale ausblenden",
     "primaryColor": "Primärfarbe",
+    "invertBaseColor": "Basisfarbe invertieren",
     "cardsIcon": "Karten Icon",
     "uploadIcon": "Icon hochladen",
     "selectRatio": "Seitenverhältnis wählen",

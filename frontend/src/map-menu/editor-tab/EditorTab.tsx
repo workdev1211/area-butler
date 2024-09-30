@@ -830,7 +830,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     </button>
                   )}
                 </div>
-                <label className="cursor-pointer label">
+                <label className="cursor-pointer label justify-start">
                   <input
                     type="checkbox"
                     name="invertBaseColor"

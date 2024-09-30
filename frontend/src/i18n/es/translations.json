@@ -139,6 +139,7 @@
     "showObjectType": "Mostrar tipo de objeto",
     "hideOtherPropertyFeatures": "Ocultar otras características de la propiedad",
     "primaryColor": "Color primario",
+    "invertBaseColor": "Invertir el color base",
     "cardsIcon": "Icono Tarjetas",
     "uploadIcon": "Icono de carga",
     "selectRatio": "Seleccionar relación de aspecto",
