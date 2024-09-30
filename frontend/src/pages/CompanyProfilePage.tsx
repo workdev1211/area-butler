@@ -15,10 +15,10 @@ import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 const CompanyProfilePage: FC = () => {
   const { integrationType } = useContext(ConfigContext);
-  const { getActualUser, setUser } = useUserState();
+  const { getCurrentUser, setUser } = useUserState();
   const { t } = useTranslation();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const isHasSubscription = !!user.subscription;

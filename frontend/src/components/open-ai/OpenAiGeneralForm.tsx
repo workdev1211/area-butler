@@ -67,8 +67,8 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
   const { t } = useTranslation();
   const { fetchPotentCustomerNames } = usePotentialCustomerData();
 
-  const { getActualUser } = useUserState();
-  const user = getActualUser();
+  const { getCurrentUser } = useUserState();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const custTargetGroupOption: ISelectTextValue = {

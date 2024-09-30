@@ -58,11 +58,11 @@ const EditorTab: FC<IEditorTabProps> = ({
   } = useContext(SearchContext);
 
   const { t } = useTranslation();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
   const { fetchLateSnapConfigs } = useLocationData();
   const { fetchRealEstStatuses } = useRealEstateData();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
   const config = responseConfig!;
 

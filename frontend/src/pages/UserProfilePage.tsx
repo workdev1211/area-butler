@@ -26,7 +26,7 @@ const mapFormDataToApiUserConfig = ({
 });
 
 const UserProfilePage: FC = () => {
-  const { getActualUser, setUser, updateUserConfig } = useUserState();
+  const { getCurrentUser, setUser, updateUserConfig } = useUserState();
   const { t } = useTranslation();
 
   const [isBusy, setIsBusy] = useState(false);
@@ -36,7 +36,7 @@ const UserProfilePage: FC = () => {
   // it was a submit button for the form with the following id
   const formId = `form-${uuid()}`;
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
   const isSubscriptionAvail = !!user.subscription;
 

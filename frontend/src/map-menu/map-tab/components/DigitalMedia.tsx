@@ -73,11 +73,11 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
   });
   const { sendToIntegration } = useIntegrationTools();
   const { createCodeSnippet, createDirectLink } = useTools();
-  const { checkIsFeatAvailable, getActualUser } = useUserState();
+  const { checkIsFeatAvailable, getCurrentUser } = useUserState();
 
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
-  const user = getActualUser();
+  const user = getCurrentUser();
 
   useEffect(() => {
     if (!printingZipActive) {

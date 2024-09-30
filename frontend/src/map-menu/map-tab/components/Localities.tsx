@@ -57,12 +57,9 @@ const Localities: FC<ILocalitiesProps> = ({
     },
   } = useContext(SearchContext);
 
-  const { getActualUser } = useUserState();
+  const { getEmbeddedUser } = useUserState();
 
-  const user =
-    mapDisplayMode !== MapDisplayModesEnum.EMBEDDED
-      ? getActualUser()
-      : undefined;
+  const user = getEmbeddedUser();
   const resultingPoiIcons = menuPoiIcons || user?.config.poiIcons?.menuPoiIcons;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 

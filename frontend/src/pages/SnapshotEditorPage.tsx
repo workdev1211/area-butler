@@ -72,7 +72,7 @@ const SnapshotEditorPage: FC = () => {
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnapshotEditorRouterProps>();
 
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
   const { t } = useTranslation();
@@ -85,7 +85,7 @@ const SnapshotEditorPage: FC = () => {
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
   const isAvailHtmlSnippet =
     isIntegrationUser || !!user?.subscription?.config.appFeatures.htmlSnippet;

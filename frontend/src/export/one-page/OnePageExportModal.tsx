@@ -88,9 +88,9 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   });
   const { fetchOpenAiResponse } = useOpenAi();
   const { createDirectLink } = useTools();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const resultingPoiIcons = user.config.poiIcons?.menuPoiIcons;
 
   const initSelectMapClippings = searchContextState.mapClippings.length

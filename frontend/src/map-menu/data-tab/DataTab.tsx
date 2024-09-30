@@ -26,8 +26,8 @@ const DataTab: FC<IDataTabProps> = ({
 }) => {
   const { searchContextState } = useContext(SearchContext);
 
-  const { checkIsFeatAvailable, getActualUser } = useUserState();
-  const user = getActualUser();
+  const { checkIsFeatAvailable, getCurrentUser } = useUserState();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const hasOpenAiFeature =

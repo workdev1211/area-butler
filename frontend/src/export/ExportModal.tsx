@@ -48,9 +48,9 @@ const ExportModal: FC<IExportModalProps> = ({
   const { t: outputT } = useTranslation("", {
     lng: outputLanguage,
   });
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
   const subscriptionPlan = isIntegrationUser
     ? undefined

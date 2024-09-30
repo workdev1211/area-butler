@@ -48,8 +48,8 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
 }) => {
   const { t } = useTranslation();
   const isLoadedGoogleMapsApi = useGoogleMapsApi();
-  const { getActualUser } = useUserState();
-  const user = getActualUser();
+  const { getCurrentUser } = useUserState();
+  const user = getCurrentUser();
 
   const [inputValue, setInputValue] = useState<string>();
   const [focus, setFocus] = useState(false);

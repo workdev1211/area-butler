@@ -88,10 +88,10 @@ const SearchParamsPage: FC = () => {
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
   const { createLocation, createSnapshot } = useLocationData();
-  const { checkIsFeatAvailable, getActualUser } = useUserState();
+  const { checkIsFeatAvailable, getCurrentUser } = useUserState();
   const { unlockProduct } = useIntegrationTools();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const [isNewRequest, setIsNewRequest] = useState(true);

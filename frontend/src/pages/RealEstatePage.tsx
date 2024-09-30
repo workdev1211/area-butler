@@ -36,10 +36,10 @@ const RealEstatePage: FC = () => {
   };
 
   const { realEstateId } = useParams<IRealEstatePageRouterProps>();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
   const { fetchRealEstates } = useRealEstateData();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const [busy, setBusy] = useState(false);

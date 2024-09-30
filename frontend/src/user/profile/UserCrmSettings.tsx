@@ -20,10 +20,10 @@ const UserCrmSettings: FC = () => {
   const { t } = useTranslation();
   const { userDispatch } = useContext(UserContext);
   const { post } = useHttp();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
   const apiConnections =
-    getActualUser().config.externalConnections ||
+    getCurrentUser().config.externalConnections ||
     ({} as TApiUserExtConnections);
 
   const [propstackApiKey, setPropstackApiKey] = useState<string>(

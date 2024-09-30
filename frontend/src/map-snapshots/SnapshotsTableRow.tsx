@@ -33,10 +33,10 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   const history = useHistory();
   const { duplicateSnapshot, deleteSnapshot } = useLocationData();
   const { createDirectLink } = useTools();
-  const { getActualUser, updateUserConfig } = useUserState();
+  const { getCurrentUser, updateUserConfig } = useUserState();
   const {
     config: { templateSnapshotId },
-  } = getActualUser();
+  } = getCurrentUser();
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);

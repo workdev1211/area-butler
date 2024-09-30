@@ -13,10 +13,10 @@ const CompanyExportSettings: FC = () => {
   const { userDispatch } = useContext(UserContext);
 
   const { t } = useTranslation();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
   const { updateCompanyConfig } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
 
   const [color, setColor] = useState<string | undefined>(
     user.config.color || ""

@@ -24,9 +24,9 @@ const PublicLinks: FC = () => {
   const { t } = useTranslation();
   const { sendToIntegration } = useIntegrationTools();
   const { createDirectLink } = useTools();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   // TODO: confirm translations here

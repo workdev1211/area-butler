@@ -111,14 +111,18 @@ export const useUserState = () => {
     }
   };
 
-  const getActualUser = (): ApiUser | IApiIntegrationUser => {
-    const actualUser = user || integrationUser;
+  const getEmbeddedUser = (): ApiUser | IApiIntegrationUser | undefined => {
+    return user || integrationUser;
+  };
 
-    if (!actualUser) {
+  const getCurrentUser = (): ApiUser | IApiIntegrationUser => {
+    const currentUser = getEmbeddedUser();
+
+    if (!currentUser) {
       throw new Error(t(IntlKeys.errors.userNotFound));
     }
 
-    return actualUser;
+    return currentUser;
   };
 
   const hideTour = async (
@@ -146,10 +150,10 @@ export const useUserState = () => {
   };
 
   const setUser = async (): Promise<ApiUser> => {
-    const actualUser = (await get<ApiUser>("/api/users/login")).data;
-    await i18n.changeLanguage(actualUser.config.language);
-    userDispatch({ type: UserActionTypes.SET_USER, payload: actualUser });
-    return actualUser;
+    const currentUser = (await get<ApiUser>("/api/users/login")).data;
+    await i18n.changeLanguage(currentUser.config.language);
+    userDispatch({ type: UserActionTypes.SET_USER, payload: currentUser });
+    return currentUser;
   };
 
   const updateCompanyConfig = async (
@@ -159,18 +163,19 @@ export const useUserState = () => {
       ? "/api/integration-users/config/company"
       : "/api/users/config/company";
 
-    const actualUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
-      .data;
+    const currentUser = (
+      await patch<ApiUser | IApiIntegrationUser>(url, config)
+    ).data;
 
     if (isIntegrationUser) {
       userDispatch({
         type: UserActionTypes.SET_INTEGRATION_USER,
-        payload: actualUser as IApiIntegrationUser,
+        payload: currentUser as IApiIntegrationUser,
       });
     } else {
       userDispatch({
         type: UserActionTypes.SET_USER,
-        payload: actualUser as ApiUser,
+        payload: currentUser as ApiUser,
       });
     }
   };
@@ -182,25 +187,27 @@ export const useUserState = () => {
       ? "/api/integration-users/config"
       : "/api/users/config";
 
-    const actualUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
-      .data;
+    const currentUser = (
+      await patch<ApiUser | IApiIntegrationUser>(url, config)
+    ).data;
 
     if (isIntegrationUser) {
       userDispatch({
         type: UserActionTypes.SET_INTEGRATION_USER,
-        payload: actualUser as IApiIntegrationUser,
+        payload: currentUser as IApiIntegrationUser,
       });
     } else {
       userDispatch({
         type: UserActionTypes.SET_USER,
-        payload: actualUser as ApiUser,
+        payload: currentUser as ApiUser,
       });
     }
   };
 
   return {
     checkIsFeatAvailable,
-    getActualUser,
+    getCurrentUser,
+    getEmbeddedUser,
     hideTour,
     hideTours,
     setUser,

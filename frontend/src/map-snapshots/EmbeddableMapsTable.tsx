@@ -23,9 +23,9 @@ const EmbeddableMapsTable: FC<IEmbeddableMapsTableProps> = ({
   } = useContext(SearchContext);
 
   const { createDirectLink, createCodeSnippet } = useTools();
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const [isShownModal, setIsShownModal] = useState(false);

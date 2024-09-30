@@ -14,10 +14,10 @@ import { useUserState } from "../hooks/userstate";
 const MapSnapshotsPage: FunctionComponent = () => {
   const { t } = useTranslation();
   const { userState, userDispatch } = useContext(UserContext);
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
   const { fetchSnapshots } = useLocationData();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
   const hasSubscription = isIntegrationUser || !!user?.subscription;
 

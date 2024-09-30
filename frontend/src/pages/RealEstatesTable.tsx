@@ -37,9 +37,9 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
   const history = useHistory<IRealEstatesHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const startSearchFromRealEstate = async (

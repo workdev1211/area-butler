@@ -144,7 +144,7 @@ const SearchResultContainer = forwardRef<
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
     const { createDirectLink } = useTools();
-    const { getActualUser } = useUserState();
+    const { getEmbeddedUser } = useUserState();
     const { sendToIntegration } = useIntegrationTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
     const { t } = useTranslation();
@@ -187,10 +187,7 @@ const SearchResultContainer = forwardRef<
     const [mapClipping, setMapClipping] = useState<string>();
     const [primaryColor, setPrimaryColor] = useState<string>();
 
-    const user =
-      mapDisplayMode !== MapDisplayModesEnum.EMBEDDED
-        ? getActualUser()
-        : undefined;
+    const user = getEmbeddedUser();
     const isIntegrationUser = !!(user && "integrationUserId" in user);
 
     const directLink = createDirectLink();

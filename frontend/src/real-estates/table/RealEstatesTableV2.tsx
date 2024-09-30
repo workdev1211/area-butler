@@ -82,9 +82,9 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
 
-  const { getActualUser } = useUserState();
+  const { getCurrentUser } = useUserState();
 
-  const user = getActualUser();
+  const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
 
   const [sorting, setSorting] = useState<SortingState>([]);
