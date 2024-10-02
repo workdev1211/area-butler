@@ -135,7 +135,7 @@ class ApiSearchResultSnapshotConfigDto
   @Expose()
   @IsOptional()
   @IsBoolean()
-  invertBaseColor?: boolean;
+  isInvertBaseColor?: boolean;
 
   @Expose()
   @Type(() => ApiSnapshotConfigRealEstSettingsDto)

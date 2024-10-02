@@ -210,7 +210,7 @@ const SearchResultContainer = forwardRef<
     // Customize primary color
     useEffect(() => {
       const primaryColor = responseConfig?.primaryColor || defaultColor;
-      const invertColor = responseConfig?.invertBaseColor;
+      const invertColor = responseConfig?.isInvertBaseColor;
       setPrimaryColor(responseConfig?.primaryColor || defaultColor);
 
       const r = containerRef;
@@ -226,7 +226,7 @@ const SearchResultContainer = forwardRef<
     }, [
       responseConfig?.primaryColor,
       containerRef,
-      responseConfig?.invertBaseColor,
+      responseConfig?.isInvertBaseColor,
     ]);
 
     // consume search response and set active/available means
@@ -482,7 +482,7 @@ const SearchResultContainer = forwardRef<
     };
     const isDark = checkIsDarkColor(
       responseConfig?.primaryColor || defaultColor,
-      responseConfig?.invertBaseColor
+      responseConfig?.isInvertBaseColor
     );
     let containerClasses = `search-result-container theme-${
       responseConfig?.theme
@@ -535,7 +535,7 @@ const SearchResultContainer = forwardRef<
             mapClipping={mapClipping}
             closeModal={handleMapClipCrop}
             color={primaryColor?.slice(1)}
-            invertColor={responseConfig?.invertBaseColor}
+            invertColor={responseConfig?.isInvertBaseColor}
             directLink={directLink}
             userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
             transportationParams={transportationParams}

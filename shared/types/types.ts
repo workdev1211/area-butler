@@ -447,7 +447,7 @@ export interface ApiSearchResultSnapshotConfig {
   mapIcon?: string;
   poiFilter?: IApiSnapshotPoiFilter;
   primaryColor?: string;
-  invertBaseColor?: boolean;
+  isInvertBaseColor?: boolean;
 
   realEstateSettings?: IApiSnapshotConfigRealEstSettings;
   realEstateStatus?: string; // move to 'realEstateSettings'

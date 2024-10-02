@@ -833,12 +833,12 @@ const EditorTab: FC<IEditorTabProps> = ({
                 <label className="cursor-pointer label justify-start">
                   <input
                     type="checkbox"
-                    name="invertBaseColor"
-                    checked={config.invertBaseColor}
+                    name="isInvertBaseColor"
+                    checked={config.isInvertBaseColor}
                     onChange={() => {
                       changeConfigParam(
-                        "invertBaseColor",
-                        !config.invertBaseColor
+                        "isInvertBaseColor",
+                        !config.isInvertBaseColor
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
