@@ -1,16 +1,14 @@
-import { FilterQuery, ProjectionFields, SortValues } from 'mongoose';
+import { Document, FilterQuery, ProjectionFields, SortValues } from 'mongoose';
 
-import { SearchResultSnapshotDocument } from '../../location/schema/search-result-snapshot.schema';
+import { IApiFetchReqParams } from '@area-butler-types/types';
 
 export type TApiMongoSortQuery = Record<string, SortValues>;
 
-export interface IApiFetchSnapshotsReq {
-  skip?: number;
-  limit?: number;
-  filter?: FilterQuery<SearchResultSnapshotDocument>;
-  project?: ProjectionFields<SearchResultSnapshotDocument>;
-  sort?: TApiMongoSortQuery;
-}
+export type TFetchReqParams<T extends Document> = IApiFetchReqParams<
+  FilterQuery<T>,
+  ProjectionFields<T>,
+  TApiMongoSortQuery
+>;
 
 export type TGeneralImage = {
   title: string;

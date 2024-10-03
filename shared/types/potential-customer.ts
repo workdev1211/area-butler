@@ -13,6 +13,7 @@ export interface ApiUpsertPotentialCustomer {
 
 export interface ApiPotentialCustomer {
   id: string;
+  isFromParent: boolean;
   name: string;
   email?: string;
   routingProfiles?: TransportationParam[];
@@ -20,7 +21,6 @@ export interface ApiPotentialCustomer {
   preferredLocations?: ApiPreferredLocation[];
   realEstateCostStructure?: ApiRealEstateCost;
   realEstateCharacteristics?: ApiRealEstateCharacteristics;
-  isFromParent: boolean;
 }
 
 export interface ApiUpsertQuestionnaireRequest {

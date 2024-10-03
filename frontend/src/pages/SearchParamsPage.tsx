@@ -15,7 +15,7 @@ import { IntlKeys } from "i18n/keys";
 import "./SearchParamsPage.scss";
 
 import FormModal, { ModalConfig } from "components/FormModal";
-import LatestUserRequestsDropDown from "components/LatestUserRequestsDropDown";
+import LastLocSearchesDropDown from "components/LastLocSearchesDropDown";
 import {
   PotentialCustomerActionTypes,
   PotentialCustomerContext,
@@ -39,11 +39,10 @@ import {
 } from "../../../shared/types/subscription-plan";
 import {
   ApiCoordinates,
-  ApiSearch,
+  ApiLocationSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
-  ApiUserRequests,
   FeatureTypeEnum,
 } from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
@@ -87,7 +86,7 @@ const SearchParamsPage: FC = () => {
   const { fetchRealEstates } = useRealEstateData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createLocation, createSnapshot } = useLocationData();
+  const { searchLocation, createSnapshot } = useLocationData();
   const { checkIsFeatAvailable, getCurrentUser } = useUserState();
   const { unlockProduct } = useIntegrationTools();
 
@@ -166,11 +165,11 @@ const SearchParamsPage: FC = () => {
       return;
     }
 
-    const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
+    const lastLocSearches = userState.lastLocSearches!;
     let limitType;
     let modelData;
 
-    const existingRequest = latestUserRequests.requests.find(
+    const existingRequest = lastLocSearches.find(
       ({ coordinates: requestCoordinates }) =>
         JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
     );
@@ -202,7 +201,7 @@ const SearchParamsPage: FC = () => {
     setModelData(modelData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchContextState.location, userState.latestUserRequests, user]);
+  }, [searchContextState.location, userState.lastLocSearches, user]);
 
   useEffect(() => {
     const getPotentialCustomers = async () => {
@@ -295,7 +294,7 @@ const SearchParamsPage: FC = () => {
       });
     }
 
-    const search: ApiSearch = {
+    const locationSearch: ApiLocationSearch = {
       preferredLocations,
       searchTitle: searchContextState?.placesLocation?.label || "Mein Standort",
       coordinates: searchContextState.location!,
@@ -311,7 +310,7 @@ const SearchParamsPage: FC = () => {
     });
     setBusyModalItems([...items]);
 
-    const searchResponse = await createLocation(search);
+    const searchResponse = await searchLocation(locationSearch);
 
     items.push({
       key: "location-search-completed",
@@ -600,7 +599,7 @@ const SearchParamsPage: FC = () => {
               </div>
               <div className="flex flex-wrap sm:gap-4">
                 {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
-                <LatestUserRequestsDropDown />
+                <LastLocSearchesDropDown />
                 <RealEstateDropDown user={user} />
               </div>
             </>

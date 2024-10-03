@@ -13,12 +13,12 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { LocationService } from './location.service';
-import ApiSearchDto from '../dto/api-search.dto';
+import ApiLocationSearchDto from '../dto/api-location-search.dto';
 import ApiUpdateSearchResultSnapshotDto from './dto/snapshot/api-update-search-result-snapshot.dto';
 import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
+import ApiFetchReqParamsDto from '../dto/api-fetch-req-params.dto';
 import {
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
@@ -27,6 +27,7 @@ import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { SnapshotService } from './snapshot.service';
 import ApiCreateSnapshotReqDto from './dto/snapshot/api-create-snapshot-req.dto';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -43,10 +44,10 @@ export class LocationIntController {
       'Search for a location, creates an entry in the "locationsearches" collection',
   })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('search')
+  @Post('location-search')
   searchLocation(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() searchData: ApiSearchDto,
+    @Body() searchData: ApiLocationSearchDto,
   ): Promise<ApiSearchResponse> {
     return this.locationService.searchLocation(integrationUser, searchData);
   }
@@ -70,48 +71,6 @@ export class LocationIntController {
   ): Promise<ApiSearchResultSnapshotResponse> {
     return this.snapshotService.createSnapshot(integrationUser, {
       snapshotReq: createSnapshotReqDto,
-    });
-  }
-
-  @ApiOperation({
-    description: 'Fetch the embeddable maps for the current user',
-  })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Get('snapshots')
-  fetchSnapshots(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Query() fetchSnapshotsReq: ApiFetchSnapshotsReqDto,
-  ): Promise<ApiSearchResultSnapshotResponse[]> {
-    const {
-      skip: skipNumber,
-      limit: limitNumber,
-      filter: filterQuery,
-      project: projectQuery,
-      sort: sortQuery,
-    } = fetchSnapshotsReq;
-
-    const resProjectQuery = projectQuery || {
-      addressToken: 1,
-      config: 1,
-      createdAt: 1,
-      description: 1,
-      endsAt: 1,
-      lastAccess: 1,
-      realEstateId: 1,
-      token: 1,
-      unaddressToken: 1,
-      visitAmount: 1,
-      'snapshot.description': 1,
-      'snapshot.location': 1,
-      'snapshot.placesLocation.label': 1,
-    };
-
-    return this.fetchSnapshotService.fetchSnapshots(integrationUser, {
-      filterQuery,
-      sortQuery,
-      limitNumber,
-      skipNumber,
-      projectQuery: resProjectQuery,
     });
   }
 
@@ -141,6 +100,49 @@ export class LocationIntController {
       integrationUser,
       limitNumber,
     );
+  }
+
+  @ApiOperation({
+    description: 'Fetch the embeddable maps for the current user',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('snapshots')
+  fetchSnapshots(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body()
+    fetchSnapshotsReq: ApiFetchReqParamsDto<SearchResultSnapshotDocument>,
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
+    const {
+      filter: filterQuery,
+      limit: limitNumber,
+      project: projectQuery,
+      skip: skipNumber,
+      sort: sortQuery,
+    } = fetchSnapshotsReq;
+
+    const resProjectQuery = projectQuery || {
+      addressToken: 1,
+      config: 1,
+      createdAt: 1,
+      description: 1,
+      endsAt: 1,
+      lastAccess: 1,
+      realEstateId: 1,
+      token: 1,
+      unaddressToken: 1,
+      visitAmount: 1,
+      'snapshot.description': 1,
+      'snapshot.location': 1,
+      'snapshot.placesLocation.label': 1,
+    };
+
+    return this.fetchSnapshotService.fetchSnapshots(integrationUser, {
+      filterQuery,
+      limitNumber,
+      skipNumber,
+      sortQuery,
+      projectQuery: resProjectQuery,
+    });
   }
 
   @ApiOperation({ description: 'Update an existing map snapshot' })

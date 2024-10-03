@@ -12,19 +12,20 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { LocationService } from './location.service';
-import ApiSearchDto from '../dto/api-search.dto';
+import ApiLocationSearchDto from '../dto/api-location-search.dto';
 import ApiSearchResponseDto from '../dto/api-search-response.dto';
 import ApiUpdateSearchResultSnapshotDto from './dto/snapshot/api-update-search-result-snapshot.dto';
-import ApiUserRequestsDto from '../dto/api-user-requests.dto';
+import ApiLastLocSearchesDto from '../dto/api-last-loc-searches.dto';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
-import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
+import ApiFetchReqParamsDto from '../dto/api-fetch-req-params.dto';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import { SnapshotService } from './snapshot.service';
 import ApiCreateSnapshotReqDto from './dto/snapshot/api-create-snapshot-req.dto';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -41,10 +42,10 @@ export class LocationController extends AuthenticatedController {
     description:
       'Search for a location, creates an entry in the "locationsearches" collection',
   })
-  @Post('search')
+  @Post('location-search')
   searchLocation(
     @InjectUser() user: UserDocument,
-    @Body() searchData: ApiSearchDto,
+    @Body() searchData: ApiLocationSearchDto,
   ): Promise<ApiSearchResponseDto> {
     return this.locationService.searchLocation(user, searchData);
   }
@@ -69,46 +70,48 @@ export class LocationController extends AuthenticatedController {
     });
   }
 
-  @ApiOperation({ description: 'Update an existing map snapshot' })
-  @Put('snapshot/:id')
-  updateSnapshot(
+  @ApiOperation({ description: 'Fetch a specific map snapshot' })
+  @Get('snapshot/:id')
+  fetchSnapshot(
     @InjectUser() user: UserDocument,
     @Param('id') snapshotId: string,
-    @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotService.updateSnapshot(user, snapshotId, body);
+    return this.fetchSnapshotService.fetchSnapshotByIdOrFail(user, snapshotId);
   }
 
-  @ApiOperation({ description: 'Delete an existing map snapshot' })
-  @Delete('snapshot/:id')
-  deleteSnapshot(
+  @ApiOperation({
+    description: 'Fetch the configs of the latest snapshots',
+  })
+  @Get('snapshots/configs')
+  fetchLastSnapConfigs(
+    @Query('limitNumber', ParseIntPipe) limitNumber = 5,
     @InjectUser() user: UserDocument,
-    @Param('id') snapshotId: string,
-  ): Promise<void> {
-    return this.snapshotService.deleteSnapshot(user, snapshotId);
+  ): Promise<IApiLateSnapConfigOption[]> {
+    return this.locationService.fetchLastSnapConfigs(user, limitNumber);
   }
 
-  @ApiOperation({ description: 'Query latest user requests' })
-  @Get('latest-user-requests')
-  latestUserRequests(
+  @ApiOperation({ description: 'Fetch latest location searches' })
+  @Get('last-loc-searches')
+  fetchLastSearches(
     @InjectUser() user: UserDocument,
-  ): Promise<ApiUserRequestsDto> {
-    return this.locationService.latestUserRequests(user);
+  ): Promise<ApiLastLocSearchesDto> {
+    return this.locationService.fetchLastLocSearches(user);
   }
 
   @ApiOperation({
     description: 'Fetch the embeddable maps for the current user',
   })
-  @Get('snapshots')
+  @Post('snapshots')
   fetchSnapshots(
     @InjectUser() user: UserDocument,
-    @Query() fetchSnapshotsReq: ApiFetchSnapshotsReqDto,
+    @Body()
+    fetchSnapshotsReq: ApiFetchReqParamsDto<SearchResultSnapshotDocument>,
   ): Promise<ApiSearchResultSnapshotResponse[]> {
     const {
-      skip: skipNumber,
-      limit: limitNumber,
       filter: filterQuery,
+      limit: limitNumber,
       project: projectQuery,
+      skip: skipNumber,
       sort: sortQuery,
     } = fetchSnapshotsReq;
 
@@ -129,30 +132,29 @@ export class LocationController extends AuthenticatedController {
 
     return this.fetchSnapshotService.fetchSnapshots(user, {
       filterQuery,
-      sortQuery,
       limitNumber,
       skipNumber,
+      sortQuery,
       projectQuery: resProjectQuery,
     });
   }
 
-  @ApiOperation({ description: 'Fetch a specific map snapshot' })
-  @Get('snapshot/:id')
-  fetchSnapshot(
+  @ApiOperation({ description: 'Update an existing map snapshot' })
+  @Put('snapshot/:id')
+  updateSnapshot(
     @InjectUser() user: UserDocument,
     @Param('id') snapshotId: string,
+    @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.fetchSnapshotService.fetchSnapshotByIdOrFail(user, snapshotId);
+    return this.snapshotService.updateSnapshot(user, snapshotId, body);
   }
 
-  @ApiOperation({
-    description: 'Fetch the configs of the latest snapshots',
-  })
-  @Get('snapshots/configs')
-  fetchLastSnapConfigs(
-    @Query('limitNumber', ParseIntPipe) limitNumber = 5,
+  @ApiOperation({ description: 'Delete an existing map snapshot' })
+  @Delete('snapshot/:id')
+  deleteSnapshot(
     @InjectUser() user: UserDocument,
-  ): Promise<IApiLateSnapConfigOption[]> {
-    return this.locationService.fetchLastSnapConfigs(user, limitNumber);
+    @Param('id') snapshotId: string,
+  ): Promise<void> {
+    return this.snapshotService.deleteSnapshot(user, snapshotId);
   }
 }

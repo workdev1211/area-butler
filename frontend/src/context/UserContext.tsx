@@ -7,8 +7,8 @@ import { IntlKeys } from "../i18n/keys";
 import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
-  ApiUserRequests,
   IApiUserExtConnectSettingsReq,
+  ApiLocationSearch,
 } from "../../../shared/types/types";
 import {
   IApiIntegrationUser,
@@ -24,12 +24,12 @@ export interface UserState {
     message?: any;
   };
   integrationUser?: IApiIntegrationUser;
-  latestUserRequests?: ApiUserRequests;
+  lastLocSearches?: ApiLocationSearch[];
   user?: ApiUser;
 }
 
 export const initialState: UserState = {
-  latestUserRequests: { requests: [] },
+  lastLocSearches: [],
   upgradeSubscriptionModalProps: {
     open: false,
     message: "",
@@ -42,7 +42,7 @@ export enum UserActionTypes {
   SET_USER = "SET_USER",
   SET_INTEGRATION_USER = "SET_INTEGRATION_USER",
   INT_USER_DECR_AVAIL_PROD_CONT = "INT_USER_DECR_AVAIL_PROD_CONT",
-  SET_LATEST_USER_REQUESTS = "SET_LATEST_USER_REQUESTS",
+  SET_LAST_LOC_SEARCHES = "SET_LAST_LOC_SEARCHES",
   SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
   SET_EMBEDDABLE_MAPS = "SET_EMBEDDABLE_MAPS",
   SET_EMBEDDABLE_MAP_DESCRIPTION = "SET_EMBEDDABLE_MAP_DESCRIPTION",
@@ -59,7 +59,7 @@ type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
   [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser;
   [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: TApiIntUserProdContType;
-  [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
+  [UserActionTypes.SET_LAST_LOC_SEARCHES]: ApiLocationSearch[];
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
   [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {
     id: string;
@@ -140,8 +140,8 @@ export const userReducer = (
 
       return { ...state, integrationUser };
     }
-    case UserActionTypes.SET_LATEST_USER_REQUESTS: {
-      return { ...state, latestUserRequests: action.payload };
+    case UserActionTypes.SET_LAST_LOC_SEARCHES: {
+      return { ...state, lastLocSearches: action.payload };
     }
     case UserActionTypes.SET_EMBEDDABLE_MAPS: {
       return { ...state, embeddableMaps: action.payload };

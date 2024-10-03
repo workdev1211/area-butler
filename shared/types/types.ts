@@ -89,8 +89,8 @@ export type TApiUserExtConnections = Partial<
   Record<ApiRealEstateExtSourcesEnum, TApiUserExtConnectSettings>
 >;
 
-export interface ApiUserRequests {
-  requests: ApiSearch[];
+export interface ApiLastLocSearches {
+  locationSearches: ApiLocationSearch[];
 }
 
 export enum ApiTourNamesEnum {
@@ -118,16 +118,17 @@ export interface ApiMoneyAmount {
   currency: string;
 }
 
-export interface ApiSearch {
-  id?: string;
-  searchTitle?: string;
-  withIsochrone?: boolean;
+export interface ApiLocationSearch {
   coordinates: ApiCoordinates;
-  preferredLocations?: ApiPreferredLocation[];
   meansOfTransportation: TransportationParam[];
   preferredAmenities: OsmName[]; // TODO single source of truth for pois
+
   endsAt?: Date;
+  id?: string;
   integrationId?: string;
+  preferredLocations?: ApiPreferredLocation[];
+  searchTitle?: string;
+  withIsochrone?: boolean;
 }
 
 export interface ApiSearchResponse {
@@ -581,3 +582,11 @@ export interface IApiUploadFileReq {
 export type TNullable<T> = {
   [P in keyof T]: T[P] | null;
 };
+
+export interface IApiFetchReqParams<T = object, U = object, V = object> {
+  filter?: T;
+  limit?: number;
+  project?: U;
+  skip?: number;
+  sort?: V;
+}

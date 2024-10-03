@@ -231,7 +231,7 @@ export class SnapshotService {
     snapshotDocObj.unaddressToken = randomBytes(60).toString('hex');
     snapshotDocObj.visitAmount = 0;
 
-    return this.fetchSnapshotService.getSnapshotRes(user, {
+    return this.fetchSnapshotService.getSnapshotRes({
       snapshotDoc: await new this.searchResultSnapshotModel(
         snapshotDocObj,
       ).save(),
@@ -265,7 +265,7 @@ export class SnapshotService {
     }
 
     if (!config && !customPois && !description && !snapshot) {
-      return this.fetchSnapshotService.getSnapshotRes(user, { snapshotDoc });
+      return this.fetchSnapshotService.getSnapshotRes({ snapshotDoc });
     }
 
     if (snapshot) {
@@ -290,7 +290,7 @@ export class SnapshotService {
       snapshotDoc.markModified('snapshot.searchResponse.routingProfiles');
     }
 
-    return this.fetchSnapshotService.getSnapshotRes(user, {
+    return this.fetchSnapshotService.getSnapshotRes({
       snapshotDoc: await snapshotDoc.save(),
     });
   }

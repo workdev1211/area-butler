@@ -147,20 +147,18 @@ export class FetchSnapshotService {
       });
   }
 
-  async getSnapshotRes(
-    user: UserDocument | TIntegrationUserDocument,
-    { isAddressShown, isEmbedded, isTrial, snapshotDoc }: IGetSnapshotResParams,
-  ): Promise<ApiSearchResultSnapshotResponse> {
+  getSnapshotRes({
+    isAddressShown,
+    isEmbedded,
+    isTrial,
+    snapshotDoc,
+  }: IGetSnapshotResParams): ApiSearchResultSnapshotResponse {
     const snapshotResDtoData: TSnapshotResDtoData = {
       ...snapshotDoc.toObject(),
       isAddressShown,
       isEmbedded,
       isTrial,
     };
-
-    if (!snapshotResDtoData.config) {
-      throw new HttpException("Config hasn't been exposed!", 500);
-    }
 
     return plainToInstance(
       ApiSearchResultSnapshotResponseDto,
@@ -193,7 +191,7 @@ export class FetchSnapshotService {
       return;
     }
 
-    return this.getSnapshotRes(user, {
+    return this.getSnapshotRes({
       isEmbedded,
       isTrial,
       snapshotDoc,
@@ -222,7 +220,7 @@ export class FetchSnapshotService {
 
     snapshotDoc.updatedAt = new Date();
 
-    return this.getSnapshotRes(user, {
+    return this.getSnapshotRes({
       snapshotDoc: await snapshotDoc.save(),
     });
   }
@@ -255,10 +253,8 @@ export class FetchSnapshotService {
       .skip(skipNumber)
       .limit(limitNumber);
 
-    return Promise.all(
-      snapshotDocs.map((snapshotDoc) =>
-        this.getSnapshotRes(user, { snapshotDoc }),
-      ),
+    return snapshotDocs.map((snapshotDoc) =>
+      this.getSnapshotRes({ snapshotDoc }),
     );
   }
 

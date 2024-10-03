@@ -19,7 +19,7 @@ import ApiOsmEntityDto from '../../../dto/api-osm-entity.dto';
 import ApiPreferredLocationDto from '../../../dto/api-preferred-location.dto';
 import ApiSearchResponseDto from '../../../dto/api-search-response.dto';
 import EntityRouteDto from '../../../dto/entity-route.dto';
-import ApiTransportationParamDto from '../../../dto/api-transportation-param.dto';
+import ApiTransportParamDto from '../../../dto/api-transport-param.dto';
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 import { EntityTransitRoute } from '@area-butler-types/routing';
 import EntityTransitRouteDto from '../../../dto/entity-transit-route.dto';
@@ -53,7 +53,7 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse;
 
   @Expose()
-  @Type(() => ApiTransportationParamDto)
+  @Type(() => ApiTransportParamDto)
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })

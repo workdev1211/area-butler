@@ -5,7 +5,7 @@ import { osmEntityTypes } from '../../../shared/constants/osm-entity-types';
 import {
   ApiCoordinates,
   ApiOsmEntity,
-  ApiSearch,
+  ApiLocationSearch,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
@@ -65,7 +65,7 @@ export class SnapshotExtService {
     transportParams = [...defaultTransportParams],
     poiTypes = [...defaultPoiTypes],
   }: ICreateSnapshotByPlace): Promise<ApiSearchResultSnapshotResponse> {
-    const searchData: ApiSearch = {
+    const searchData: ApiLocationSearch = {
       preferredLocations,
       coordinates: { ...place.geometry.location },
       integrationId:
@@ -168,7 +168,7 @@ export class SnapshotExtService {
 
     const preferredAmenities = localityParams.map(({ name }) => name);
 
-    const searchData: ApiSearch = {
+    const searchData: ApiLocationSearch = {
       preferredAmenities,
       preferredLocations,
       coordinates: place?.geometry?.location,

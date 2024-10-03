@@ -80,15 +80,12 @@ export class EmbeddedMapController {
     snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
     await snapshotDoc.save();
 
-    const snapshotRes = await this.fetchSnapshotService.getSnapshotRes(
-      resultUser,
-      {
-        isTrial,
-        snapshotDoc,
-        isAddressShown,
-        isEmbedded: true,
-      },
-    );
+    const snapshotRes = this.fetchSnapshotService.getSnapshotRes({
+      isAddressShown,
+      isTrial,
+      snapshotDoc,
+      isEmbedded: true,
+    });
 
     const filterQuery: FilterQuery<RealEstateListingDocument> = {
       status: snapshotRes.config.realEstateStatus,

@@ -8,10 +8,10 @@ import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import useOnClickOutside from "hooks/onclickoutside";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
+import { ApiOsmEntity, ApiLocationSearch } from "../../../shared/types/types";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 
-const LatestUserRequestsDropDown: FC = () => {
+const LastLocSearchesDropDown: FC = () => {
   const dropDownRef = useRef(null);
 
   const { userState } = useContext(UserContext);
@@ -23,7 +23,7 @@ const LatestUserRequestsDropDown: FC = () => {
   const { t } = useTranslation();
   useOnClickOutside(dropDownRef, () => showMenu && setShowMenu(false));
 
-  const requests = userState.latestUserRequests?.requests || [];
+  const requests = userState.lastLocSearches || [];
 
   const buttonStyles =
     "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto";
@@ -32,7 +32,7 @@ const LatestUserRequestsDropDown: FC = () => {
     ? "dropdown dropdown-open dropdown-top z-2000 relative mt-4 w-full sm:w-auto"
     : "dropdown mt-4 w-full sm:w-auto";
 
-  const fillSearchParamsFromLatestRequest = (request: ApiSearch) => {
+  const fillSearchParamsFromLatestRequest = (request: ApiLocationSearch) => {
     const { lat, lng } = request.coordinates;
 
     searchContextDispatch({
@@ -93,7 +93,11 @@ const LatestUserRequestsDropDown: FC = () => {
     });
   };
 
-  return requests?.length > 0 ? (
+  if (!requests?.length) {
+    return null;
+  }
+
+  return (
     <div className={dropdownClasses} ref={dropDownRef}>
       <div
         className={buttonStyles}
@@ -102,9 +106,10 @@ const LatestUserRequestsDropDown: FC = () => {
       >
         {t(IntlKeys.environmentalAnalysis.lastEntries)}
       </div>
+
       {showMenu && (
         <ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
-          {requests.map((request: ApiSearch) => (
+          {requests.map((request: ApiLocationSearch) => (
             <li
               key={
                 "latest-user-request-" +
@@ -134,7 +139,7 @@ const LatestUserRequestsDropDown: FC = () => {
         </ul>
       )}
     </div>
-  ) : null;
+  );
 };
 
-export default LatestUserRequestsDropDown;
+export default LastLocSearchesDropDown;

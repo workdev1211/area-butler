@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, SchemaTypes } from 'mongoose';
 
-import { ApiSearch } from '@area-butler-types/types';
+import { ApiLocationSearch } from '@area-butler-types/types';
 import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { foreignIdGetSet } from '../../shared/constants/schema';
@@ -14,7 +14,7 @@ export type LocationSearchDocument = LocationSearch & Document;
 })
 export class LocationSearch {
   @Prop({ type: Object, required: true })
-  locationSearch: ApiSearch;
+  locationSearch: ApiLocationSearch;
 
   @Prop({ type: Date, default: Date.now })
   createdAt?: Date;

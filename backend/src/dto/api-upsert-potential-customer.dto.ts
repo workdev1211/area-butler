@@ -13,7 +13,7 @@ import { OsmName, TransportationParam } from '@area-butler-types/types';
 import ApiPreferredLocationDto from './api-preferred-location.dto';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
-import ApiTransportationParamDto from './api-transportation-param.dto';
+import ApiTransportParamDto from './api-transport-param.dto';
 
 @Exclude()
 class ApiUpsertPotentialCustomerDto implements ApiUpsertPotentialCustomer {
@@ -55,7 +55,7 @@ class ApiUpsertPotentialCustomerDto implements ApiUpsertPotentialCustomer {
   realEstateCostStructure?: ApiRealEstateCostDto;
 
   @Expose()
-  @Type(() => ApiTransportationParamDto)
+  @Type(() => ApiTransportParamDto)
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

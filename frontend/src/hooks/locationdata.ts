@@ -12,11 +12,12 @@ import {
 import { useHttp } from "./http";
 import {
   ApiCreateSnapshotReq,
-  ApiSearch,
+  ApiLocationSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
+  IApiFetchReqParams,
   TPoiGroupName,
 } from "../../../shared/types/types";
 import { ICurrentMapRef } from "../shared/search-result.types";
@@ -35,12 +36,14 @@ export const useLocationData = () => {
 
   const isIntegration = !!integrationType;
 
-  const createLocation = async (
-    search: ApiSearch
+  const searchLocation = async (
+    locationSearch: ApiLocationSearch
   ): Promise<ApiSearchResponse> => {
     const { data: searchResponse } = await post<ApiSearchResponse>(
-      isIntegration ? "/api/location-int/search" : "/api/location/search",
-      search
+      isIntegration
+        ? "/api/location-int/location-search"
+        : "/api/location/location-search",
+      locationSearch
     );
 
     return searchResponse;
@@ -64,20 +67,19 @@ export const useLocationData = () => {
   };
 
   const fetchSnapshots = async (
-    queryParams?: string
+    fetchReqParams?: IApiFetchReqParams
   ): Promise<ApiSearchResultSnapshotResponse[]> => {
-    let url: string = isIntegration
-      ? "/api/location-int/snapshots"
-      : "/api/location/snapshots";
-
-    if (queryParams) {
-      url += `?${queryParams}`;
-    }
-
-    return (await get<ApiSearchResultSnapshotResponse[]>(url)).data;
+    return (
+      await post<ApiSearchResultSnapshotResponse[]>(
+        isIntegration
+          ? "/api/location-int/snapshots"
+          : "/api/location/snapshots",
+        fetchReqParams
+      )
+    ).data;
   };
 
-  const fetchLateSnapConfigs = async (
+  const fetchLastSnapConfigs = async (
     limitNumber: number
   ): Promise<IApiLateSnapConfigOption[]> => {
     if (integrationType === IntegrationTypesEnum.MY_VIVENDA) {
@@ -219,10 +221,10 @@ export const useLocationData = () => {
   };
 
   return {
-    createLocation,
+    searchLocation,
     fetchSnapshot,
     fetchSnapshots,
-    fetchLateSnapConfigs,
+    fetchLastSnapConfigs,
     duplicateSnapshot,
     createSnapshot,
     updateSnapshot,

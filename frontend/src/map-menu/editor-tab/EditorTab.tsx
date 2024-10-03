@@ -59,7 +59,7 @@ const EditorTab: FC<IEditorTabProps> = ({
 
   const { t } = useTranslation();
   const { getCurrentUser } = useUserState();
-  const { fetchLateSnapConfigs } = useLocationData();
+  const { fetchLastSnapConfigs } = useLocationData();
   const { fetchRealEstStatuses } = useRealEstateData();
 
   const user = getCurrentUser();
@@ -97,7 +97,7 @@ const EditorTab: FC<IEditorTabProps> = ({
 
   useEffect(() => {
     const fetchEmbeddableMaps = async (): Promise<void> => {
-      const lateSnapConfResponse = await fetchLateSnapConfigs(
+      const lateSnapConfResponse = await fetchLastSnapConfigs(
         isNewSnapshot ? 6 : 5
       );
 

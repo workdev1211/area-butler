@@ -23,9 +23,9 @@ import {
   ApiIsochrone,
   ApiOsmEntityCategory,
   ApiOsmLocation,
-  ApiSearch,
+  ApiLocationSearch,
   ApiSearchResponse,
-  ApiUserRequests,
+  ApiLastLocSearches,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -73,7 +73,7 @@ export class LocationService {
 
   async searchLocation(
     user: UserDocument | TIntegrationUserDocument,
-    search: ApiSearch,
+    locationSearch: ApiLocationSearch,
     realEstate?: ApiRealEstateListing,
   ): Promise<ApiSearchResponse> {
     // 'in' checks a schema but not a specific document
@@ -82,7 +82,7 @@ export class LocationService {
     const integrationParams = isIntegrationUser
       ? {
           integrationParams: {
-            integrationId: search.integrationId,
+            integrationId: locationSearch.integrationId,
             integrationUserId: user.integrationUserId,
             integrationType: user.integrationType,
           },
@@ -90,7 +90,7 @@ export class LocationService {
       : undefined;
 
     const existingLocationFilter = {
-      'locationSearch.coordinates': search.coordinates,
+      'locationSearch.coordinates': locationSearch.coordinates,
     };
 
     Object.assign(
@@ -129,8 +129,8 @@ export class LocationService {
       );
     }
 
-    const coordinates = search.coordinates;
-    const preferredAmenities = search.preferredAmenities;
+    const coordinates = locationSearch.coordinates;
+    const preferredAmenities = locationSearch.preferredAmenities;
     const routingProfiles = {};
 
     const convertDistanceToMeters = (routingProfile: TransportationParam) => {
@@ -144,7 +144,7 @@ export class LocationService {
       return convertMinutesToMeters(amount, routingProfile.type);
     };
 
-    for (const routingProfile of search.meansOfTransportation) {
+    for (const routingProfile of locationSearch.meansOfTransportation) {
       const fetchNodeParams: IApiOverpassFetchNodes = {
         coordinates,
         preferredAmenities,
@@ -157,7 +157,7 @@ export class LocationService {
           )
         : await this.overpassService.fetchNodes(fetchNodeParams);
 
-      const withIsochrone = search.withIsochrone !== false;
+      const withIsochrone = locationSearch.withIsochrone !== false;
 
       const isochrone = withIsochrone
         ? await this.isochroneService.fetchIsochrone(
@@ -177,7 +177,7 @@ export class LocationService {
     }
 
     const location: Partial<LocationSearchDocument> = {
-      locationSearch: search,
+      locationSearch,
     };
 
     Object.assign(
@@ -239,7 +239,7 @@ export class LocationService {
             openAiRequestQuantity,
           },
         } = await this.realEstateListingIntService.findOneOrFailByIntParams({
-          integrationId: search.integrationId,
+          integrationId: locationSearch.integrationId,
           integrationType: user.integrationType,
           integrationUserId: user.integrationUserId,
         }));
@@ -286,7 +286,7 @@ export class LocationService {
     };
   }
 
-  async latestUserRequests(user: UserDocument): Promise<ApiUserRequests> {
+  async fetchLastLocSearches(user: UserDocument): Promise<ApiLastLocSearches> {
     // TODO think about using class-transformer for mapping
     const requests = (
       await this.locationSearchModel
@@ -301,12 +301,12 @@ export class LocationService {
     // TODO think about using lodash.groupBy or making all the grouping (etc, etc) in one cycle
     const grouped = groupBy(
       requests,
-      (request: ApiSearch) =>
+      (request: ApiLocationSearch) =>
         `${request.coordinates.lat}${request.coordinates.lng}`,
     );
 
     return {
-      requests: Object.values(grouped).map((g) => g[0]),
+      locationSearches: Object.values(grouped).map((g) => g[0]),
     };
   }
 

@@ -14,7 +14,7 @@ import "./App.scss";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import { localStorageConsentGivenKey } from "../../shared/constants/constants";
-import { ApiUser, ApiUserRequests } from "../../shared/types/types";
+import { ApiUser, ApiLastLocSearches } from "../../shared/types/types";
 import Authenticated from "./auth/Authenticated";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
@@ -149,13 +149,13 @@ function App() {
     const getUserData = async (): Promise<void> => {
       await fetchCurrentUser();
 
-      const latestUserRequests: ApiUserRequests = (
-        await get<ApiUserRequests>("/api/location/latest-user-requests")
+      const { locationSearches } = (
+        await get<ApiLastLocSearches>("/api/location/last-loc-searches")
       ).data;
 
       userDispatch({
-        type: UserActionTypes.SET_LATEST_USER_REQUESTS,
-        payload: latestUserRequests,
+        type: UserActionTypes.SET_LAST_LOC_SEARCHES,
+        payload: locationSearches,
       });
     };
 

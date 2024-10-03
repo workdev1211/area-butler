@@ -8,7 +8,7 @@ import {
 } from '@area-butler-types/types';
 
 @Exclude()
-class ApiTransportationParamDto implements TransportationParam {
+class ApiTransportParamDto implements TransportationParam {
   @Expose()
   @IsNotEmpty()
   @IsNumber()
@@ -27,4 +27,4 @@ class ApiTransportationParamDto implements TransportationParam {
   unit: UnitsOfTransportation;
 }
 
-export default ApiTransportationParamDto;
+export default ApiTransportParamDto;
