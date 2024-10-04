@@ -129,12 +129,13 @@ export class OpenAiService {
       (image) => !image.is_not_for_expose,
     );
 
-    return this.openAiApiService.fetchWithImagesResponse(
-      this.openAiQueryService.getRealEstDesc2Query({
-        realEstate: realEstateExtData,
+    return this.openAiApiService.fetchResponse(
+      this.openAiQueryService.getRealEstDescQuery({
+        realEstate: resultRealEstate,
         images,
         ...realEstDescParams,
       }),
+      null,
       images,
     );
   }
