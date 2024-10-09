@@ -10,7 +10,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import * as dayjs from 'dayjs';
 
-import { SubscriptionService } from '../user/subscription.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,

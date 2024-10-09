@@ -9,14 +9,14 @@ import {
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 import { ApiTourNamesEnum } from '@area-butler-types/types';
-import { InjectIntegrationUserInterceptor } from './interceptor/inject-integration-user.interceptor';
-import { InjectUser } from './inject-user.decorator';
-import { IntegrationUserService } from './integration-user.service';
+import { InjectIntegrationUserInterceptor } from '../interceptor/inject-integration-user.interceptor';
+import { InjectUser } from '../inject-user.decorator';
+import { IntegrationUserService } from '../service/integration-user.service';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
-import { TIntegrationUserDocument } from './schema/integration-user.schema';
-import { ConvertIntUserService } from './convert-int-user.service';
-import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
-import UpdateUserConfigDto from './dto/update-user-config.dto';
+import { TIntegrationUserDocument } from '../schema/integration-user.schema';
+import { ConvertIntUserService } from '../service/convert-int-user.service';
+import UpdateApiCompanyConfigDto from '../../company/dto/update-api-company-config.dto';
+import UpdateUserConfigDto from '../dto/update-user-config.dto';
 
 @ApiTags('users', 'integration')
 @Controller('api/integration-users')

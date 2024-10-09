@@ -1,14 +1,14 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 
-import { TIntegrationUserDocument } from './schema/integration-user.schema';
+import { TIntegrationUserDocument } from '../schema/integration-user.schema';
 import {
   IApiIntegrationUserProductContingent,
   TApiIntegrationUserProduct,
   TApiIntUserAvailProdContingents,
   TApiIntUserProdContType,
 } from '@area-butler-types/integration-user';
-import { getAvailProdContType } from '../../../shared/functions/integration.functions';
+import { getAvailProdContType } from '../../../../shared/functions/integration.functions';
 import { IntegrationUserService } from './integration-user.service';
 import { IntegrationActionTypeEnum } from '@area-butler-types/integration';
 

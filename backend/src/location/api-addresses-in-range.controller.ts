@@ -16,7 +16,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { ResultStatusEnum } from '@area-butler-types/types';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
-import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { UsageStatisticsService } from '../user/service/usage-statistics.service';
 import {
   ApiUsageStatsTypesEnum,
   IApiAddressInRange,

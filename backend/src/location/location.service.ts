@@ -12,7 +12,7 @@ import {
   convertMinutesToMeters,
   groupBy,
 } from '../../../shared/functions/shared.functions';
-import { SubscriptionService } from '../user/subscription.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
 import { configService } from '../config/config.service';
 import {
@@ -38,7 +38,7 @@ import {
   retrieveTotalRequestContingent,
   UserDocument,
 } from '../user/schema/user.schema';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/service/user.service';
 import {
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlanType,
@@ -47,7 +47,7 @@ import {
 import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
-import { IntegrationUserService } from '../user/integration-user.service';
+import { IntegrationUserService } from '../user/service/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { FetchSnapshotService } from './fetch-snapshot.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';

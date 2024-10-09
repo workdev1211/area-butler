@@ -8,7 +8,7 @@ import {
   stripeSubscriptionsCheckoutMode,
   stripeToPaypalPriceIdMapping,
 } from '../../../shared/constants/subscription-plan';
-import { SubscriptionService } from '../user/subscription.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 import {
   SlackChannel,

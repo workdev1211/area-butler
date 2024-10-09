@@ -6,7 +6,7 @@ import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
 import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
-import { UsageStatisticsService } from '../../user/usage-statistics.service';
+import { UsageStatisticsService } from '../../user/service/usage-statistics.service';
 import ApiQueryLocIndicesReqDto from '../dto/api-query-loc-indices-req.dto';
 import {
   ApiUsageStatsTypesEnum,

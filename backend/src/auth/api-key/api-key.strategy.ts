@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { apiRouteToFeatTypeMap } from '../../shared/constants/api';
 
 @Injectable()

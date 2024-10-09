@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { IntegrationUserService } from '../integration-user.service';
+import { IntegrationUserService } from '../service/integration-user.service';
 
 @Injectable()
 export class InjectIntegrationUserInterceptor implements NestInterceptor {

@@ -1,27 +1,27 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { SubscriptionListener } from './listener/subscription.listener';
+import { SubscriptionListener } from './subscription.listener';
 import { User, UserSchema } from './schema/user.schema';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { UserController } from './controller/user.controller';
+import { UserService } from './service/user.service';
 import { Subscription, SubscriptionSchema } from './schema/subscription.schema';
-import { SubscriptionService } from './subscription.service';
+import { SubscriptionService } from './service/subscription.service';
 import { ClientModule } from '../client/client.module';
 import {
   IntegrationUser,
   IntegrationUserSchema,
 } from './schema/integration-user.schema';
-import { IntegrationUserService } from './integration-user.service';
-import { IntegrationUserController } from './integration-user.controller';
-import { UsageStatisticsService } from './usage-statistics.service';
+import { IntegrationUserService } from './service/integration-user.service';
+import { IntegrationUserController } from './controller/integration-user.controller';
+import { UsageStatisticsService } from './service/usage-statistics.service';
 import {
   UsageStatistics,
   UsageStatisticsSchema,
 } from './schema/usage-statistics.schema';
-import { ContingentIntService } from './contingent-int.service';
+import { ContingentIntService } from './service/contingent-int.service';
 import { CompanyModule } from '../company/company.module';
-import { ConvertIntUserService } from './convert-int-user.service';
+import { ConvertIntUserService } from './service/convert-int-user.service';
 
 @Module({
   imports: [
@@ -40,6 +40,7 @@ import { ConvertIntUserService } from './convert-int-user.service';
       },
     ]),
   ],
+  controllers: [UserController, IntegrationUserController],
   providers: [
     ContingentIntService,
     ConvertIntUserService,
@@ -58,6 +59,5 @@ import { ConvertIntUserService } from './convert-int-user.service';
     UsageStatisticsService,
     UserService,
   ],
-  controllers: [UserController, IntegrationUserController],
 })
 export class UserModule {}

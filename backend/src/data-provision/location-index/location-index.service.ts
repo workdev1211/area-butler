@@ -4,7 +4,7 @@ import { Connection, Model } from 'mongoose';
 
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import { UserDocument } from '../../user/schema/user.schema';
-import { SubscriptionService } from '../../user/subscription.service';
+import { SubscriptionService } from '../../user/service/subscription.service';
 import {
   LocationIndex,
   LocationIndexDocument,

@@ -7,13 +7,13 @@ import * as dayjs from 'dayjs';
 import {
   Subscription,
   SubscriptionDocument,
-} from './schema/subscription.schema';
-import { configService } from '../config/config.service';
+} from '../schema/subscription.schema';
+import { configService } from '../../config/config.service';
 import {
   allSubscriptions,
   TRIAL_PRICE_ID,
-} from '../../../shared/constants/subscription-plan';
-import ApiSubscriptionPlanDto from '../dto/api-subscription-plan.dto';
+} from '../../../../shared/constants/subscription-plan';
+import ApiSubscriptionPlanDto from '../../dto/api-subscription-plan.dto';
 import {
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlanType,
@@ -25,20 +25,20 @@ import {
   IPaymentItem,
   ISubscriptionPlanPrice,
   PaymentItemTypeEnum,
-} from '../shared/types/subscription';
+} from '../../shared/types/subscription';
 import {
   IMailProps,
   MailSenderService,
-} from '../client/mail/mail-sender.service';
+} from '../../client/mail/mail-sender.service';
 import {
   newBusinessPlusSubscriptionTemplateId,
   newPayPerUseSubscriptionTemplateId,
   newTrialSubscriptionTemplateId,
   // subscriptionExpirationTemplateId,
   trialSubscriptionExpirationTemplateId,
-} from '../shared/constants/email';
-import { User, UserDocument } from './schema/user.schema';
-import { EventType } from '../event/event.types';
+} from '../../shared/constants/email';
+import { User, UserDocument } from '../schema/user.schema';
+import { EventType } from '../../event/event.types';
 import { EventEmitter2 } from 'eventemitter2';
 
 interface ISubscriptionUpsertData {

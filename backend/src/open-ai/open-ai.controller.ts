@@ -6,7 +6,7 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
-import { SubscriptionService } from '../user/subscription.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import ApiOpenAiImproveTextQueryDto from './dto/api-open-ai-improve-text-query.dto';
 import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';

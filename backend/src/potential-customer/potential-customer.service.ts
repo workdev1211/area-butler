@@ -28,8 +28,8 @@ import {
   ApiUpsertQuestionnaire,
   ApiUpsertQuestionnaireRequest,
 } from '@area-butler-types/potential-customer';
-import { UserService } from '../user/user.service';
-import { SubscriptionService } from '../user/subscription.service';
+import { UserService } from '../user/service/user.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import { TUnitedUser } from '../shared/types/user';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import { PotentCustomerEventEnum } from '../event/event.types';

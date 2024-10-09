@@ -3,19 +3,19 @@ import { OnEvent } from '@nestjs/event-emitter';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 
-import { StripeService } from '../../client/stripe/stripe.service';
+import { StripeService } from '../client/stripe/stripe.service';
 import {
   EventType,
   ILimitIncreaseEvent,
   ISubscriptionUpsertEvent,
   ISubscriptionRenewEvent,
   ITrialSubscriptionUpsertEvent,
-} from '../../event/event.types';
-import { SubscriptionService } from '../subscription.service';
-import { UserService } from '../user.service';
+} from '../event/event.types';
+import { SubscriptionService } from './service/subscription.service';
+import { UserService } from './service/user.service';
 import { PaymentSystemTypeEnum } from '@area-butler-types/subscription-plan';
-import { PaypalService } from '../../client/paypal/paypal.service';
-import { stripeToPaypalPriceIdMapping } from '../../../../shared/constants/subscription-plan';
+import { PaypalService } from '../client/paypal/paypal.service';
+import { stripeToPaypalPriceIdMapping } from '../../../shared/constants/subscription-plan';
 
 @Injectable()
 export class SubscriptionListener {

@@ -6,7 +6,7 @@ import {
   RealEstateListing,
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
-import { SubscriptionService } from '../user/subscription.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import { UserDocument } from '../user/schema/user.schema';
 import {
   IApiRealEstateListingSchema,

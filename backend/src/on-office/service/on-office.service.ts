@@ -12,7 +12,7 @@ import * as dayjs from 'dayjs';
 import { configService } from '../../config/config.service';
 import { activateUserPath } from '../shared/on-office.constants';
 import { OnOfficeApiService } from '../../client/on-office/on-office-api.service';
-import { IntegrationUserService } from '../../user/integration-user.service';
+import { IntegrationUserService } from '../../user/service/integration-user.service';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeArtTypesEnum,
@@ -56,10 +56,10 @@ import {
   getOnOfficeSortedMapData,
 } from '../../shared/functions/on-office';
 import { FetchSnapshotService } from '../../location/fetch-snapshot.service';
-import { ContingentIntService } from '../../user/contingent-int.service';
+import { ContingentIntService } from '../../user/service/contingent-int.service';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 import { CompanyService } from '../../company/company.service';
-import { ConvertIntUserService } from '../../user/convert-int-user.service';
+import { ConvertIntUserService } from '../../user/service/convert-int-user.service';
 import { OnOfficeEstateService } from './on-office-estate.service';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';

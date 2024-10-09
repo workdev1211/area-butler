@@ -14,12 +14,12 @@ import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { ApiTourNamesEnum, ApiUser } from '@area-butler-types/types';
-import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
-import { SubscriptionService } from './subscription.service';
-import { UserService } from './user.service';
+import { mapSubscriptionToApiSubscription } from '../mapper/subscription.mapper';
+import { SubscriptionService } from '../service/subscription.service';
+import { UserService } from '../service/user.service';
 import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
-import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
-import UpdateUserConfigDto from './dto/update-user-config.dto';
+import UpdateApiCompanyConfigDto from '../../company/dto/update-api-company-config.dto';
+import UpdateUserConfigDto from '../dto/update-user-config.dto';
 
 interface IUserRequest extends Request {
   user: { email: string };

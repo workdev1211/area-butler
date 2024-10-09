@@ -10,7 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { FilterQuery, UpdateQuery } from 'mongoose';
 import structuredClone from '@ungap/structured-clone';
 
-import { IntegrationUserService } from '../user/integration-user.service';
+import { IntegrationUserService } from '../user/service/integration-user.service';
 import {
   IApiIntCreateEstateLinkReq,
   IApiIntSetPropPubLinksReq,
@@ -56,7 +56,7 @@ import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { CompanyService } from '../company/company.service';
-import { ConvertIntUserService } from '../user/convert-int-user.service';
+import { ConvertIntUserService } from '../user/service/convert-int-user.service';
 
 @Injectable()
 export class PropstackService {

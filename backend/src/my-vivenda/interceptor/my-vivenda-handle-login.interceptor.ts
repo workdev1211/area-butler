@@ -12,7 +12,7 @@ import { validate } from 'class-validator';
 
 import MyVivendaAuth0UserDto from '../dto/my-vivenda-auth0-user.dto';
 import { clientIdToUserId } from '../../shared/constants/api';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { IAuth0User } from '../../auth/auth0/auth0-api.strategy';
 import { configService } from '../../config/config.service';
 import { UserDocument } from '../../user/schema/user.schema';

@@ -3,7 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 
 import { StripeService } from '../../client/stripe/stripe.service';
 import { EventType, IUserCreatedEvent } from '../../event/event.types';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 
 @Injectable()
 export class BillingListener {

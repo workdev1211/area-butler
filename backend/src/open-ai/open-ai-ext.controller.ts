@@ -11,7 +11,7 @@ import {
   IApiOpenAiExtQueryReqStatus,
   IOpenAiExtQueryRes,
 } from '../shared/types/external-api';
-import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { UsageStatisticsService } from '../user/service/usage-statistics.service';
 import { OpenAiExtService } from './open-ai-ext.service';
 
 @ApiTags('open-ai', 'api')

@@ -16,7 +16,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
-import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { UsageStatisticsService } from '../user/service/usage-statistics.service';
 import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-template.dto';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';

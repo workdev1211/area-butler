@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 
-import { SubscriptionService } from '../user/subscription.service';
+import { SubscriptionService } from '../user/service/subscription.service';
 import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
@@ -19,7 +19,7 @@ import {
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/service/user.service';
 import {
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlanType,
@@ -27,7 +27,7 @@ import {
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IntegrationUserService } from '../user/integration-user.service';
+import { IntegrationUserService } from '../user/service/integration-user.service';
 import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
 import { RoutingService } from '../routing/routing.service';
 import { FetchSnapshotService } from './fetch-snapshot.service';

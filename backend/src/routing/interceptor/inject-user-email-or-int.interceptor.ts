@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { subscriptionExpiredMessage } from '../../../../shared/messages/error.message';
-import { SubscriptionService } from '../../user/subscription.service';
-import { IntegrationUserService } from '../../user/integration-user.service';
+import { SubscriptionService } from '../../user/service/subscription.service';
+import { IntegrationUserService } from '../../user/service/integration-user.service';
 import { UserDocument } from '../../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { FetchSnapshotService } from '../../location/fetch-snapshot.service';

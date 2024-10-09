@@ -2,7 +2,7 @@
 
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { clientIdToUserId } from '../../shared/constants/api';
 
 @Injectable()

@@ -20,27 +20,27 @@ import {
   cumulativeRequestSubscriptionTypes,
   fixedRequestSubscriptionTypes,
   TRIAL_PRICE_ID,
-} from '../../../shared/constants/subscription-plan';
-import { User, UserDocument } from './schema/user.schema';
+} from '../../../../shared/constants/subscription-plan';
+import { User, UserDocument } from '../schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
   IApiUserExtConnectSettingsReq,
 } from '@area-butler-types/types';
-import { EventType } from '../event/event.types';
-import { MapboxService } from '../client/mapbox/mapbox.service';
-import ApiUserDto from './dto/api-user.dto';
+import { EventType } from '../../event/event.types';
+import { MapboxService } from '../../client/mapbox/mapbox.service';
+import ApiUserDto from '../dto/api-user.dto';
 import {
   COMPANY_PATH,
   PARENT_USER_PATH,
   SUBSCRIPTION_PATH,
-} from '../shared/constants/schema';
-import { CompanyService } from '../company/company.service';
+} from '../../shared/constants/schema';
+import { CompanyService } from '../../company/company.service';
 import { IUserConfig } from '@area-butler-types/user';
-import UserConfigDto from './dto/user-config.dto';
-import ApiCompanyConfigDto from '../company/dto/api-company-config.dto';
-import CompanyConfigDto from '../company/dto/company-config.dto';
+import UserConfigDto from '../dto/user-config.dto';
+import ApiCompanyConfigDto from '../../company/dto/api-company-config.dto';
+import CompanyConfigDto from '../../company/dto/company-config.dto';
 import { IApiCompanyConfig } from '@area-butler-types/company';
 
 @Injectable()

@@ -28,7 +28,7 @@ import { LocationIndexService } from '../data-provision/location-index/location-
 import { getProcUpdateQuery } from '../shared/functions/shared';
 import { checkIsSearchNotUnlocked } from '../../../shared/functions/integration.functions';
 import { ResultStatusEnum } from '@area-butler-types/types';
-import { ContingentIntService } from '../user/contingent-int.service';
+import { ContingentIntService } from '../user/service/contingent-int.service';
 
 interface IUnlockProductParams {
   availProdContType: TApiIntUserProdContType;

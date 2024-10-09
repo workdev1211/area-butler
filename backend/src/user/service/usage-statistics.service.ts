@@ -3,16 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 
-import { UserDocument } from './schema/user.schema';
+import { UserDocument } from '../schema/user.schema';
 import {
   UsageStatistics,
   UsageStatisticsDocument,
-} from './schema/usage-statistics.schema';
-import { TIntegrationUserDocument } from './schema/integration-user.schema';
+} from '../schema/usage-statistics.schema';
+import { TIntegrationUserDocument } from '../schema/integration-user.schema';
 import {
   ApiUsageStatsTypesEnum,
   TApiUsageStatsReqStatus,
-} from '../shared/types/external-api';
+} from '../../shared/types/external-api';
 
 @Injectable()
 export class UsageStatisticsService {

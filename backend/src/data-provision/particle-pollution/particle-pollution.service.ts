@@ -9,7 +9,7 @@ import {
 } from '../schemas/particle-pollution.schema';
 import { ApiGeojsonFeature } from '@area-butler-types/types';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
-import { SubscriptionService } from '../../user/subscription.service';
+import { SubscriptionService } from '../../user/service/subscription.service';
 import { UserDocument } from '../../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { createChunks } from '../../../../shared/functions/shared.functions';

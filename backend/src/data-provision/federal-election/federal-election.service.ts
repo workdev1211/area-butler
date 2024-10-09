@@ -10,7 +10,7 @@ import {
 } from '../schemas/federal-election.schema';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { UserDocument } from '../../user/schema/user.schema';
-import { SubscriptionService } from '../../user/subscription.service';
+import { SubscriptionService } from '../../user/service/subscription.service';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 
 export const distinctValues = (value: any, index: any, self: any) =>

@@ -20,20 +20,20 @@ import { plainToInstance } from 'class-transformer';
 import {
   IntegrationUser,
   TIntegrationUserDocument,
-} from './schema/integration-user.schema';
+} from '../schema/integration-user.schema';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntUserCreate,
 } from '@area-butler-types/integration-user';
-import { MapboxService } from '../client/mapbox/mapbox.service';
+import { MapboxService } from '../../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum } from '@area-butler-types/types';
-import { EventType } from '../event/event.types';
-import { COMPANY_PATH, PARENT_USER_PATH } from '../shared/constants/schema';
+import { EventType } from '../../event/event.types';
+import { COMPANY_PATH, PARENT_USER_PATH } from '../../shared/constants/schema';
 import { IApiUserConfig, IUserConfig } from '@area-butler-types/user';
-import CompanyConfigDto from '../company/dto/company-config.dto';
-import UserConfigDto from './dto/user-config.dto';
-import { CompanyService } from '../company/company.service';
+import CompanyConfigDto from '../../company/dto/company-config.dto';
+import UserConfigDto from '../dto/user-config.dto';
+import { CompanyService } from '../../company/company.service';
 
 @Injectable()
 export class IntegrationUserService {
