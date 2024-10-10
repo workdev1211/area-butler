@@ -139,7 +139,6 @@
     "showObjectType": "Objecttype weergeven",
     "hideOtherPropertyFeatures": "Andere eigenschappen verbergen",
     "primaryColor": "Primaire kleur",
-    "invertBaseColor": "Basiskleur omkeren",
     "cardsIcon": "Kaarten Pictogram",
     "uploadIcon": "Pictogram uploaden",
     "selectRatio": "Selecteer beeldverhouding",
@@ -302,7 +301,13 @@
         "DISTRICT_DESC": "Tekst van het district"
       },
       "publicLinks": "Links met en zonder adres",
-      "maxCharactersLength": "maxCharactersLength"
+      "maxCharactersLength": "maxCharactersLength",
+      "textLength": {
+        "SHORT": "De tekst moet kort en bondig zijn.",
+        "MEDIUM": "De tekst moet van gemiddelde lengte zijn.",
+        "LONG": "De tekst moet lang en gedetailleerd zijn.",
+        "SPECIFIC": "Stel het gewenste aantal tekens voor tekst in"
+      }
     },
     "addNewLocationModalTitle": "Nieuwe locatie toevoegen",
     "addNewLocationModalBtn": "Voeg  toe",
