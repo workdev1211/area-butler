@@ -139,7 +139,6 @@
     "showObjectType": "Show object type",
     "hideOtherPropertyFeatures": "Hide other property features",
     "primaryColor": "Primary color",
-    "invertBaseColor": "Invert base color",
     "cardsIcon": "Cards Icon",
     "uploadIcon": "Upload icon",
     "selectRatio": "Select aspect ratio",
@@ -302,7 +301,13 @@
         "DISTRICT_DESC": "District text"
       },
       "publicLinks": "Links with and without address",
-      "maxCharactersLength": "maxCharactersLength"
+      "maxCharactersLength": "maxCharactersLength",
+      "textLength": {
+        "SHORT": "The text should be short and concise.",
+        "MEDIUM": "The text should be of medium length.",
+        "LONG": "The text should be long and detailed.",
+        "SPECIFIC": "Specify the desired number of characters for text"
+      }
     },
     "addNewLocationModalTitle": "Add new location",
     "addNewLocationModalBtn": "Add",
@@ -750,8 +755,5 @@
       "cardStyles": "Card styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.\nCard styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.",
       "annualSubscription": "Annual subscription"
     }
-  },
-  "errors": {
-    "userNotFound": "User not found!"
   }
 }
