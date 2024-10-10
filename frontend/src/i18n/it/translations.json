@@ -139,7 +139,6 @@
     "showObjectType": "Mostra il tipo di oggetto",
     "hideOtherPropertyFeatures": "Nascondere altre caratteristiche della proprietà",
     "primaryColor": "Colore primario",
-    "invertBaseColor": "Invertire il colore di base",
     "cardsIcon": "Icona Carte",
     "uploadIcon": "Icona di caricamento",
     "selectRatio": "Selezionare il rapporto d'aspetto",
@@ -302,7 +301,13 @@
         "DISTRICT_DESC": "Testo del distretto"
       },
       "publicLinks": "Collegamenti con e senza indirizzo",
-      "maxCharactersLength": "lunghezza massima dei caratteri"
+      "maxCharactersLength": "lunghezza massima dei caratteri",
+      "textLength": {
+        "SHORT": "Il testo dovrà essere breve e conciso.",
+        "MEDIUM": "Il testo dovrebbe essere di media lunghezza.",
+        "LONG": "Il testo dovrebbe essere lungo e dettagliato.",
+        "SPECIFIC": "Impostare il numero di caratteri desiderato per il testo"
+      }
     },
     "addNewLocationModalTitle": "Aggiungi una nuova posizione",
     "addNewLocationModalBtn": "Aggiungi",
