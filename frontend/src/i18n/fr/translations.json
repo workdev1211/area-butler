@@ -139,7 +139,6 @@
     "showObjectType": "Afficher le type d'objet",
     "hideOtherPropertyFeatures": "Masquer les autres caractéristiques de l'objet",
     "primaryColor": "Couleur primaire",
-    "invertBaseColor": "Inverser la couleur de base",
     "cardsIcon": "Icône des cartes",
     "uploadIcon": "Télécharger l'icône",
     "selectRatio": "Choisir le rapport d'aspect",
@@ -302,7 +301,13 @@
         "DISTRICT_DESC": "Texte du quartier"
       },
       "publicLinks": "Liens avec ou sans adresse",
-      "maxCharactersLength": "maxCharactersLength"
+      "maxCharactersLength": "maxCharactersLength",
+      "textLength": {
+        "SHORT": "Le texte doit être court et concis.",
+        "MEDIUM": "Le texte doit être de longueur moyenne.",
+        "LONG": "Le texte doit être long et détaillé.",
+        "SPECIFIC": "Définir le nombre de caractères souhaité pour le texte"
+      }
     },
     "addNewLocationModalTitle": "Ajouter un nouveau lieu",
     "addNewLocationModalBtn": "Ajouter",
