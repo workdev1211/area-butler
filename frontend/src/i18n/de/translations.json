@@ -139,7 +139,6 @@
     "showObjectType": "Objekttyp anzeigen",
     "hideOtherPropertyFeatures": "Weitere Objektmerkmale ausblenden",
     "primaryColor": "Primärfarbe",
-    "invertBaseColor": "Basisfarbe invertieren",
     "cardsIcon": "Karten Icon",
     "uploadIcon": "Icon hochladen",
     "selectRatio": "Seitenverhältnis wählen",
@@ -302,7 +301,13 @@
         "DISTRICT_DESC": "Stadtteiltext"
       },
       "publicLinks": "Links mit und ohne Adresse",
-      "maxCharactersLength": "Zielzeichenlänge"
+      "maxCharactersLength": "Zielzeichenlänge",
+      "textLength": {
+        "SHORT": "Der Text soll kurz und prägnant sein.",
+        "MEDIUM": "Der Text soll mittellang sein.",
+        "LONG": "Der Text soll lang und ausführlich sein.",
+        "SPECIFIC": "Gewünschte Zeichenanzahl für Text festlegen"
+      }
     },
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",
     "addNewLocationModalBtn": "Hinzufügen",
@@ -750,8 +755,5 @@
       "cardStyles": "Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.\nKartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.",
       "annualSubscription": "Jahres-Abo"
     }
-  },
-  "errors": {
-    "userNotFound": "Benutzer nicht gefunden!"
   }
 }
