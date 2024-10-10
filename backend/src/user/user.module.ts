@@ -20,13 +20,11 @@ import {
   UsageStatisticsSchema,
 } from './schema/usage-statistics.schema';
 import { ContingentIntService } from './service/contingent-int.service';
-import { CompanyModule } from '../company/company.module';
 import { ConvertIntUserService } from './service/convert-int-user.service';
 
 @Module({
   imports: [
     ClientModule,
-    CompanyModule,
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       {
@@ -51,7 +49,6 @@ import { ConvertIntUserService } from './service/convert-int-user.service';
     UserService,
   ],
   exports: [
-    CompanyModule,
     ContingentIntService,
     ConvertIntUserService,
     IntegrationUserService,

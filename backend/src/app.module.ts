@@ -28,6 +28,7 @@ import { PropstackModule } from './propstack/propstack.module';
 import { MyVivendaModule } from './my-vivenda/my-vivenda.module';
 import { CompanyModule } from './company/company.module';
 import { MigrationModule } from './migration/migration.module';
+import { CompanyUserModule } from './company-user/company-user.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { MigrationModule } from './migration/migration.module';
     MyVivendaModule,
     CompanyModule,
     MigrationModule,
+    CompanyUserModule,
   ],
   providers: [
     {

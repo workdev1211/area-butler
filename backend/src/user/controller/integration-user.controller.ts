@@ -15,7 +15,6 @@ import { IntegrationUserService } from '../service/integration-user.service';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import { TIntegrationUserDocument } from '../schema/integration-user.schema';
 import { ConvertIntUserService } from '../service/convert-int-user.service';
-import UpdateApiCompanyConfigDto from '../../company/dto/update-api-company-config.dto';
 import UpdateUserConfigDto from '../dto/update-user-config.dto';
 
 @ApiTags('users', 'integration')
@@ -58,21 +57,6 @@ export class IntegrationUserController {
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserService.convertDocToApiIntUser(
       await this.integrationUserService.hideTour(integrationUser),
-    );
-  }
-
-  @ApiProperty({ description: 'Update current company config' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Patch('config/company')
-  async updateCompanyConfig(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() config: UpdateApiCompanyConfigDto,
-  ): Promise<IApiIntegrationUser> {
-    return this.convertIntUserService.convertDocToApiIntUser(
-      await this.integrationUserService.updateCompanyConfig(
-        integrationUser,
-        config,
-      ),
     );
   }
 

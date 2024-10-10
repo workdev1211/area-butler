@@ -19,7 +19,7 @@ const CallbackPage: FC = () => {
   useEffect(() => {
     const refetchMe = async (): Promise<void> => {
       try {
-        const user = (await get<ApiUser>("/api/users/login")).data;
+        const user = (await get<ApiUser>("/api/company-user/login")).data;
         if (user.subscription) {
           toastSuccess("Abonnement erfolgreich abgeschlossen");
           history.push("/");

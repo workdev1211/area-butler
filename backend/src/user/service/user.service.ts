@@ -1,10 +1,5 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { EventEmitter2 } from 'eventemitter2';
 import {
   FilterQuery,
   Model,
@@ -13,13 +8,11 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import * as dayjs from 'dayjs';
-import { ManipulateType } from 'dayjs';
 import { plainToInstance } from 'class-transformer';
 
 import {
   cumulativeRequestSubscriptionTypes,
   fixedRequestSubscriptionTypes,
-  TRIAL_PRICE_ID,
 } from '../../../../shared/constants/subscription-plan';
 import { User, UserDocument } from '../schema/user.schema';
 import { SubscriptionService } from './subscription.service';
@@ -28,7 +21,6 @@ import {
   ApiTourNamesEnum,
   IApiUserExtConnectSettingsReq,
 } from '@area-butler-types/types';
-import { EventType } from '../../event/event.types';
 import { MapboxService } from '../../client/mapbox/mapbox.service';
 import ApiUserDto from '../dto/api-user.dto';
 import {
@@ -36,62 +28,29 @@ import {
   PARENT_USER_PATH,
   SUBSCRIPTION_PATH,
 } from '../../shared/constants/schema';
-import { CompanyService } from '../../company/company.service';
 import { IUserConfig } from '@area-butler-types/user';
 import UserConfigDto from '../dto/user-config.dto';
 import ApiCompanyConfigDto from '../../company/dto/api-company-config.dto';
-import CompanyConfigDto from '../../company/dto/company-config.dto';
-import { IApiCompanyConfig } from '@area-butler-types/company';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    private readonly companyService: CompanyService,
-    private readonly eventEmitter: EventEmitter2,
     private readonly mapboxService: MapboxService,
     private readonly subscriptionService: SubscriptionService,
   ) {}
 
-  async upsertUser(email: string, fullname: string): Promise<UserDocument> {
-    const existingUser = await this.findByEmail(email);
-
-    if (existingUser) {
-      return existingUser;
-    }
-
-    const company = await this.companyService.create();
-
-    const newUser = await this.userModel.create({
+  create(
+    email: string,
+    fullname: string,
+    companyId: string,
+  ): Promise<UserDocument> {
+    return this.userModel.create({
+      companyId,
       email,
       fullname,
-      companyId: company.id,
       consentGiven: null,
     });
-
-    newUser.company = company;
-
-    // creates a new Stripe customer and default potential customer records
-    void this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, {
-      user: newUser,
-    });
-
-    const {
-      price: { interval },
-    } = this.subscriptionService.getApiSubscriptionPlanPrice(TRIAL_PRICE_ID);
-
-    // creates Trial subscription
-    void this.eventEmitter.emitAsync(
-      EventType.TRIAL_SUBSCRIPTION_UPSERT_EVENT,
-      {
-        user: newUser,
-        endsAt: dayjs()
-          .add(interval.value, interval.unit as ManipulateType)
-          .toDate(),
-      },
-    );
-
-    return newUser;
   }
 
   async findById({
@@ -141,13 +100,7 @@ export class UserService {
     return this.userModel.findByIdAndUpdate(userId, updateQuery, { new: true });
   }
 
-  async giveConsent(email: string): Promise<UserDocument> {
-    const user = await this.upsertUser(email, email);
-
-    if (!user) {
-      throw new NotFoundException('Unknown user!');
-    }
-
+  async giveConsent(user: UserDocument): Promise<UserDocument> {
     if (!user.consentGiven) {
       user.consentGiven = new Date();
     }
@@ -156,15 +109,9 @@ export class UserService {
   }
 
   async hideTour(
-    email: string,
+    user: UserDocument,
     tour?: ApiTourNamesEnum,
   ): Promise<UserDocument> {
-    const user = await this.findByEmail(email);
-
-    if (!user) {
-      throw new NotFoundException('Unknown user!');
-    }
-
     const studyTours = { ...user.config.studyTours };
 
     if (tour) {
@@ -341,43 +288,10 @@ export class UserService {
     );
   }
 
-  async updateCompanyConfig(
-    email: string,
-    config: Partial<IApiCompanyConfig>,
-  ): Promise<UserDocument> {
-    const {
-      _id: userDbId,
-      isAdmin,
-      company: { _id: companyDbId },
-    } = await this.findByEmail(email, {
-      id: 1,
-      companyId: 1,
-      role: 1,
-    });
-
-    if (!isAdmin) {
-      throw new ForbiddenException();
-    }
-
-    const companyConfigDto = plainToInstance(CompanyConfigDto, config, {
-      excludeExtraneousValues: true,
-      exposeDefaultValues: false,
-      exposeUnsetFields: false,
-    });
-
-    await this.companyService.updateConfig(companyDbId, companyConfigDto);
-
-    return this.findOneCore({ _id: userDbId });
-  }
-
   async updateConfig(
-    email: string,
+    user: UserDocument,
     config: Partial<IUserConfig>,
   ): Promise<UserDocument> {
-    const user = await this.findByEmail(email, {
-      id: 1,
-    });
-
     this.subscriptionService.checkSubscriptionViolation(
       user.subscription?.type,
       (subscriptionPlan) =>
@@ -446,7 +360,7 @@ export class UserService {
     });
   }
 
-  private async findOneCore(
+  async findOneCore(
     filterQuery: FilterQuery<UserDocument>,
     projectQuery?: ProjectionFields<UserDocument>,
   ): Promise<UserDocument> {

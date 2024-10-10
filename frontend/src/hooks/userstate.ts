@@ -129,7 +129,7 @@ export const useUserState = () => {
     const currentUser = (
       isIntegrationUser
         ? await get<IApiIntegrationUser>("/api/integration-users/current")
-        : await get<ApiUser>("/api/users/login")
+        : await get<ApiUser>("/api/company-user/login")
     ).data;
 
     await i18n.changeLanguage(currentUser.config.language);
@@ -178,8 +178,8 @@ export const useUserState = () => {
     config: TNullable<Partial<IApiCompanyConfig>>
   ): Promise<void> => {
     const url = isIntegrationUser
-      ? "/api/integration-users/config/company"
-      : "/api/users/config/company";
+      ? "/api/company-user-int/config/company"
+      : "/api/company-user/config/company";
 
     let currentUser;
 

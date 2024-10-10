@@ -1,9 +1,4 @@
-import {
-  ForbiddenException,
-  HttpException,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   FilterQuery,
@@ -30,10 +25,8 @@ import { MapboxService } from '../../client/mapbox/mapbox.service';
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { EventType } from '../../event/event.types';
 import { COMPANY_PATH, PARENT_USER_PATH } from '../../shared/constants/schema';
-import { IApiUserConfig, IUserConfig } from '@area-butler-types/user';
-import CompanyConfigDto from '../../company/dto/company-config.dto';
+import { IUserConfig } from '@area-butler-types/user';
 import UserConfigDto from '../dto/user-config.dto';
-import { CompanyService } from '../../company/company.service';
 
 @Injectable()
 export class IntegrationUserService {
@@ -42,7 +35,6 @@ export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
-    private readonly companyService: CompanyService,
     private readonly eventEmitter: EventEmitter2,
     private readonly mapboxService: MapboxService,
   ) {}
@@ -165,29 +157,6 @@ export class IntegrationUserService {
     );
   }
 
-  async updateCompanyConfig(
-    {
-      _id: intUserDbId,
-      isAdmin,
-      company: { _id: companyDbId },
-    }: TIntegrationUserDocument,
-    config: Partial<IApiUserConfig>,
-  ): Promise<TIntegrationUserDocument> {
-    if (!isAdmin) {
-      throw new ForbiddenException();
-    }
-
-    const companyConfigDto = plainToInstance(CompanyConfigDto, config, {
-      excludeExtraneousValues: true,
-      exposeDefaultValues: false,
-      exposeUnsetFields: false,
-    });
-
-    await this.companyService.updateConfig(companyDbId, companyConfigDto);
-
-    return this.findOneCore({ _id: intUserDbId });
-  }
-
   async updateConfig(
     { _id: intUserDbId }: TIntegrationUserDocument,
     config: Partial<IUserConfig>,
@@ -259,7 +228,7 @@ export class IntegrationUserService {
     });
   }
 
-  private async findOneCore(
+  async findOneCore(
     filterQuery: FilterQuery<TIntegrationUserDocument>,
     projectQuery?: ProjectionFields<TIntegrationUserDocument>,
   ): Promise<TIntegrationUserDocument> {

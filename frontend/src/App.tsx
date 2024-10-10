@@ -132,8 +132,9 @@ function App() {
 
     const consumeConsentGiven = async (): Promise<void> => {
       try {
-        const updatedUser = (await post<ApiUser>("/api/users/consent", {}))
-          .data;
+        const updatedUser = (
+          await post<ApiUser>("/api/company-user/consent", {})
+        ).data;
 
         userDispatch({
           type: UserActionTypes.SET_USER,

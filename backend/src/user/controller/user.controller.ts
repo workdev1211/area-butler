@@ -1,55 +1,31 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
+import { Body, Controller, Delete, Get, Param, Patch } from '@nestjs/common';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 import { ApiTourNamesEnum, ApiUser } from '@area-butler-types/types';
 import { mapSubscriptionToApiSubscription } from '../mapper/subscription.mapper';
 import { SubscriptionService } from '../service/subscription.service';
 import { UserService } from '../service/user.service';
 import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
-import UpdateApiCompanyConfigDto from '../../company/dto/update-api-company-config.dto';
 import UpdateUserConfigDto from '../dto/update-user-config.dto';
-
-interface IUserRequest extends Request {
-  user: { email: string };
-}
+import { InjectUser } from '../inject-user.decorator';
+import { UserDocument } from '../schema/user.schema';
+import { AuthenticatedController } from '../../shared/authenticated.controller';
 
 @ApiTags('users')
-@ApiBearerAuth()
 @Controller('api/users')
-@UseGuards(AuthGuard('auth0-spa'))
-export class UserController {
+export class UserController extends AuthenticatedController {
   constructor(
-    private readonly userService: UserService,
     private readonly subscriptionService: SubscriptionService,
-  ) {}
-
-  @ApiProperty({ description: 'Get the current user' })
-  @Get('login')
-  async login(@Req() { user: { email } }: IUserRequest): Promise<ApiUser> {
-    return this.userService.convertDocToApiUser(
-      await this.userService.upsertUser(email, email),
-    );
+    private readonly userService: UserService,
+  ) {
+    super();
   }
 
   @ApiProperty({ description: 'Get the current user subscriptions' })
   @Get('subscriptions')
   async fetchUserSubscriptions(
-    @Req() { user: { email } }: IUserRequest,
+    @InjectUser() user: UserDocument,
   ): Promise<ApiUserSubscription[]> {
-    const user = await this.userService.upsertUser(email, email);
-
     return (
       await this.subscriptionService.fetchUserSubscriptions(
         user.parentId || user.id,
@@ -60,66 +36,40 @@ export class UserController {
   @ApiProperty({ description: 'Cancel trial subscription' })
   @Delete('cancel-trial')
   async cancelTrialSubscription(
-    @Req() { user: { email } }: IUserRequest,
+    @InjectUser() user: UserDocument,
   ): Promise<ApiUser> {
-    const user = await this.userService.upsertUser(email, email);
-
     // TODO think about creating a trial service
     await this.subscriptionService.removeTrialSubscription(user.id);
-
     return this.userService.convertDocToApiUser(user);
-  }
-
-  @ApiProperty({ description: 'Update current company config' })
-  @Patch('config/company')
-  async updateCompanyConfig(
-    @Req() { user: { email } }: IUserRequest,
-    @Body() config: UpdateApiCompanyConfigDto,
-  ): Promise<ApiUser> {
-    return this.userService.convertDocToApiUser(
-      await this.userService.updateCompanyConfig(email, config),
-    );
   }
 
   @ApiProperty({ description: 'Update current user config' })
   @Patch('config')
   async updateConfig(
-    @Req() { user: { email } }: IUserRequest,
+    @InjectUser() user: UserDocument,
     @Body() config: UpdateUserConfigDto,
   ): Promise<ApiUser> {
     return this.userService.convertDocToApiUser(
-      await this.userService.updateConfig(email, config),
-    );
-  }
-
-  @ApiProperty({ description: 'Set consent for the current user' })
-  @Post('consent')
-  async giveConsent(
-    @Req() { user: { email } }: IUserRequest,
-  ): Promise<ApiUser> {
-    return this.userService.convertDocToApiUser(
-      await this.userService.giveConsent(email),
+      await this.userService.updateConfig(user, config),
     );
   }
 
   @ApiProperty({ description: 'Hide single tour for current user' })
   @Patch('hide-tour/:tour')
   async hideTour(
-    @Req() { user: { email } }: IUserRequest,
+    @InjectUser() user: UserDocument,
     @Param('tour') tour: ApiTourNamesEnum,
   ): Promise<ApiUser> {
     return this.userService.convertDocToApiUser(
-      await this.userService.hideTour(email, tour),
+      await this.userService.hideTour(user, tour),
     );
   }
 
   @ApiProperty({ description: 'Hide tours for current user' })
   @Patch('hide-tour')
-  async hideAllTours(
-    @Req() { user: { email } }: IUserRequest,
-  ): Promise<ApiUser> {
+  async hideAllTours(@InjectUser() user: UserDocument): Promise<ApiUser> {
     return this.userService.convertDocToApiUser(
-      await this.userService.hideTour(email),
+      await this.userService.hideTour(user),
     );
   }
 }
