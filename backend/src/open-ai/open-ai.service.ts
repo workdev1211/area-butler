@@ -13,6 +13,7 @@ import {
   IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiRealEstDescQuery,
   OpenAiQueryTypeEnum,
+  OpenAiTextLengthEnum,
   TOpenAiLocDescType,
 } from '@area-butler-types/open-ai';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
@@ -59,7 +60,7 @@ export class OpenAiService {
 
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getLocDescQuery(user, params),
-      {
+      locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
         maxCharactersLength: locDescParams.maxCharactersLength,
         language: language as LanguageTypeEnum,
       },
@@ -70,11 +71,21 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locRealEstDescParams: TFetchLocRealEstDescParams,
   ): Promise<string> {
+    const params = await this.processLocRealEstParams(
+      user,
+      locRealEstDescParams,
+    );
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
+
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getLocRealEstDescQuery(
-        user,
-        await this.processLocRealEstParams(user, locRealEstDescParams),
-      ),
+      await this.openAiQueryService.getLocRealEstDescQuery(user, params),
+      locRealEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: locRealEstDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -88,6 +99,7 @@ export class OpenAiService {
         user,
         await this.realEstateListingService.fetchById(user, realEstateId),
       );
+    const language = realEstDescParams.language || LanguageTypeEnum.de;
 
     if (!resultRealEstate) {
       throw new UnprocessableEntityException('Real estate not found!');
@@ -98,6 +110,10 @@ export class OpenAiService {
         realEstate: resultRealEstate,
         ...realEstDescParams,
       }),
+      realEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: realEstDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -115,6 +131,7 @@ export class OpenAiService {
     if (!resultRealEstate || !resultRealEstate.integrationId) {
       throw new UnprocessableEntityException('Real estate not found!');
     }
+    const language = realEstDescParams.language || LanguageTypeEnum.de;
 
     const {
       parameters: { apiKey },
@@ -135,7 +152,10 @@ export class OpenAiService {
         images,
         ...realEstDescParams,
       }),
-      null,
+      realEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: realEstDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
       images,
     );
   }
@@ -156,11 +176,20 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locRealEstDescParams: TFetchLocRealEstDescParams,
   ): Promise<string> {
+    const params = await this.processLocRealEstParams(
+      user,
+      locRealEstDescParams,
+    );
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getFacebookPostQuery(
-        user,
-        await this.processLocRealEstParams(user, locRealEstDescParams),
-      ),
+      await this.openAiQueryService.getFacebookPostQuery(user, params),
+      locRealEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: locRealEstDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -168,11 +197,20 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locRealEstDescParams: TFetchLocRealEstDescParams,
   ): Promise<string> {
+    const params = await this.processLocRealEstParams(
+      user,
+      locRealEstDescParams,
+    );
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getInstagramCaptionQuery(
-        user,
-        await this.processLocRealEstParams(user, locRealEstDescParams),
-      ),
+      await this.openAiQueryService.getInstagramCaptionQuery(user, params),
+      locRealEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: locRealEstDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -180,11 +218,17 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locDescParams: TFetchLocDescParams,
   ): Promise<string> {
+    const params = await this.processLocParams(user, locDescParams);
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getMacroLocDescQuery(
-        user,
-        await this.processLocParams(user, locDescParams),
-      ),
+      await this.openAiQueryService.getMacroLocDescQuery(user, params),
+      locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: locDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -192,11 +236,17 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locDescParams: TFetchLocDescParams,
   ): Promise<string> {
+    const params = await this.processLocParams(user, locDescParams);
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getMicroLocDescQuery(
-        user,
-        await this.processLocParams(user, locDescParams),
-      ),
+      await this.openAiQueryService.getMicroLocDescQuery(user, params),
+      locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: locDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 
@@ -204,11 +254,20 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     locDescParams: TFetchLocDescParams,
   ): Promise<string> {
+    const params = await this.processLocParams(user, locDescParams);
+    const language =
+      params.language ||
+      params.snapshotRes.config.language ||
+      LanguageTypeEnum.de;
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getDistrictDescQuery(
         user,
         await this.processLocParams(user, locDescParams),
       ),
+      locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: locDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
     );
   }
 

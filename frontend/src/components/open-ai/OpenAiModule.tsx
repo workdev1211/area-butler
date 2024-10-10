@@ -25,7 +25,9 @@ import {
   CachingContext,
 } from "../../context/CachingContext";
 import OpenAiGeneralForm from "./OpenAiGeneralForm";
-import { SearchContext } from '../../context/SearchContext';
+import { SearchContext } from "../../context/SearchContext";
+import { UserContext } from "../../context/UserContext";
+import { IIntUserExpMatchParams } from "../../../../shared/types/integration-user";
 
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
@@ -59,6 +61,11 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
 
+  const {
+    userState: { user },
+  } = useContext(UserContext);
+  const config = user?.config;
+
   const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
   const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
   const realEstDescFormRef =
@@ -70,6 +77,13 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
   >(initialQueryType);
+
+  const defaultTextLength =
+    queryType &&
+    config?.exportMatching &&
+    (config?.exportMatching as Record<string, IIntUserExpMatchParams>)[
+      queryType
+    ].maxTextLength;
 
   const resultQueryTypes = searchResultSnapshotId
     ? openAiQueryTypes
@@ -307,6 +321,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
             <OpenAiGeneralForm
               formId="open-ai-general-form"
               initialValues={cachedOpenAi.general}
+              defaultTextLength={defaultTextLength || 2000}
               onValuesChange={(values) => {
                 cachingDispatch({
                   type: CachingActionTypesEnum.SET_OPEN_AI,

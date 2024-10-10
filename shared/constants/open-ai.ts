@@ -221,6 +221,10 @@ export const openAiTextLengthOptions: ISelectTextValue[] = [
     value: OpenAiTextLengthEnum.LONG,
     text: "Der Text soll lang und ausführlich sein.",
   },
+  {
+    value: OpenAiTextLengthEnum.SPECIFIC,
+    text: "",
+  },
 ];
 
 export const openAiRealEstTypeOptions: ISelectTextValue[] = [

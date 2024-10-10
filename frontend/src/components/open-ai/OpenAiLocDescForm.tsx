@@ -7,16 +7,10 @@ import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
-import Input from "../inputs/formik/Input";
 import { SearchContext } from "../../context/SearchContext";
-import {
-  meansOfTransportations,
-  onePageCharacterLimit,
-} from "../../../../shared/constants/constants";
+import { meansOfTransportations } from "../../../../shared/constants/constants";
 import { IOpenAiLocDescFormValues } from "../../../../shared/types/open-ai";
 import { TFormikInnerRef } from "../../shared/shared.types";
-
-const DEFAULT_MAX_CHAR_LEN = onePageCharacterLimit;
 
 interface IOpenAiLocDescFormListenProps {
   onValuesChange: (values: IOpenAiLocDescFormValues) => void;
@@ -70,7 +64,6 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
   const processedInitialValues = initialValues
     ? {
         ...initialValues,
-        maxCharactersLength: DEFAULT_MAX_CHAR_LEN,
         meanOfTransportation: meansOfTransportation.some(
           ({ value }) => value === initialValues?.meanOfTransportation
         )
@@ -79,7 +72,6 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
       }
     : {
         meanOfTransportation: meansOfTransportation[0].value,
-        maxCharactersLength: DEFAULT_MAX_CHAR_LEN,
       };
 
   const validationSchema = Yup.object({
@@ -119,12 +111,6 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
               </option>
             ))}
           </Select>
-          <Input
-            label={t(IntlKeys.snapshotEditor.dataTab.maxCharactersLength)}
-            name="maxCharactersLength"
-            type="number"
-            className="input input-bordered w-full max-w-xs"
-          />
         </div>
 
         {typeof onValuesChange === "function" && (

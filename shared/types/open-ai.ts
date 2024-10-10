@@ -24,11 +24,11 @@ export interface IOpenAiGeneralFormValues {
   targetGroupName?: string;
   customText?: string;
   textLength?: OpenAiTextLengthEnum;
+  maxCharactersLength?: number;
 }
 
 export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
   meanOfTransportation: MeansOfTransportation;
-  maxCharactersLength?: number;
 }
 
 export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {
@@ -121,6 +121,7 @@ export enum OpenAiTextLengthEnum {
   SHORT = "SHORT",
   MEDIUM = "MEDIUM",
   LONG = "LONG",
+  SPECIFIC = "SPECIFIC",
 }
 
 export type TOpenAiLocDescType = Extract<

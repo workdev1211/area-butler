@@ -1,9 +1,9 @@
-import {FunctionComponent, useEffect, useState} from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
-import {Form, Formik, useFormikContext} from "formik";
+import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
@@ -18,13 +18,14 @@ import {
   OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
-import {TFormikInnerRef} from "../../shared/shared.types";
-import {defaultTargetGroupName} from "../../../../shared/constants/potential-customer";
-import {usePotentialCustomerData} from "../../hooks/potentialcustomerdata";
+import { TFormikInnerRef } from "../../shared/shared.types";
+import { defaultTargetGroupName } from "../../../../shared/constants/potential-customer";
+import { usePotentialCustomerData } from "../../hooks/potentialcustomerdata";
 // import RangeInput from "../inputs/formik/RangeInput";
 import CustomTextSelect from "../inputs/formik/CustomTextSelect";
-import {ISelectTextValue} from "../../../../shared/types/types";
-import {camelize} from "../../../../shared/functions/shared.functions";
+import CustomNumberSelect from "../inputs/formik/CustomNumberSelect";
+import { ISelectTextValue } from "../../../../shared/types/types";
+import { camelize } from "../../../../shared/functions/shared.functions";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;
@@ -50,6 +51,7 @@ interface IOpenAiGeneralFormProps {
   onSubmit?: (values: IOpenAiGeneralFormValues) => void;
   isFromOnePage?: boolean;
   formRef?: TFormikInnerRef<IOpenAiGeneralFormValues>;
+  defaultTextLength?: number;
 }
 
 const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
@@ -59,6 +61,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
   onSubmit,
   isFromOnePage,
   formRef,
+  defaultTextLength
 }) => {
   const { t } = useTranslation();
   const { fetchPotentCustomerNames } = usePotentialCustomerData();
@@ -86,6 +89,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
         targetGroupName: defaultTargetGroupName,
         customText: "",
         textLength: isFromOnePage ? undefined : OpenAiTextLengthEnum.MEDIUM,
+        maxCharactersLength: defaultTextLength,
       };
 
   const validationSchema = Yup.object({
@@ -95,6 +99,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
     textLength: Yup.string()
       .oneOf(Object.values(OpenAiTextLengthEnum))
       .optional(),
+    maxCharactersLength: Yup.number().integer().optional()
   });
 
   useEffect(() => {
@@ -168,19 +173,27 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
             {/*/>*/}
 
             {!isFromOnePage && (
-              <div className="form-control">
-                <Select
-                  label={t(IntlKeys.snapshotEditor.dataTab.desiredTextLength)}
-                  placeholder={t(IntlKeys.snapshotEditor.dataTab.desiredTextLength)}
-                  name="textLength"
-                  defaultValue={OpenAiTextLengthEnum.MEDIUM}
-                >
-                  {openAiTextLengthOptions.map(({ text, value }) => (
-                    <option value={value} key={value}>
-                      {text}
-                    </option>
-                  ))}
-                </Select>
+              <div className="form-control max-w-xs">
+                <CustomNumberSelect
+                  mainName="textLength"
+                  name="maxCharactersLength"
+                  selectOptions={openAiTextLengthOptions.map(({ value }) => ({
+                    value,
+                    text: t(
+                      (
+                        IntlKeys.snapshotEditor.dataTab.textLength as Record<
+                          string,
+                          string
+                        >
+                      )[value]
+                    ),
+                  }))}
+                  mainLabel={t(
+                    IntlKeys.snapshotEditor.dataTab.desiredTextLength
+                  )}
+                  label={t(IntlKeys.snapshotEditor.dataTab.maxCharactersLength)}
+                  customTextValue={OpenAiTextLengthEnum.SPECIFIC}
+                />
               </div>
             )}
 
@@ -195,7 +208,9 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
               >
                 <div
                   className="tooltip tooltip-left tooltip-accent text-justify font-medium"
-                  data-tip={t(IntlKeys.snapshotEditor.dataTab.customTextTooltip)}
+                  data-tip={t(
+                    IntlKeys.snapshotEditor.dataTab.customTextTooltip
+                  )}
                 >
                   i
                 </div>
@@ -203,9 +218,15 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
 
               <div className="grid w-full">
                 <CustomTextSelect
-                  mainLabel={t(IntlKeys.snapshotEditor.dataTab.furtherAIInstructions)}
-                  label={t(IntlKeys.snapshotEditor.dataTab.resultsText, { count: values.customText?.length })}
-                  placeholder={t(IntlKeys.snapshotEditor.dataTab.userDefinedText)}
+                  mainLabel={t(
+                    IntlKeys.snapshotEditor.dataTab.furtherAIInstructions
+                  )}
+                  label={t(IntlKeys.snapshotEditor.dataTab.resultsText, {
+                    count: values.customText?.length,
+                  })}
+                  placeholder={t(
+                    IntlKeys.snapshotEditor.dataTab.userDefinedText
+                  )}
                   name="customText"
                   selectOptions={openAiCustomTextOptions}
                   customTextValue={OpenAiCustomTextEnum.CUSTOM}
