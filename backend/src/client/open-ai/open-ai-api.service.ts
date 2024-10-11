@@ -22,7 +22,7 @@ export class OpenAiApiService {
   async fetchResponse(
     queryText: string,
     responseCompressedParams?: IResponseCompressed,
-    images?: TImage[],
+    images: TImage[] = [],
   ): Promise<string> {
     // let encoding: Tiktoken;
 
