@@ -179,7 +179,7 @@ export class OpenAiQueryService {
     } = queryParams;
 
     return (
-      `Sie sind ein erfahrener Immobilienmakler. Schreiben Sie einen ansprechenden Text über die Ausstattungsmerkmale einer Immobilie für ${realEstateType}. Der Text sollte ${targetGroupName} ansprechen. Verwenden Sie keine Sonderzeichen und Emoticons. Konzentrieren Sie sich auf Materialien, Heizung, Bodenbeläge und alle bemerkenswerten technischen Details. Vermeiden Sie Übertreibungen, Ausschmückungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeiden Sie Verweise und Quellenangaben.\n` +
+      `Sie sind ein Immobilienmakler. Sie müssen eine detaillierte Ausstattungsliste der Immobilie für ${realEstateType} erstellen. Der Text sollte sich an ${targetGroupName} richten. Und die Ausgabe sollte in Aufzählungspunkten erfolgen, die für die Aufnahme in eine Immobilienliste geeignet sind. Verwenden Sie keine Sonderzeichen und Emoticons. Konzentrieren Sie sich auf Heizung, Bodenbeläge, Möbel und alle bemerkenswerten technischen Details. Vermeiden Sie Übertreibungen, Ausschmückungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeiden Sie Referenzen und Zitate.\n` +
       (images &&
         images.length > 0 &&
         `Nutze dabei die bereitgestellten Daten und Bilder. Die Bilder sollen analysiert werden und nicht im Text verlinkt werden.\n `) +
