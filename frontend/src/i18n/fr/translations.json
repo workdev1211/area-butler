@@ -315,7 +315,8 @@
     "addNewLocationModalBtn": "Ajouter",
     "addNewLocationModalSuccess": "Objet ajouté avec succès !",
     "addNewLocationModalFailed": "Erreur lors de l'enregistrement de l'objet",
-    "outputLanguage": "Édition Langue"
+    "outputLanguage": "Édition Langue",
+    "invertBaseColor": "Inverser la couleur de base"
   },
   "common": {
     "showMore": "Voir plus",
