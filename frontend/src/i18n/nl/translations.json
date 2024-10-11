@@ -286,7 +286,8 @@
         "INSTAGRAM_CAPTION": "Instagram bericht",
         "GENERAL_QUESTION": "Algemene vraag voor KI",
         "FORMAL_TO_INFORMAL": "Transformatie jij-vorm in jij-vorm",
-        "DISTRICT_DESC": "Tekst van het district"
+        "DISTRICT_DESC": "Tekst van het district",
+        "EQUIPMENT_DESCRIPTION": "Beschrijving apparatuur"
       },
       "openAITypesOptionLabel": {
         "LOCATION_DESCRIPTION": "Situatietekst",
@@ -298,7 +299,8 @@
         "INSTAGRAM_CAPTION": "Instagram bericht",
         "GENERAL_QUESTION": "Algemene vraag voor KI",
         "FORMAL_TO_INFORMAL": "Transformatie jij-vorm in jij-vorm",
-        "DISTRICT_DESC": "Tekst van het district"
+        "DISTRICT_DESC": "Tekst van het district",
+        "EQUIPMENT_DESCRIPTION": "Beschrijving apparatuur"
       },
       "publicLinks": "Links met en zonder adres",
       "maxCharactersLength": "maxCharactersLength",
