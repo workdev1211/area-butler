@@ -315,7 +315,8 @@
     "addNewLocationModalBtn": "Voeg  toe",
     "addNewLocationModalSuccess": "Object succesvol toegevoegd!",
     "addNewLocationModalFailed": "Fout bij het opslaan van het object",
-    "outputLanguage": "Uitvoertaal"
+    "outputLanguage": "Uitvoertaal",
+    "invertBaseColor": "Basiskleur omkeren"
   },
   "common": {
     "showMore": "Meer tonen",
