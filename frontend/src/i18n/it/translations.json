@@ -315,7 +315,8 @@
     "addNewLocationModalBtn": "Aggiungi",
     "addNewLocationModalSuccess": "Oggetto aggiunto con successo!",
     "addNewLocationModalFailed": "Errore durante il salvataggio dell'oggetto",
-    "outputLanguage": "Lingua di uscita"
+    "outputLanguage": "Lingua di uscita",
+    "invertBaseColor": "Invertire il colore di base"
   },
   "common": {
     "showMore": "Mostra di più",
