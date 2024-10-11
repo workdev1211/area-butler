@@ -315,7 +315,8 @@
     "addNewLocationModalBtn": "Add",
     "addNewLocationModalSuccess": "Object successfully added!",
     "addNewLocationModalFailed": "Error when saving the object",
-    "outputLanguage": "Output language"
+    "outputLanguage": "Output language",
+    "invertBaseColor": "Invert base color"
   },
   "common": {
     "showMore": "Show more",
