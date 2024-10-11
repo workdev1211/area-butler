@@ -286,7 +286,8 @@
         "INSTAGRAM_CAPTION": "Post su Instagram",
         "GENERAL_QUESTION": "Domanda generale per KI",
         "FORMAL_TO_INFORMAL": "Trasformazione di te-forma in te-forma",
-        "DISTRICT_DESC": "Testo del distretto"
+        "DISTRICT_DESC": "Testo del distretto",
+        "EQUIPMENT_DESCRIPTION": "Descrizione dell'apparecchiatura"
       },
       "openAITypesOptionLabel": {
         "LOCATION_DESCRIPTION": "Testo della situazione",
@@ -298,7 +299,8 @@
         "INSTAGRAM_CAPTION": "Post su Instagram",
         "GENERAL_QUESTION": "Domanda generale per KI",
         "FORMAL_TO_INFORMAL": "Trasformazione di te-forma in te-forma",
-        "DISTRICT_DESC": "Testo del distretto"
+        "DISTRICT_DESC": "Testo del distretto",
+        "EQUIPMENT_DESCRIPTION": "Descrizione dell'apparecchiatura"
       },
       "publicLinks": "Collegamenti con e senza indirizzo",
       "maxCharactersLength": "lunghezza massima dei caratteri",
