@@ -286,7 +286,8 @@
         "INSTAGRAM_CAPTION": "Instagram Post",
         "GENERAL_QUESTION": "General question to KI",
         "FORMAL_TO_INFORMAL": "Transformation you-form into you-form",
-        "DISTRICT_DESC": "District text"
+        "DISTRICT_DESC": "District text",
+        "EQUIPMENT_DESCRIPTION": "Equipment description"
       },
       "openAITypesOptionLabel": {
         "LOCATION_DESCRIPTION": "Situation text",
@@ -298,7 +299,8 @@
         "INSTAGRAM_CAPTION": "Instagram Post",
         "GENERAL_QUESTION": "General question to KI",
         "FORMAL_TO_INFORMAL": "Transformation you-form into you-form",
-        "DISTRICT_DESC": "District text"
+        "DISTRICT_DESC": "District text",
+        "EQUIPMENT_DESCRIPTION": "Equipment description"
       },
       "publicLinks": "Links with and without address",
       "maxCharactersLength": "maxCharactersLength",
