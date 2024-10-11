@@ -311,6 +311,8 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesSideBarLabel.LOCATION_DESCRIPTION",
         REAL_ESTATE_DESCRIPTION:
           "snapshotEditor.dataTab.openAITypesSideBarLabel.REAL_ESTATE_DESCRIPTION",
+        EQUIPMENT_DESCRIPTION:
+          "snapshotEditor.dataTab.openAITypesSideBarLabel.EQUIPMENT_DESCRIPTION",
         LOCATION_REAL_ESTATE_DESCRIPTION:
           "snapshotEditor.dataTab.openAITypesSideBarLabel.LOCATION_REAL_ESTATE_DESCRIPTION",
         FORMAL_TO_INFORMAL:
@@ -333,6 +335,8 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesOptionLabel.LOCATION_DESCRIPTION",
         REAL_ESTATE_DESCRIPTION:
           "snapshotEditor.dataTab.openAITypesOptionLabel.REAL_ESTATE_DESCRIPTION",
+        EQUIPMENT_DESCRIPTION:
+          "snapshotEditor.dataTab.openAITypesOptionLabel.EQUIPMENT_DESCRIPTION",
         LOCATION_REAL_ESTATE_DESCRIPTION:
           "snapshotEditor.dataTab.openAITypesOptionLabel.LOCATION_REAL_ESTATE_DESCRIPTION",
         FORMAL_TO_INFORMAL:

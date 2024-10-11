@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -10,7 +10,11 @@ import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
 import { invertFilter } from "../../../shared/shared.constants";
 import OpenAiModal from "../../../components/OpenAiModal";
-import { TUnlockIntProduct } from "../../../../../shared/types/integration";
+import {
+  IntegrationTypesEnum,
+  TUnlockIntProduct,
+} from "../../../../../shared/types/integration";
+import { ConfigContext } from "../../../context/ConfigContext";
 
 interface IOpenAiTextsProps {
   snapshotId: string;
@@ -27,6 +31,8 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
   const [isOpenAiTextsOpen, setIsOpenAiTextsOpen] = useState(false);
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
   const [openAiQueryType, setOpenAiQueryType] = useState<OpenAiQueryTypeEnum>();
+
+  const { integrationType } = useContext(ConfigContext);
 
   return (
     <>
@@ -84,32 +90,38 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
             {/*    Lagetext generieren*/}
             {/*  </h3>*/}
             {/*</li>*/}
-            {openAiQueryTypes.map(({ type }) => (
-              <li key={type}>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    setOpenAiQueryType(type);
-                    setIsShownOpenAiModal(true);
-                  }}
-                >
-                  <img
-                    className="w-4 h-4"
-                    style={invertFilter}
-                    src={aiIcon}
-                    alt="ai"
-                  />
-                  <span>
-                    {t(
-                      (
-                        IntlKeys.snapshotEditor.dataTab
-                          .openAITypesSideBarLabel as Record<string, string>
-                      )[type]
-                    )}
-                  </span>
-                </h3>
-              </li>
-            ))}
+            {openAiQueryTypes
+              .filter(
+                ({ type }) =>
+                  integrationType === IntegrationTypesEnum.PROPSTACK ||
+                  type !== OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
+              )
+              .map(({ type }) => (
+                <li key={type}>
+                  <h3
+                    className="max-w-fit items-center cursor-pointer"
+                    onClick={() => {
+                      setOpenAiQueryType(type);
+                      setIsShownOpenAiModal(true);
+                    }}
+                  >
+                    <img
+                      className="w-4 h-4"
+                      style={invertFilter}
+                      src={aiIcon}
+                      alt="ai"
+                    />
+                    <span>
+                      {t(
+                        (
+                          IntlKeys.snapshotEditor.dataTab
+                            .openAITypesSideBarLabel as Record<string, string>
+                        )[type]
+                      )}
+                    </span>
+                  </h3>
+                </li>
+              ))}
           </ul>
         </div>
       </div>

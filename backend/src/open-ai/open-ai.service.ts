@@ -160,6 +160,45 @@ export class OpenAiService {
     );
   }
 
+  async fetchEquipmentDesc(
+    user: TIntegrationUserDocument,
+    { realEstateId, realEstate, ...realEstDescParams }: TFetchRealEstDescParams,
+  ): Promise<string> {
+    const resultRealEstate =
+      realEstate ||
+      mapRealEstateListingToApiRealEstateListing(
+        user,
+        await this.realEstateListingService.fetchById(user, realEstateId),
+      );
+
+    if (!resultRealEstate || !resultRealEstate.integrationId) {
+      throw new UnprocessableEntityException('Real estate not found!');
+    }
+
+    const {
+      parameters: { apiKey },
+    } = user;
+
+    const realEstateExtData = await this.propstackApiService.fetchPropertyById(
+      apiKey,
+      Number(resultRealEstate.integrationId),
+    );
+
+    const images = realEstateExtData.images.filter(
+      (image) => !image.is_not_for_expose,
+    );
+
+    return this.openAiApiService.fetchResponse(
+      this.openAiQueryService.getEquipmentDescQuery({
+        realEstate: resultRealEstate,
+        images,
+        ...realEstDescParams,
+      }),
+      null,
+      images,
+    );
+  }
+
   fetchImprovedText(originalText: string, customText: string): Promise<string> {
     return this.openAiApiService.fetchResponse(
       this.openAiQueryService.getImprovedText(originalText, customText),

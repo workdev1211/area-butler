@@ -27,6 +27,8 @@ import {
 import OpenAiGeneralForm from "./OpenAiGeneralForm";
 import { SearchContext } from "../../context/SearchContext";
 import { UserContext } from "../../context/UserContext";
+import { ConfigContext } from "../../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { IIntUserExpMatchParams } from "../../../../shared/types/integration-user";
 
 interface IOpenAiModuleProps {
@@ -60,6 +62,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const {
     searchContextState: { responseConfig },
   } = useContext(SearchContext);
+  const { integrationType } = useContext(ConfigContext);
 
   const {
     userState: { user },
@@ -77,23 +80,29 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
   >(initialQueryType);
-
+  
   const defaultTextLength =
     queryType &&
     config?.exportMatching &&
     (config?.exportMatching as Record<string, IIntUserExpMatchParams>)[
       queryType
-    ].maxTextLength;
+      ].maxTextLength;
 
-  const resultQueryTypes = searchResultSnapshotId
-    ? openAiQueryTypes
-    : openAiQueryTypes.filter(
-        ({ type }) =>
-          ![
-            OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-            OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-          ].includes(type)
-      );
+  const resultQueryTypes = (
+    searchResultSnapshotId
+      ? openAiQueryTypes
+      : openAiQueryTypes.filter(
+          ({ type }) =>
+            ![
+              OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+              OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+            ].includes(type)
+        )
+  ).filter(
+    ({ type }) =>
+      integrationType === IntegrationTypesEnum.PROPSTACK ||
+      type !== OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
+  );
 
   useEffect(() => {
     if (!isFetchResponse || !queryType) {
@@ -137,7 +146,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
 
           break;
         }
-
+        case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION:
         case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
           realEstDescFormRef.current?.handleSubmit();
 
@@ -266,6 +275,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         {[
           OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
           OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+          OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
           OpenAiQueryTypeEnum.FACEBOOK_POST,
           OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
         ].includes(queryType as OpenAiQueryTypeEnum) && (

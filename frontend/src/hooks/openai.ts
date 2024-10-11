@@ -98,6 +98,13 @@ export const useOpenAi = () => {
         break;
       }
 
+      case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION: {
+        url = isPropstack
+            ? "/api/open-ai-int/equipment-desc"
+            : "/api/open-ai-int/real-est-desc"
+        break;
+      }
+
       case OpenAiQueryTypeEnum.IMPROVE_TEXT: {
         url = isIntegration
           ? "/api/open-ai-int/improve-text"

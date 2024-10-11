@@ -147,6 +147,11 @@ export const openAiQueryTypes: Array<{
     sidebarLabel: "Objekt - Beschreibung",
   },
   {
+    type: OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+    label: "Objektbeschreibung",
+    sidebarLabel: "Objekt - Beschreibung",
+  },
+  {
     type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
     label: "Exposétext",
     sidebarLabel: "Exposé-Text",

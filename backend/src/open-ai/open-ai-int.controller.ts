@@ -88,6 +88,24 @@ export class OpenAiIntController {
   }
 
   @ApiOperation({
+    description: 'Fetch Open AI real estate equipment description with image analyzing',
+  })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('equipment-desc')
+  async fetchEquipmentDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
+  ): Promise<string> {
+    return this.openAiService.fetchEquipmentDesc(
+      integrationUser,
+      realEstDescQueryDto,
+    );
+  }
+
+  @ApiOperation({
     description: 'Fetch Open AI text improvement',
   })
   @UseInterceptors(

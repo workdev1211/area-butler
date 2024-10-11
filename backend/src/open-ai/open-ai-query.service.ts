@@ -170,6 +170,34 @@ export class OpenAiQueryService {
     );
   }
 
+  getEquipmentDescQuery(queryParams: IRealEstDescQueryParams): string {
+    const {
+      realEstate,
+      realEstateType,
+      targetGroupName = defaultTargetGroupName,
+      images,
+    } = queryParams;
+
+    return (
+      `Sie sind ein erfahrener Immobilienmakler. Schreiben Sie einen ansprechenden Text über die Ausstattungsmerkmale einer Immobilie für ${realEstateType}. Der Text sollte ${targetGroupName} ansprechen. Verwenden Sie keine Sonderzeichen und Emoticons. Konzentrieren Sie sich auf Materialien, Heizung, Bodenbeläge und alle bemerkenswerten technischen Details. Vermeiden Sie Übertreibungen, Ausschmückungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeiden Sie Verweise und Quellenangaben.\n` +
+      (images &&
+        images.length > 0 &&
+        `Nutze dabei die bereitgestellten Daten und Bilder. Die Bilder sollen analysiert werden und nicht im Text verlinkt werden.\n `) +
+      `\n` +
+      this.getTextReqs({
+        queryParams,
+        isRealEstDescPresent: true,
+      }) +
+      '\n\n' +
+      this.getRealEstDesc({
+        realEstate,
+        realEstateType,
+      }) +
+      `Die mitgegebenen Urls sind:\n` +
+      images?.map((image) => `- ${image.title}: ${image.url}`).join('\n')
+    );
+  }
+
   getImprovedText(originalText: string, customText: string): string {
     return (
       `Sei mein Experte für Immobilien. Es wurde ein Text zu einer Immobilie erstellt, allerdings hat der Autor folgenden Änderungswunsch: ${customText}\n` +

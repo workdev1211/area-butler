@@ -259,6 +259,14 @@ export interface IPropstackProperty {
   rs_type?: string; // enum
   rs_category?: string; // enum
   district?: string;
+  
+  heating_type?: IPropstackLabelValue;
+  flooring?: IPropstackLabelValue;
+  windows?: IPropstackLabelValue;
+  kitchen_type?: IPropstackLabelValue;
+  bathrooms_features?: IPropstackLabelValue;
+  additional_features?: IPropstackLabelValue;
+  energy_efficiency_class?: IPropstackLabelValue;
 }
 
 // obtained from a webhook triggered by a Propstack event
