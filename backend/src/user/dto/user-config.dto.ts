@@ -1,5 +1,6 @@
 import {
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -45,7 +46,7 @@ class UserConfigDto implements IUserConfig {
 
   @Expose()
   @IsOptional()
-  @IsString()
+  @IsMongoId()
   templateSnapshotId?: string;
 }
 

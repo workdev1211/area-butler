@@ -153,6 +153,23 @@ export const replaceValInObj = (
   return obj;
 };
 
+// requires a higher TS version to avoid errors
+// @ts-ignore
+export const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
+  fn: T,
+  delayInMs = 250
+): ((...args: Parameters<T>) => void) => {
+  let timeout: NodeJS.Timeout;
+
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+      fn(...args);
+    }, delayInMs);
+  };
+};
+
 // left for possible future usage
 export const applyClassMixins = (derivedCtor: any, constructors: any[]) => {
   constructors.forEach((baseCtor) => {

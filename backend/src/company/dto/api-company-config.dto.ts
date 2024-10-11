@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsMongoId, IsOptional } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
 import { IApiCompanyConfig } from '@area-butler-types/company';
@@ -23,7 +23,7 @@ class ApiCompanyConfigDto
     },
   )
   @IsOptional()
-  @IsString()
+  @IsMongoId()
   companyTemplateSnapshotId?: string;
 
   @Expose()
@@ -40,7 +40,7 @@ class ApiCompanyConfigDto
     },
   )
   @IsOptional()
-  @IsString()
+  @IsMongoId()
   templateSnapshotId?: string;
 }
 

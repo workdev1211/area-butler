@@ -10,6 +10,7 @@ import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import CompanyExportSettings from "../company/CompanyExportSettings";
 import { deriveTotalRequestContingent } from "../shared/shared.functions";
 import { useUserState } from "../hooks/userstate";
+import CompanyTemplateId from "../company/CompanyTemplateId";
 
 const CompanyProfilePage: FC = () => {
   const { fetchCurrentUser, getCurrentUser } = useUserState();
@@ -50,9 +51,13 @@ const CompanyProfilePage: FC = () => {
       withHorizontalPadding={true}
       actionsBottom={[<BackButton to="/" key="company-config-back" />]}
     >
-      {isCustomExportAvail && <CompanyExportSettings />}
+      <div className="flex flex-col gap-10 my-10">
+        {isCustomExportAvail && <CompanyExportSettings />}
 
-      <SubscriptionLimitsOrSelection />
+        <SubscriptionLimitsOrSelection />
+
+        <CompanyTemplateId />
+      </div>
     </DefaultLayout>
   );
 };

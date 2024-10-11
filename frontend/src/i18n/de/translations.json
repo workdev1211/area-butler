@@ -767,5 +767,10 @@
   "errors": {
     "userNotFound": "Benutzer nicht gefunden!",
     "wrongIntegration": "Falscher Integrationstyp!"
+  },
+  "company": {
+    "profile": {
+      "templateIdLabel": "Vorlage für alle User auswählen und fixieren"
+    }
   }
 }

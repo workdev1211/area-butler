@@ -86,6 +86,12 @@ export class UserService {
     return this.findOneCore({ paypalCustomerId });
   }
 
+  async findManyByCompanyId({ companyId }: UserDocument): Promise<string[]> {
+    return (await this.userModel.find({ companyId }, { id: 1 })).map(
+      ({ id }) => id,
+    );
+  }
+
   async updateExtConnections(
     userId: string,
     { connectType, ...connectSettings }: IApiUserExtConnectSettingsReq,

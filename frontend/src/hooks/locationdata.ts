@@ -72,8 +72,21 @@ export const useLocationData = () => {
     return (
       await post<ApiSearchResultSnapshotResponse[]>(
         isIntegration
-          ? "/api/location-int/snapshots"
-          : "/api/location/snapshots",
+          ? "/api/location-int/fetch-snapshots"
+          : "/api/location/fetch-snapshots",
+        fetchReqParams
+      )
+    ).data;
+  };
+
+  const fetchCompanySnapshots = async (
+    fetchReqParams?: Omit<IApiFetchReqParams, "project" | "sort">
+  ): Promise<ApiSearchResultSnapshotResponse[]> => {
+    return (
+      await post<ApiSearchResultSnapshotResponse[]>(
+        isIntegration
+          ? "/api/location-int/fetch-company-snapshots"
+          : "/api/location/fetch-company-snapshots",
         fetchReqParams
       )
     ).data;
@@ -224,6 +237,7 @@ export const useLocationData = () => {
     searchLocation,
     fetchSnapshot,
     fetchSnapshots,
+    fetchCompanySnapshots,
     fetchLastSnapConfigs,
     duplicateSnapshot,
     createSnapshot,

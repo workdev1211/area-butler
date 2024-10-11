@@ -1,4 +1,9 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   FilterQuery,
@@ -37,6 +42,8 @@ import {
   SNAPSHOT_USER_PATH,
   SUBSCRIPTION_PATH,
 } from '../shared/constants/schema';
+import { IntegrationUserService } from '../user/service/integration-user.service';
+import { UserService } from '../user/service/user.service';
 
 interface IFetchSnapshotMainParams {
   filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
@@ -46,7 +53,7 @@ interface IFetchSnapshotMainParams {
   sortQuery?: TApiMongoSortQuery;
 }
 
-interface IFetchSnapshotsParams extends Partial<IFetchSnapshotMainParams> {
+interface IFetchSnapshotsParams extends IFetchSnapshotMainParams {
   skipNumber: number;
   limitNumber: number;
 }
@@ -71,8 +78,10 @@ export class FetchSnapshotService {
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
+    private readonly integrationUserService: IntegrationUserService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
+    private readonly userService: UserService,
   ) {}
 
   async fetchSnapshotDoc(
@@ -243,13 +252,60 @@ export class FetchSnapshotService {
       filterQuery,
       projectQuery,
       sortQuery,
-      skipNumber = 0,
       limitNumber = 0,
+      skipNumber = 0,
     }: IFetchSnapshotsParams,
   ): Promise<ApiSearchResultSnapshotResponse[]> {
     const snapshotDocs = await this.searchResultSnapshotModel
       .find(await this.getFilterQueryWithUser(user, filterQuery), projectQuery)
       .sort(sortQuery)
+      .skip(skipNumber)
+      .limit(limitNumber);
+
+    return snapshotDocs.map((snapshotDoc) =>
+      this.getSnapshotRes({ snapshotDoc }),
+    );
+  }
+
+  async fetchCompanySnapshots(
+    user: UserDocument | TIntegrationUserDocument,
+    { filterQuery, limitNumber = 0, skipNumber = 0 }: IFetchSnapshotsParams,
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
+    // TODO change to 'Role' decorator
+    // Old 'Role' decorator rename to 'TechRole'
+    if (!user.isAdmin) {
+      throw new ForbiddenException();
+    }
+
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    const resFilterQuery: FilterQuery<SearchResultSnapshotDocument> = {
+      ...filterQuery,
+    };
+
+    if (isIntegrationUser) {
+      resFilterQuery.$or = [];
+
+      (await this.integrationUserService.findManyByCompanyId(user)).reduce(
+        (result, { integrationType, integrationUserId }) => {
+          result.$or.push({
+            'integrationParams.integrationType': integrationType,
+            'integrationParams.integrationUserId': integrationUserId,
+          });
+
+          return result;
+        },
+        resFilterQuery,
+      );
+    } else {
+      resFilterQuery.userId = {
+        $in: await this.userService.findManyByCompanyId(user),
+      };
+    }
+
+    const snapshotDocs = await this.searchResultSnapshotModel
+      .find(resFilterQuery, { 'snapshot.placesLocation.label': 1 })
+      .sort({ updatedAt: -1 })
       .skip(skipNumber)
       .limit(limitNumber);
 
@@ -300,6 +356,12 @@ export class FetchSnapshotService {
     if (isSnapshotIframeExpired) {
       throw new HttpException(addressExpiredMessage, 402);
     }
+  }
+
+  async checkIsSnapshotExists(snapshotId: Types.ObjectId): Promise<boolean> {
+    return !!(await this.searchResultSnapshotModel.exists({
+      _id: snapshotId,
+    }));
   }
 
   async getFilterQueryWithUser(

@@ -767,5 +767,10 @@
   "errors": {
     "userNotFound": "User not found!",
     "wrongIntegration": "Wrong integration type!"
+  },
+  "company": {
+    "profile": {
+      "templatePlaceholder": "Type an address or existing snapshot id..."
+    }
   }
 }

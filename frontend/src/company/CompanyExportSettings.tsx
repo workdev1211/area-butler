@@ -87,12 +87,12 @@ const CompanyExportSettings: FC = () => {
   };
 
   return (
-    <div className="mt-10">
-      <h1 className="font-bold text-xl mb-2">
+    <div className="flex flex-col gap-4">
+      <h1 className="font-bold text-xl">
         {t(IntlKeys.yourProfile.exportSettings)}
       </h1>
 
-      <p>{t(IntlKeys.yourProfile.exportSettingsDescription)}</p>
+      {t(IntlKeys.yourProfile.exportSettingsDescription)}
 
       <ImageUpload image={logo} setImage={setLogo} onChange={updateLogo} />
 
@@ -105,16 +105,12 @@ const CompanyExportSettings: FC = () => {
         uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
       />
 
-      <div className="mt-5">
-        <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
-      </div>
+      <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
 
       {(!!user.config.logo || !!user.config.color || !!user.config.mapIcon) && (
-        <div className="mt-5">
-          <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
-            {t(IntlKeys.yourProfile.exportSettingsResetBtn)}
-          </button>
-        </div>
+        <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
+          {t(IntlKeys.yourProfile.exportSettingsResetBtn)}
+        </button>
       )}
     </div>
   );

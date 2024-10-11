@@ -101,7 +101,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({
     description: 'Fetch the embeddable maps for the current user',
   })
-  @Post('snapshots')
+  @Post('fetch-snapshots')
   fetchSnapshots(
     @InjectUser() user: UserDocument,
     @Body()
@@ -136,6 +136,28 @@ export class LocationController extends AuthenticatedController {
       skipNumber,
       sortQuery,
       projectQuery: resProjectQuery,
+    });
+  }
+
+  @ApiOperation({
+    description: 'Fetch company snapshots',
+  })
+  @Post('fetch-company-snapshots')
+  fetchCompanySnapshots(
+    @InjectUser() user: UserDocument,
+    @Body()
+    fetchSnapshotsReq: ApiFetchReqParamsDto<SearchResultSnapshotDocument>,
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
+    const {
+      filter: filterQuery,
+      limit: limitNumber,
+      skip: skipNumber,
+    } = fetchSnapshotsReq;
+
+    return this.fetchSnapshotService.fetchCompanySnapshots(user, {
+      filterQuery,
+      limitNumber,
+      skipNumber,
     });
   }
 

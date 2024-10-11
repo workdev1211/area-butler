@@ -104,7 +104,7 @@ export const useHttp = () => {
 
   const patch = async <T, U = unknown>(
     url: string,
-    body: U,
+    body?: U,
     additionalHeaders: { [key: string]: string } = {},
     axiosRequestConfig: AxiosRequestConfig = {}
   ): Promise<AxiosResponse<T>> => {

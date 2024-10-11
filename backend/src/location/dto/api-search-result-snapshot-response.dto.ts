@@ -23,6 +23,15 @@ export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
   poiIcons?: IApiPoiIcons;
 };
 
+interface IProcessAddrVisParams<
+  T extends ApiRealEstateListing | ApiSearchResultSnapshot,
+> {
+  entity: T;
+  isAddressShown: boolean;
+  isEmbedded: boolean;
+  isSnapshot?: boolean;
+}
+
 @Exclude()
 class ApiSearchResultSnapshotResponseDto
   implements ApiSearchResultSnapshotResponse
@@ -47,22 +56,20 @@ class ApiSearchResultSnapshotResponseDto
   @Transform(
     ({
       value,
-      obj: {
-        isAddressShown,
-        isEmbedded = false,
-        config: { showAddress = false },
-      },
+      obj: { config, isAddressShown, isEmbedded = false },
     }: {
       obj: TSnapshotResDtoData;
       value: ApiSearchResultSnapshot;
     }): ApiSearchResultSnapshot =>
-      processAddressVisibility(
-        value,
-        isEmbedded && typeof isAddressShown === 'boolean'
-          ? isAddressShown
-          : showAddress,
+      processAddressVisibility<ApiSearchResultSnapshot>({
         isEmbedded,
-      ),
+        entity: value,
+        isAddressShown:
+          isEmbedded && typeof isAddressShown === 'boolean'
+            ? isAddressShown
+            : !!config?.showAddress,
+        isSnapshot: true,
+      }),
     {
       toClassOnly: true,
     },
@@ -99,23 +106,20 @@ class ApiSearchResultSnapshotResponseDto
   @Transform(
     ({
       value,
-      obj: {
-        isAddressShown,
-        isEmbedded = false,
-        config: { showAddress = false },
-      },
+      obj: { config, isAddressShown, isEmbedded = false },
     }: {
       obj: TSnapshotResDtoData;
       value: ApiRealEstateListing;
     }): ApiRealEstateListing =>
       value
-        ? processAddressVisibility(
-            value,
-            isEmbedded && typeof isAddressShown === 'boolean'
-              ? isAddressShown
-              : showAddress,
+        ? processAddressVisibility<ApiRealEstateListing>({
             isEmbedded,
-          )
+            entity: value,
+            isAddressShown:
+              isEmbedded && typeof isAddressShown === 'boolean'
+                ? isAddressShown
+                : !!config?.showAddress,
+          })
         : undefined,
     {
       toClassOnly: true,
@@ -153,21 +157,22 @@ export default ApiSearchResultSnapshotResponseDto;
 let randomCoordinates: ApiCoordinates;
 
 const processAddressVisibility = <
-  T extends ApiSearchResultSnapshot | ApiRealEstateListing,
->(
-  entity: T,
-  isAddressShown: boolean,
-  isEmbedded: boolean,
-): T => {
+  T extends ApiRealEstateListing | ApiSearchResultSnapshot,
+>({
+  entity,
+  isAddressShown,
+  isEmbedded,
+  isSnapshot,
+}: IProcessAddrVisParams<T>): T => {
   if (!entity || isAddressShown || !isEmbedded) {
     return entity;
   }
 
-  const isSnapshot = 'searchResponse' in entity;
-
   if (!randomCoordinates) {
     randomCoordinates = randomizeCoordinates(
-      isSnapshot ? entity.location : entity.coordinates,
+      isSnapshot
+        ? (entity as ApiSearchResultSnapshot).location
+        : (entity as ApiRealEstateListing).coordinates,
     );
   }
 
@@ -179,20 +184,27 @@ const processAddressVisibility = <
     };
   }
 
-  const searchResponse: ApiSearchResponse = {
-    ...entity.searchResponse,
-    centerOfInterest: {
-      coordinates: randomCoordinates,
-      address: undefined,
-      distanceInMeters: 0,
-      entity: undefined,
-    },
-  };
-
-  return {
+  const resultSnapshot: T = {
     ...entity,
-    searchResponse,
     location: randomCoordinates,
     placesLocation: undefined,
   };
+
+  let searchResponse: ApiSearchResponse;
+
+  if ((entity as ApiSearchResultSnapshot).searchResponse) {
+    searchResponse = {
+      ...(entity as ApiSearchResultSnapshot).searchResponse,
+      centerOfInterest: {
+        coordinates: randomCoordinates,
+        address: undefined,
+        distanceInMeters: 0,
+        entity: undefined,
+      },
+    };
+
+    Object.assign(resultSnapshot, { searchResponse });
+  }
+
+  return resultSnapshot;
 };

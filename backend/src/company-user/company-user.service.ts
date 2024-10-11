@@ -1,5 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { FilterQuery } from 'mongoose';
+import {
+  ForbiddenException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { FilterQuery, Types } from 'mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { plainToInstance } from 'class-transformer';
 import * as dayjs from 'dayjs';
@@ -15,6 +19,7 @@ import { IApiCompanyConfig } from '@area-butler-types/company';
 import CompanyConfigDto from '../company/dto/company-config.dto';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/service/integration-user.service';
+import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 
 @Injectable()
 export class CompanyUserService {
@@ -22,6 +27,7 @@ export class CompanyUserService {
     private readonly companyService: CompanyService,
     private readonly eventEmitter: EventEmitter2,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly subscriptionService: SubscriptionService,
     private readonly userService: UserService,
   ) {}
@@ -74,6 +80,7 @@ export class CompanyUserService {
     user: TIntegrationUserDocument | UserDocument,
     config: Partial<IApiCompanyConfig>,
   ): Promise<TIntegrationUserDocument | UserDocument> {
+    // TODO Add a decorator and a guard with renaming old 'Role' to 'TechRole'
     if (!user.isAdmin) {
       throw new ForbiddenException();
     }
@@ -83,6 +90,21 @@ export class CompanyUserService {
       exposeDefaultValues: false,
       exposeUnsetFields: false,
     });
+
+    const templateSnapshotId = companyConfigDto.templateSnapshotId;
+
+    if (templateSnapshotId) {
+      const isSnapshotExists =
+        await this.fetchSnapshotService.checkIsSnapshotExists(
+          new Types.ObjectId(templateSnapshotId),
+        );
+
+      if (!isSnapshotExists) {
+        throw new UnprocessableEntityException(
+          `The template snapshot with id ${templateSnapshotId} does not exist!`,
+        );
+      }
+    }
 
     await this.companyService.updateConfig(user.company._id, companyConfigDto);
 

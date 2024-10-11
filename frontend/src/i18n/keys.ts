@@ -831,4 +831,11 @@ export const IntlKeys = {
     userNotFound: "errors.userNotFound",
     wrongIntegration: "errors.wrongIntegration",
   },
+
+  company: {
+    profile: {
+      templatePlaceholder: "company.profile.templatePlaceholder",
+      templateIdLabel: "company.profile.templateIdLabel",
+    },
+  },
 };

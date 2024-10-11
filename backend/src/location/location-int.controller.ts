@@ -106,7 +106,7 @@ export class LocationIntController {
     description: 'Fetch the embeddable maps for the current user',
   })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('snapshots')
+  @Post('fetch-snapshots')
   fetchSnapshots(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
@@ -142,6 +142,29 @@ export class LocationIntController {
       skipNumber,
       sortQuery,
       projectQuery: resProjectQuery,
+    });
+  }
+
+  @ApiOperation({
+    description: 'Fetch company snapshots',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('fetch-company-snapshots')
+  fetchCompanySnapshots(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body()
+    fetchSnapshotsReq: ApiFetchReqParamsDto<SearchResultSnapshotDocument>,
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
+    const {
+      filter: filterQuery,
+      limit: limitNumber,
+      skip: skipNumber,
+    } = fetchSnapshotsReq;
+
+    return this.fetchSnapshotService.fetchCompanySnapshots(integrationUser, {
+      filterQuery,
+      limitNumber,
+      skipNumber,
     });
   }
 

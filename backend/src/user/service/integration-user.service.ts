@@ -16,7 +16,10 @@ import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from '../schema/integration-user.schema';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import {
+  IApiIntegrationParams,
+  IntegrationTypesEnum,
+} from '@area-butler-types/integration';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntUserCreate,
@@ -131,6 +134,20 @@ export class IntegrationUserService {
       },
       projectQuery,
     );
+  }
+
+  async findManyByCompanyId({
+    companyId,
+  }: TIntegrationUserDocument): Promise<IApiIntegrationParams[]> {
+    return (
+      await this.integrationUserModel.find(
+        { companyId },
+        { integrationType: 1, integrationUserId: 1 },
+      )
+    ).map(({ integrationType, integrationUserId }) => ({
+      integrationType,
+      integrationUserId,
+    }));
   }
 
   findOneAndUpdate(

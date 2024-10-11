@@ -1,6 +1,6 @@
 import { lazy, Suspense, useContext, useEffect } from "react";
 
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";

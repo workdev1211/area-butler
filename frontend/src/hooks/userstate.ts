@@ -181,18 +181,7 @@ export const useUserState = () => {
       ? "/api/company-user-int/config/company"
       : "/api/company-user/config/company";
 
-    let currentUser;
-
-    try {
-      currentUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
-        .data;
-
-      setUserContext(currentUser);
-    } catch (e) {
-      console.error(e);
-      toastError(t(IntlKeys.common.errorOccurred));
-      throw new Error(t(IntlKeys.common.errorOccurred));
-    }
+    await updateConfig<IApiCompanyConfig>(url, config);
   };
 
   const updateUserConfig = async (
@@ -202,7 +191,14 @@ export const useUserState = () => {
       ? "/api/integration-users/config"
       : "/api/users/config";
 
-    let currentUser;
+    await updateConfig<IUserConfig>(url, config);
+  };
+
+  const updateConfig = async <T extends IApiCompanyConfig | IUserConfig>(
+    url: string,
+    config: TNullable<Partial<T>>
+  ): Promise<void> => {
+    let currentUser: ApiUser | IApiIntegrationUser;
 
     try {
       currentUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))

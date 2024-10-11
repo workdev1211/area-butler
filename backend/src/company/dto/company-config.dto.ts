@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
+  IsMongoId,
   IsObject,
   IsOptional,
   IsString,
@@ -93,7 +94,7 @@ class CompanyConfigDto implements ICompanyConfig {
 
   @Expose()
   @IsOptional()
-  @IsString()
+  @IsMongoId()
   templateSnapshotId?: string;
 }
 
