@@ -286,7 +286,8 @@
         "INSTAGRAM_CAPTION": "Post Instagram",
         "GENERAL_QUESTION": "Question générale à l'IA",
         "FORMAL_TO_INFORMAL": "Transformation de la forme \"vous\" en forme \"tu\".",
-        "DISTRICT_DESC": "Texte du quartier"
+        "DISTRICT_DESC": "Texte du quartier",
+        "EQUIPMENT_DESCRIPTION": "Description de l'équipement"
       },
       "openAITypesOptionLabel": {
         "LOCATION_DESCRIPTION": "Texte de la situation",
@@ -298,7 +299,8 @@
         "INSTAGRAM_CAPTION": "Post Instagram",
         "GENERAL_QUESTION": "Question générale à l'IA",
         "FORMAL_TO_INFORMAL": "Transformation de la forme \"vous\" en forme \"tu\".",
-        "DISTRICT_DESC": "Texte du quartier"
+        "DISTRICT_DESC": "Texte du quartier",
+        "EQUIPMENT_DESCRIPTION": "Description de l'équipement"
       },
       "publicLinks": "Liens avec ou sans adresse",
       "maxCharactersLength": "maxCharactersLength",
