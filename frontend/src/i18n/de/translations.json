@@ -286,7 +286,8 @@
         "INSTAGRAM_CAPTION": "Instagram Post",
         "GENERAL_QUESTION": "Generelle Frage an KI",
         "FORMAL_TO_INFORMAL": "Transformation Sie-Form in Du-Form",
-        "DISTRICT_DESC": "Stadtteiltext"
+        "DISTRICT_DESC": "Stadtteiltext",
+        "EQUIPMENT_DESCRIPTION": "Ausstattungsbeschreibung"
       },
       "openAITypesOptionLabel": {
         "LOCATION_DESCRIPTION": "Lagetext",
@@ -298,7 +299,8 @@
         "INSTAGRAM_CAPTION": "Instagram Post",
         "GENERAL_QUESTION": "Generelle Frage an KI",
         "FORMAL_TO_INFORMAL": "Transformation Sie-Form in Du-Form",
-        "DISTRICT_DESC": "Stadtteiltext"
+        "DISTRICT_DESC": "Stadtteiltext",
+        "EQUIPMENT_DESCRIPTION": "Ausstattungsbeschreibung"
       },
       "publicLinks": "Links mit und ohne Adresse",
       "maxCharactersLength": "Zielzeichenlänge",
