@@ -315,7 +315,8 @@
     "addNewLocationModalBtn": "Añadir",
     "addNewLocationModalSuccess": "¡Objeto añadido correctamente!",
     "addNewLocationModalFailed": "Error al guardar el objeto",
-    "outputLanguage": "Idioma de salida"
+    "outputLanguage": "Idioma de salida",
+    "invertBaseColor": "Invertir el color base"
   },
   "common": {
     "showMore": "Ver más",
