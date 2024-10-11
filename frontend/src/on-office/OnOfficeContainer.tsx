@@ -47,7 +47,7 @@ const PotentialCustomersPage = lazy(
 );
 const RealEstatePage = lazy(() => import("../pages/RealEstatePage"));
 const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
-const MapPage = lazy(() => import("./pages/MapPage"));
+const SnapshotEditorPage = lazy(() => import("../pages/SnapshotEditorPage"));
 const OpenAiPage = lazy(() => import("../pages/OpenAiPage"));
 const ProductPage = lazy(() => import("../pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
@@ -162,7 +162,7 @@ const OnOfficeContainer: FunctionComponent = () => {
             <RealEstatesPage />
           </Route>
           <Route path={`/${snapshotEditorPath}/:snapshotId`}>
-            <MapPage />
+            <SnapshotEditorPage />
           </Route>
           <Route path="/map-snapshots">
             <MapSnapshotsPage />
