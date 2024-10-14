@@ -132,11 +132,21 @@ export class FetchSnapshotService {
       .sort(sortQuery)
       .populate({
         path: SNAPSHOT_USER_PATH,
-        populate: [COMPANY_PATH, PARENT_USER_PATH, SUBSCRIPTION_PATH],
+        populate: [
+          COMPANY_PATH,
+          SUBSCRIPTION_PATH,
+          {
+            path: PARENT_USER_PATH,
+            populate: [COMPANY_PATH, SUBSCRIPTION_PATH],
+          },
+        ],
       })
       .populate({
         path: SNAPSHOT_INT_USER_PATH,
-        populate: [COMPANY_PATH, PARENT_USER_PATH],
+        populate: [
+          COMPANY_PATH,
+          { path: PARENT_USER_PATH, populate: [COMPANY_PATH] },
+        ],
       });
   }
 
