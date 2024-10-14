@@ -261,8 +261,8 @@ export class IntegrationUserService {
     return this.integrationUserModel
       .findOne(filterQuery, projectQuery)
       .sort({ updatedAt: -1 })
-      .populate(PARENT_USER_PATH)
-      .populate(COMPANY_PATH);
+      .populate(COMPANY_PATH)
+      .populate(PARENT_USER_PATH);
   }
 
   private async findOneAndUpdateCore(
@@ -272,7 +272,7 @@ export class IntegrationUserService {
     return this.integrationUserModel
       .findOneAndUpdate(filterQuery, updateQuery, { new: true })
       .sort({ updatedAt: -1 })
-      .populate(PARENT_USER_PATH)
-      .populate(COMPANY_PATH);
+      .populate(COMPANY_PATH)
+      .populate(PARENT_USER_PATH);
   }
 }

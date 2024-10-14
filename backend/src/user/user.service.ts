@@ -421,16 +421,7 @@ export class UserService {
       .populate(COMPANY_PATH)
       .populate({
         path: PARENT_USER_PATH,
-        populate: [
-          {
-            path: COMPANY_PATH,
-            justOne: true,
-          },
-          {
-            path: SUBSCRIPTION_PATH,
-            justOne: true,
-          },
-        ],
+        populate: [SUBSCRIPTION_PATH],
       })
       .populate(SUBSCRIPTION_PATH);
   }
@@ -445,16 +436,7 @@ export class UserService {
       .populate(COMPANY_PATH)
       .populate({
         path: PARENT_USER_PATH,
-        populate: [
-          {
-            path: COMPANY_PATH,
-            justOne: true,
-          },
-          {
-            path: SUBSCRIPTION_PATH,
-            justOne: true,
-          },
-        ],
+        populate: [SUBSCRIPTION_PATH],
       })
       .populate(SUBSCRIPTION_PATH);
   }
