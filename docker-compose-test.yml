@@ -7,9 +7,9 @@ x-logging: &default-logging
     max-file: "30"
 
 services:
-  area-butler-db:
+  areabutler-test-db:
     image: mongo:5.0.2
-    container_name: area-butler-db
+    container_name: areabutler-test-db
     restart: always
     command: mongod --logpath /dev/null --oplogSize 128 --quiet
     networks:
@@ -17,21 +17,21 @@ services:
     expose:
       - 27017
     volumes:
-      - area-butler-db:/data/db
-      - area-butler-db-dump:/dump
+      - areabutler-test-db:/data/db
+      - areabutler-test-db-dump:/dump
     labels:
       - "traefik.enable=false"
     logging: *default-logging
 
-  area-butler:
+  areabutler-test:
     build: .
     image: kudiba/area-butler
-    container_name: area-butler-app
+    container_name: areabutler-test-app
     restart: always
     networks:
       - web
     ports:
-      - 8073:3000
+      - 8072:3000
     environment:
       - PORT=3000
       - MAPBOX_ACCESS_TOKEN
@@ -78,23 +78,22 @@ services:
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.area-butler-http.entrypoints=web"
-      - "traefik.http.routers.area-butler-http.middlewares=redirect"
-      #      - "traefik.http.routers.area-butler-http.middlewares=a-b-to-ab"
-      - "traefik.http.routers.area-butler-http.rule=Host(`area-butler.dev.area-butler.de`, `areabutler.dev.areabutler.de`)"
-      - "traefik.http.routers.area-butler.entrypoints=websecure"
-      - "traefik.http.routers.area-butler.rule=Host(`area-butler.dev.area-butler.de`, `areabutler.dev.areabutler.de`)"
-      - "traefik.http.routers.area-butler.tls=true"
-      - "traefik.http.routers.area-butler.tls.certresolver=le"
-      - "traefik.port=8073"
+      - "traefik.http.routers.areabutler-test-http.entrypoints=web"
+      - "traefik.http.routers.areabutler-test-http.middlewares=redirect"
+      - "traefik.http.routers.areabutler-test-http.rule=Host(`areabutler.test.areabutler.de`)"
+      - "traefik.http.routers.areabutler-test.entrypoints=websecure"
+      - "traefik.http.routers.areabutler-test.rule=Host(`areabutler.test.areabutler.de`)"
+      - "traefik.http.routers.areabutler-test.tls=true"
+      - "traefik.http.routers.areabutler-test.tls.certresolver=le"
+      - "traefik.port=8072"
     logging: *default-logging
     depends_on:
-      - area-butler-db
+      - areabutler-test-db
 
 volumes:
-  area-butler-db:
+  areabutler-test-db:
     external: true
-  area-butler-db-dump:
+  areabutler-test-db-dump:
     external: true
 
 networks:

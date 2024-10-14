@@ -1,5 +1,11 @@
+stages:
+  - build
+  - deploy
+
 variables:
-  PROJECT_NAME: 'kudiba/area-butler'
+  PROD_BRANCH: "main"
+  DEV_BRANCH: "dev"
+  PROJECT_NAME: "kudiba/area-butler"
 
 default:
   image: docker:20.10.6
@@ -8,8 +14,6 @@ default:
 
 build:
   stage: build
-  tags:
-    - hetzner
   script:
     - apk add --no-cache docker-compose
     - docker-compose build
@@ -17,50 +21,55 @@ build:
 
 deploy-dev:
   stage: deploy
-  tags:
-    - hetzner
   environment:
     name: dev
-    url: 'https://areabutler.dev.areabutler.de/'
-    on_stop: undeploy-dev
+    url: "https://areabutler.dev.areabutler.de/"
+  #    on_stop: undeploy-dev
   script:
     - cat $DEV_ENV > .env
     - apk add --no-cache docker-compose
     - docker-compose -p 'area-butler' down || true
     - docker-compose -p 'area-butler' up -d
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $DEV_BRANCH # available for both commits and MRs
 
-undeploy-dev:
+#undeploy-dev:
+#  stage: deploy
+#  variables:
+#    GIT_STRATEGY: none # requiring a deleted branch is not possible
+#  environment:
+#    name: dev
+#    action: stop
+#  when: manual
+#  script:
+#    - apk add --no-cache docker-compose
+#    - docker-compose -p 'area-butler' down || true
+#    - docker-compose -p 'area-butler' rm --force
+#    - echo "Image deleted"
+#  rules:
+#    - if: $CI_COMMIT_REF_NAME == $DEV_BRANCH # available for both commits and MRs
+
+deploy-test:
   stage: deploy
-  tags:
-    - hetzner
-  variables:
-    GIT_STRATEGY: none # requiring a deleted branch is not possible
   environment:
-    name: dev
-    action: stop
+    name: test
+    url: "https://areabutler.test.areabutler.de/"
   when: manual
   script:
+    - cat $TEST_ENV > .env
     - apk add --no-cache docker-compose
-    - docker-compose -p 'area-butler' down || true
-    - docker-compose -p 'area-butler' rm --force
-    - echo "Image deleted"
-  only:
-    - main
+    - docker-compose -p 'areabutler-test' down || true
+    - docker-compose -p 'areabutler-test' -f docker-compose-test.yml up -d
 
 deploy-prod:
   stage: deploy
-  tags:
-    - hetzner
   environment:
     name: production
-    url: 'https://app.areabutler.de/'
-  when: manual
+    url: "https://app.areabutler.de/"
   script:
     - cat $PROD_ENV > .env
     - apk add --no-cache docker-compose
     - docker-compose -p 'area-butler-prod' down || true
     - docker-compose -p 'area-butler-prod' -f docker-compose-prod.yml up -d
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $PROD_BRANCH # available for both commits and MRs

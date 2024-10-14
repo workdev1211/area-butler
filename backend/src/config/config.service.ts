@@ -235,6 +235,10 @@ class ConfigService {
         return 'https://app.areabutler.de';
       }
 
+      case 'test': {
+        return 'https://areabutler.test.areabutler.de';
+      }
+
       case 'local': {
         const port = this.getPort();
         return `http://localhost${port ? `:${port}` : ''}`;
