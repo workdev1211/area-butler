@@ -106,7 +106,7 @@ export class UserService {
   }
 
   async findByApiKey(apiKey: string): Promise<UserDocument> {
-    return this.findOneCore({ 'apiKeyParams.apiKey': apiKey });
+    return this.findOneCore({ 'config.apiKeyParams.apiKey': apiKey });
   }
 
   async findByStripeCustomerId(
