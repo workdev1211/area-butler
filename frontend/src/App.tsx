@@ -1,4 +1,4 @@
-import { lazy, Suspense, useContext, useEffect, useState } from "react";
+import { lazy, Suspense, useContext, useEffect } from "react";
 
 import { useTranslation } from "react-i18next";
 
@@ -30,7 +30,7 @@ import {
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
 import { LoadingMessage } from "./components/Loading";
-import InformationModal from "./components/InformationModal";
+// import InformationModal from "./components/InformationModal";
 import BrowserWarningModal from "./components/BrowserWarningModal";
 import SupportLink from "./components/SupportLink";
 
@@ -81,7 +81,7 @@ const SnapshotEditorPage = lazy(() => import("./pages/SnapshotEditorPage"));
 
 const MapSnapshotsPage = lazy(() => import("./pages/MapSnapshotsPage"));
 
-const infoKey = "is-seen-info-2024-08-07";
+// const infoKey = "is-seen-info-2024-08-07";
 
 function App() {
   const { i18n } = useTranslation();
@@ -95,9 +95,9 @@ function App() {
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
-  const [isSeenInfo, setIsSeenInfo] = useState(
-    window.localStorage.getItem(infoKey) === "true"
-  );
+  // const [isSeenInfo, setIsSeenInfo] = useState(
+  //   window.localStorage.getItem(infoKey) === "true"
+  // );
 
   const initialPaypalOptions = {
     "client-id": paypalClientId || "test",
@@ -171,64 +171,64 @@ function App() {
       <div>{process.env.REACT_APP_SENTRY_DSN_FE}</div>
       <div className="app">
         {isAuthenticated && <BrowserWarningModal />}
-        {isAuthenticated && !isSeenInfo && (
-          <InformationModal
-            title="Neue Funktionen im AreaButler"
-            contentWidthRem={30}
-            onClose={(isDontShowAgain: boolean) => {
-              if (isDontShowAgain) {
-                window.localStorage.setItem(infoKey, "true");
-              }
+        {/*{isAuthenticated && !isSeenInfo && (*/}
+        {/*  <InformationModal*/}
+        {/*    title="Neue Funktionen im AreaButler"*/}
+        {/*    contentWidthRem={30}*/}
+        {/*    onClose={(isDontShowAgain: boolean) => {*/}
+        {/*      if (isDontShowAgain) {*/}
+        {/*        window.localStorage.setItem(infoKey, "true");*/}
+        {/*      }*/}
 
-              setIsSeenInfo(true);
-            }}
-          >
-            <div className="flex flex-col gap-3">
-              <div className="text-justify">
-                <div>Sehr geehrte Kundin,</div>
-                <div>sehr geehrter Kunde,</div>
-                <div>
-                  in diesem Video stellen wir Ihnen die neuen Funktionen des
-                  AreaButlers vor.
-                </div>
-              </div>
+        {/*      setIsSeenInfo(true);*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <div className="flex flex-col gap-3">*/}
+        {/*      <div className="text-justify">*/}
+        {/*        <div>Sehr geehrte Kundin,</div>*/}
+        {/*        <div>sehr geehrter Kunde,</div>*/}
+        {/*        <div>*/}
+        {/*          in diesem Video stellen wir Ihnen die neuen Funktionen des*/}
+        {/*          AreaButlers vor.*/}
+        {/*        </div>*/}
+        {/*      </div>*/}
 
-              <iframe
-                className="w-[30rem] h-[16.875rem]"
-                title="whats-new"
-                src="https://www.youtube.com/embed/JIxzv8leFq0?controls=0"
-              />
+        {/*      <iframe*/}
+        {/*        className="w-[30rem] h-[16.875rem]"*/}
+        {/*        title="whats-new"*/}
+        {/*        src="https://www.youtube.com/embed/JIxzv8leFq0?controls=0"*/}
+        {/*      />*/}
 
-              <div className="text-justify">
-                <div>Zusammengefasst:</div>
-                <ul className="list-disc pl-4">
-                  <li>Visuelle Überarbeitung der Navigation auf der Karte</li>
-                  <li>Häufig genutzte Funktionen auf der ersten Seite</li>
-                  <li>
-                    Verbesserte und neue KI Prompts (Mikro- und Makrolage,
-                    Stadtteiltexte und Socialmedia Posts)
-                  </li>
-                  <li>
-                    Screenshotmodal mit Möglichkeit zum Zuschneiden,
-                    Herunterladen und/oder ans CRM senden
-                  </li>
-                </ul>
-              </div>
+        {/*      <div className="text-justify">*/}
+        {/*        <div>Zusammengefasst:</div>*/}
+        {/*        <ul className="list-disc pl-4">*/}
+        {/*          <li>Visuelle Überarbeitung der Navigation auf der Karte</li>*/}
+        {/*          <li>Häufig genutzte Funktionen auf der ersten Seite</li>*/}
+        {/*          <li>*/}
+        {/*            Verbesserte und neue KI Prompts (Mikro- und Makrolage,*/}
+        {/*            Stadtteiltexte und Socialmedia Posts)*/}
+        {/*          </li>*/}
+        {/*          <li>*/}
+        {/*            Screenshotmodal mit Möglichkeit zum Zuschneiden,*/}
+        {/*            Herunterladen und/oder ans CRM senden*/}
+        {/*          </li>*/}
+        {/*        </ul>*/}
+        {/*      </div>*/}
 
-              <div>
-                <div>Wir freuen uns auf euer Feedback!</div>
-                <div>Mit freundlichen Grüßen</div>
-                <div>Das AreaButler-Team</div>
-                <a
-                  href="mailto:info@areabutler.de"
-                  className="text-blue-600 dark:text-blue-500 hover:underline"
-                >
-                  info@areabutler.de
-                </a>
-              </div>
-            </div>
-          </InformationModal>
-        )}
+        {/*      <div>*/}
+        {/*        <div>Wir freuen uns auf euer Feedback!</div>*/}
+        {/*        <div>Mit freundlichen Grüßen</div>*/}
+        {/*        <div>Das AreaButler-Team</div>*/}
+        {/*        <a*/}
+        {/*          href="mailto:info@areabutler.de"*/}
+        {/*          className="text-blue-600 dark:text-blue-500 hover:underline"*/}
+        {/*        >*/}
+        {/*          info@areabutler.de*/}
+        {/*        </a>*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  </InformationModal>*/}
+        {/*)}*/}
         <ToastContainer
           position="top-right"
           autoClose={10000}
