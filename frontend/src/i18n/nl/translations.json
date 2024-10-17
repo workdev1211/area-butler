@@ -316,7 +316,8 @@
     "addNewLocationModalSuccess": "Object succesvol toegevoegd!",
     "addNewLocationModalFailed": "Fout bij het opslaan van het object",
     "outputLanguage": "Uitvoertaal",
-    "invertBaseColor": "Basiskleur omkeren"
+    "invertBaseColor": "Basiskleur omkeren",
+    "errorSendingAiRequest": "Fout bij het verzenden van het AI-verzoek!"
   },
   "common": {
     "showMore": "Meer tonen",
