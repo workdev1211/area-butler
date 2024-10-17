@@ -465,6 +465,7 @@ export const IntlKeys = {
     german: "snapshotEditor.german",
     outputLanguage: "snapshotEditor.outputLanguage",
     invertBaseColor: "snapshotEditor.invertBaseColor",
+    errorSendingAiRequest: "snapshotEditor.errorSendingAiRequest",
   },
 
   realEstate: {

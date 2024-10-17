@@ -51,7 +51,7 @@ const CustomNumberSelect: FunctionComponent<ICustomNumberSelectProps> = ({
               label={label}
               name={name}
               className="input input-bordered w-full"
-              type="text"
+              type="number"
               placeholder={placeholder}
             />
           </div>

@@ -1,5 +1,8 @@
 import { useContext } from "react";
 
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
+
 import { useHttp } from "./http";
 import {
   IApiOpenAiImproveTextQuery,
@@ -33,6 +36,7 @@ export type TOpenAiQuery = { integrationId?: string } & (
 );
 
 export const useOpenAi = () => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
@@ -159,7 +163,7 @@ export const useOpenAi = () => {
     try {
       queryResponse = (await post<string>(url, resOpenAiQuery)).data;
     } catch (e) {
-      toastError("Fehler beim Senden der KI-Anfrage!");
+      toastError(t(IntlKeys.snapshotEditor.errorSendingAiRequest));
       return "";
     }
 
