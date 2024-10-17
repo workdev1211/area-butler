@@ -316,7 +316,8 @@
     "addNewLocationModalSuccess": "Oggetto aggiunto con successo!",
     "addNewLocationModalFailed": "Errore durante il salvataggio dell'oggetto",
     "outputLanguage": "Lingua di uscita",
-    "invertBaseColor": "Invertire il colore di base"
+    "invertBaseColor": "Invertire il colore di base",
+    "errorSendingAiRequest": "Errore nell'invio della richiesta AI!"
   },
   "common": {
     "showMore": "Mostra di più",
