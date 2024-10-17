@@ -316,7 +316,8 @@
     "addNewLocationModalSuccess": "Objekt erfolgreich hinzugefügt!",
     "addNewLocationModalFailed": "Fehler beim Speichern des Objektes",
     "outputLanguage": "Ausgabesprache",
-    "invertBaseColor": "Basisfarbe invertieren"
+    "invertBaseColor": "Basisfarbe invertieren",
+    "errorSendingAiRequest": "Fehler beim Senden der KI-Anfrage!"
   },
   "common": {
     "showMore": "Mehr anzeigen",
