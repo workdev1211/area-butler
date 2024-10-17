@@ -316,7 +316,8 @@
     "addNewLocationModalSuccess": "Objet ajouté avec succès !",
     "addNewLocationModalFailed": "Erreur lors de l'enregistrement de l'objet",
     "outputLanguage": "Édition Langue",
-    "invertBaseColor": "Inverser la couleur de base"
+    "invertBaseColor": "Inverser la couleur de base",
+    "errorSendingAiRequest": "Erreur lors de l'envoi de la demande d'IA !"
   },
   "common": {
     "showMore": "Voir plus",
