@@ -47,12 +47,17 @@ export const randomizeCoordinates = ({
   lat,
   lng,
 }: ApiCoordinates): ApiCoordinates => {
-  const d1 = randomInt() / 10000;
-  const d2 = randomInt() / 10000;
+  const getRandom = (): number => {
+    const min = 0.00069; // 90 meters
+    const max = 0.00115; // 150 meters
+    const rand = Math.random() * (max - min) + min;
+
+    return Math.random() >= 0.5 ? rand : -rand;
+  };
 
   return {
-    lat: lat + d1,
-    lng: lng + d2,
+    lat: lat + getRandom(),
+    lng: lng + getRandom(),
   };
 };
 

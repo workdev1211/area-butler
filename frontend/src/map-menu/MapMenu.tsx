@@ -224,6 +224,7 @@ const MapMenu: FC<IMapMenuProps> = ({
                 <li
                   className="flex flex-row cursor-pointer items-center mb-1"
                   onClick={() => toggleLanguageChange(lang)}
+                  key={lang}
                 >
                   <span className="uppercase text-white text-center rounded border border-white text-sm p-2 mr-2">
                     {lang}
