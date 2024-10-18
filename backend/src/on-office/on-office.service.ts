@@ -1150,7 +1150,7 @@ export class OnOfficeService {
     estateId: string,
   ): Promise<Array<IApiOnOfficeRealEstateFile & { url: string }>> {
     const { parameters } = integrationUser;
-    const { token, apiKey, customerName } =
+    const { token, apiKey, customerName, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.GET;
     const resourceType = ApiOnOfficeResourceTypesEnum.FILE;
@@ -1176,6 +1176,7 @@ export class OnOfficeService {
             resourcetype: resourceType,
             parameters: {
               estateid: estateId,
+              extendedclaim: extendedClaim,
               showispublishedonhomepage: true,
             },
           },
