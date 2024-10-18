@@ -30,5 +30,6 @@ import { CompanyModule } from '../company/company.module';
   ],
   controllers: [OnOfficeController, OnOfficeWebhookController],
   providers: [OnOfficeService, OnOfficeWebhookService],
+  exports: [OnOfficeService]
 })
 export class OnOfficeModule {}

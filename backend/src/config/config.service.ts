@@ -253,6 +253,10 @@ class ConfigService {
   getOnOfficeProviderSecret(): string {
     return this.getValue('ON_OFFICE_PROVIDER_SECRET');
   }
+  
+  getOnOfficeImageUrl(): string {
+    return this.getValue('ON_OFFICE_IMAGES_URL')
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([

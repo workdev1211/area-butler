@@ -3,7 +3,7 @@ import { OpenAI } from 'openai';
 // import { encoding_for_model, Tiktoken } from '@dqbd/tiktoken';
 import { configService } from '../../config/config.service';
 import { LanguageTypeEnum } from '@area-butler-types/types';
-import { TImage } from '../../shared/types/propstack';
+import { TGeneralImage } from '../../shared/types/shared';
 
 const MODEL_NAME = 'gpt-4o';
 
@@ -22,7 +22,7 @@ export class OpenAiApiService {
   async fetchResponse(
     queryText: string,
     responseCompressedParams?: IResponseCompressed,
-    images: TImage[] = [],
+    images: TGeneralImage[] = [],
   ): Promise<string> {
     // let encoding: Tiktoken;
 
@@ -87,8 +87,12 @@ export class OpenAiApiService {
       responseCompressedParams &&
       response.length > responseCompressedParams.maxCharactersLength
     ) {
+      const maxCharactersLength =
+        responseCompressedParams?.maxCharactersLength - 50;
       const query =
-        `Fasse den folgenden Text so zusammen, dass er nicht länger als ${responseCompressedParams.maxCharactersLength} Zeichen lang ist! Lasse die Tonalität hierbei unverändert.\n` +
+        `Fasse den folgenden Text so zusammen, dass er nicht länger als ${
+          maxCharactersLength > 50 ? maxCharactersLength : 50
+        } Zeichen lang ist! Lasse die Tonalität hierbei unverändert.\n` +
         ` Verwende als Ausgabesprache ${responseCompressedParams.language} (BCP 47).` +
         response;
 

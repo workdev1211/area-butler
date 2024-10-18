@@ -37,6 +37,7 @@ import {
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 import { IPropstackProperty, TImage } from '../shared/types/propstack';
+import { TGeneralImage } from '../shared/types/shared';
 
 interface IGeneralQueryParams extends IOpenAiGeneralFormValues {
   language?: LanguageTypeEnum | ApiBcp47LanguageEnum;
@@ -52,7 +53,7 @@ export interface IRealEstDescQueryParams
   extends IGeneralQueryParams,
     Omit<IApiOpenAiRealEstDescQuery, 'realEstateId'> {
   realEstate: ApiRealEstateListing;
-  images?: TImage[];
+  images?: TGeneralImage[];
 }
 
 export interface IRealEstDesc2QueryParams extends IGeneralQueryParams {

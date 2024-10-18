@@ -101,6 +101,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   ).filter(
     ({ type }) =>
       integrationType === IntegrationTypesEnum.PROPSTACK ||
+      integrationType === IntegrationTypesEnum.ON_OFFICE ||
       type !== OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
   );
 

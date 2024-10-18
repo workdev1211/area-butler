@@ -11,3 +11,8 @@ export interface IApiFetchSnapshotsReq {
   project?: ProjectionFields<SearchResultSnapshotDocument>;
   sort?: TApiMongoSortQuery;
 }
+export type TGeneralImage = {
+  url: string;
+  title: string;
+  id?: string | number;
+};

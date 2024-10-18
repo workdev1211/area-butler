@@ -334,7 +334,12 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
                   <div className="flex flex-col gap-2 w-[97%]">
                     <OpenAiGeneralForm
                       formId="open-ai-general-form"
-                      initialValues={cachedOpenAi.general}
+                      initialValues={
+                        cachedOpenAi.general && {
+                          ...cachedOpenAi.general,
+                          maxCharactersLength: 600,
+                        }
+                      }
                       onValuesChange={(values) => {
                         cachingDispatch({
                           type: CachingActionTypesEnum.SET_OPEN_AI,

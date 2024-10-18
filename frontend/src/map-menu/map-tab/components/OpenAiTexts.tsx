@@ -94,6 +94,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
               .filter(
                 ({ type }) =>
                   integrationType === IntegrationTypesEnum.PROPSTACK ||
+                  integrationType === IntegrationTypesEnum.ON_OFFICE ||
                   type !== OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
               )
               .map(({ type }) => (

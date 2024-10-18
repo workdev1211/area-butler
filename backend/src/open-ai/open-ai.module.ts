@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { UserModule } from '../user/user.module';
 import { OpenAiController } from './open-ai.controller';
@@ -11,6 +11,7 @@ import { ClientModule } from '../client/client.module';
 import { OpenAiQueryService } from './open-ai-query.service';
 import { LocationModule } from '../location/location.module';
 import { OpenAiExtService } from './open-ai-ext.service';
+import { OnOfficeModule } from '../on-office/on-office.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { OpenAiExtService } from './open-ai-ext.service';
     LocationModule,
     PlaceModule,
     UserModule,
+    forwardRef(() => OnOfficeModule),
   ],
   controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   providers: [OpenAiService, OpenAiQueryService, OpenAiExtService],

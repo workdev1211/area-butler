@@ -49,6 +49,7 @@ export enum ApiOnOfficeResourceTypesEnum {
   BASIC_SETTINGS = "basicsettings", // logo and color
   UPLOAD_FILE = "uploadfile",
   USER = "user",
+  FILE = "file",
 }
 
 interface IApiOnOfficeRequestAction {
@@ -86,6 +87,8 @@ export interface IApiOnOfficeReqActParams {
   setDefaultPublicationRights?: boolean;
   url?: string; // only for links
   relatedRecordId?: string; // real estate id
+  estateid?: string; // real estate id
+  showispublishedonhomepage?: boolean;
   // file upload end
 }
 
@@ -118,6 +121,15 @@ export enum ApiOnOfficeArtTypesEnum {
   "OBJEKT-LINK" = "Objekt-Link",
   ANZEIGEN = "Anzeigen",
   FINANZIERUNGSBEISPIEL = "Finanzierungsbeispiel",
+}
+
+export enum ApiOnOfficeFileTypesEnum {
+  photo = "Foto",
+  cover = "Titelbild",
+  sitePlan = "Lageplan",
+  qrCode = "QR-Code",
+  floorPlan = "Grundriss",
+  energyPassScale = "Epass_Skala",
 }
 
 // TODO make it the right way - without anys
@@ -191,6 +203,16 @@ export interface IApiOnOfficeRealEstate {
   lage: string; // LOCATION_DESCRIPTION
   sonstige_angaben: string; // LOCATION_REAL_ESTATE_DESCRIPTION
   objektbeschreibung: string; // REAL_ESTATE_DESCRIPTION
+}
+
+export interface IApiOnOfficeRealEstateFile {
+  type: ApiOnOfficeFileTypesEnum;
+  position: number;
+  name: string;
+  originalName: string;
+  filename: string;
+  title: string;
+  fileSize: number;
 }
 
 export enum ApiOnOfficeEstateMarketTypesEnum {

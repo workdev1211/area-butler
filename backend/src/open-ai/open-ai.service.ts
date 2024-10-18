@@ -1,4 +1,9 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -22,6 +27,10 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { LanguageTypeEnum } from '@area-butler-types/types';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import { OnOfficeService } from '../on-office/on-office.service';
+import { TGeneralImage } from '../shared/types/shared';
+import { ApiOnOfficeFileTypesEnum } from '@area-butler-types/on-office';
 
 type TFetchLocDescParams =
   | (IApiOpenAiLocDescQuery & { snapshotRes?: never })
@@ -44,6 +53,8 @@ export class OpenAiService {
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly openAiApiService: OpenAiApiService,
     private readonly propstackApiService: PropstackApiService,
+    @Inject(forwardRef(() => OnOfficeService))
+    private readonly onOfficeService: OnOfficeService,
     private readonly openAiQueryService: OpenAiQueryService,
     private readonly realEstateListingService: RealEstateListingService,
   ) {}
@@ -133,17 +144,9 @@ export class OpenAiService {
     }
     const language = realEstDescParams.language || LanguageTypeEnum.de;
 
-    const {
-      parameters: { apiKey },
-    } = user;
-
-    const realEstateExtData = await this.propstackApiService.fetchPropertyById(
-      apiKey,
-      Number(resultRealEstate.integrationId),
-    );
-
-    const images = realEstateExtData.images.filter(
-      (image) => !image.is_not_for_expose,
+    const images = await this.getRealEstatePhotos(
+      user,
+      resultRealEstate.integrationId,
     );
 
     return this.openAiApiService.fetchResponse(
@@ -175,17 +178,11 @@ export class OpenAiService {
       throw new UnprocessableEntityException('Real estate not found!');
     }
 
-    const {
-      parameters: { apiKey },
-    } = user;
+    const language = realEstDescParams.language || LanguageTypeEnum.de;
 
-    const realEstateExtData = await this.propstackApiService.fetchPropertyById(
-      apiKey,
-      Number(resultRealEstate.integrationId),
-    );
-
-    const images = realEstateExtData.images.filter(
-      (image) => !image.is_not_for_expose,
+    const images = await this.getRealEstatePhotos(
+      user,
+      resultRealEstate.integrationId,
     );
 
     return this.openAiApiService.fetchResponse(
@@ -194,7 +191,10 @@ export class OpenAiService {
         images,
         ...realEstDescParams,
       }),
-      null,
+      realEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
+        maxCharactersLength: realEstDescParams.maxCharactersLength,
+        language: language as LanguageTypeEnum,
+      },
       images,
     );
   }
@@ -406,5 +406,43 @@ export class OpenAiService {
       snapshotRes: resultSnapshotRes,
       ...locRealEstDescParams,
     };
+  }
+
+  private async getRealEstatePhotos(
+    user: TIntegrationUserDocument,
+    estateId: string,
+  ): Promise<TGeneralImage[]> {
+    switch (user.integrationType) {
+      case IntegrationTypesEnum.PROPSTACK:
+        const {
+          parameters: { apiKey },
+        } = user;
+
+        const realEstateExtData =
+          await this.propstackApiService.fetchPropertyById(
+            apiKey,
+            Number(estateId),
+          );
+
+        return realEstateExtData.images.filter(
+          (image) => !image.is_not_for_expose,
+        );
+      case IntegrationTypesEnum.ON_OFFICE:
+        const images = await this.onOfficeService.processEstateFiles(
+          user,
+          estateId,
+        );
+
+        return images.filter((image) =>
+          [
+            ApiOnOfficeFileTypesEnum.photo,
+            ApiOnOfficeFileTypesEnum.cover,
+            ApiOnOfficeFileTypesEnum.energyPassScale,
+            ApiOnOfficeFileTypesEnum.floorPlan,
+          ].includes(image.type),
+        );
+      default:
+        return [];
+    }
   }
 }

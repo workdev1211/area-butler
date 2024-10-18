@@ -75,6 +75,7 @@ services:
       - REACT_APP_SENTRY_ENV
       - REACT_APP_BASE_URL
       - ADDR_IN_RANGE_API_TYPE
+      - ON_OFFICE_IMAGES_URL
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"

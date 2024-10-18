@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { useHttp } from "./http";
 import {
@@ -22,10 +22,7 @@ import { ConfigContext } from "../context/ConfigContext";
 import { useIntegrationTools } from "./integration/integrationtools";
 import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/on-office-products";
 import { TApiIntUserProdContType } from "../../../shared/types/integration-user";
-import {
-  IntegrationActionTypeEnum,
-  IntegrationTypesEnum,
-} from "../../../shared/types/integration";
+import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 
 export type TOpenAiQuery = { integrationId?: string } & (
   | IApiOpenAiLocDescQuery
@@ -47,7 +44,6 @@ export const useOpenAi = () => {
   const { post } = useHttp();
 
   const isIntegration = !!integrationType;
-  const isPropstack = integrationType === IntegrationTypesEnum.PROPSTACK;
   const realEstateListing = searchContextState.realEstateListing!;
 
   const fetchOpenAiResponse = async (
@@ -95,17 +91,13 @@ export const useOpenAi = () => {
 
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
         url = isIntegration
-          ? isPropstack
-            ? "/api/open-ai-int/real-est-desc-2"
-            : "/api/open-ai-int/real-est-desc"
+          ? "/api/open-ai-int/real-est-desc-2"
           : "/api/open-ai/real-est-desc";
         break;
       }
 
       case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION: {
-        url = isPropstack
-            ? "/api/open-ai-int/equipment-desc"
-            : "/api/open-ai-int/real-est-desc"
+        url = "/api/open-ai-int/equipment-desc";
         break;
       }
 

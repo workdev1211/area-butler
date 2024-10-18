@@ -27,6 +27,7 @@ import {
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeOrderData,
   IApiOnOfficeRealEstate,
+  IApiOnOfficeRealEstateFile,
   IApiOnOfficeRequest,
   IApiOnOfficeResponse,
   IApiOnOfficeUnlockProviderReq,
@@ -91,6 +92,7 @@ export interface IPerformLoginData extends IProcessEstateData {
 export class OnOfficeService {
   private readonly apiUrl = configService.getBaseApiUrl();
   private readonly appUrl = configService.getBaseAppUrl();
+  private readonly onOfficeImageUrl = configService.getOnOfficeImageUrl();
   private readonly integrationType = IntegrationTypesEnum.ON_OFFICE;
   private readonly logger = new Logger(OnOfficeService.name);
 
@@ -1141,6 +1143,60 @@ export class OnOfficeService {
       place,
       realEstate,
     };
+  }
+
+  public async processEstateFiles(
+    integrationUser: TIntegrationUserDocument,
+    estateId: string,
+  ): Promise<Array<IApiOnOfficeRealEstateFile & { url: string }>> {
+    const { parameters } = integrationUser;
+    const { token, apiKey, customerName } =
+      parameters as IApiIntUserOnOfficeParams;
+    const actionId = ApiOnOfficeActionIdsEnum.GET;
+    const resourceType = ApiOnOfficeResourceTypesEnum.FILE;
+    const timestamp = dayjs().unix();
+
+    const signature = this.onOfficeApiService.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: 'estate',
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              estateid: estateId,
+              showispublishedonhomepage: true,
+            },
+          },
+        ],
+      },
+    };
+
+    const response: IApiOnOfficeResponse<IApiOnOfficeRealEstateFile> =
+      await this.onOfficeApiService.sendRequest(request);
+
+    this.onOfficeApiService.checkResponseIsSuccess(
+      this.processEstateData.name,
+      'The estate entity has not been retrieved!',
+      request,
+      response,
+    );
+
+    return response.response.results[0].data.records.map((record) => ({
+      ...record.elements,
+      url: `${this.onOfficeImageUrl}/${customerName}/${estateId}/${record.elements.filename}`,
+    }));
   }
 
   private async fetchLogoAndColor({
