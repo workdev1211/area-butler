@@ -777,9 +777,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
 
             {isIntegrationUser
-              ? ["web89711-21", "web89711-31", "web91649-21"].includes(
-                  user.integrationUserId
-                )
+              ? new RegExp(/^web89711-\d+$/).test(user.integrationUserId)
               : [
                   "atr@areabutler.de",
                   "a.timper@area-butler.de",

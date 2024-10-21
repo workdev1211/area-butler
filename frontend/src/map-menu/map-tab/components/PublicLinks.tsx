@@ -12,28 +12,40 @@ import { useTools } from "../../../hooks/tools";
 import { IntlKeys } from "i18n/keys";
 import { SearchContext } from "../../../context/SearchContext";
 import { IApiIntSetPropPubLinksReq } from "../../../../../shared/types/integration";
-import { UserContext } from "../../../context/UserContext";
 import { AreaButlerExportTypesEnum } from "../../../../../shared/types/types";
+import { useUserState } from "../../../hooks/userstate";
 
 const PublicLinks: FC = () => {
   const { integrationType } = useContext(ConfigContext);
   const {
     searchContextState: { responseConfig, responseTokens },
   } = useContext(SearchContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
   const { t } = useTranslation();
   const { sendToIntegration } = useIntegrationTools();
   const { createDirectLink } = useTools();
+  const { getActualUser } = useUserState();
+
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   // TODO: confirm translations here
-  const addressLinkTitle = "Mit Adresse - AreaButler Link";
-  const unaddressLinkTitle = "Anonym - AreaButler Link ohne Adresse";
+  let addressLinkTitle = "Mit Adresse - AreaButler Link";
+  let unaddressLinkTitle = "Anonym - AreaButler Link ohne Adresse";
+
+  // Schmitt Immo hack
+  if (
+    isIntegrationUser &&
+    new RegExp(/^18925(-\d+)?$/).test(user.integrationUserId)
+  ) {
+    addressLinkTitle = "Interaktive Karte";
+    unaddressLinkTitle = "Interaktive anonyme Karte";
+  }
 
   const directLink = createDirectLink({ language: responseConfig?.language });
-  const isLinkEntity = integrationUser?.config.isSpecialLink;
+  const isLinkEntity = isIntegrationUser
+    ? user.config.isSpecialLink
+    : undefined;
   const isSentBothAvail = !!(
     integrationType &&
     responseTokens?.addressToken &&

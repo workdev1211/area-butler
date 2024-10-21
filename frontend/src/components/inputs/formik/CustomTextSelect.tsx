@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FC, useState } from "react";
 import { useField } from "formik";
 
 import { ISelectTextValue } from "../../../../../shared/types/types";
@@ -17,7 +17,7 @@ interface ICustomTextSelectProps {
   isInput?: boolean;
 }
 
-const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
+const CustomTextSelect: FC<ICustomTextSelectProps> = ({
   label,
   mainLabel,
   name,
@@ -31,7 +31,7 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
   isInput,
 }) => {
   const [, meta, helpers] = useField<string>(name);
-  const { value: textValue } = meta;
+  const { value } = meta;
   const { setValue } = helpers;
 
   let selectValue = emptyTextValue || selectOptions[0]?.value;
@@ -48,9 +48,12 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
 
   return (
     <>
-      {mainLabel && <label className="label">
-        <span className="label-text">{mainLabel}</span>
-      </label>}
+      {mainLabel && (
+        <label className="label">
+          <span className="label-text">{mainLabel}</span>
+        </label>
+      )}
+
       <div
         className={`rounded-lg p-2 ${isCustomText && !isInput ? "pb-0" : ""}`}
         style={{ border: "1px solid lightgray" }}
@@ -96,12 +99,12 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
                 className="input input-bordered w-full"
                 type="text"
                 placeholder={placeholder}
-                value={textValue}
+                value={value}
                 onChange={({ target: { value: currentText } }) => {
                   if (
                     !textLengthLimit ||
                     currentText.length < textLengthLimit + 1 ||
-                    currentText.length < textValue.length
+                    currentText.length < value.length
                   ) {
                     setValue(currentText);
                   }
@@ -111,12 +114,12 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
               <textarea
                 className="textarea h-36 textarea-bordered w-full pb-0"
                 placeholder={placeholder}
-                value={textValue}
+                value={value}
                 onChange={({ target: { value: currentText } }) => {
                   if (
                     !textLengthLimit ||
                     currentText.length < textLengthLimit + 1 ||
-                    currentText.length < textValue.length
+                    currentText.length < value.length
                   ) {
                     setValue(currentText);
                   }

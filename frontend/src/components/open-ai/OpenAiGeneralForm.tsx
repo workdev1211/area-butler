@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -26,14 +26,15 @@ import CustomTextSelect from "../inputs/formik/CustomTextSelect";
 import CustomNumberSelect from "../inputs/formik/CustomNumberSelect";
 import { ISelectTextValue } from "../../../../shared/types/types";
 import { camelize } from "../../../../shared/functions/shared.functions";
+import { useUserState } from "../../hooks/userstate";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;
 }
 
-const OpenAiGeneralFormListener: FunctionComponent<
-  IOpenAiGeneralFormListenerProps
-> = ({ onValuesChange }) => {
+const OpenAiGeneralFormListener: FC<IOpenAiGeneralFormListenerProps> = ({
+  onValuesChange,
+}) => {
   const { values } = useFormikContext<IOpenAiGeneralFormValues>();
 
   useEffect(() => {
@@ -54,17 +55,21 @@ interface IOpenAiGeneralFormProps {
   defaultTextLength?: number;
 }
 
-const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
+const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
   formId,
   initialValues,
   onValuesChange,
   onSubmit,
   isFromOnePage,
   formRef,
-  defaultTextLength
+  defaultTextLength,
 }) => {
   const { t } = useTranslation();
   const { fetchPotentCustomerNames } = usePotentialCustomerData();
+
+  const { getActualUser } = useUserState();
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   const custTargetGroupOption: ISelectTextValue = {
     text: t(IntlKeys.snapshotEditor.dataTab.enterYourOwnTargetGroup),
@@ -87,10 +92,22 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
     : {
         tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
         targetGroupName: defaultTargetGroupName,
-        customText: "",
         textLength: isFromOnePage ? undefined : OpenAiTextLengthEnum.MEDIUM,
         maxCharactersLength: defaultTextLength,
       };
+
+  let customText = initialValues?.customText || "";
+
+  // Schmitt Immo hack
+  if (
+    isIntegrationUser &&
+    new RegExp(/^18925(-\d+)?$/).test(user.integrationUserId)
+  ) {
+    customText =
+      "bodenständig, keine Übertreibungen, Zielgruppe nicht explizit nennen, Struktur: 1ter Absatz Einleitung, 2ter Absatz Key Facts und zwar Stichpunktartig, 3ter Absatz Vorzüge der Lage (mindestens drei relevante POIs mit Name und Meter-Entfernung nennen) und Zusammenfassung";
+  }
+
+  resultInitValues.customText = customText;
 
   const validationSchema = Yup.object({
     tonality: Yup.string().oneOf(Object.values(OpenAiTonalityEnum)).optional(),
@@ -99,7 +116,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
     textLength: Yup.string()
       .oneOf(Object.values(OpenAiTextLengthEnum))
       .optional(),
-    maxCharactersLength: Yup.number().integer().optional()
+    maxCharactersLength: Yup.number().integer().optional(),
   });
 
   useEffect(() => {
@@ -231,7 +248,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
                   selectOptions={openAiCustomTextOptions}
                   customTextValue={OpenAiCustomTextEnum.CUSTOM}
                   emptyTextValue={OpenAiCustomTextEnum.NONE}
-                  initialText={initialValues?.customText}
+                  initialText={customText}
                 />
               </div>
             </div>

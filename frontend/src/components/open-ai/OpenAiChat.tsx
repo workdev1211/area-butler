@@ -106,6 +106,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
         query: { ...query, customText: queryText },
       });
     }
+
     setIsImproveDialogEnabled(true);
     setIsFetchResponse(false);
     promptInputRef.current!.value = "";
@@ -242,6 +243,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                               onClick={() => {
                                 queryResponses.splice(i, 1);
                                 setQueryResponse([...queryResponses]);
+
                                 if (queryResponses.length === 0) {
                                   setIsImproveDialogEnabled(false);
                                 }
@@ -256,7 +258,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                                   integrationNames[integrationType!],
                               })}
                               onClick={() => {
-                                sendToIntegration({
+                                void sendToIntegration({
                                   exportType: genText.initialQueryType as
                                     | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
                                     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
@@ -288,13 +290,16 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                               IntlKeys.snapshotEditor.dataTab.applyChange
                             )}
                             onClick={() => {
-                              if (editInputRef.current) {
-                                queryResponses[i] = {
-                                  ...queryResponses[i],
-                                  queryResponse: editInputRef.current?.value,
-                                };
-                                setIsEditMode(-1);
+                              if (!editInputRef.current) {
+                                return;
                               }
+
+                              queryResponses[i] = {
+                                ...queryResponses[i],
+                                queryResponse: editInputRef.current?.value,
+                              };
+
+                              setIsEditMode(-1);
                             }}
                           />
                           <img
@@ -353,8 +358,10 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                       initialQueryType: queryType,
                       queryResponse: responseText,
                     });
+
                     setIsImproveDialogEnabled(true);
                   }
+
                   setIsEditMode(-1);
                   setIsFetchResponse(false);
                 }}
@@ -383,16 +390,20 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                 }`}
                 form="open-ai-location-description-form"
                 onClick={() => {
-                  if (isOpenAiAvailable) {
-                    setIsFetchResponse(true);
-                    if (isImproveDialogEnabled) {
-                      if (promptInputRef.current?.value === "") return;
-                      refineOpenAiResponse();
-                    }
+                  if (!isOpenAiAvailable) {
+                    handleUnlock();
                     return;
                   }
 
-                  handleUnlock();
+                  setIsFetchResponse(true);
+
+                  if (isImproveDialogEnabled) {
+                    if (promptInputRef.current?.value === "") {
+                      return;
+                    }
+
+                    void refineOpenAiResponse();
+                  }
                 }}
                 disabled={isGenerateButtonDisabled || isFetchResponse}
               >

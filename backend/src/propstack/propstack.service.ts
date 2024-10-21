@@ -271,8 +271,12 @@ export class PropstackService {
     const processTextFieldParams = ({
       exportType,
       text,
-    }: TUpdEstTextFieldParams): [string, string | object] => {
+    }: TUpdEstTextFieldParams): [string, string | object] | [] => {
       let exportMatchParams = exportMatching && exportMatching[exportType];
+
+      if (exportMatchParams?.fieldId === null) {
+        return [];
+      }
 
       if (!exportMatchParams) {
         switch (exportType) {
@@ -320,6 +324,10 @@ export class PropstackService {
     const data = textFieldsParams.reduce((result, textFieldParams) => {
       const [key, value] = processTextFieldParams(textFieldParams);
 
+      if (!key) {
+        return result;
+      }
+
       if (key === customFieldKey && typeof value === 'object') {
         const customFields = result[key];
         result[key] = customFields ? { ...customFields, ...value } : value;
@@ -329,6 +337,10 @@ export class PropstackService {
       result[key] = value;
       return result;
     }, {});
+
+    if (!Object.keys(data).length) {
+      return;
+    }
 
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,

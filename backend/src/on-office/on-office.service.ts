@@ -476,9 +476,13 @@ export class OnOfficeService {
     const processTextFieldParams = ({
       exportType,
       text,
-    }: TUpdEstTextFieldParams) => {
+    }: TUpdEstTextFieldParams): { [key: string]: string } | undefined => {
       let exportMatchParams =
         resExportMatching && resExportMatching[exportType];
+
+      if (exportMatchParams?.fieldId === null) {
+        return;
+      }
 
       if (!exportMatchParams) {
         switch (exportType) {
@@ -523,6 +527,10 @@ export class OnOfficeService {
       Object.assign(result, processTextFieldParams(textFieldParams));
       return result;
     }, {});
+
+    if (!Object.keys(data).length) {
+      return;
+    }
 
     const request: IApiOnOfficeRequest = {
       token,
