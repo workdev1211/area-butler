@@ -5,9 +5,9 @@
     "potentialCustomers": "My target groups",
     "cards": "My maps",
     "profile": "Profile",
-    "companyProfile": "Company profile",
     "logout": "Log out",
-    "menu": "Menu"
+    "menu": "Menu",
+    "companyProfile": "Company profile"
   },
   "snapshotEditor": {
     "map": "Map",
@@ -563,9 +563,6 @@
     "defaultUploadLabel": "Upload logo",
     "sizeError": "Your logo must not be larger than 5 MB!"
   },
-  "companyProfile": {
-    "title": "Company profile"
-  },
   "yourProfile": {
     "title": "Your profile",
     "profileUpdated": "Profile updated!",
@@ -764,6 +761,9 @@
       "annualSubscription": "Annual subscription"
     }
   },
+  "companyProfile": {
+    "title": "Company profile"
+  },
   "errors": {
     "userNotFound": "User not found!",
     "wrongIntegration": "Wrong integration type!"
@@ -771,6 +771,7 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Type an address or existing snapshot id..."
-    }
+    },
+    "templateIdLabel": "Select and fix template for all users"
   }
 }

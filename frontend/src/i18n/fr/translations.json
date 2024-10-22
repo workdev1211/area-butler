@@ -6,7 +6,8 @@
     "cards": "Mes cartes",
     "profile": "Profil",
     "logout": "Se désinscrire",
-    "menu": "Menu"
+    "menu": "Menu",
+    "companyProfile": "Profil de l'entreprise"
   },
   "snapshotEditor": {
     "map": "Carte",
@@ -759,5 +760,18 @@
       "cardStyles": "Styles de carte : sont configurés une seule fois pour votre compte d'utilisateur,\n          sont utilisables pour autant de cartes que vous le souhaitez et sont\n          disponibles pendant toute la durée d'utilisation.\nStyles de carte : configurés une seule fois pour votre compte d'utilisateur,\n          sont utilisables pour autant de cartes que vous le souhaitez et pour toute la durée de vie de la carte.\n          disponibles pendant toute la durée d'utilisation.",
       "annualSubscription": "Abonnement annuel"
     }
+  },
+  "companyProfile": {
+    "title": "Profil de l'entreprise"
+  },
+  "errors": {
+    "userNotFound": "Utilisateur non trouvé !",
+    "wrongIntegration": "Mauvais type d'intégration !"
+  },
+  "company": {
+    "profile": {
+      "templatePlaceholder": "Tapez une adresse ou un identifiant d'instantané existant..."
+    },
+    "templateIdLabel": "Sélectionner et fixer le modèle pour tous les utilisateurs"
   }
 }

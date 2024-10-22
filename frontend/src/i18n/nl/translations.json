@@ -6,7 +6,8 @@
     "cards": "Mijn kaarten",
     "profile": "Profiel",
     "logout": "Afmelden",
-    "menu": "Menu"
+    "menu": "Menu",
+    "companyProfile": "Bedrijfsprofiel"
   },
   "snapshotEditor": {
     "map": "Kaart",
@@ -759,5 +760,18 @@
       "cardStyles": "Kaartstijlen: worden eenmalig ingesteld voor je gebruikersaccount,\n          kunnen worden gebruikt voor een willekeurig aantal kaarten en zijn beschikbaar voor de gehele\n          beschikbaar voor de gehele gebruiksperiode.\nKaartstijlen: worden eenmalig ingesteld voor je gebruikersaccount,\n          kunnen worden gebruikt voor een willekeurig aantal kaarten en zijn beschikbaar voor de gehele\n          beschikbaar voor de gehele gebruiksperiode.",
       "annualSubscription": "Jaarabonnement"
     }
+  },
+  "companyProfile": {
+    "title": "Bedrijfsprofiel"
+  },
+  "errors": {
+    "userNotFound": "Gebruiker niet gevonden!",
+    "wrongIntegration": "Verkeerde integratietype!"
+  },
+  "company": {
+    "profile": {
+      "templatePlaceholder": "Typ een adres of bestaande snapshot-id..."
+    },
+    "templateIdLabel": "Selecteer en bevestig sjabloon voor alle gebruikers"
   }
 }

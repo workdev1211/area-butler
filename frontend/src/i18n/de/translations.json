@@ -5,9 +5,9 @@
     "potentialCustomers": "Meine Zielgruppen",
     "cards": "Meine Karten",
     "profile": "Profil",
-    "companyProfile": "Unternehmensprofil",
     "logout": "Abmelden",
-    "menu": "Menü"
+    "menu": "Menü",
+    "companyProfile": "Unternehmensprofil"
   },
   "snapshotEditor": {
     "map": "Karte",
@@ -563,9 +563,6 @@
     "defaultUploadLabel": "Logo hochladen",
     "sizeError": "Dein Logo darf nicht größer als 5 MB sein!"
   },
-  "companyProfile": {
-    "title": "Unternehmensprofil"
-  },
   "yourProfile": {
     "title": "Ihr Profil",
     "profileUpdated": "Profil aktualisiert!",
@@ -764,13 +761,17 @@
       "annualSubscription": "Jahres-Abo"
     }
   },
+  "companyProfile": {
+    "title": "Unternehmensprofil"
+  },
   "errors": {
     "userNotFound": "Benutzer nicht gefunden!",
     "wrongIntegration": "Falscher Integrationstyp!"
   },
   "company": {
     "profile": {
-      "templateIdLabel": "Vorlage für alle User auswählen und fixieren"
-    }
+      "templatePlaceholder": "Geben Sie eine Adresse oder eine vorhandene Snapshot-ID ein..."
+    },
+    "templateIdLabel": "Vorlage für alle User auswählen und fixieren"
   }
 }

@@ -6,7 +6,8 @@
     "cards": "Le mie carte",
     "profile": "Profilo",
     "logout": "Disconnettersi",
-    "menu": "Menu"
+    "menu": "Menu",
+    "companyProfile": "Profilo aziendale"
   },
   "snapshotEditor": {
     "map": "Mappa",
@@ -759,5 +760,18 @@
       "cardStyles": "Stili di mappa: vengono impostati una volta per il proprio account utente,\n          possono essere utilizzati per un numero qualsiasi di carte e sono disponibili per tutto il periodo di utilizzo.\n          disponibili per l'intero periodo di utilizzo.\nStili di carta: sono impostati una volta per l'account utente,\n          possono essere utilizzati per un numero qualsiasi di carte e sono disponibili per tutto il periodo di utilizzo.\n          disponibili per l'intero periodo di utilizzo.",
       "annualSubscription": "Abbonamento annuale"
     }
+  },
+  "companyProfile": {
+    "title": "Profilo aziendale"
+  },
+  "errors": {
+    "userNotFound": "Utente non trovato!",
+    "wrongIntegration": "Tipo di integrazione sbagliato!"
+  },
+  "company": {
+    "profile": {
+      "templatePlaceholder": "Digitare un indirizzo o l'id dell'istantanea esistente..."
+    },
+    "templateIdLabel": "Selezionare e fissare il modello per tutti gli utenti"
   }
 }
