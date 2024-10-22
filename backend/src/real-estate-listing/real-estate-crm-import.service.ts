@@ -47,7 +47,7 @@ import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
 import { getProcUpdateQuery } from '../shared/functions/shared';
 import { PlaceService } from '../place/place.service';
 import ApiPropstackWebhookToAreaButlerDto from './dto/api-propstack-webhook-to-area-butler.dto';
-import { propertyFields } from '../on-office/shared/on-office.constants';
+import { estateFields } from '../on-office/shared/on-office.constants';
 import { IApiUserExtConnectSettingsReq } from '@area-butler-types/types';
 
 @Injectable()
@@ -362,7 +362,7 @@ export class RealEstateCrmImportService {
       listlimit: ON_OFFICE_ESTATES_PER_PAGE,
       listoffset: 0,
       formatoutput: true,
-      data: propertyFields,
+      data: estateFields,
     };
 
     if (isIntegrationUser) {

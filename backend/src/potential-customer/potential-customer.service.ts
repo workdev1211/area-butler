@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ProjectionFields } from 'mongoose';
+import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
 
 import {
@@ -11,14 +11,12 @@ import {
   QuestionnaireRequest,
   QuestionnaireRequestDocument,
 } from './schema/questionnaire-request.schema';
-import { SubscriptionService } from '../user/subscription.service';
 import {
   MailSenderService,
   IMailProps,
 } from '../client/mail/mail-sender.service';
 import { configService } from '../config/config.service';
 import { UserDocument } from '../user/schema/user.schema';
-import { UserService } from '../user/user.service';
 import {
   questionnaireInvitationTemplateId,
   questionnaireSubmissionTemplateId,
@@ -30,7 +28,8 @@ import {
   ApiUpsertQuestionnaire,
   ApiUpsertQuestionnaireRequest,
 } from '@area-butler-types/potential-customer';
-import { IntegrationUserService } from '../user/integration-user.service';
+import { UserService } from '../user/user.service';
+import { SubscriptionService } from '../user/subscription.service';
 
 @Injectable()
 export class PotentialCustomerService {
@@ -40,7 +39,6 @@ export class PotentialCustomerService {
     @InjectModel(QuestionnaireRequest.name)
     private readonly questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
     private readonly userService: UserService,
-    private readonly integrationUserService: IntegrationUserService,
     private readonly mailSender: MailSenderService,
     private readonly subscriptionService: SubscriptionService,
   ) {}
@@ -50,59 +48,40 @@ export class PotentialCustomerService {
     projectQuery?: ProjectionFields<PotentialCustomerDocument>,
   ): Promise<PotentialCustomerDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
-    const userIds: string[] = [];
-    let filter;
+    const userIds: (Types.ObjectId | string)[] = [];
+    let filterQuery: FilterQuery<PotentialCustomerDocument>;
 
     if (isIntegrationUser) {
       userIds.push(user.integrationUserId);
 
-      if (user.parentId) {
-        const parentIntUserId =
-          user.parentUser?.integrationUserId ||
-          (
-            await this.integrationUserService.findByDbId(user.parentId, {
-              integrationUserId: 1,
-            })
-          ).integrationUserId;
-
-        userIds.push(parentIntUserId);
+      if (user.parentUser) {
+        userIds.push(user.parentUser.integrationUserId);
       }
 
-      filter = {
+      filterQuery = {
         'integrationParams.integrationUserId': { $in: userIds },
         'integrationParams.integrationType': user.integrationType,
       };
     }
 
     if (!isIntegrationUser) {
-      userIds.push(user.id);
+      userIds.push(user._id);
 
-      if (user.parentId) {
-        userIds.push(user.parentId);
+      if (user.parentUser) {
+        userIds.push(user.parentUser._id);
       }
 
-      filter = {
+      filterQuery = {
         userId: { $in: userIds },
       };
     }
 
-    return this.potentialCustomerModel.find(filter, projectQuery);
+    return this.potentialCustomerModel.find(filterQuery, projectQuery);
   }
 
   async fetchNames(
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<string[]> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (isIntegrationUser && user.parentId && !user.parentUser) {
-      user.parentUser = await this.integrationUserService.findByDbId(
-        user.parentId,
-        {
-          integrationUserId: 1,
-        },
-      );
-    }
-
     const potentialCustomers = await this.fetchPotentialCustomers(user, {
       name: 1,
     });

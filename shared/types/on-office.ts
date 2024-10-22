@@ -50,6 +50,8 @@ export enum ApiOnOfficeResourceTypesEnum {
   UPLOAD_FILE = "uploadfile",
   USER = "user",
   FILE = "file",
+  MULTISELECT_KEY = "multiselectkey",
+  MULTISELECT_CONFIGURATION = "multiselectconfiguration",
 }
 
 interface IApiOnOfficeRequestAction {
@@ -76,8 +78,9 @@ export interface IApiOnOfficeReqActParams {
   formatoutput?: boolean; // returns text values instead of enums
   filter?: TApiOnOfficeReqParamFilter;
   fieldList?: string[]; // enum[] IApiOnOfficeRealEstate
+  module?: OnOfficeReqModuleEnum;
+  fields?: string[];
   // file upload start
-  module?: "estate"; // enum
   freetext?: string; // file description
   tmpUploadId?: string;
   file?: string; // filename
@@ -195,6 +198,7 @@ export interface IApiOnOfficeRealEstate {
   anzahl_balkone: string; // number of balconies
   unterkellert: ApiOnOfficeEstateBasementEnum; // basement
   vermarktungsart: string; // ApiOnOfficeEstateMarketTypesEnum // marketing type - sell, rent, etc
+  TargetAudience: string[];
   /*
   // external id in onOffice, in our app we use "Id" / "Datensatznr" field
   objektnr_extern: string; // the label is "ImmoNr"
@@ -340,4 +344,15 @@ export enum OnOfficeOpenAiFieldEnum {
   LOCATION = "lage",
   OTHER_INFO = "sonstige_angaben",
   PROP_DESCRIPTION = "objektbeschreibung",
+}
+
+export enum OnOfficeReqModuleEnum {
+  ESTATE = "estate",
+  ADDRESS = "address",
+  CALENDAR = "calendar",
+  TASK = "task",
+  AGENTS_LOG = "agentsLog",
+  PROJECT = "project",
+  FACTURE_ARTICLE_ADMINISTRATION = "fakturaArticleAdministration",
+  FACTURE_BOOKINGS = "fakturaBookings",
 }

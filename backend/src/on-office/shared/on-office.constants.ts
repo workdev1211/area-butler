@@ -1,6 +1,6 @@
 export const activateUserPath = 'activate-user';
 
-export const propertyFields = [
+export const estateFields = [
   'Id', // onOffice estate id
   'objekttitel',
   'strasse',
@@ -25,5 +25,4 @@ export const propertyFields = [
   'objekttyp',
   'TargetAudience',
   'objektbeschreibung',
-
 ];

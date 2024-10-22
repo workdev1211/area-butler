@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -28,9 +23,9 @@ import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { LanguageTypeEnum } from '@area-butler-types/types';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
-import { OnOfficeService } from '../on-office/on-office.service';
 import { TGeneralImage } from '../shared/types/shared';
 import { ApiOnOfficeFileTypesEnum } from '@area-butler-types/on-office';
+import { OpenAiOnOfficeService } from './open-ai-on-office.service';
 
 type TFetchLocDescParams =
   | (IApiOpenAiLocDescQuery & { snapshotRes?: never })
@@ -53,9 +48,8 @@ export class OpenAiService {
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly openAiApiService: OpenAiApiService,
     private readonly propstackApiService: PropstackApiService,
-    @Inject(forwardRef(() => OnOfficeService))
-    private readonly onOfficeService: OnOfficeService,
     private readonly openAiQueryService: OpenAiQueryService,
+    private readonly openAiOnOfficeService: OpenAiOnOfficeService,
     private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
@@ -428,7 +422,7 @@ export class OpenAiService {
           (image) => !image.is_not_for_expose,
         );
       case IntegrationTypesEnum.ON_OFFICE:
-        const images = await this.onOfficeService.processEstateFiles(
+        const images = await this.openAiOnOfficeService.fetchEstateImages(
           user,
           estateId,
         );

@@ -15,6 +15,7 @@ import { OnOfficeWebhookController } from './on-office-webhook.controller';
 import { OnOfficeWebhookService } from './on-office-webhook.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { CompanyModule } from '../company/company.module';
+import { OnOfficeEstateService } from './on-office-estate.service';
 
 @Module({
   imports: [
@@ -29,7 +30,6 @@ import { CompanyModule } from '../company/company.module';
     ]),
   ],
   controllers: [OnOfficeController, OnOfficeWebhookController],
-  providers: [OnOfficeService, OnOfficeWebhookService],
-  exports: [OnOfficeService]
+  providers: [OnOfficeService, OnOfficeEstateService, OnOfficeWebhookService],
 })
 export class OnOfficeModule {}

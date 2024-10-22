@@ -17,10 +17,12 @@ import { OnOfficeWebhookUrlEnum } from './shared/on-office.types';
 import ApiOnOfficeLoginQueryParamsDto from './dto/api-on-office-login-query-params.dto';
 import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
 import { createDirectLink } from '../shared/functions/shared';
+import { OnOfficeEstateService } from './on-office-estate.service';
 
 @Injectable()
 export class OnOfficeWebhookService {
   constructor(
+    private readonly onOfficeEstateService: OnOfficeEstateService,
     private readonly onOfficeService: OnOfficeService,
     private readonly openAiExtService: OpenAiExtService,
     private readonly openAiService: OpenAiService,
@@ -94,7 +96,7 @@ export class OnOfficeWebhookService {
     }
 
     if (textFieldParams.length) {
-      await this.onOfficeService.updateEstTextFields(
+      await this.onOfficeEstateService.updateTextFields(
         integrationUser,
         realEstate.integrationId,
         textFieldParams,

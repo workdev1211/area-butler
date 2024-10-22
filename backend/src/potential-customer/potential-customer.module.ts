@@ -34,5 +34,6 @@ import { PotentialCustomerIntController } from './potential-customer-int.control
     QuestionnaireController,
   ],
   providers: [PotentialCustomerService, PotentialCustomerListener],
+  exports: [PotentialCustomerService],
 })
 export class PotentialCustomerModule {}

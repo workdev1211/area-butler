@@ -37,6 +37,7 @@ import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
 // import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
 import ApiIntSetPropPubLinksReqDto from '../dto/integration/api-int-set-prop-pub-links-req.dto';
+import { OnOfficeEstateService } from './on-office-estate.service';
 
 @ApiTags('on-office')
 @Controller('api/on-office')
@@ -44,6 +45,7 @@ export class OnOfficeController {
   private readonly logger = new Logger(OnOfficeController.name);
 
   constructor(
+    private readonly onOfficeEstateService: OnOfficeEstateService,
     private readonly onOfficeService: OnOfficeService,
     private readonly realEstateCrmImportService: RealEstateCrmImportService,
   ) {}
@@ -107,11 +109,11 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Update estate text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('estate-text')
-  updateEstateTextField(
+  updateEstTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() { exportType, integrationId, text }: ApiIntUpdEstTextFieldReqDto,
   ): Promise<void> {
-    return this.onOfficeService.updateEstTextFields(
+    return this.onOfficeEstateService.updateTextFields(
       integrationUser,
       integrationId,
       [{ exportType, text }],
@@ -125,7 +127,7 @@ export class OnOfficeController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() uploadEstateFileDto: ApiIntUploadEstateFileReqDto,
   ): Promise<void> {
-    return this.onOfficeService.uploadEstateFile(
+    return this.onOfficeEstateService.uploadFile(
       integrationUser,
       uploadEstateFileDto,
     );
@@ -148,10 +150,10 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Fetch available estate statuses' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('avail-statuses')
-  fetchAvailStatuses(
+  fetchEstStatuses(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiRealEstAvailIntStatuses> {
-    return this.onOfficeService.fetchAvailStatuses(integrationUser);
+    return this.onOfficeEstateService.fetchAvailStatuses(integrationUser);
   }
 
   @ApiOperation({ description: 'Sync estate data' })
@@ -168,14 +170,14 @@ export class OnOfficeController {
     );
   }
 
-  @ApiOperation({ description: 'Set public links' })
+  @ApiOperation({ description: 'Set estate public links' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('property-public-links')
-  setPropPublicLinks(
+  setEstPublicLinks(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() setPropPubLinksReqDto: ApiIntSetPropPubLinksReqDto,
   ): Promise<void> {
-    return this.onOfficeService.setPropPublicLinks(
+    return this.onOfficeEstateService.setPublicLinks(
       integrationUser,
       setPropPubLinksReqDto,
     );
