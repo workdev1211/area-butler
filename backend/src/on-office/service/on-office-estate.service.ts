@@ -7,8 +7,8 @@ import {
 import * as dayjs from 'dayjs';
 import { plainToInstance } from 'class-transformer';
 
-import { estateFields } from './shared/on-office.constants';
-import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
+import { estateFields } from '../shared/on-office.constants';
+import { OnOfficeApiService } from '../../client/on-office/on-office-api.service';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeArtTypesEnum,
@@ -19,7 +19,7 @@ import {
   OnOfficeOpenAiFieldEnum,
   OnOfficeReqModuleEnum,
 } from '@area-butler-types/on-office';
-import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import {
   IApiIntCreateEstateLinkReq,
   IApiIntSetPropPubLinksReq,
@@ -28,18 +28,18 @@ import {
   IntegrationTypesEnum,
   TUpdEstTextFieldParams,
 } from '@area-butler-types/integration';
-import { GeoJsonPoint } from '../shared/types/geo-json';
-import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
+import { GeoJsonPoint } from '../../shared/types/geo-json';
+import { RealEstateListingIntService } from '../../real-estate-listing/real-estate-listing-int.service';
+import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import { IApiIntUserOnOfficeParams } from '@area-butler-types/integration-user';
 import {
   onOfficeLinkFieldMapper,
   onOfficeOpenAiFieldMapper,
-} from '../../../shared/constants/on-office/on-office-constants';
-import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
+} from '../../../../shared/constants/on-office/on-office-constants';
+import ApiOnOfficeToAreaButlerDto from '../../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
-import { parseOnOfficeFloat } from '../shared/functions/on-office';
-import { PlaceService } from '../place/place.service';
+import { parseOnOfficeFloat } from '../../shared/functions/on-office';
+import { PlaceService } from '../../place/place.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';

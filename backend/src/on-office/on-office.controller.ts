@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { OnOfficeService } from './on-office.service';
+import { OnOfficeService } from './service/on-office.service';
 import { activateUserPath } from './shared/on-office.constants';
 import ApiOnOfficeUnlockProviderReqDto from './dto/api-on-office-unlock-provider-req.dto';
 import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
@@ -37,7 +37,7 @@ import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
 // import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
 import ApiIntSetPropPubLinksReqDto from '../dto/integration/api-int-set-prop-pub-links-req.dto';
-import { OnOfficeEstateService } from './on-office-estate.service';
+import { OnOfficeEstateService } from './service/on-office-estate.service';
 
 @ApiTags('on-office')
 @Controller('api/on-office')

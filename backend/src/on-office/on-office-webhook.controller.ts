@@ -10,7 +10,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import ApiOnOfficeLoginQueryParamsDto from './dto/api-on-office-login-query-params.dto';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
-import { OnOfficeWebhookService } from './on-office-webhook.service';
+import { OnOfficeWebhookService } from './service/on-office-webhook.service';
 import { OnOfficeWebhookUrlEnum } from './shared/on-office.types';
 
 @ApiTags('on-office', 'webhook')

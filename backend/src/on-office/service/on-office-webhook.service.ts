@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 
-import { SnapshotExtService } from '../location/snapshot-ext.service';
+import { SnapshotExtService } from '../../location/snapshot-ext.service';
 import { IPerformLoginData, OnOfficeService } from './on-office.service';
-import { OpenAiService } from '../open-ai/open-ai.service';
+import { OpenAiService } from '../../open-ai/open-ai.service';
 import {
   ApiSearchResultSnapshotResponse,
   AreaButlerExportTypesEnum,
   MeansOfTransportation,
 } from '@area-butler-types/types';
-import { onOfficeOpenAiFieldMapper } from '../../../shared/constants/on-office/on-office-constants';
+import { onOfficeOpenAiFieldMapper } from '../../../../shared/constants/on-office/on-office-constants';
 import { OnOfficeOpenAiFieldEnum } from '@area-butler-types/on-office';
 import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
-import { defaultRealEstType } from '../../../shared/constants/open-ai';
-import { OpenAiExtService } from '../open-ai/open-ai-ext.service';
-import { OnOfficeWebhookUrlEnum } from './shared/on-office.types';
-import ApiOnOfficeLoginQueryParamsDto from './dto/api-on-office-login-query-params.dto';
+import { defaultRealEstType } from '../../../../shared/constants/open-ai';
+import { OpenAiExtService } from '../../open-ai/open-ai-ext.service';
+import { OnOfficeWebhookUrlEnum } from '../shared/on-office.types';
+import ApiOnOfficeLoginQueryParamsDto from '../dto/api-on-office-login-query-params.dto';
 import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
-import { createDirectLink } from '../shared/functions/shared';
+import { createDirectLink } from '../../shared/functions/shared';
 import { OnOfficeEstateService } from './on-office-estate.service';
 
 @Injectable()

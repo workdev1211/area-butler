@@ -8,10 +8,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
 
-import { configService } from '../config/config.service';
-import { activateUserPath } from './shared/on-office.constants';
-import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
-import { IntegrationUserService } from '../user/integration-user.service';
+import { configService } from '../../config/config.service';
+import { activateUserPath } from '../shared/on-office.constants';
+import { OnOfficeApiService } from '../../client/on-office/on-office-api.service';
+import { IntegrationUserService } from '../../user/integration-user.service';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
@@ -30,17 +30,17 @@ import {
   TApiOnOfficeConfirmOrderRes,
   TOnOfficeLoginQueryParams,
 } from '@area-butler-types/on-office';
-import { allOnOfficeProducts } from '../../../shared/constants/on-office/on-office-products';
-import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { allOnOfficeProducts } from '../../../../shared/constants/on-office/on-office-products';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import {
   OnOfficeTransaction,
   TOnOfficeTransactionDocument,
-} from './schema/on-office-transaction.schema';
-import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
+} from '../schema/on-office-transaction.schema';
+import { convertOnOfficeProdToIntUserProd } from '../shared/on-office.functions';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
-import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
+import { RealEstateListingIntService } from '../../real-estate-listing/real-estate-listing-int.service';
+import { convertBase64ContentToUri } from '../../../../shared/functions/image.functions';
+import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
   IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
@@ -49,12 +49,12 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import {
   buildOnOfficeQueryString,
   getOnOfficeSortedMapData,
-} from '../shared/functions/on-office';
-import { FetchSnapshotService } from '../location/fetch-snapshot.service';
-import { ContingentIntService } from '../user/contingent-int.service';
+} from '../../shared/functions/on-office';
+import { FetchSnapshotService } from '../../location/fetch-snapshot.service';
+import { ContingentIntService } from '../../user/contingent-int.service';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
-import { CompanyService } from '../company/company.service';
-import { ConvertIntUserService } from '../user/convert-int-user.service';
+import { CompanyService } from '../../company/company.service';
+import { ConvertIntUserService } from '../../user/convert-int-user.service';
 import { OnOfficeEstateService } from './on-office-estate.service';
 
 interface IProcessEstateData {

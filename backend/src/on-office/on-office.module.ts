@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { OnOfficeService } from './on-office.service';
+import { OnOfficeService } from './service/on-office.service';
 import { OnOfficeController } from './on-office.controller';
 import { ClientModule } from '../client/client.module';
 import { UserModule } from '../user/user.module';
@@ -12,10 +12,10 @@ import {
 } from './schema/on-office-transaction.schema';
 import { PlaceModule } from '../place/place.module';
 import { OnOfficeWebhookController } from './on-office-webhook.controller';
-import { OnOfficeWebhookService } from './on-office-webhook.service';
+import { OnOfficeWebhookService } from './service/on-office-webhook.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { CompanyModule } from '../company/company.module';
-import { OnOfficeEstateService } from './on-office-estate.service';
+import { OnOfficeEstateService } from './service/on-office-estate.service';
 
 @Module({
   imports: [

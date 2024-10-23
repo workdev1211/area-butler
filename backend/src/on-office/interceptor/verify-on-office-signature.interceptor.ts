@@ -8,7 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import structuredClone from '@ungap/structured-clone';
 
-import { OnOfficeService } from '../on-office.service';
+import { OnOfficeService } from '../service/on-office.service';
 import { TOnOfficeLoginQueryParams } from '@area-butler-types/on-office';
 
 @Injectable()

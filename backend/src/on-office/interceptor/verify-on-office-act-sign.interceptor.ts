@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable, scheduled, asyncScheduler } from 'rxjs';
 
-import { OnOfficeService } from '../on-office.service';
+import { OnOfficeService } from '../service/on-office.service';
 
 @Injectable()
 export class VerifyOnOfficeActSignInterceptor implements NestInterceptor {
