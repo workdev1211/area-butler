@@ -7,6 +7,7 @@ import {
   ApiOsmEntity,
   ApiSearch,
   ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   IApiPlacesLocation,
   OsmName,
@@ -24,15 +25,18 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { PlaceService } from '../place/place.service';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 
 interface ICreateSnapshot {
   user: UserDocument | TIntegrationUserDocument;
   location: string | ApiCoordinates;
+
   templateSnapshotId?: string;
   externalId?: string;
   realEstateListing?: ApiRealEstateListing;
   transportParams?: TransportationParam[];
   poiTypes?: OsmName[];
+  preferredLocations?: ApiPreferredLocation[];
   primaryColor?: string;
 }
 
@@ -55,12 +59,14 @@ export class SnapshotExtService {
     place,
     templateSnapshotId,
     externalId,
+    preferredLocations,
     primaryColor,
     realEstateListing,
     transportParams = [...defaultTransportParams],
     poiTypes = [...defaultPoiTypes],
   }: ICreateSnapshotByPlace): Promise<ApiSearchResultSnapshotResponse> {
     const searchData: ApiSearch = {
+      preferredLocations,
       coordinates: { ...place.geometry.location },
       integrationId:
         'integrationUserId' in user
@@ -103,7 +109,7 @@ export class SnapshotExtService {
       transportationParams: searchData.meansOfTransportation,
     };
 
-    let snapshotConfig;
+    let snapshotConfig: ApiSearchResultSnapshotConfig;
 
     if (templateSnapshotId) {
       const { config } =
@@ -126,28 +132,18 @@ export class SnapshotExtService {
     });
   }
 
-  async createSnapshot({
-    user,
-    location,
-    realEstateListing,
-    templateSnapshotId,
-    transportParams,
-    poiTypes,
-    primaryColor,
-    externalId,
-  }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
-    const place = await this.placeService.fetchPlaceOrFail({ user, location });
-
-    return this.createSnapshotByPlace({
-      user,
-      place,
-      templateSnapshotId,
-      realEstateListing,
-      transportParams,
-      poiTypes,
-      externalId,
-      primaryColor,
+  async createSnapshot(
+    createSnapshotParams: ICreateSnapshot,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const place = await this.placeService.fetchPlaceOrFail({
+      user: createSnapshotParams.user,
+      location: createSnapshotParams.location,
     });
+
+    const resultParams = { ...createSnapshotParams, place };
+    delete resultParams.location;
+
+    return this.createSnapshotByPlace(resultParams);
   }
 
   async createSnapshotFromTemplate(
