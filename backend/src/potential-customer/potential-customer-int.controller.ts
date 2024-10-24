@@ -46,16 +46,13 @@ export class PotentialCustomerIntController {
   async fetchPotentialCustomers(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<ApiPotentialCustomer[]> {
-    return (
-      await this.potentialCustomerService.fetchPotentialCustomers(
-        integrationUser,
-      )
-    ).map((potentialCustomer) =>
-      mapPotentialCustomerToApiPotentialCustomer(
-        potentialCustomer,
-        integrationUser.integrationUserId,
-        true,
-      ),
+    return (await this.potentialCustomerService.findMany(integrationUser)).map(
+      (potentialCustomer) =>
+        mapPotentialCustomerToApiPotentialCustomer(
+          potentialCustomer,
+          integrationUser.integrationUserId,
+          true,
+        ),
     );
   }
 

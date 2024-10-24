@@ -4,6 +4,17 @@ import {
   UnitsOfTransportation,
 } from '@area-butler-types/types';
 import { PotentialCustomerDocument } from '../../potential-customer/schema/potential-customer.schema';
+import { defaultTargetGroupName } from '../../../../shared/constants/potential-customer';
+import {
+  defaultPoiTypes,
+  defaultTransportParams,
+} from '../../../../shared/constants/location';
+
+export const defaultPotentialCustomer: Partial<PotentialCustomerDocument> = {
+  name: defaultTargetGroupName,
+  preferredAmenities: [...defaultPoiTypes],
+  routingProfiles: [...defaultTransportParams],
+};
 
 export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
   {

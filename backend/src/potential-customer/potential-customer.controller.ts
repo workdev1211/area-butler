@@ -39,7 +39,7 @@ export class PotentialCustomerController extends AuthenticatedController {
     @InjectUser() user: UserDocument,
   ): Promise<ApiPotentialCustomer[]> {
     return (
-      await this.potentialCustomerService.fetchPotentialCustomers(user)
+      await this.potentialCustomerService.findMany(user)
     ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p, user.id));
   }
 

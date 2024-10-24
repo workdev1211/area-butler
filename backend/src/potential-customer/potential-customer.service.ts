@@ -30,6 +30,10 @@ import {
 } from '@area-butler-types/potential-customer';
 import { UserService } from '../user/user.service';
 import { SubscriptionService } from '../user/subscription.service';
+import { TUnitedUser } from '../shared/types/user';
+
+type TFilterQuery = FilterQuery<PotentialCustomerDocument>;
+type TProjectQuery = ProjectionFields<PotentialCustomerDocument>;
 
 @Injectable()
 export class PotentialCustomerService {
@@ -38,51 +42,36 @@ export class PotentialCustomerService {
     private readonly potentialCustomerModel: Model<PotentialCustomerDocument>,
     @InjectModel(QuestionnaireRequest.name)
     private readonly questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
-    private readonly userService: UserService,
     private readonly mailSender: MailSenderService,
     private readonly subscriptionService: SubscriptionService,
+    private readonly userService: UserService,
   ) {}
 
-  async fetchPotentialCustomers(
-    user: UserDocument | TIntegrationUserDocument,
+  async findOne(
+    user: TUnitedUser,
+    filterQuery: FilterQuery<PotentialCustomerDocument>,
     projectQuery?: ProjectionFields<PotentialCustomerDocument>,
+  ): Promise<PotentialCustomerDocument> {
+    return this.potentialCustomerModel.findOne(
+      this.injectUserIds(user, filterQuery),
+      projectQuery,
+    );
+  }
+
+  async findMany(
+    user: TUnitedUser,
+    projectQuery?: TProjectQuery,
   ): Promise<PotentialCustomerDocument[]> {
-    const isIntegrationUser = 'integrationUserId' in user;
-    const userIds: (Types.ObjectId | string)[] = [];
-    let filterQuery: FilterQuery<PotentialCustomerDocument>;
-
-    if (isIntegrationUser) {
-      userIds.push(user.integrationUserId);
-
-      if (user.parentUser) {
-        userIds.push(user.parentUser.integrationUserId);
-      }
-
-      filterQuery = {
-        'integrationParams.integrationUserId': { $in: userIds },
-        'integrationParams.integrationType': user.integrationType,
-      };
-    }
-
-    if (!isIntegrationUser) {
-      userIds.push(user._id);
-
-      if (user.parentUser) {
-        userIds.push(user.parentUser._id);
-      }
-
-      filterQuery = {
-        userId: { $in: userIds },
-      };
-    }
-
-    return this.potentialCustomerModel.find(filterQuery, projectQuery);
+    return this.potentialCustomerModel.find(
+      this.injectUserIds(user),
+      projectQuery,
+    );
   }
 
   async fetchNames(
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<string[]> {
-    const potentialCustomers = await this.fetchPotentialCustomers(user, {
+    const potentialCustomers = await this.findMany(user, {
       name: 1,
     });
 
@@ -259,7 +248,7 @@ export class PotentialCustomerService {
       userId,
     });
 
-    const customers = await this.fetchPotentialCustomers(user);
+    const customers = await this.findMany(user);
 
     const existingCustomer = customers.find(
       (c) => c.email?.toLowerCase() === email.toLowerCase(),
@@ -288,5 +277,42 @@ export class PotentialCustomerService {
     } else {
       await this.updatePotentialCustomer(user, existingCustomer.id, upsertData);
     }
+  }
+
+  private injectUserIds(
+    user: TUnitedUser,
+    filterQuery: TFilterQuery = {},
+  ): TFilterQuery {
+    const resFilterQuery: TFilterQuery = {
+      ...filterQuery,
+    };
+
+    const isIntegrationUser = 'integrationUserId' in user;
+    const userIds: (Types.ObjectId | string)[] = [];
+
+    if (!isIntegrationUser) {
+      userIds.push(user._id);
+
+      if (user.parentUser) {
+        userIds.push(user.parentUser._id);
+      }
+
+      resFilterQuery.userId = { $in: userIds };
+
+      return resFilterQuery;
+    }
+
+    userIds.push(user.integrationUserId);
+
+    if (user.parentUser) {
+      userIds.push(user.parentUser.integrationUserId);
+    }
+
+    Object.assign(resFilterQuery, {
+      'integrationParams.integrationUserId': { $in: userIds },
+      'integrationParams.integrationType': user.integrationType,
+    });
+
+    return resFilterQuery;
   }
 }
