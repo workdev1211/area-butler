@@ -606,10 +606,11 @@ export class OnOfficeService {
       integrationUser.parentUser = parentUser;
     }
 
-    const processedEstateData = await this.onOfficeEstateService.processData(
-      integrationUser,
-      estateId,
-    );
+    const processedEstateData =
+      await this.onOfficeEstateService.processEstateData(
+        integrationUser,
+        estateId,
+      );
 
     return {
       integrationUser,

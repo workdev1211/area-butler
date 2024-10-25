@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { SnapshotExtService } from '../../location/snapshot-ext.service';
 import { IPerformLoginData, OnOfficeService } from './on-office.service';
@@ -18,14 +18,26 @@ import ApiOnOfficeLoginQueryParamsDto from '../dto/api-on-office-login-query-par
 import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
 import { createDirectLink } from '../../shared/functions/shared';
 import { OnOfficeEstateService } from './on-office-estate.service';
+import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
+import { PotentialCustomerDocument } from '../../potential-customer/schema/potential-customer.schema';
+import { defaultPotentialCustomer } from '../../shared/constants/potential-customers';
+
+interface IGenerateLocDescs {
+  loginData: IPerformLoginData;
+  snapshotRes?: ApiSearchResultSnapshotResponse;
+  potentialCustomer?: Partial<PotentialCustomerDocument>;
+}
 
 @Injectable()
 export class OnOfficeWebhookService {
+  private readonly logger = new Logger(OnOfficeWebhookService.name);
+
   constructor(
     private readonly onOfficeEstateService: OnOfficeEstateService,
     private readonly onOfficeService: OnOfficeService,
     private readonly openAiExtService: OpenAiExtService,
     private readonly openAiService: OpenAiService,
+    private readonly potentialCustomerService: PotentialCustomerService,
     private readonly snapshotExtService: SnapshotExtService,
   ) {}
 
@@ -35,6 +47,36 @@ export class OnOfficeWebhookService {
   ): Promise<void> {
     const { integrationUser, onOfficeEstate, place, realEstate } =
       await this.onOfficeService.performLogin(onOfficeQueryParams);
+
+    if (!integrationUser.subscription) {
+      this.logger.verbose(
+        `User ${integrationUser.integrationUserId} doesn't have a subscription. Endpoint: ${endpoint}.`,
+      );
+
+      return;
+    }
+
+    let fetchPotentCustomer: PotentialCustomerDocument;
+
+    if (onOfficeEstate.TargetAudience?.length) {
+      fetchPotentCustomer = await this.potentialCustomerService.findOne(
+        integrationUser,
+        { name: onOfficeEstate.TargetAudience[0] },
+        {
+          name: 1,
+          routingProfiles: 1,
+          preferredAmenities: 1,
+          preferredLocations: 1,
+        },
+      );
+    }
+
+    const potentialCustomer = fetchPotentCustomer || defaultPotentialCustomer;
+    this.logger.verbose(
+      `Potential customer is ${
+        potentialCustomer?.id || potentialCustomer.name
+      }.`,
+    );
 
     let snapshotRes: ApiSearchResultSnapshotResponse;
     let locDescs: Partial<Record<TOpenAiLocDescType, string>>;
@@ -49,6 +91,7 @@ export class OnOfficeWebhookService {
       snapshotRes = await this.createSnapshot({
         integrationUser,
         place,
+        potentialCustomer,
         realEstate,
       });
     }
@@ -60,15 +103,16 @@ export class OnOfficeWebhookService {
         OnOfficeWebhookUrlEnum.TARGET_GROUP,
       ].includes(endpoint)
     ) {
-      locDescs = await this.generateLocDescs(
-        {
+      locDescs = await this.generateLocDescs({
+        loginData: {
           integrationUser,
           onOfficeEstate,
           place,
           realEstate,
         },
+        potentialCustomer,
         snapshotRes,
-      );
+      });
     }
 
     const textFieldParams: TUpdEstTextFieldParams[] = [];
@@ -108,26 +152,34 @@ export class OnOfficeWebhookService {
     integrationUser,
     place,
     realEstate,
-  }: Omit<
-    IPerformLoginData,
-    'onOfficeEstate'
-  >): Promise<ApiSearchResultSnapshotResponse> {
+    potentialCustomer: {
+      preferredLocations,
+      preferredAmenities: poiTypes,
+      routingProfiles: transportParams,
+    },
+  }: Omit<IPerformLoginData, 'onOfficeEstate'> & {
+    potentialCustomer: Partial<PotentialCustomerDocument>;
+  }): Promise<ApiSearchResultSnapshotResponse> {
     return this.snapshotExtService.createSnapshotByPlace({
       place,
+      poiTypes,
+      preferredLocations,
+      transportParams,
       realEstateListing: realEstate,
       user: integrationUser,
     });
   }
 
-  private async generateLocDescs(
-    {
+  private async generateLocDescs({
+    potentialCustomer,
+    snapshotRes,
+    loginData: {
       integrationUser,
-      onOfficeEstate: { lage, sonstige_angaben, objektbeschreibung },
       place,
       realEstate,
-    }: IPerformLoginData,
-    snapshotRes?: ApiSearchResultSnapshotResponse,
-  ): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
+      onOfficeEstate: { lage, sonstige_angaben, objektbeschreibung },
+    },
+  }: IGenerateLocDescs): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
     const requiredLocDescTypes = Object.entries({
       lage,
       sonstige_angaben,
@@ -146,7 +198,10 @@ export class OnOfficeWebhookService {
 
     const resultSnapshotRes =
       snapshotRes ||
-      (await this.openAiExtService.generateSnapshotRes({ place }));
+      (await this.openAiExtService.generateSnapshotRes({
+        place,
+        potentialCustomer,
+      }));
 
     return this.openAiService.batchFetchLocDescs(
       integrationUser,
@@ -155,6 +210,7 @@ export class OnOfficeWebhookService {
         meanOfTransportation: MeansOfTransportation.WALK,
         realEstateType: realEstate.type || defaultRealEstType,
         snapshotRes: resultSnapshotRes,
+        targetGroupName: potentialCustomer.name,
       },
       requiredLocDescTypes,
     );

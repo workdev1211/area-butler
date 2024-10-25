@@ -25,6 +25,9 @@ import {
 import { OpenAiService } from './open-ai.service';
 import { DEFAULT_DISTANCE } from '../location/dto/api-fetch-poi-data-req.dto';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
+import { PotentialCustomerDocument } from '../potential-customer/schema/potential-customer.schema';
+
+const MAX_DISTANCE_IN_METERS = 25000; // 60 minutes by car
 
 @Injectable()
 export class OpenAiExtService {
@@ -169,35 +172,59 @@ export class OpenAiExtService {
   // only parameters used in 'OpenAiQueryService' are present
   async generateSnapshotRes({
     place,
+    potentialCustomer,
     distance = DEFAULT_DISTANCE,
     transportMode = MeansOfTransportation.WALK,
     unit = ApiUnitsOfTransportEnum.MINUTES,
   }: {
     place: GeocodeResult;
     distance?: number;
+    potentialCustomer?: Partial<PotentialCustomerDocument>;
     transportMode?: MeansOfTransportation;
     unit?: ApiUnitsOfTransportEnum;
   }): Promise<ApiSearchResultSnapshotResponse> {
     const coordinates = place.geometry.location;
 
-    const poiData = await this.locationExtService.fetchPoiData({
-      coordinates,
-      distance,
-      transportMode,
-      unit,
-    });
-
-    return {
+    const snapshotRes = {
       config: { showAddress: false },
       snapshot: {
         location: coordinates,
         placesLocation: { label: place.formatted_address },
         searchResponse: {
-          routingProfiles: {
-            [transportMode]: { locationsOfInterest: poiData },
-          },
+          routingProfiles: {},
         },
       },
     } as ApiSearchResultSnapshotResponse;
+
+    const setRoutingProfiles = async (
+      distance: number,
+      transportMode: MeansOfTransportation,
+      unit: ApiUnitsOfTransportEnum,
+    ): Promise<void> => {
+      const poiData = await this.locationExtService.fetchPoiData({
+        coordinates,
+        distance,
+        transportMode,
+        unit,
+        maxDistanceInMeters: MAX_DISTANCE_IN_METERS,
+      });
+
+      Object.assign(snapshotRes.snapshot.searchResponse.routingProfiles, {
+        [transportMode]: { locationsOfInterest: poiData },
+      });
+    };
+
+    if (potentialCustomer) {
+      snapshotRes.snapshot.preferredLocations =
+        potentialCustomer.preferredLocations;
+
+      for (const { amount, type, unit } of potentialCustomer.routingProfiles) {
+        await setRoutingProfiles(amount, type, ApiUnitsOfTransportEnum[unit]);
+      }
+    } else {
+      await setRoutingProfiles(distance, transportMode, unit);
+    }
+
+    return snapshotRes;
   }
 }

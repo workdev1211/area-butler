@@ -449,17 +449,17 @@ export class OnOfficeEstateService {
     }
   }
 
-  async processData(
-    integrationUser: TIntegrationUserDocument,
+  async fetchEstate(
+    { parameters }: TIntegrationUserDocument,
     estateId: string,
-  ): Promise<IProcessEstateData> {
-    const { integrationUserId, parameters } = integrationUser;
+  ): Promise<IApiOnOfficeRealEstate> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
+
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
-    const timestamp = dayjs().unix();
 
+    const timestamp = dayjs().unix();
     const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
@@ -495,14 +495,20 @@ export class OnOfficeEstateService {
       await this.onOfficeApiService.sendRequest(request);
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.processData.name,
+      this.fetchEstate.name,
       'The estate entity has not been retrieved!',
       request,
       response,
     );
 
-    const onOfficeEstate =
-      response.response.results[0].data.records[0].elements;
+    return response.response.results[0].data.records[0].elements;
+  }
+
+  async processEstateData(
+    integrationUser: TIntegrationUserDocument,
+    estateId: string,
+  ): Promise<IProcessEstateData> {
+    const onOfficeEstate = await this.fetchEstate(integrationUser, estateId);
 
     const {
       breitengrad: lat,
@@ -537,7 +543,7 @@ export class OnOfficeEstateService {
 
     if (!place) {
       this.logger.error(
-        this.processData.name,
+        this.processEstateData.name,
         locationAddress,
         locationCoordinates,
       );
@@ -547,9 +553,9 @@ export class OnOfficeEstateService {
 
     Object.assign(onOfficeEstate, {
       integrationParams: {
-        integrationUserId,
         integrationId: estateId,
         integrationType: this.integrationType,
+        integrationUserId: integrationUser.integrationUserId,
       },
       address: locationAddress || place.formatted_address,
       location: {

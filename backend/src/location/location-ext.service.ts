@@ -38,13 +38,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ProjectionFields } from 'mongoose';
 import { OsmEntityMapper } from '@area-butler-types/osm-entity-mapper';
 
-interface IFetchPoiDataArgs {
+interface IFetchPoiDataParams {
   coordinates: ApiCoordinates;
-  transportMode: MeansOfTransportation;
   distance: number;
+  transportMode: MeansOfTransportation;
+
+  maxDistanceInMeters?: number;
   poiNumber?: number;
-  unit: ApiUnitsOfTransportEnum;
   preferredAmenities?: OsmName[];
+  unit: ApiUnitsOfTransportEnum;
 }
 
 const MAX_DISTANCE_IN_METERS = 2000;
@@ -63,24 +65,25 @@ export class LocationExtService {
 
   async fetchPoiData({
     coordinates,
-    transportMode,
     distance,
+    transportMode,
     unit,
+    maxDistanceInMeters = MAX_DISTANCE_IN_METERS,
     poiNumber = 0,
     preferredAmenities = defaultPoiTypes,
-  }: IFetchPoiDataArgs): Promise<ApiOsmLocation[]> {
+  }: IFetchPoiDataParams): Promise<ApiOsmLocation[]> {
     let resultDistInMeters = distance;
-    let maxPossibleDistance;
+    let maxPossibleDistance: number;
 
     switch (unit) {
       case ApiUnitsOfTransportEnum.KILOMETERS: {
         resultDistInMeters = resultDistInMeters * 1000;
-        maxPossibleDistance = MAX_DISTANCE_IN_METERS / 1000;
+        maxPossibleDistance = maxDistanceInMeters / 1000;
         break;
       }
 
       case ApiUnitsOfTransportEnum.METERS: {
-        maxPossibleDistance = MAX_DISTANCE_IN_METERS;
+        maxPossibleDistance = maxDistanceInMeters;
         break;
       }
 
@@ -91,14 +94,14 @@ export class LocationExtService {
         );
 
         maxPossibleDistance = convertMetersToMinutes(
-          MAX_DISTANCE_IN_METERS,
+          maxDistanceInMeters,
           transportMode,
         );
         break;
       }
     }
 
-    if (resultDistInMeters > MAX_DISTANCE_IN_METERS) {
+    if (resultDistInMeters > maxDistanceInMeters) {
       throw new HttpException(
         `The distance shouldn't be higher than ${maxPossibleDistance} ${unit.toLowerCase()}!`,
         400,

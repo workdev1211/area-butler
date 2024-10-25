@@ -16,6 +16,7 @@ import { OnOfficeWebhookService } from './service/on-office-webhook.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { CompanyModule } from '../company/company.module';
 import { OnOfficeEstateService } from './service/on-office-estate.service';
+import { PotentialCustomerModule } from '../potential-customer/potential-customer.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { OnOfficeEstateService } from './service/on-office-estate.service';
     LocationModule,
     OpenAiModule,
     PlaceModule,
+    PotentialCustomerModule,
     UserModule,
     MongooseModule.forFeature([
       { name: OnOfficeTransaction.name, schema: OnOfficeTransactionSchema },
