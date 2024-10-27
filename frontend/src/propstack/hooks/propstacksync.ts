@@ -2,7 +2,6 @@ import { AxiosResponse } from "axios";
 
 import { useHttp } from "../../hooks/http";
 import {
-  // IApiIntCreateEstateLinkReq,
   IApiIntSetPropPubLinksReq,
   IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
@@ -74,7 +73,8 @@ export const usePropstackSync = () => {
     switch (sendToPropstackData.exportType) {
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
-      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
+      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+      case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION: {
         return updatePropertyTextField(
           sendToPropstackData as IApiIntUpdEstTextFieldReq
         );

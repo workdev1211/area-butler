@@ -47,6 +47,7 @@ export enum PropstackActionTypeEnum {
 export enum PropstackFieldNameEnum {
   LOCATION_NOTE = "location",
   DESCRIPTION_NOTE = "description",
+  FURNISHING_NOTE = "furnishing",
   OTHER_NOTE = "other",
 }
 
@@ -54,6 +55,7 @@ export enum PropstackTextFieldTypeEnum {
   LOCATION_NOTE = "location_note",
   DESCRIPTION_NOTE = "description_note",
   OTHER_NOTE = "other_note",
+  FURNISHING_NOTE = "furnishing_note",
 }
 
 export enum PropstackProductTypeEnum {

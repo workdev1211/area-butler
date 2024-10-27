@@ -54,6 +54,10 @@ const propstackToOpenAiFieldMapper: Map<
     PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
     OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
   ],
+  [
+    PropstackTextFieldTypeEnum.FURNISHING_NOTE,
+    OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+  ],
 ]);
 
 export const propstackOpenAiFieldMapper = getBidirectionalMapping(

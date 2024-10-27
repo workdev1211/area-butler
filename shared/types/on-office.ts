@@ -206,7 +206,8 @@ export interface IApiOnOfficeRealEstate {
   // location descriptions
   lage: string; // LOCATION_DESCRIPTION
   sonstige_angaben: string; // LOCATION_REAL_ESTATE_DESCRIPTION
-  objektbeschreibung: string; // REAL_ESTATE_DESCRIPTION
+  objektbeschreibung: string; // REAL_ESTATE_DESCRIPTION,
+  ausstatt_beschr: string; // EQUIPMENT_DESCRIPTION
 }
 
 export interface IApiOnOfficeRealEstateFile {
@@ -344,6 +345,7 @@ export enum OnOfficeOpenAiFieldEnum {
   LOCATION = "lage",
   OTHER_INFO = "sonstige_angaben",
   PROP_DESCRIPTION = "objektbeschreibung",
+  EQUIPMENT_DESCRIPTION = "ausstatt_beschr",
 }
 
 export enum OnOfficeReqModuleEnum {

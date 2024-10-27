@@ -2,7 +2,6 @@ import { AxiosResponse } from "axios";
 
 import { useHttp } from "../../hooks/http";
 import {
-  // IApiIntCreateEstateLinkReq,
   IApiIntSetPropPubLinksReq,
   IApiIntUpdEstTextFieldReq,
   IApiIntUploadEstateFileReq,
@@ -79,6 +78,7 @@ export const useOnOfficeSync = () => {
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+      case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION:
       case AreaButlerExportTypesEnum.INLINE_FRAME: {
         return updateEstateTextField(
           sendToOnOfficeData as IApiIntUpdEstTextFieldReq

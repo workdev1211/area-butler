@@ -19,6 +19,11 @@ const onOfficeToOpenAiFieldMapper: Map<
     OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
     OnOfficeOpenAiFieldEnum.PROP_DESCRIPTION,
   ],
+  // Ausstattungsbeschreibung
+  [
+    OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+    OnOfficeOpenAiFieldEnum.EQUIPMENT_DESCRIPTION,
+  ],
 ]);
 
 export const onOfficeOpenAiFieldMapper = getBidirectionalMapping(

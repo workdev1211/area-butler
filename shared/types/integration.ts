@@ -1,9 +1,9 @@
-import { TApiIntUserProdContType } from "./integration-user";
-import { OpenAiQueryTypeEnum } from "./open-ai";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   ApiIntUserPropstackProdContTypesEnum,
+  TApiIntUserProdContType,
 } from "./integration-user";
+import { OpenAiQueryTypeEnum } from "./open-ai";
 import { OnOfficeProductTypesEnum } from "./on-office";
 import { PropstackProductTypeEnum } from "./propstack";
 import {
@@ -138,6 +138,7 @@ export interface IApiIntUpdEstTextFieldReq {
     | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
     | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+    | OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
     | AreaButlerExportTypesEnum.INLINE_FRAME
     | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
     | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;

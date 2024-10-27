@@ -104,7 +104,8 @@ export class OnOfficeEstateService {
 
           case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
           case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
-          case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+          case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
+          case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION: {
             exportMatchParams = {
               fieldId: onOfficeOpenAiFieldMapper.get(exportType),
               maxTextLength: defaultMaxTextLength,

@@ -11,5 +11,7 @@ export const propstackFieldNameToType: Record<
     PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
   [PropstackFieldNameEnum.LOCATION_NOTE]:
     PropstackTextFieldTypeEnum.LOCATION_NOTE,
+  [PropstackFieldNameEnum.FURNISHING_NOTE]:
+    PropstackTextFieldTypeEnum.FURNISHING_NOTE,
   [PropstackFieldNameEnum.OTHER_NOTE]: PropstackTextFieldTypeEnum.OTHER_NOTE,
 };

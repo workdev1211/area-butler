@@ -55,6 +55,13 @@ class ExportMatchingDto
   @IsObject()
   @ValidateNested()
   [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]?: ExportMatchingParams;
+
+  @Expose()
+  @Type(() => ExpMatchParams)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  [OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]?: ExportMatchingParams;
 }
 
 export default ExportMatchingDto;

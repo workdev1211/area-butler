@@ -1,5 +1,5 @@
 import { LanguageTypeEnum, MeansOfTransportation } from "./types";
-import { ApiBcp47LanguageEnum } from './real-estate';
+import { ApiBcp47LanguageEnum } from "./real-estate";
 
 export enum OpenAiTonalityEnum {
   FORMAL_SERIOUS = "FORMAL_SERIOUS",
@@ -130,4 +130,5 @@ export type TOpenAiLocDescType = Extract<
   | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
   | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
   | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+  | OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
 >;

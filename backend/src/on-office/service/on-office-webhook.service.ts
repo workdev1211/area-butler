@@ -177,13 +177,13 @@ export class OnOfficeWebhookService {
       integrationUser,
       place,
       realEstate,
-      onOfficeEstate: { lage, sonstige_angaben, objektbeschreibung },
+      onOfficeEstate: { lage, objektbeschreibung, ausstatt_beschr },
     },
   }: IGenerateLocDescs): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
     const requiredLocDescTypes = Object.entries({
       lage,
-      sonstige_angaben,
       objektbeschreibung,
+      ausstatt_beschr,
     }).reduce<Set<TOpenAiLocDescType>>((result, [key, value]) => {
       const locDescType = onOfficeOpenAiFieldMapper.get(
         key as OnOfficeOpenAiFieldEnum,

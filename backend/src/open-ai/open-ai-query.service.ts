@@ -180,7 +180,7 @@ export class OpenAiQueryService {
     } = queryParams;
 
     return (
-      `Sie sind ein Immobilienmakler. Sie müssen eine detaillierte Ausstattungsliste der Immobilie für ${realEstateType} erstellen. Der Text sollte sich an ${targetGroupName} richten. Und die Ausgabe sollte in Aufzählungspunkten erfolgen, die für die Aufnahme in eine Immobilienliste geeignet sind. Verwenden Sie keine Sonderzeichen und Emoticons. Konzentrieren Sie sich auf Heizung, Bodenbeläge, Möbel und alle bemerkenswerten technischen Details. Vermeiden Sie Übertreibungen, Ausschmückungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeiden Sie Referenzen und Zitate.\n` +
+      `Sie sind ein Immobilienmakler. Sie müssen eine detaillierte Ausstattungsliste der Immobilie für ${realEstateType} erstellen. Der Text sollte sich an ${targetGroupName} richten. Und die Ausgabe soll ausschließlich in Aufzählungspunkten erfolgen, die für die Aufnahme in eine Immobilienliste geeignet sind. Verwenden Sie keine Sonderzeichen und Emoticons. Konzentrieren Sie sich auf Heizung, Bodenbeläge und alle bemerkenswerten technischen Details. Vermeiden Sie Übertreibungen, Ausschmückungen und Überschriften. Vermeiden Sie Referenzen und Zitate.\n` +
       (images &&
         images.length > 0 &&
         `Nutze dabei die bereitgestellten Daten und Bilder. Die Bilder sollen analysiert werden und nicht im Text verlinkt werden.\n `) +
@@ -438,32 +438,39 @@ Zudem verwende diese vom AreaButler generierten Daten:
     } = locDescQueryParams;
     const lang = language || config.language || LanguageTypeEnum.de;
 
-    const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse ${address} liegt. Der Name des Stadtteils soll im Text genannt werden. Der Text soll die Zielgruppe ${targetGroupName} ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben.
+    const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse ${address} liegt. Der Name des Stadtteils, der Stadt und angrenzender Stadtteile soll im Text genannt werden. Der Text soll die Zielgruppe ${targetGroupName} ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben. Versuche die Vorzüge des Stadtteils strukturiert und seriös darzustellen.
 
 Der Text soll:
 
 - die Adresse nicht explizit erwähnen und nur auf den Stadtteil eingehen
 - ${openAiTextLengthOptions.find(({ value }) => value === textLength).text}
 - eine ${openAiTonalities[tonality]} Tonalität haben
-- nur gerundete ca. Angaben statt exakten Metern und Minuten verwenden.
-- Stadtteildetails und die für ${targetGroupName} wichtigsten POIs namentlich nennen.
-- darlegen, warum dieser Stadtteil für diese Zielgruppe optimal ist.
-- Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen.
+- SEO-optimiert sein, um für Immobilienkäufer relevante Suchanfragen abzudecken
+- qualitative Aussagen zu Lage, Infrastruktur, Natur, Nahversorgung und Freizeitmöglichkeiten enthalten
+- POIs aus dem AreaButler (Restaurants, Supermärkte, Apotheken, Spielplätze etc.) nennen angeben
+- qualitative Aussagen zu den statistischen Daten aus dem Umkreis der Adresse machen (z.B. Einwohnerzahlen, Altersstruktur, Leerstand, durchschnittliche Wohnfläche etc.) -> diese bitte im Internet zB auf wikipedia recherchieren und diese in Highlight Stichpuntken aufführen
+- Absätze für eine klare Struktur nutzen
+- auf die wichtigsten Landmarks und Einrichtungen (Schulen, Kliniken, Parks) hinweisen
+- Entfernung zu Autobahnen, öffentlichen Verkehrsmitteln und dem nächstgelegenen Flughafen angeben
+- für SEO relevante Begriffe wie „Immobilien“, „Wohnung“, „Haus“, „Kauf“, „Stadtteilname“ etc. integrieren
+- Außerdem füge am Ende einen Abschnitt mit häufig gestellten Fragen (FAQs) zum Stadtteil ein, der für potenzielle Immobilienkäufer relevant ist.
+- Vermeide Sonderzeichen und Formatierungen.
 - Do not include any explanation
 - verwende als Ausgabesprache ${lang} (BCP 47)
 
+Textstruktur mit Überschriften:
+Stadtteilbeschreibung für [Stadtteilname]
+Daten Highlights des Stadtteils [Stadtteilname]
+Stadtteil FAQs
 
-Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe ${targetGroupName} für diesen Stadtteil:
-
-1. Detaillierte POI Tabelle aus dem AreaButler (siehe unten).
-2. Lage-Indizes (siehe unten): Verwende diese für qualitative Aussagen, ohne die Indizes explizit zu erwähnen.
-3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.
-4. Führe in jedem Fall eine ausgiebige eigene Online-Recherche des Stadtteils aus in der die Adresse ${address} liegt und nutze vor alle diese zusätzlich gewonnenen Informationen.
-
-###Daten:
+###Zusätzliche Daten:
 `;
 
-    return initialText + (await this.getLocDesc(user, locDescQueryParams));
+    return (
+      initialText +
+      (await this.getLocDesc(user, locDescQueryParams, false)) +
+      '\n\n  --- Bitte recherchieren in jedem fall online: INTERNET, Sozio-Demografische Daten über den Stadtteil, Zensus Daten des Stadtteils, WIkipedia zum Stadtteil, websiten über düe Stadt, den Stadtteil und all dein Wissen'
+    );
   }
 
   // Left in case of future progress in OpenAi text limiting
@@ -567,14 +574,17 @@ Nutze folgende Informationen und baue daraus positive Argumente für die Zielgru
       meanOfTransportation,
       targetGroupName = defaultTargetGroupName,
     }: ILocDescQueryParams,
+    censusRequired = true,
   ): Promise<string> {
     let queryText =
       `Nutze folgende Informationen und baue daraus positive Argumente für die Zielgruppe "${targetGroupName}":\n` +
       `1. Detaillierte POI Tabelle aus dem AreaButler (siehe unten).\n` +
       `2. Lage-Indizes (siehe unten): Verwende diese für qualitative Aussagen, ohne die Indizes explizit zu erwähnen.\n` +
-      `3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.\n` +
+      (censusRequired
+        ? `3. Zensus-Daten (siehe unten): z.B. Einwohner, Durchschnittsalter, Leerstand etc.\n`
+        : '') +
       `4. Führe in jedem Fall eine eigene Online-Recherche der Adresse ${snapshot.placesLocation.label} aus und nutze zusätzlich gewonnene Informationen insbesondere für eine kurze Beschreibung der Charakteristika der Straße in der die Adresse liegt. Trotzdem darf der Name der Adresse nicht eplizit im Text genannt werden.` +
-      `\nDaten`;
+      `\n\nDaten`;
 
     // POIs
 
@@ -629,24 +639,25 @@ Nutze folgende Informationen und baue daraus positive Argumente für die Zielgru
     }
 
     // Zensus data
-
-    const zensusData = await this.zensusAtlasService.query(
-      user,
-      calculateRelevantArea(snapshot.location).geometry,
-    );
-
-    if (Object.values(zensusData).some((dataType) => dataType.length > 0)) {
-      const processedCensusData = processCensusData(
-        cleanCensusProperties(zensusData),
+    if (censusRequired) {
+      const zensusData = await this.zensusAtlasService.query(
+        user,
+        calculateRelevantArea(snapshot.location).geometry,
       );
 
-      queryText +=
-        '\n\nZensus Daten:\n' +
-        Object.values(processedCensusData)
-          .map(
-            ({ label, value: { addressData } }) => `${label}: ${addressData}`,
-          )
-          .join('\n');
+      if (Object.values(zensusData).some((dataType) => dataType.length > 0)) {
+        const processedCensusData = processCensusData(
+          cleanCensusProperties(zensusData),
+        );
+
+        queryText +=
+          '\n\nZensus Daten:\n' +
+          Object.values(processedCensusData)
+            .map(
+              ({ label, value: { addressData } }) => `${label}: ${addressData}`,
+            )
+            .join('\n');
+      }
     }
 
     return queryText;

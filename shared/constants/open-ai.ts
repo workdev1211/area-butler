@@ -148,8 +148,8 @@ export const openAiQueryTypes: Array<{
   },
   {
     type: OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
-    label: "Objektbeschreibung",
-    sidebarLabel: "Objekt - Beschreibung",
+    label: "Ausstattungsbeschreibung",
+    sidebarLabel: "Ausstattung - Beschreibung",
   },
   {
     type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
@@ -264,4 +264,5 @@ export const openAiLocDescTypes: TOpenAiLocDescType[] = [
   OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
   OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
   OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+  OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
 ];

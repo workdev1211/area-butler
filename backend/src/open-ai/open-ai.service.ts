@@ -322,6 +322,13 @@ export class OpenAiService {
         locDescType: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
         description: await this.fetchRealEstDesc(user, locRealEstDescParams),
       }),
+      [OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]: async () => ({
+        locDescType: OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+        description: await this.fetchEquipmentDesc(
+          user as TIntegrationUserDocument,
+          locRealEstDescParams,
+        ),
+      }),
     };
 
     const resLocDescMethods = requiredLocDescTypes

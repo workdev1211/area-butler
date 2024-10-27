@@ -119,6 +119,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
         OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
         OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
         OpenAiQueryTypeEnum.FACEBOOK_POST,
         OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
         OpenAiQueryTypeEnum.MICRO_LOC_DESC,
@@ -262,7 +263,8 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                                   exportType: genText.initialQueryType as
                                     | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
                                     | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-                                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+                                    | OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
                                   text: genText.queryResponse,
                                   language: responseConfig?.language,
                                 });

@@ -42,6 +42,7 @@ const OpenAiModal: FC<IOpenAiModalProps> = ({
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
         OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
         OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
       ].includes(queryType)
     );
   };
