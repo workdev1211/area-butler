@@ -44,6 +44,7 @@ export interface IApiOnOfficeProcessedRealEstate
   // immonr: string; // the label for 'objektnr_extern' field
   areaButlerStatus?: string; // this field comes from our side
   areaButlerStatus2?: string; // this field comes from our side
+  externe_url?: string;
 }
 
 @Exclude()
@@ -98,6 +99,18 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   externalId?: string;
 
   @Expose()
+  @Transform(
+    ({
+      obj: { externe_url },
+      value,
+    }: {
+      obj: IApiOnOfficeProcessedRealEstate;
+      value: string;
+    }): string => value || externe_url,
+    {
+      toClassOnly: true,
+    },
+  )
   @IsOptional()
   @IsString()
   externalUrl?: string;
