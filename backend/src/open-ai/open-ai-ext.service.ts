@@ -4,6 +4,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { OpenAiApiService } from '../client/open-ai/open-ai-api.service';
 import {
+  ApiBcp47LanguageEnum,
   ApiEnergyEfficiency,
   ApiFurnishing,
   ApiRealEstateCostType,
@@ -26,6 +27,7 @@ import { OpenAiService } from './open-ai.service';
 import { DEFAULT_DISTANCE } from '../location/dto/api-fetch-poi-data-req.dto';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 import { PotentialCustomerDocument } from '../potential-customer/schema/potential-customer.schema';
+import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 
 const MAX_DISTANCE_IN_METERS = 25000; // 60 minutes by car
 
@@ -69,57 +71,43 @@ export class OpenAiExtService {
     const coordinates = place.geometry.location;
     const resultAddress = address || place.formatted_address;
 
-    const realEstate = this.generateRealEstate({
-      energyEfficiency,
-      furnishing,
-      livingAreaInSqM,
-      price,
-      priceType,
-      totalAreaInSqM,
-      address: resultAddress,
+    const snapshotRes =
+      [
+        ApiOpenAiQueryTypesEnum.LOC_DESC,
+        ApiOpenAiQueryTypesEnum.LOC_EST_DESC,
+        ApiOpenAiQueryTypesEnum.DISTRICT_DESC,
+      ].includes(queryType) &&
+      (await this.generateSnapshotRes({
+        distance,
+        place,
+        transportMode,
+        unit,
+      }));
+
+    const realEstate =
+      [
+        ApiOpenAiQueryTypesEnum.EST_DESC,
+        ApiOpenAiQueryTypesEnum.LOC_EST_DESC,
+      ].includes(queryType) &&
+      this.generateRealEstate({
+        energyEfficiency,
+        furnishing,
+        livingAreaInSqM,
+        price,
+        priceType,
+        totalAreaInSqM,
+        address: resultAddress,
+      });
+
+    let queryResp = await this.generateText({
+      user,
+      queryType,
+      realEstate,
+      snapshotRes,
+      language,
+      tonality,
+      transportMode,
     });
-
-    let queryResp: string;
-
-    switch (queryType) {
-      case ApiOpenAiQueryTypesEnum.LOC_DESC:
-      case ApiOpenAiQueryTypesEnum.LOC_EST_DESC: {
-        const snapshotRes = await this.generateSnapshotRes({
-          distance,
-          place,
-          transportMode,
-          unit,
-        });
-
-        queryResp =
-          queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
-            ? await this.openAiService.fetchLocDesc(user, {
-                language,
-                snapshotRes,
-                tonality,
-                meanOfTransportation: transportMode,
-              })
-            : await this.openAiService.fetchLocRealEstDesc(user, {
-                language,
-                realEstate,
-                snapshotRes,
-                tonality,
-                meanOfTransportation: transportMode,
-                realEstateType: defaultRealEstType,
-              });
-
-        break;
-      }
-
-      case ApiOpenAiQueryTypesEnum.EST_DESC: {
-        queryResp = await this.openAiService.fetchRealEstDesc(user, {
-          language,
-          realEstate,
-          tonality,
-          realEstateType: realEstate.type || defaultRealEstType,
-        });
-      }
-    }
 
     if (queryResp.length > maxTextLength) {
       const query =
@@ -134,6 +122,44 @@ export class OpenAiExtService {
       coordinates,
       queryResp,
     };
+  }
+
+  generateText({
+    user,
+    queryType,
+    realEstate,
+    snapshotRes,
+    language,
+    tonality,
+    transportMode,
+  }: {
+    user: UserDocument | TIntegrationUserDocument;
+    queryType: ApiOpenAiQueryTypesEnum;
+    realEstate?: ApiRealEstateListing;
+    snapshotRes: ApiSearchResultSnapshotResponse;
+    language?: ApiBcp47LanguageEnum;
+    tonality?: OpenAiTonalityEnum;
+    transportMode?: MeansOfTransportation;
+  }): Promise<string> {
+    const params = {
+      language,
+      realEstate,
+      snapshotRes,
+      tonality,
+      meanOfTransportation: transportMode,
+      realEstateType:
+        (realEstate ? realEstate.type : false) || defaultRealEstType,
+    };
+    switch (queryType) {
+      case ApiOpenAiQueryTypesEnum.LOC_DESC:
+        return this.openAiService.fetchLocDesc(user, params);
+      case ApiOpenAiQueryTypesEnum.DISTRICT_DESC:
+        return this.openAiService.fetchDistrictDesc(user, params);
+      case ApiOpenAiQueryTypesEnum.LOC_EST_DESC:
+        return this.openAiService.fetchLocRealEstDesc(user, params);
+      case ApiOpenAiQueryTypesEnum.EST_DESC:
+        return this.openAiService.fetchRealEstDesc(user, params);
+    }
   }
 
   // only parameters used in 'OpenAiQueryService' are present

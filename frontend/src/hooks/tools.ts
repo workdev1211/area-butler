@@ -30,9 +30,7 @@ export const useTools = () => {
   const createCodeSnippet = (
     tokenDataParams?: IGetTokenDataParams
   ): string => `<iframe
-  style="border: none"
-  width="100%"
-  height="100%"
+  style="border: none; width: 100%; height: 600px"
   src="${createDirectLink(tokenDataParams)}"
   title="AreaButler Map Snippet"
 ></iframe>`;
@@ -47,7 +45,9 @@ export const useTools = () => {
       systemEnv !== "local"
         ? origin
         : `${origin.replace(/^(https?:\/\/\w*)(:.*)?$/, "$1")}:3002`
-    }/embed?token=${token}&language=${tokenDataParams?.language || LanguageTypeEnum.de}`;
+    }/embed?token=${token}&language=${
+      tokenDataParams?.language || LanguageTypeEnum.de
+    }`;
 
     if (typeof resIsAddressShown === "boolean") {
       url += `&isAddressShown=${resIsAddressShown}`;

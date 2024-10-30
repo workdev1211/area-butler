@@ -4,7 +4,7 @@ import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   ApiCoordinates,
   ApiGeojsonType,
-  ApiOsmLocation, LanguageTypeEnum,
+  ApiOsmLocation,
   MeansOfTransportation,
   OsmName,
   ResultStatusEnum,
@@ -57,6 +57,7 @@ export enum ApiOpenAiQueryTypesEnum {
   'LOC_DESC' = 'LOC_DESC',
   'EST_DESC' = 'EST_DESC',
   'LOC_EST_DESC' = 'LOC_EST_DESC',
+  'DISTRICT_DESC' = 'DISTRICT_DESC',
 }
 
 export enum SnapshotDataTypesEnum {
@@ -106,14 +107,12 @@ export interface IApiQueryLocIndicesReq extends IApiCoordinatesOrAddress {
   type?: ApiGeojsonType;
 }
 
-export interface IApiQueryLocIndicesReqStatus
-  extends IExternalApiReqStatus<IApiQueryLocIndicesReq> {}
+export type IApiQueryLocIndicesReqStatus =
+  IExternalApiReqStatus<IApiQueryLocIndicesReq>;
 
-export interface IApiQueryLocIndicesRes
-  extends IExternalApiRes<TApiLocIndexProps> {}
+export type IApiQueryLocIndicesRes = IExternalApiRes<TApiLocIndexProps>;
 
-export interface IApiQueryZensusAtlasRes
-  extends IExternalApiRes<TProcessedCensusData> {}
+export type IApiQueryZensusAtlasRes = IExternalApiRes<TProcessedCensusData>;
 
 export interface IApiAddressInRange {
   full_address: string;
@@ -140,11 +139,10 @@ export interface IApiFetchAddrInRangeReqStatus
   apiRequestsNumber?: number;
 }
 
-export interface IApiFetchAddrInRangeRes
-  extends IExternalApiRes<{
-    addresses_number: number;
-    addresses: IApiAddressInRange[];
-  }> {}
+export type IApiFetchAddrInRangeRes = IExternalApiRes<{
+  addresses_number: number;
+  addresses: IApiAddressInRange[];
+}>;
 
 export interface IApiFetchPoiDataReq extends IApiCoordinatesOrAddress {
   poiNumber?: number;
@@ -153,11 +151,10 @@ export interface IApiFetchPoiDataReq extends IApiCoordinatesOrAddress {
   unit?: ApiUnitsOfTransportEnum;
 }
 
-export interface IApiFetchPoiDataReqStatus
-  extends IExternalApiReqStatus<IApiFetchPoiDataReq> {}
+export type IApiFetchPoiDataReqStatus =
+  IExternalApiReqStatus<IApiFetchPoiDataReq>;
 
-export interface IApiFetchPoiDataRes
-  extends IExternalApiRes<ApiOsmLocation[]> {}
+export type IApiFetchPoiDataRes = IExternalApiRes<ApiOsmLocation[]>;
 
 export interface IOpenAiExtQueryReq extends IApiFetchPoiDataReq {
   language?: ApiBcp47LanguageEnum;
@@ -173,10 +170,10 @@ export interface IOpenAiExtQueryReq extends IApiFetchPoiDataReq {
   totalAreaInSqM?: number;
 }
 
-export interface IApiOpenAiExtQueryReqStatus
-  extends IExternalApiReqStatus<IOpenAiExtQueryReq> {}
+export type IApiOpenAiExtQueryReqStatus =
+  IExternalApiReqStatus<IOpenAiExtQueryReq>;
 
-export interface IOpenAiExtQueryRes extends IExternalApiRes<string> {}
+export type IOpenAiExtQueryRes = IExternalApiRes<string>;
 
 export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
   isAddressShown?: boolean;
@@ -188,8 +185,8 @@ export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
   templateSnapshotId?: string;
 }
 
-export interface IApiFetchSnapshotDataReqStatus
-  extends IExternalApiReqStatus<IApiFetchSnapshotDataReq> {}
+export type IApiFetchSnapshotDataReqStatus =
+  IExternalApiReqStatus<IApiFetchSnapshotDataReq>;
 
 export interface IApiFetchSnapshotDataRes extends IExternalApiRes<string> {
   snapshotId: string;

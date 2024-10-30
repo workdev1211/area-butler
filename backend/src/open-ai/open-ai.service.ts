@@ -293,10 +293,7 @@ export class OpenAiService {
       params.snapshotRes.config.language ||
       LanguageTypeEnum.de;
     return this.openAiApiService.fetchResponse(
-      await this.openAiQueryService.getDistrictDescQuery(
-        user,
-        await this.processLocParams(user, locDescParams),
-      ),
+      await this.openAiQueryService.getDistrictDescQuery(user, params),
       locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
         maxCharactersLength: locDescParams.maxCharactersLength,
         language: language as LanguageTypeEnum,

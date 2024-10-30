@@ -200,9 +200,7 @@ export class LocationExtService {
       case SnapshotDataTypesEnum.IFRAME_CODE: {
         const iframeCode = String.raw`
 <iframe
- style="border: none"
- width="100%"
- height="100%"
+ style="border: none; width: 100%; height: 600px"
  src="${directLink}"
  title="AreaButler Map Snippet"
 ></iframe>`;
