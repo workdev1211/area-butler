@@ -139,7 +139,7 @@ export class RealEstateCrmImportService {
           const resourceType = ApiOnOfficeResourceTypesEnum.FIELDS;
           const actionId = ApiOnOfficeActionIdsEnum.GET;
 
-          const signature = this.onOfficeApiService.generateSignature(
+          const signature = OnOfficeApiService.generateSignature(
             [timestamp, token, resourceType, actionId].join(''),
             secret,
             'base64',
@@ -352,7 +352,7 @@ export class RealEstateCrmImportService {
       throw new HttpException('onOffice authentication failed!', 401);
     }
 
-    let signature = this.onOfficeApiService.generateSignature(
+    let signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       secret,
       'base64',
@@ -407,7 +407,7 @@ export class RealEstateCrmImportService {
 
     const initialResponse = await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.importFromCrm.name,
       'The onOffice import failed!',
       request,
@@ -428,7 +428,7 @@ export class RealEstateCrmImportService {
       for (let i = 2; i < numberOfPages + 1; i += 1) {
         const timestamp = dayjs().unix();
 
-        signature = this.onOfficeApiService.generateSignature(
+        signature = OnOfficeApiService.generateSignature(
           [timestamp, token, resourceType, actionId].join(''),
           secret,
           'base64',
@@ -441,7 +441,7 @@ export class RealEstateCrmImportService {
 
         const response = await this.onOfficeApiService.sendRequest(request);
 
-        this.onOfficeApiService.checkResponseIsSuccess(
+        OnOfficeApiService.checkResponseIsSuccess(
           this.importFromCrm.name,
           'The onOffice import failed!',
           request,

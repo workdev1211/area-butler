@@ -226,7 +226,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
     const timestamp = dayjs().unix();
 
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -256,7 +256,7 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     try {
-      this.onOfficeApiService.checkResponseIsSuccess(
+      OnOfficeApiService.checkResponseIsSuccess(
         this.unlockProvider.name,
         'User login failed!',
         request,
@@ -344,7 +344,7 @@ export class OnOfficeService {
     const sortedOrderData = getOnOfficeSortedMapData(onOfficeOrderData);
     const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
     onOfficeOrderData.signature =
-      this.onOfficeApiService.generateSignature(orderQueryString);
+      OnOfficeApiService.generateSignature(orderQueryString);
 
     return { onOfficeOrderData };
   }
@@ -443,7 +443,7 @@ export class OnOfficeService {
 
     const testUrl = `${url}?${testQueryString}`;
     const generatedSignature =
-      this.onOfficeApiService.generateSignature(testUrl);
+      OnOfficeApiService.generateSignature(testUrl);
 
     if (generatedSignature === signature) {
       return;
@@ -627,7 +627,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.BASIC_SETTINGS;
     const timestamp = dayjs().unix();
 
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -664,7 +664,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.fetchLogoAndColor.name,
       "User color and logo haven't been retrieved!",
       request,
@@ -685,7 +685,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.USER;
     const timestamp = dayjs().unix();
 
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -714,7 +714,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.fetchUserData.name,
       "User data hasn't been retrieved!",
       request,

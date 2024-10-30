@@ -13,11 +13,12 @@ export const ON_OFFICE_ESTATES_PER_PAGE = 20;
 
 @Injectable()
 export class OnOfficeApiService {
-  private readonly providerSecret = configService.getOnOfficeProviderSecret();
-  private readonly logger = new Logger(OnOfficeApiService.name);
+  private static readonly providerSecret =
+    configService.getOnOfficeProviderSecret();
+  private static readonly logger = new Logger(OnOfficeApiService.name);
   private readonly apiUrl = 'https://api.onoffice.de/api/stable/api.php';
 
-  constructor(private readonly http: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
   async sendRequest(
     requestBody: IApiOnOfficeRequest,
@@ -34,7 +35,7 @@ export class OnOfficeApiService {
     const { data } = await firstValueFrom<{
       data: IApiOnOfficeResponse;
     }>(
-      this.http.post<IApiOnOfficeResponse>(this.apiUrl, requestBody, {
+      this.httpService.post<IApiOnOfficeResponse>(this.apiUrl, requestBody, {
         headers: resultingHeaders,
         maxBodyLength: 20971520,
       }),
@@ -43,7 +44,7 @@ export class OnOfficeApiService {
     return data;
   }
 
-  generateSignature(
+  static generateSignature(
     data: string,
     secret = this.providerSecret,
     encoding: BufferEncoding = 'hex',
@@ -54,7 +55,7 @@ export class OnOfficeApiService {
       .toString(encoding);
   }
 
-  checkResponseIsSuccess(
+  static checkResponseIsSuccess(
     methodName: string,
     errorMessage: string,
     request: IApiOnOfficeRequest,

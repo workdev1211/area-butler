@@ -72,7 +72,7 @@ export class OnOfficeEstateService {
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
 
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -164,7 +164,7 @@ export class OnOfficeEstateService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.updateTextFields.name,
       'Estate update failed!',
       request,
@@ -188,7 +188,7 @@ export class OnOfficeEstateService {
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
     const timestamp = dayjs().unix();
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -219,7 +219,7 @@ export class OnOfficeEstateService {
       initialRequest,
     );
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.uploadFile.name,
       'File upload failed on the 1st step!',
       initialRequest,
@@ -275,7 +275,7 @@ export class OnOfficeEstateService {
       finalRequest,
     );
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.uploadFile.name,
       'File upload failed on the 2nd step!',
       finalRequest,
@@ -297,7 +297,7 @@ export class OnOfficeEstateService {
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
     const timestamp = dayjs().unix();
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -338,7 +338,7 @@ export class OnOfficeEstateService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.createLink.name,
       'Link upload failed!',
       request,
@@ -355,7 +355,7 @@ export class OnOfficeEstateService {
     const resourceType = ApiOnOfficeResourceTypesEnum.FIELDS;
 
     const timestamp = dayjs().unix();
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -387,7 +387,7 @@ export class OnOfficeEstateService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.fetchAvailStatuses.name,
       'Link upload failed!',
       request,
@@ -461,7 +461,7 @@ export class OnOfficeEstateService {
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
 
     const timestamp = dayjs().unix();
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -495,7 +495,7 @@ export class OnOfficeEstateService {
     const response: IApiOnOfficeResponse<IApiOnOfficeRealEstate> =
       await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.fetchEstate.name,
       'The estate entity has not been retrieved!',
       request,

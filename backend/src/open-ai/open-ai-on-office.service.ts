@@ -30,7 +30,7 @@ export class OpenAiOnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.FILE;
     const timestamp = dayjs().unix();
 
-    const signature = this.onOfficeApiService.generateSignature(
+    const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -61,7 +61,7 @@ export class OpenAiOnOfficeService {
     const response: IApiOnOfficeResponse<IApiOnOfficeRealEstateFile> =
       await this.onOfficeApiService.sendRequest(request);
 
-    this.onOfficeApiService.checkResponseIsSuccess(
+    OnOfficeApiService.checkResponseIsSuccess(
       this.fetchEstateImages.name,
       'The estate entity has not been retrieved!',
       request,
