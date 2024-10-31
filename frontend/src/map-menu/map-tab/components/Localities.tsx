@@ -72,6 +72,7 @@ const Localities: FC<ILocalitiesProps> = ({
 
   return (
     <div
+      q-id="localities"
       className={
         "collapse collapse-arrow view-option" +
         (isLocalitiesOpen ? " collapse-open" : " collapse-closed")

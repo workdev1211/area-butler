@@ -28,6 +28,7 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
 
   return (
     <div
+      q-id='location-indices'
       className={`collapse collapse-arrow view-option${
         isLocationIndicesOpen ? " collapse-open" : " collapse-closed"
       }`}

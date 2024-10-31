@@ -271,6 +271,7 @@ const EditorTab: FC<IEditorTabProps> = ({
   return (
     <div className="editor-tab z-9000" data-tour="editor-map-menu">
       <div
+        q-id='poi-filter'
         className={
           "collapse collapse-arrow view-option" +
           (isPoiVisibilityOpen ? " collapse-open" : " collapse-closed")
@@ -364,6 +365,7 @@ const EditorTab: FC<IEditorTabProps> = ({
       </div>
 
       <div
+        q-id='config'
         className={
           "collapse collapse-arrow view-option" +
           (isConfigOptionsOpen ? " collapse-open" : " collapse-closed")

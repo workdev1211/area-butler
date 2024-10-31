@@ -44,6 +44,7 @@ const EnvironmentalInfo: FC<IEnvironmentalInfoProps> = ({
 
   return (
     <div
+      q-id='environmental-info'
       className={
         "collapse collapse-arrow view-option" +
         (isEnvironmentalInfoOpen ? " collapse-open" : " collapse-closed")

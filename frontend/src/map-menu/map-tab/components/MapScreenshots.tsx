@@ -25,6 +25,7 @@ const MapScreenshots: FC<IMapScreenshotsProps> = ({
 
   return (
     <div
+      q-id='screenshots'
       className={
         "collapse collapse-arrow view-option" +
         (isMapScreenshotsOpen ? " collapse-open" : " collapse-closed")

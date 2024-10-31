@@ -87,6 +87,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
 
   return (
     <div
+      q-id='social-demographics'
       className={
         "collapse collapse-arrow view-option" +
         (isSocialDemographicsOpen ? " collapse-open" : " collapse-closed")

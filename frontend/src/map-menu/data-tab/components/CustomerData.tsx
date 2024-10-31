@@ -39,6 +39,7 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
 
   return (
     <div
+      q-id='customer-data'
       className={
         "collapse collapse-arrow view-option" +
         (isCustomerDataOpen ? " collapse-open" : " collapse-closed")

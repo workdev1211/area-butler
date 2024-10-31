@@ -158,6 +158,7 @@ const LocationExport: FC<ILocationExportProps> = ({
 
   return (
     <div
+      q-id='location-export'
       className={
         "collapse collapse-arrow view-option" +
         (isReportsOpen ? " collapse-open" : " collapse-closed")

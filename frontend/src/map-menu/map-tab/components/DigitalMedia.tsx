@@ -147,6 +147,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
 
   return (
     <div
+      q-id='digital-media'
       className={
         "collapse collapse-arrow view-option" +
         (isDigitalMediaOpen ? " collapse-open" : " collapse-closed")

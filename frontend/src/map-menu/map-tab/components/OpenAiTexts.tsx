@@ -48,6 +48,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
       )}
 
       <div
+        q-id='ai-texts'
         className={`collapse collapse-arrow view-option${
           isOpenAiTextsOpen ? " collapse-open" : " collapse-closed"
         }`}

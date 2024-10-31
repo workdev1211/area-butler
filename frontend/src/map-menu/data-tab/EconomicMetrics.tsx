@@ -19,6 +19,7 @@ const EconomicMetrics: FunctionComponent = () => {
 
   return (
     <div
+      q-id='economics-metric'
       className={
         "collapse collapse-arrow view-option" +
         (isEconomicMetricsOpen ? " collapse-open" : " collapse-closed")
