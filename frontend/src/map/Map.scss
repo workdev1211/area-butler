@@ -11,6 +11,8 @@
 }
 
 .cluster-icon {
+  margin-top: -100%;
+  margin-left: -100%;
   width: 150px !important;
   height: auto !important;
   padding: 6px;
@@ -18,6 +20,26 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
+}
+
+.cluster-icon-counter {
+  background-color: var(--primary);
+  color: white;
+  height: 14px;
+  padding: 0px 4px;
+  justify-content: center;
+  display: flex;
+  line-height: 14px;
+  border-radius: 14px;
+  margin-top: -50%;
+  margin-left: -6px;
+  font-size: x-small;
+}
+
+.bright-primary-color {
+  .cluster-icon-counter {
+    color: black;
+  }
 }
 
 .cluster-icon-wrapper {
