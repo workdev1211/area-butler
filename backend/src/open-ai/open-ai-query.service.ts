@@ -435,6 +435,7 @@ Zudem verwende diese vom AreaButler generierten Daten:
       textLength = OpenAiTextLengthEnum.MEDIUM,
       tonality,
       language,
+      customText,
     } = locDescQueryParams;
     const lang = language || config.language || LanguageTypeEnum.de;
 
@@ -458,10 +459,14 @@ Der Text soll:
 - Do not include any explanation
 - verwende als Ausgabesprache ${lang} (BCP 47)
 
-Textstruktur mit Überschriften:
+${
+  (customText &&
+    `Berücksichtige priorisiert folgende Anweisung bei der Erstellung: ${customText}`) ||
+  `Textstruktur mit Überschriften:
 Stadtteilbeschreibung für [Stadtteilname]
 Daten Highlights des Stadtteils [Stadtteilname]
-Stadtteil FAQs
+Stadtteil FAQs`
+}
 
 ###Zusätzliche Daten:
 `;

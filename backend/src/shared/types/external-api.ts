@@ -168,6 +168,7 @@ export interface IOpenAiExtQueryReq extends IApiFetchPoiDataReq {
   price?: number;
   priceType?: ApiRealEstateCostType;
   totalAreaInSqM?: number;
+  customText?: string;
 }
 
 export type IApiOpenAiExtQueryReqStatus =

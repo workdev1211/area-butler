@@ -61,6 +61,7 @@ export class OpenAiExtService {
       totalAreaInSqM,
       energyEfficiency,
       furnishing,
+      customText,
     } = openAiQueryParams;
 
     const place = await this.placeService.fetchPlaceOrFail({
@@ -70,7 +71,6 @@ export class OpenAiExtService {
 
     const coordinates = place.geometry.location;
     const resultAddress = address || place.formatted_address;
-
     const snapshotRes =
       [
         ApiOpenAiQueryTypesEnum.LOC_DESC,
@@ -107,6 +107,7 @@ export class OpenAiExtService {
       language,
       tonality,
       transportMode,
+      customText,
     });
 
     if (queryResp.length > maxTextLength) {
@@ -132,6 +133,7 @@ export class OpenAiExtService {
     language,
     tonality,
     transportMode,
+    customText,
   }: {
     user: UserDocument | TIntegrationUserDocument;
     queryType: ApiOpenAiQueryTypesEnum;
@@ -140,6 +142,7 @@ export class OpenAiExtService {
     language?: ApiBcp47LanguageEnum;
     tonality?: OpenAiTonalityEnum;
     transportMode?: MeansOfTransportation;
+    customText?: string;
   }): Promise<string> {
     const params = {
       language,
@@ -147,8 +150,8 @@ export class OpenAiExtService {
       snapshotRes,
       tonality,
       meanOfTransportation: transportMode,
-      realEstateType:
-        (realEstate ? realEstate.type : false) || defaultRealEstType,
+      realEstateType: (realEstate && realEstate.type) || defaultRealEstType,
+      customText,
     };
     switch (queryType) {
       case ApiOpenAiQueryTypesEnum.LOC_DESC:
