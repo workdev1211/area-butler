@@ -28,7 +28,7 @@
 }
 
 .mapMenu {
-  background-color: #ffffffb0;
+  background-color: #ffffff;
   border-radius: 15px;
   padding: 10px;
   overflow: hidden;
@@ -46,13 +46,14 @@
   }
 
   img {
-    width: 20px;
-    height: 20px;
+    width: 17px;
+    height: 17px;
+    margin: 4px 7px 4px 0;
   }
 
-  div {
-    width: 25px;
-    height: 25px;
+  .img-container {
+    width: 21px;
+    height: 24px;
   }
 
 }
