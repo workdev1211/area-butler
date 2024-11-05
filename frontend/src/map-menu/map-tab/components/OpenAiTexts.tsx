@@ -48,7 +48,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
       )}
 
       <div
-        q-id='ai-texts'
+        q-id="ai-texts"
         className={`collapse collapse-arrow view-option${
           isOpenAiTextsOpen ? " collapse-open" : " collapse-closed"
         }`}
@@ -98,8 +98,8 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
                   integrationType === IntegrationTypesEnum.ON_OFFICE ||
                   type !== OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
               )
-              .map(({ type }) => (
-                <li key={type}>
+              .map(({ type, label }) => (
+                <li key={type} q-id={label}>
                   <h3
                     className="max-w-fit items-center cursor-pointer"
                     onClick={() => {

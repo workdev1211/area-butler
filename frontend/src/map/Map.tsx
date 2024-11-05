@@ -1105,9 +1105,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               (cm) =>
                 '<div class="flex items-center gap-0.5">' +
                 cm.icon +
-                `<span class="cluster-icon-counter">${
-                  cm.count
-                }</span>` +
+                `<span class="cluster-icon-counter">${cm.count}</span>` +
                 "</div>"
             );
 
@@ -1120,11 +1118,11 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             });
           },
           maxClusterRadius: 200,
-          polygonOptions: { color: config?.primaryColor || '#fff' },
-          disableClusteringAtZoom: config?.groupItems ? 15 : 1,
+          polygonOptions: { color: config?.primaryColor || "#fff" },
+          disableClusteringAtZoom: config?.groupItems ? 17 : 1,
           spiderfyOnMaxZoom: false,
-          animate: false,
-          zoomToBoundsOnClick: false,
+          animate: true,
+          zoomToBoundsOnClick: true,
         });
 
         // set realEstateListing to active if theme is KF and group is real estate listings

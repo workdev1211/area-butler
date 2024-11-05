@@ -187,7 +187,7 @@ const LocationExport: FC<ILocationExportProps> = ({
 
       <div className="collapse-content">
         <ul>
-          <li>
+          <li q-id='location-expose'>
             <h3
               className="max-w-fit items-center cursor-pointer"
               onClick={() => {
@@ -206,7 +206,7 @@ const LocationExport: FC<ILocationExportProps> = ({
               {/*<span className="badge badge-primary">NEU</span>*/}
             </h3>
           </li>
-          <li>
+          <li q-id='analysis-pdf'>
             <h3
               className="max-w-fit items-center cursor-pointer"
               onClick={() => {
@@ -222,7 +222,7 @@ const LocationExport: FC<ILocationExportProps> = ({
               {t(IntlKeys.snapshotEditor.dataTab.environmentalAnalysisPDF)}
             </h3>
           </li>
-          <li>
+          <li q-id='overview-pdf'>
             <h3
               className="max-w-fit items-center cursor-pointer"
               onClick={() => {
