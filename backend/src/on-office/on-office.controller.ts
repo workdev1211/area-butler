@@ -38,6 +38,7 @@ import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-esta
 // import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
 import ApiIntSetPropPubLinksReqDto from '../dto/integration/api-int-set-prop-pub-links-req.dto';
 import { OnOfficeEstateService } from './service/on-office-estate.service';
+import { OnOfficeQueryBuilderService } from './service/query-builder/on-office-query-builder.service';
 
 @ApiTags('on-office')
 @Controller('api/on-office')
@@ -46,6 +47,7 @@ export class OnOfficeController {
 
   constructor(
     private readonly onOfficeEstateService: OnOfficeEstateService,
+    private readonly onOfficeQueryBuilderService: OnOfficeQueryBuilderService,
     private readonly onOfficeService: OnOfficeService,
     private readonly realEstateCrmImportService: RealEstateCrmImportService,
   ) {}
@@ -109,15 +111,18 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Update estate text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('estate-text')
-  updateEstTextField(
+  async updateEstTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() { exportType, integrationId, text }: ApiIntUpdEstTextFieldReqDto,
   ): Promise<void> {
-    return this.onOfficeEstateService.updateTextFields(
-      integrationUser,
-      integrationId,
-      [{ exportType, text }],
-    );
+    await this.onOfficeQueryBuilderService
+      .setUserParams(integrationUser.parameters)
+      .updateTextFields(
+        integrationId,
+        [{ exportType, text }],
+        integrationUser.company.config.exportMatching,
+      )
+      .exec();
   }
 
   @ApiOperation({ description: 'Upload a file' })
@@ -127,7 +132,7 @@ export class OnOfficeController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() uploadEstateFileDto: ApiIntUploadEstateFileReqDto,
   ): Promise<void> {
-    return this.onOfficeEstateService.uploadFile(
+    return this.onOfficeService.uploadFile(
       integrationUser,
       uploadEstateFileDto,
     );
@@ -150,10 +155,15 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Fetch available estate statuses' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('avail-statuses')
-  fetchEstStatuses(
+  async fetchEstStatuses(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiRealEstAvailIntStatuses> {
-    return this.onOfficeEstateService.fetchAvailStatuses(integrationUser);
+    const { getAvailStatuses } = await this.onOfficeQueryBuilderService
+      .setUserParams(integrationUser.parameters)
+      .getAvailStatuses()
+      .exec();
+
+    return getAvailStatuses;
   }
 
   @ApiOperation({ description: 'Sync estate data' })

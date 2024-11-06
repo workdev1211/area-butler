@@ -10,14 +10,28 @@ export const groupBy = (xs: any, f: any): Record<string, any> =>
     {}
   );
 
-export const getBidirectionalMapping = <R, T>(
-  mapping: Map<R, T>
-): Map<R | T, T | R> =>
-  Array.from(mapping).reduce((result, [key, value]) => {
-    result.set(key, value);
-    result.set(value, key);
-    return result;
-  }, new Map());
+export const getReverseMapping = <K, V>(mapping: Map<K, V>): Map<V, K> => {
+  const reverseMap = new Map<V, K>();
+
+  mapping.forEach((value, key) => {
+    reverseMap.set(value, key);
+  });
+
+  return reverseMap;
+};
+
+export const getBidirectionalMapping = <K, V>(
+  mapping: Map<K, V>
+): Map<K | V, V | K> => {
+  const bidirectionalMapping = new Map<K | V, V | K>();
+
+  mapping.forEach((value, key) => {
+    bidirectionalMapping.set(key, value);
+    bidirectionalMapping.set(value, key);
+  });
+
+  return bidirectionalMapping;
+};
 
 export const camelize = (str: string): string =>
   str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
@@ -137,4 +151,18 @@ export const replaceValInObj = (
   });
 
   return obj;
+};
+
+// left for possible future usage
+export const applyClassMixins = (derivedCtor: any, constructors: any[]) => {
+  constructors.forEach((baseCtor) => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+      Object.defineProperty(
+        derivedCtor.prototype,
+        name,
+        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+          Object.create(null)
+      );
+    });
+  });
 };

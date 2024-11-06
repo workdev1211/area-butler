@@ -17,6 +17,7 @@ import { OpenAiModule } from '../open-ai/open-ai.module';
 import { CompanyModule } from '../company/company.module';
 import { OnOfficeEstateService } from './service/on-office-estate.service';
 import { PotentialCustomerModule } from '../potential-customer/potential-customer.module';
+import { OnOfficeQueryBuilderService } from './service/query-builder/on-office-query-builder.service';
 
 @Module({
   imports: [
@@ -32,6 +33,11 @@ import { PotentialCustomerModule } from '../potential-customer/potential-custome
     ]),
   ],
   controllers: [OnOfficeController, OnOfficeWebhookController],
-  providers: [OnOfficeService, OnOfficeEstateService, OnOfficeWebhookService],
+  providers: [
+    OnOfficeService,
+    OnOfficeEstateService,
+    OnOfficeWebhookService,
+    OnOfficeQueryBuilderService,
+  ],
 })
 export class OnOfficeModule {}

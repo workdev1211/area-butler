@@ -5,7 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
+import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { configService } from '../../config/config.service';
@@ -14,6 +14,7 @@ import { OnOfficeApiService } from '../../client/on-office/on-office-api.service
 import { IntegrationUserService } from '../../user/integration-user.service';
 import {
   ApiOnOfficeActionIdsEnum,
+  ApiOnOfficeArtTypesEnum,
   ApiOnOfficeResourceTypesEnum,
   ApiOnOfficeTransactionStatusesEnum,
   IApiOnOfficeActivationReq,
@@ -27,6 +28,7 @@ import {
   IApiOnOfficeRealEstate,
   IApiOnOfficeRequest,
   IApiOnOfficeUnlockProviderReq,
+  OnOfficeReqModuleEnum,
   TApiOnOfficeConfirmOrderRes,
   TOnOfficeLoginQueryParams,
 } from '@area-butler-types/on-office';
@@ -37,9 +39,11 @@ import {
   TOnOfficeTransactionDocument,
 } from '../schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from '../shared/on-office.functions';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import {
+  IApiIntUploadEstateFileReq,
+  IntegrationTypesEnum,
+} from '@area-butler-types/integration';
 import { RealEstateListingIntService } from '../../real-estate-listing/real-estate-listing-int.service';
-import { convertBase64ContentToUri } from '../../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
   IApiIntUserLoginRes,
@@ -56,6 +60,9 @@ import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 import { CompanyService } from '../../company/company.service';
 import { ConvertIntUserService } from '../../user/convert-int-user.service';
 import { OnOfficeEstateService } from './on-office-estate.service';
+import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
+import { convertBase64ContentToUri } from '../../../../shared/functions/image.functions';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -84,6 +91,7 @@ export class OnOfficeService {
     private readonly integrationUserService: IntegrationUserService,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly onOfficeEstateService: OnOfficeEstateService,
+    private readonly onOfficeQueryBuilderService: OnOfficeQueryBuilderService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
 
@@ -442,8 +450,7 @@ export class OnOfficeService {
     ]);
 
     const testUrl = `${url}?${testQueryString}`;
-    const generatedSignature =
-      OnOfficeApiService.generateSignature(testUrl);
+    const generatedSignature = OnOfficeApiService.generateSignature(testUrl);
 
     if (generatedSignature === signature) {
       return;
@@ -486,54 +493,10 @@ export class OnOfficeService {
           })
         : undefined);
 
-    if (integrationUser) {
-      const { userName, email } = await this.fetchUserData({
-        ...integrationUser.parameters,
-        extendedClaim,
-      });
-
-      const { color, logo } = await this.fetchLogoAndColor({
-        ...integrationUser.parameters,
-        extendedClaim,
-      });
-
-      if (color || logo) {
-        await this.companyService.updateOne(
-          { _id: integrationUser.company._id },
-          {
-            $set: {
-              accessToken: extendedClaim,
-              'config.color': color
-                ? `#${color}`
-                : integrationUser.company.config?.color,
-              'config.logo': logo
-                ? convertBase64ContentToUri(logo)
-                : integrationUser.company.config?.logo,
-            },
-          },
-        );
-      }
-
-      const updateQuery: UpdateQuery<TIntegrationUserDocument> = {
-        $set: {
-          accessToken: extendedClaim,
-          'parameters.extendedClaim': extendedClaim,
-          'parameters.parameterCacheId': parameterCacheId,
-          'parameters.customerName': customerName,
-          'parameters.userName': userName,
-          'parameters.email': email,
-          parentId: parentUser?.id,
-        },
-      };
-
-      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
-        integrationUser.id,
-        updateQuery,
-      );
-    }
+    let teamUser: TIntegrationUserDocument;
 
     if (!integrationUser) {
-      const groupUser =
+      teamUser =
         parentUser ||
         (await this.integrationUserService.findOne(
           this.integrationType,
@@ -544,62 +507,83 @@ export class OnOfficeService {
           },
           { companyId: 1, parameters: 1 },
         ));
+    }
 
-      if (groupUser) {
-        const groupUserParams =
-          groupUser.parameters as IApiIntUserOnOfficeParams;
+    if (!integrationUser && !teamUser) {
+      this.logger.debug(this.login, integrationUserId, customerWebId, userId);
+      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+    }
 
-        const { userName, email } = await this.fetchUserData({
-          ...groupUser.parameters,
-          extendedClaim,
-          userId,
-        });
+    const userParams: IApiIntUserOnOfficeParams = {
+      ...(integrationUser || teamUser).parameters,
+      extendedClaim,
+      userId,
+    };
 
-        const { color, logo } = await this.fetchLogoAndColor({
-          ...groupUser.parameters,
-          extendedClaim,
-        });
+    const {
+      getColorAndLogo: { color, logo },
+      getEstateData: estateData,
+      getUserData: { email, userName },
+    } = await this.onOfficeQueryBuilderService
+      .setUserParams(userParams)
+      .getColorAndLogo()
+      .getUserData()
+      .getEstateData(estateId)
+      .exec();
 
-        if (color || logo) {
-          await this.companyService.updateOne(
-            { _id: groupUser.company._id },
-            {
-              $set: {
-                'config.color': color
-                  ? `#${color}`
-                  : groupUser.company.config?.color,
-                'config.logo': logo
-                  ? convertBase64ContentToUri(logo)
-                  : groupUser.company.config?.logo,
-              },
-            },
-          );
-        }
-
-        integrationUser = await this.integrationUserService.create({
-          integrationUserId,
-          accessToken: extendedClaim,
-          companyId: groupUser.companyId,
-          integrationType: this.integrationType,
-          parameters: {
-            parameterCacheId,
-            customerName,
-            customerWebId,
-            userId,
-            userName,
-            email,
-            extendedClaim,
-            apiKey: groupUserParams.apiKey,
-            token: groupUserParams.token,
+    if (color || logo) {
+      await this.companyService.updateOne(
+        { _id: integrationUser.company._id },
+        {
+          $set: {
+            accessToken: extendedClaim,
+            'config.color': color
+              ? `#${color}`
+              : (integrationUser || teamUser).company.config?.color,
+            'config.logo': logo
+              ? convertBase64ContentToUri(logo)
+              : (integrationUser || teamUser).company.config?.logo,
           },
-          parentId: parentUser?.id,
-        });
-      }
+        },
+      );
+    }
+
+    if (integrationUser) {
+      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
+        integrationUser.id,
+        {
+          $set: {
+            accessToken: extendedClaim,
+            'parameters.extendedClaim': extendedClaim,
+            'parameters.parameterCacheId': parameterCacheId,
+            'parameters.customerName': customerName,
+            'parameters.userName': userName,
+            'parameters.email': email,
+            parentId: parentUser?.id,
+          },
+        },
+      );
     }
 
     if (!integrationUser) {
-      this.logger.debug(this.login, integrationUserId, customerWebId);
-      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+      integrationUser = await this.integrationUserService.create({
+        integrationUserId,
+        accessToken: extendedClaim,
+        companyId: teamUser.companyId,
+        integrationType: this.integrationType,
+        parameters: {
+          parameterCacheId,
+          customerName,
+          customerWebId,
+          userId,
+          userName,
+          email,
+          extendedClaim,
+          apiKey: teamUser.parameters.apiKey,
+          token: (teamUser.parameters as IApiIntUserOnOfficeParams).token,
+        },
+        parentId: parentUser?.id,
+      });
     }
 
     if (!integrationUser.parentUser && parentUser) {
@@ -609,7 +593,7 @@ export class OnOfficeService {
     const processedEstateData =
       await this.onOfficeEstateService.processEstateData(
         integrationUser,
-        estateId,
+        estateData,
       );
 
     return {
@@ -618,22 +602,29 @@ export class OnOfficeService {
     };
   }
 
-  private async fetchLogoAndColor({
-    token,
-    apiKey,
-    extendedClaim,
-  }: IApiIntUserOnOfficeParams): Promise<{ color: string; logo: string }> {
-    const actionId = ApiOnOfficeActionIdsEnum.READ;
-    const resourceType = ApiOnOfficeResourceTypesEnum.BASIC_SETTINGS;
-    const timestamp = dayjs().unix();
+  async uploadFile(
+    { parameters, company: { config } }: TIntegrationUserDocument,
+    {
+      base64Image,
+      exportType,
+      filename,
+      fileTitle,
+      integrationId,
+    }: IApiIntUploadEstateFileReq,
+  ): Promise<void> {
+    const { token, apiKey, extendedClaim } =
+      parameters as IApiIntUserOnOfficeParams;
+    const actionId = ApiOnOfficeActionIdsEnum.DO;
+    const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
+    const timestamp = dayjs().unix();
     const signature = OnOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
     );
 
-    const request: IApiOnOfficeRequest = {
+    const initialRequest: IApiOnOfficeRequest = {
       token,
       request: {
         actions: [
@@ -642,56 +633,39 @@ export class OnOfficeService {
             hmac: signature,
             hmac_version: 2,
             actionid: actionId,
-            resourceid: '',
+            resourceid: null,
             identifier: '',
             resourcetype: resourceType,
             parameters: {
-              data: {
-                basicData: {
-                  characteristicsCi: [
-                    'color',
-                    // 'color2',
-                    'logo',
-                  ],
-                },
-              },
               extendedclaim: extendedClaim,
+              data: base64Image.replace(/^data:.*;base64,/, ''),
             },
           },
         ],
       },
     };
 
-    const response = await this.onOfficeApiService.sendRequest(request);
+    const initialResponse = await this.onOfficeApiService.sendRequest(
+      initialRequest,
+    );
 
     OnOfficeApiService.checkResponseIsSuccess(
-      this.fetchLogoAndColor.name,
-      "User color and logo haven't been retrieved!",
-      request,
-      response,
+      this.uploadFile.name,
+      'File upload failed on the 1st step!',
+      initialRequest,
+      initialResponse,
     );
 
-    return response.response.results[0].data.records[0].elements.basicData
-      .characteristicsCi;
-  }
+    let artType = ApiOnOfficeArtTypesEnum.FOTO;
 
-  private async fetchUserData({
-    token,
-    apiKey,
-    extendedClaim,
-    userId,
-  }: IApiIntUserOnOfficeParams): Promise<{ userName: string; email: string }> {
-    const actionId = ApiOnOfficeActionIdsEnum.READ;
-    const resourceType = ApiOnOfficeResourceTypesEnum.USER;
-    const timestamp = dayjs().unix();
+    if (exportType === AreaButlerExportTypesEnum.QR_CODE) {
+      artType = ApiOnOfficeArtTypesEnum['QR-CODE'];
+    }
+    if (exportType === AreaButlerExportTypesEnum.SCREENSHOT) {
+      artType = ApiOnOfficeArtTypesEnum.LAGEPLAN;
+    }
 
-    const signature = OnOfficeApiService.generateSignature(
-      [timestamp, token, resourceType, actionId].join(''),
-      apiKey,
-      'base64',
-    );
-
-    const request: IApiOnOfficeRequest = {
+    const finalRequest: IApiOnOfficeRequest = {
       token,
       request: {
         actions: [
@@ -700,30 +674,42 @@ export class OnOfficeService {
             hmac: signature,
             hmac_version: 2,
             actionid: actionId,
-            resourceid: userId,
-            identifier: '',
+            resourceid: null,
             resourcetype: resourceType,
+            identifier: '',
             parameters: {
-              data: ['Name', 'email'],
               extendedclaim: extendedClaim,
+              module: OnOfficeReqModuleEnum.ESTATE,
+              tmpUploadId:
+                initialResponse.response.results[0].data.records[0].elements
+                  .tmpUploadId,
+              file: filename,
+              title: fileTitle,
+              Art: artType,
+              setDefaultPublicationRights: true,
+              relatedRecordId: integrationId,
             },
           },
         ],
       },
     };
 
-    const response = await this.onOfficeApiService.sendRequest(request);
+    const exportMatching = config?.exportMatching;
 
-    OnOfficeApiService.checkResponseIsSuccess(
-      this.fetchUserData.name,
-      "User data hasn't been retrieved!",
-      request,
-      response,
+    if (exportMatching && exportMatching[exportType]) {
+      finalRequest.request.actions[0].parameters.documentAttribute =
+        exportMatching[exportType].fieldId;
+    }
+
+    const finalResponse = await this.onOfficeApiService.sendRequest(
+      finalRequest,
     );
 
-    const { Name: userName, email } =
-      response.response.results[0].data.records[0].elements;
-
-    return { userName, email };
+    OnOfficeApiService.checkResponseIsSuccess(
+      this.uploadFile.name,
+      'File upload failed on the 2nd step!',
+      finalRequest,
+      finalResponse,
+    );
   }
 }

@@ -54,7 +54,7 @@ export enum ApiOnOfficeResourceTypesEnum {
   MULTISELECT_CONFIGURATION = "multiselectconfiguration",
 }
 
-interface IApiOnOfficeRequestAction {
+export interface IApiOnOfficeRequestAction {
   timestamp?: number;
   hmac: string;
   hmac_version: 2;
@@ -79,6 +79,7 @@ export interface IApiOnOfficeReqActParams {
   filter?: TApiOnOfficeReqParamFilter;
   fieldList?: string[]; // enum[] IApiOnOfficeRealEstate
   module?: OnOfficeReqModuleEnum;
+  modul?: string;
   fields?: string[];
   // file upload start
   freetext?: string; // file description

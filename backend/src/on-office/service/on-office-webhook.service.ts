@@ -17,10 +17,10 @@ import { OnOfficeWebhookUrlEnum } from '../shared/on-office.types';
 import ApiOnOfficeLoginQueryParamsDto from '../dto/api-on-office-login-query-params.dto';
 import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
 import { createDirectLink } from '../../shared/functions/shared';
-import { OnOfficeEstateService } from './on-office-estate.service';
 import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
 import { PotentialCustomerDocument } from '../../potential-customer/schema/potential-customer.schema';
 import { defaultPotentialCustomer } from '../../shared/constants/potential-customers';
+import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
 
 interface IGenerateLocDescs {
   loginData: IPerformLoginData;
@@ -33,7 +33,7 @@ export class OnOfficeWebhookService {
   private readonly logger = new Logger(OnOfficeWebhookService.name);
 
   constructor(
-    private readonly onOfficeEstateService: OnOfficeEstateService,
+    private readonly onOfficeQueryBuilderService: OnOfficeQueryBuilderService,
     private readonly onOfficeService: OnOfficeService,
     private readonly openAiExtService: OpenAiExtService,
     private readonly openAiService: OpenAiService,
@@ -140,11 +140,14 @@ export class OnOfficeWebhookService {
     }
 
     if (textFieldParams.length) {
-      await this.onOfficeEstateService.updateTextFields(
-        integrationUser,
-        realEstate.integrationId,
-        textFieldParams,
-      );
+      await this.onOfficeQueryBuilderService
+        .setUserParams(integrationUser.parameters)
+        .updateTextFields(
+          realEstate.integrationId,
+          textFieldParams,
+          integrationUser.company.config.exportMatching,
+        )
+        .exec();
     }
   }
 

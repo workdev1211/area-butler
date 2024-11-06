@@ -56,7 +56,7 @@ export class OnOfficeApiService {
   }
 
   static checkResponseIsSuccess(
-    methodName: string,
+    serviceName: string,
     errorMessage: string,
     request: IApiOnOfficeRequest,
     response: IApiOnOfficeResponse,
@@ -70,27 +70,24 @@ export class OnOfficeApiService {
           errorcode: responseErrorCode,
           message: responseMessage,
         },
-        response: {
-          results: [
-            {
-              status: { errorcode: actionErrorCode, message: actionMessage },
-            },
-          ],
-        },
+        response: { results },
       } = response;
 
-      responseIsSuccess =
+      responseIsSuccess = results.reduce(
+        (
+          result,
+          { status: { errorcode: actionErrorCode, message: actionMessage } },
+        ) => result && actionErrorCode === 0 && actionMessage === 'OK',
         responseCode === 200 &&
-        responseErrorCode === 0 &&
-        responseMessage === 'OK' &&
-        actionErrorCode === 0 &&
-        actionMessage === 'OK';
+          responseErrorCode === 0 &&
+          responseMessage === 'OK',
+      );
     } catch (e) {
       this.logger.error(this.checkResponseIsSuccess.name, e);
     }
 
     if (!responseIsSuccess) {
-      this.logger.error(`Method: ${methodName}`, request, response);
+      this.logger.error(`Service: ${serviceName}`, request, response);
       throw new HttpException(errorMessage, 400);
     }
   }

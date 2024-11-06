@@ -44,15 +44,15 @@ export interface IIntUserSubscription {
 }
 
 export interface IApiIntUserOnOfficeParams {
-  parameterCacheId?: string;
+  apiKey?: string; // client secret
   customerName?: string;
   customerWebId?: string; // OnOffice account id
+  email?: string;
+  extendedClaim?: string; // used by us as an access token
+  parameterCacheId?: string;
+  token?: string; // client access token
   userId?: string; // OnOffice account user id
   userName?: string;
-  extendedClaim: string; // used by us as an access token
-  apiKey?: string; // client secret
-  token?: string; // client access token
-  email?: string;
 }
 
 export interface IApiPropstackStoredBroker {
