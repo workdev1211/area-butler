@@ -95,11 +95,35 @@ export const onOfficeActionMapper: Map<
   ],
   // multiselect
   [
-    OnOfficeActionTypeEnum.GET_MULTISELECT_CONFIG,
+    OnOfficeActionTypeEnum.CREATE_MULTISELECT_VALUES,
+    {
+      actionId: ApiOnOfficeActionIdsEnum.CREATE,
+      actionType: OnOfficeActionTypeEnum.CREATE_MULTISELECT_VALUES,
+      resourceType: ApiOnOfficeResourceTypesEnum.MULTISELECT_KEY,
+    },
+  ],
+  [
+    OnOfficeActionTypeEnum.GET_MULTISELECT_VALUES,
     {
       actionId: ApiOnOfficeActionIdsEnum.GET,
-      actionType: OnOfficeActionTypeEnum.GET_MULTISELECT_CONFIG,
+      actionType: OnOfficeActionTypeEnum.GET_MULTISELECT_VALUES,
       resourceType: ApiOnOfficeResourceTypesEnum.MULTISELECT_CONFIGURATION,
+    },
+  ],
+  [
+    OnOfficeActionTypeEnum.UPDATE_MULTISELECT_VALUES,
+    {
+      actionId: ApiOnOfficeActionIdsEnum.MODIFY,
+      actionType: OnOfficeActionTypeEnum.UPDATE_MULTISELECT_VALUES,
+      resourceType: ApiOnOfficeResourceTypesEnum.MULTISELECT_KEY,
+    },
+  ],
+  [
+    OnOfficeActionTypeEnum.DELETE_MULTISELECT_VALUES,
+    {
+      actionId: ApiOnOfficeActionIdsEnum.DELETE,
+      actionType: OnOfficeActionTypeEnum.DELETE_MULTISELECT_VALUES,
+      resourceType: ApiOnOfficeResourceTypesEnum.MULTISELECT_KEY,
     },
   ],
 ]);

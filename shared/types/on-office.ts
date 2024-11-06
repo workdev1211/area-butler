@@ -79,7 +79,7 @@ export interface IApiOnOfficeReqActParams {
   filter?: TApiOnOfficeReqParamFilter;
   fieldList?: string[]; // enum[] IApiOnOfficeRealEstate
   module?: OnOfficeReqModuleEnum;
-  modul?: string;
+  modul?: OnOfficeMultiSelModuleEnum;
   fields?: string[];
   // file upload start
   freetext?: string; // file description
@@ -358,4 +358,9 @@ export enum OnOfficeReqModuleEnum {
   PROJECT = "project",
   FACTURE_ARTICLE_ADMINISTRATION = "fakturaArticleAdministration",
   FACTURE_BOOKINGS = "fakturaBookings",
+}
+
+export enum OnOfficeMultiSelModuleEnum {
+  ESTATE = "objekte",
+  ADDRESS = "adressen",
 }

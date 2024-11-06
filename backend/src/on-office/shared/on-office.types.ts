@@ -1,5 +1,6 @@
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import { IApiOnOfficeRealEstate } from '@area-butler-types/on-office';
+import { IOnOfficeMulSelValue } from '../service/query-builder/on-office-multiselect.mixin';
 
 export enum OnOfficeWebhookUrlEnum {
   CREATE_MAP = 'create-map',
@@ -20,7 +21,10 @@ export enum OnOfficeActionTypeEnum {
   UPDATE_TEXT_FIELDS = 'updateTextFields',
 
   // multiselect
-  GET_MULTISELECT_CONFIG = 'getMultiselectConfig',
+  CREATE_MULTISELECT_VALUES = 'createMultiselectValues',
+  GET_MULTISELECT_VALUES = 'getMultiselectValues',
+  UPDATE_MULTISELECT_VALUES = 'updateMultiselectValues',
+  DELETE_MULTISELECT_VALUES = 'deleteMultiselectValues',
 }
 
 export interface IOnOfficeActionResults
@@ -34,5 +38,8 @@ export interface IOnOfficeActionResults
   [OnOfficeActionTypeEnum.GET_ESTATE_DATA]?: IApiOnOfficeRealEstate;
   [OnOfficeActionTypeEnum.UPDATE_TEXT_FIELDS]?: void;
   // multiselect
-  [OnOfficeActionTypeEnum.GET_MULTISELECT_CONFIG]?: object;
+  [OnOfficeActionTypeEnum.CREATE_MULTISELECT_VALUES]?: void;
+  [OnOfficeActionTypeEnum.GET_MULTISELECT_VALUES]?: IOnOfficeMulSelValue[];
+  [OnOfficeActionTypeEnum.UPDATE_MULTISELECT_VALUES]?: void;
+  [OnOfficeActionTypeEnum.DELETE_MULTISELECT_VALUES]?: void;
 }

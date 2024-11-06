@@ -12,7 +12,11 @@ import {
 import { applyClassMixins } from '../../../../../shared/functions/shared.functions';
 import { OnOfficeCompanyUserMixin } from './on-office-company-user.mixin';
 import { OnOfficeEstateMixin } from './on-office-estate.mixin';
-import { OnOfficeMultiselectMixin } from './on-office-multiselect.mixin';
+import {
+  IOnOfficeMulSelReqValues,
+  IOnOfficeMulSelValue,
+  OnOfficeMultiselectMixin,
+} from './on-office-multiselect.mixin';
 import {
   IApiIntCreateEstateLinkReq,
   TUpdEstTextFieldParams,
@@ -65,5 +69,11 @@ export abstract class OnOfficeQueryBuilder {
   ) => this;
 
   // multiselect
-  getMultiselectConfig: () => this;
+  createMultiselectValues: (fieldValues: IOnOfficeMulSelValue[]) => this;
+  getMultiselectValues: () => this;
+  updateMultiselectValues: (fieldValues: IOnOfficeMulSelValue[]) => this;
+  deleteMultiselectValues: (fieldKeys: string[]) => this;
+  protected convertFieldValues: (
+    fieldValues: IOnOfficeMulSelValue[],
+  ) => IOnOfficeMulSelReqValues;
 }

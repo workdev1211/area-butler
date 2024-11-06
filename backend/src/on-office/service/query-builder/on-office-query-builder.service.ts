@@ -81,7 +81,10 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
           }
 
           case OnOfficeActionTypeEnum.CREATE_LINK:
-          case OnOfficeActionTypeEnum.UPDATE_TEXT_FIELDS: {
+          case OnOfficeActionTypeEnum.UPDATE_TEXT_FIELDS:
+          case OnOfficeActionTypeEnum.CREATE_MULTISELECT_VALUES:
+          case OnOfficeActionTypeEnum.UPDATE_MULTISELECT_VALUES:
+          case OnOfficeActionTypeEnum.DELETE_MULTISELECT_VALUES: {
             break;
           }
 
@@ -116,9 +119,22 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
             break;
           }
 
-          default: {
-            result[actionType] = [...currentValue.data.records];
+          case OnOfficeActionTypeEnum.GET_MULTISELECT_VALUES: {
+            result[actionType] = currentValue.data.records.map(
+              ({ elements: { field, fieldcontent, position } }) => ({
+                fieldKey: field,
+                fieldValue: fieldcontent,
+                position: position,
+              }),
+            );
+
+            break;
           }
+
+          // left for possible future usage
+          // default: {
+          //   result[actionType] = [...currentValue.data.records];
+          // }
         }
 
         return result;

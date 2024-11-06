@@ -63,6 +63,12 @@ import { OnOfficeEstateService } from './on-office-estate.service';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { convertBase64ContentToUri } from '../../../../shared/functions/image.functions';
+import {
+  camelize,
+  replaceUmlaut,
+} from '../../../../shared/functions/shared.functions';
+import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
+import { IOnOfficeMulSelValue } from './query-builder/on-office-multiselect.mixin';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -92,6 +98,7 @@ export class OnOfficeService {
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly onOfficeEstateService: OnOfficeEstateService,
     private readonly onOfficeQueryBuilderService: OnOfficeQueryBuilderService,
+    private readonly potentialCustomerService: PotentialCustomerService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
 
@@ -521,6 +528,7 @@ export class OnOfficeService {
     };
 
     const {
+      getMultiselectValues,
       getColorAndLogo: { color, logo },
       getEstateData: estateData,
       getUserData: { email, userName },
@@ -529,7 +537,10 @@ export class OnOfficeService {
       .getColorAndLogo()
       .getUserData()
       .getEstateData(estateId)
+      .getMultiselectValues()
       .exec();
+
+    await this.syncPotentCustomers(userParams, getMultiselectValues);
 
     if (color || logo) {
       await this.companyService.updateOne(
@@ -711,5 +722,78 @@ export class OnOfficeService {
       finalRequest,
       finalResponse,
     );
+  }
+
+  private async syncPotentCustomers(
+    userParams: IApiIntUserOnOfficeParams,
+    multiselectValues: IOnOfficeMulSelValue[],
+  ): Promise<void> {
+    const existPotentCusNames = await this.potentialCustomerService.fetchNames({
+      integrationType: IntegrationTypesEnum.ON_OFFICE,
+      integrationUserId: 'web89711-31',
+    } as TIntegrationUserDocument);
+
+    let maxPosition = 0;
+
+    const valuesToDelete = multiselectValues.reduce(
+      (result, { fieldKey, fieldValue, position }) => {
+        if (position > maxPosition) {
+          maxPosition = position;
+        }
+
+        const isExists = existPotentCusNames.includes(fieldValue);
+
+        if (!isExists) {
+          result.values.push(fieldKey);
+          result.positions.push(position);
+        }
+
+        return result;
+      },
+      { positions: [], values: [] },
+    );
+
+    const valuesToCreate = existPotentCusNames.reduce<IOnOfficeMulSelValue[]>(
+      (result, potentCusName) => {
+        const isExists = multiselectValues.some(
+          ({ fieldValue }) => fieldValue === potentCusName,
+        );
+
+        if (!isExists) {
+          let newPosition = valuesToDelete.positions.shift();
+
+          if (!newPosition) {
+            maxPosition += 1;
+            newPosition = maxPosition;
+          }
+
+          result.push({
+            fieldKey: camelize(replaceUmlaut(potentCusName)),
+            fieldValue: potentCusName,
+            position: newPosition,
+          });
+        }
+
+        return result;
+      },
+      [],
+    );
+
+    if (!valuesToCreate.length && !valuesToDelete.values.length) {
+      return;
+    }
+
+    const queryBuilder =
+      this.onOfficeQueryBuilderService.setUserParams(userParams);
+
+    if (valuesToDelete.values.length) {
+      queryBuilder.deleteMultiselectValues(valuesToDelete.values);
+    }
+
+    if (valuesToCreate.length) {
+      queryBuilder.createMultiselectValues(valuesToCreate);
+    }
+
+    await queryBuilder.exec();
   }
 }
