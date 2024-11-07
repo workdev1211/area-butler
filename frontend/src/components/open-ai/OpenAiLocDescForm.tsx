@@ -47,8 +47,8 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
   const { t } = useTranslation();
   const { searchContextState } = useContext(SearchContext);
 
-  const meansOfTransportation = searchContextState.transportationParams.map(
-    ({ type }) => {
+  const meansOfTransportation = searchContextState.transportationParams
+    .map(({ type }) => {
       const {
         label,
         type: value,
@@ -58,8 +58,8 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
       )!;
 
       return { label, value, mode };
-    }
-  );
+    })
+    .reverse();
 
   const processedInitialValues = initialValues
     ? {
