@@ -18,7 +18,6 @@ import { PlaceService } from '../../place/place.service';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 import structuredClone from '@ungap/structured-clone';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
-import { IApiIntUserOnOfficeParams } from '@area-butler-types/integration-user';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -44,7 +43,7 @@ export class OnOfficeEstateService {
     const textFieldsParams: TUpdEstTextFieldParams[] = [];
 
     const queryBuilder = this.onOfficeQueryBuilderService.setUserParams(
-      integrationUser.parameters as IApiIntUserOnOfficeParams,
+      integrationUser.parameters,
     );
 
     for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {

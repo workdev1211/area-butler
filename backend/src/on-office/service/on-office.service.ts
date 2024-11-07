@@ -69,6 +69,7 @@ import {
 } from '../../../../shared/functions/shared.functions';
 import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
 import { IOnOfficeMulSelValue } from './query-builder/on-office-multiselect.mixin';
+import structuredClone from '@ungap/structured-clone';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -540,8 +541,6 @@ export class OnOfficeService {
       .getMultiselectValues()
       .exec();
 
-    await this.syncPotentCustomers(userParams, getMultiselectValues);
-
     if (color || logo) {
       await this.companyService.updateOne(
         { _id: integrationUser.company._id },
@@ -596,6 +595,8 @@ export class OnOfficeService {
         parentId: parentUser?.id,
       });
     }
+
+    await this.syncPotentCustomers(integrationUser, getMultiselectValues);
 
     if (!integrationUser.parentUser && parentUser) {
       integrationUser.parentUser = parentUser;
@@ -725,42 +726,56 @@ export class OnOfficeService {
   }
 
   private async syncPotentCustomers(
-    userParams: IApiIntUserOnOfficeParams,
+    integrationUser: TIntegrationUserDocument,
     multiselectValues: IOnOfficeMulSelValue[],
   ): Promise<void> {
-    const existPotentCusNames = await this.potentialCustomerService.fetchNames({
-      integrationType: IntegrationTypesEnum.ON_OFFICE,
-      integrationUserId: 'web89711-31',
-    } as TIntegrationUserDocument);
+    const existPotentCusNames = await this.potentialCustomerService.fetchNames(
+      integrationUser,
+    );
 
-    let maxPosition = 0;
+    const sortedValues = structuredClone(multiselectValues).sort(
+      ({ position: posA }, { position: posB }) => posA - posB,
+    );
 
-    const valuesToDelete = multiselectValues.reduce(
+    let maxPosition = sortedValues[sortedValues.length - 1]?.position || 0;
+    let previousPosition = 0;
+    const availablePositions: number[] = [];
+
+    const valuesToDelete = sortedValues.reduce<string[]>(
       (result, { fieldKey, fieldValue, position }) => {
-        if (position > maxPosition) {
-          maxPosition = position;
+        const positionDiff = position - previousPosition;
+
+        if (positionDiff > 1) {
+          for (
+            let positionCounter = 1;
+            positionCounter < positionDiff;
+            positionCounter += 1
+          ) {
+            availablePositions.push(previousPosition + positionCounter);
+          }
         }
 
+        previousPosition = position;
         const isExists = existPotentCusNames.includes(fieldValue);
 
         if (!isExists) {
-          result.values.push(fieldKey);
-          result.positions.push(position);
+          result.push(fieldKey);
+          availablePositions.push(position);
         }
 
         return result;
       },
-      { positions: [], values: [] },
+      [],
     );
 
     const valuesToCreate = existPotentCusNames.reduce<IOnOfficeMulSelValue[]>(
       (result, potentCusName) => {
-        const isExists = multiselectValues.some(
+        const isExists = sortedValues.some(
           ({ fieldValue }) => fieldValue === potentCusName,
         );
 
         if (!isExists) {
-          let newPosition = valuesToDelete.positions.shift();
+          let newPosition = availablePositions.shift();
 
           if (!newPosition) {
             maxPosition += 1;
@@ -779,15 +794,16 @@ export class OnOfficeService {
       [],
     );
 
-    if (!valuesToCreate.length && !valuesToDelete.values.length) {
+    if (!valuesToCreate.length && !valuesToDelete.length) {
       return;
     }
 
-    const queryBuilder =
-      this.onOfficeQueryBuilderService.setUserParams(userParams);
+    const queryBuilder = this.onOfficeQueryBuilderService.setUserParams(
+      integrationUser.parameters,
+    );
 
     if (valuesToDelete.values.length) {
-      queryBuilder.deleteMultiselectValues(valuesToDelete.values);
+      queryBuilder.deleteMultiselectValues(valuesToDelete);
     }
 
     if (valuesToCreate.length) {
