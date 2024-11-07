@@ -1090,7 +1090,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           iconCreateFunction: (cluster) => {
             const groupedMarkers = groupBy(
               cluster.getAllChildMarkers().map((m) => m.getIcon().options),
-              (i: any) => i.className
+              (i: any) => i.iconUrl
             );
 
             const countedMarkers = Object.entries(groupedMarkers)
@@ -1267,16 +1267,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           amenityMarkerGroup.addLayer(marker);
 
           return true;
-        });
-
-        // react on the marker group click
-        amenityMarkerGroup.on("clusterclick", (a) => {
-          // TODO deprecated property
-          const centerOfGroup = center(a.layer.toGeoJSON());
-          const lat = centerOfGroup.geometry.coordinates[1];
-          const lng = centerOfGroup.geometry.coordinates[0];
-          setMapCenterZoom({ lat, lng }, 17);
-          setGotoMapCenter({ goto: true, withZoom: true });
         });
 
         currentMap!.addLayer(amenityMarkerGroup);

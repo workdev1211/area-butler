@@ -11,9 +11,6 @@
 }
 
 .cluster-icon {
-  margin-top: -100%;
-  margin-left: -100%;
-  width: 150px !important;
   height: auto !important;
   padding: 6px;
   aspect-ratio: 1 !important;
@@ -48,6 +45,10 @@
   gap: 6px;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  margin-top: -50% !important;
+  margin-left: -50% !important;
+  width: 150px !important;
 }
 
 .cluster-icon-wrapper .locality-marker-wrapper {
