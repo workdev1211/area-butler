@@ -448,7 +448,7 @@ Der Text soll:
 - eine ${openAiTonalities[tonality]} Tonalität haben
 - SEO-optimiert sein, um für Immobilienkäufer relevante Suchanfragen abzudecken
 - qualitative Aussagen zu Lage, Infrastruktur, Natur, Nahversorgung und Freizeitmöglichkeiten enthalten
-- POIs aus dem AreaButler (Restaurants, Supermärkte, Apotheken, Spielplätze etc.) nennen angeben
+- POIs aus dem AreaButler nennen und Entfernungen angeben
 - qualitative Aussagen zu den statistischen Daten aus dem Umkreis der Adresse machen (z.B. Einwohnerzahlen, Altersstruktur, Leerstand, durchschnittliche Wohnfläche etc.) -> diese bitte im Internet zB auf wikipedia recherchieren und diese in Highlight Stichpuntken aufführen
 - Absätze für eine klare Struktur nutzen
 - auf die wichtigsten Landmarks und Einrichtungen (Schulen, Kliniken, Parks) hinweisen
@@ -554,9 +554,9 @@ Stadtteil FAQs`
           : []),
         ...(isLocDescPresent
           ? [
-              `Lagedetails und die für die Zielgruppe "${targetGroupName}" wichtigsten POIs namentlich nennen`,
-              `nur gerundete ca. Angaben statt exakten Metern und Minuten verwenden`,
-              `Entfernung zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV nennen`,
+              `du sollst die für die Zielgruppe "${targetGroupName}" die vier wichtigsten POIs herausarbeiten und explizit nennen`,
+              `verwende für die Entfernungen nur gerundete ca. Angaben statt exakten Metern und Minuten`,
+              `nenne in jedem Fall Entfernungen zum nächstgelegenen internationalen Flughafen, Autobahnen und ÖPNV`,
             ]
           : []),
         `verwende als Ausgabesprache ${
