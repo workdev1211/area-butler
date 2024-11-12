@@ -1,17 +1,23 @@
-import { FC, useEffect, useState } from "react";
+import { ComponentType, FC, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { components } from "react-select";
+import {
+  components,
+  ControlProps,
+  CSSObjectWithLabel,
+  GroupBase,
+  MenuProps,
+  StylesConfig,
+} from "react-select";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
-
-import "./LocationAutocomplete.scss";
 
 import {
   deriveGeocodeByAddress,
   deriveGeocodeByPlaceId,
 } from "../shared/shared.functions";
-import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
+import PoweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
+import LocationIcon from "../assets/icons/icons-16-x-16-outline-ic-location.svg";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { useGoogleMapsApi } from "../hooks/google";
 import { LoadingMessage } from "./Loading";
@@ -24,22 +30,38 @@ export interface IOnLocAutoChangeProps {
   isError?: boolean;
 }
 
+interface ISelectOption {
+  label: string;
+  value: { place_id: string };
+}
+
 interface ILocationAutocompleteProps {
   afterChange: (locAutoChangeProps: IOnLocAutoChangeProps) => void;
   value: any;
   menuZIndex?: number;
 }
 
-const Menu = (props: any) => {
-  return (
-    <components.Menu {...props}>
-      {props.children}
-      <div className="powered-container">
-        <img src={poweredByGoogleIcon} alt="google-icon" />
-      </div>
-    </components.Menu>
-  );
-};
+const Control: ComponentType<
+  ControlProps<ISelectOption, false, GroupBase<ISelectOption>>
+> = ({ children, ...props }) => (
+  <components.Control {...props}>
+    <img className="w-5 h-5 ml-5" src={LocationIcon} alt="location" />
+    {children}
+  </components.Control>
+);
+
+const Menu: ComponentType<
+  MenuProps<ISelectOption, false, GroupBase<ISelectOption>>
+> = ({ children, ...props }) => (
+  <components.Menu {...props}>
+    {children}
+    <img
+      className="self-end h-4 my-1 mr-2"
+      src={PoweredByGoogleIcon}
+      alt="google"
+    />
+  </components.Menu>
+);
 
 const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
   afterChange = () => {},
@@ -52,7 +74,7 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
   const user = getCurrentUser();
 
   const [inputValue, setInputValue] = useState<string>();
-  const [focus, setFocus] = useState(false);
+  const [isFocus, setIsFocus] = useState(false);
 
   useEffect(() => {
     setInputValue(value?.label || "");
@@ -91,9 +113,9 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
     }
   };
 
-  const deriveValue = (value?: any): any => {
+  const deriveValue = (value?: any): ISelectOption | undefined => {
     if (!value) {
-      return null;
+      return;
     }
 
     return value.value?.place_id
@@ -101,15 +123,54 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
       : { label: value, value: { place_id: "123" } };
   };
 
-  const selectValue = deriveValue(value);
+  const selectedValue = deriveValue(value);
+
+  const customStyles: StylesConfig<
+    ISelectOption,
+    false,
+    GroupBase<ISelectOption>
+  > = {
+    control: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      border: "1px solid var(--base-bright-silver)",
+      boxShadow: "none",
+      ":hover": {
+        border: "1px solid var(--primary)",
+      },
+      ":focus": {
+        border: "1px solid var(--primary)",
+      },
+    }),
+    menu: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    menuList: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    menuPortal: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: menuZIndex,
+    }),
+    option: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      zIndex: 9999,
+    }),
+    valueContainer: (base: CSSObjectWithLabel): CSSObjectWithLabel => ({
+      ...base,
+      color: "var(--base-anthracite)",
+    }),
+  };
 
   return (
     <div
-      className={focus ? "form-control w-full focus" : "form-control w-full"}
+      className={`form-control w-full${isFocus ? " focus:text-primary" : ""}`}
     >
       <label className="label">
         <span>{t(IntlKeys.common.address)}</span>
       </label>
+
       <div
         className="google-input"
         onClick={() =>
@@ -121,9 +182,12 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
           minLengthAutocomplete={5}
           selectProps={{
             components: {
+              Control,
               Menu,
+              DropdownIndicator: () => null,
+              IndicatorSeparator: () => null,
             },
-            value: selectValue,
+            value: selectedValue,
             inputValue: inputValue,
             onInputChange: (v: any, { action }: any) =>
               onInputChange(v, action),
@@ -133,11 +197,13 @@ const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
             placeholder: t(IntlKeys.googleAutocomplete.enterAddress),
             noOptionsMessage: () => t(IntlKeys.common.noResults),
             loadingMessage: () => t(IntlKeys.common.searching),
-            onFocus: () => setFocus(true),
-            onBlur: () => setFocus(false),
+            onFocus: () => setIsFocus(true),
+            onBlur: () => setIsFocus(false),
             menuPortalTarget: document.body,
-            styles: {
-              menuPortal: (base: any) => ({ ...base, zIndex: menuZIndex }),
+            styles: customStyles,
+            classNames: {
+              control: () => "flex items-center h-[48px] rounded-lg",
+              menu: () => "flex flex-col",
             },
           }}
         />

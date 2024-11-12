@@ -108,7 +108,10 @@ const CompanyExportSettings: FC = () => {
       <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
 
       {(!!user.config.logo || !!user.config.color || !!user.config.mapIcon) && (
-        <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
+        <button
+          className="btn btn-primary max-w-fit"
+          onClick={rollbackSettings}
+        >
           {t(IntlKeys.yourProfile.exportSettingsResetBtn)}
         </button>
       )}

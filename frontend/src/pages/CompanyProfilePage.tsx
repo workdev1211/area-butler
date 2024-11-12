@@ -24,9 +24,9 @@ const CompanyProfilePage: FC = () => {
     ? user.requestsExecuted >= deriveTotalRequestContingent(user)
     : undefined;
   const isCustomExportAvail =
-    isIntegrationUser ||
-    (isHasSubscription &&
-      user.subscription!.config.appFeatures.canCustomizeExport);
+    !isIntegrationUser &&
+    isHasSubscription &&
+    user.subscription!.config.appFeatures.canCustomizeExport;
 
   useEffect(() => {
     void fetchCurrentUser();
@@ -51,11 +51,9 @@ const CompanyProfilePage: FC = () => {
       withHorizontalPadding={true}
       actionsBottom={[<BackButton to="/" key="company-config-back" />]}
     >
-      <div className="flex flex-col gap-10 my-10">
+      <div className="flex flex-col gap-3 my-3">
         {isCustomExportAvail && <CompanyExportSettings />}
-
         <SubscriptionLimitsOrSelection />
-
         <CompanyTemplateId />
       </div>
     </DefaultLayout>

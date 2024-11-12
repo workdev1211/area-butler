@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import "./defaultLayout.scss";
 
@@ -31,6 +31,7 @@ const DefaultLayout: FC<IDefaultLayoutProps> = ({
   withHorizontalPadding,
 }) => {
   const { t } = useTranslation();
+
   return (
     <div className={`default-layout ${isContentLoaded ? "" : "flex-1"}`}>
       {(title || timelineStep || actionsTop) && (
@@ -69,7 +70,7 @@ const DefaultLayout: FC<IDefaultLayoutProps> = ({
         </div>
       )}
       <div
-        className={`default-layout-content ${
+        className={`default-layout-content grow ${
           withHorizontalPadding ? "padding" : ""
         } ${isContentLoaded ? "" : "flex flex-1 justify-center"}`}
       >

@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from "react";
-import { ControlProps, CSSObjectWithLabel, GroupBase } from "react-select";
+import { CSSObjectWithLabel, GroupBase, StylesConfig } from "react-select";
 import AsyncCreatableSelect from "react-select/async-creatable";
 
 import { useTranslation } from "react-i18next";
@@ -24,37 +24,6 @@ const CompanyTemplateId: FC = () => {
   const [fetchDelayInMs, setFetchDelayInMs] = useState<number>(0);
 
   const user = getCurrentUser();
-
-  const customStyles = {
-    control: (
-      provided: CSSObjectWithLabel,
-      {
-        isFocused,
-      }: ControlProps<
-        ApiSearchResultSnapshotResponse,
-        false,
-        GroupBase<ApiSearchResultSnapshotResponse>
-      >
-    ) => {
-      const boxShadow = isFocused
-        ? "0 0 0 2px hsl(var(--b1)),0 0 0 4px hsla(var(--bc)/.2)"
-        : "none";
-
-      return {
-        ...provided,
-        borderColor: "rgb(203 213 225)",
-        borderWidth: "1px",
-        boxShadow,
-        "&:hover": {
-          boxShadow,
-        },
-        // left just in case
-        // "&:active": {
-        //   boxShadow,
-        // },
-      };
-    },
-  };
 
   const loadOptions = useMemo(
     () =>
@@ -90,13 +59,32 @@ const CompanyTemplateId: FC = () => {
     [fetchCompanySnapshots]
   );
 
+  const customStyles: StylesConfig<
+    ApiSearchResultSnapshotResponse,
+    false,
+    GroupBase<ApiSearchResultSnapshotResponse>
+  > = {
+    control: (base: CSSObjectWithLabel) => ({
+      ...base,
+      border: "1px solid var(--base-bright-silver)",
+      boxShadow: "none",
+      ":hover": {
+        border: "1px solid var(--primary)",
+      },
+      ":focus": {
+        border: "1px solid var(--primary)",
+      },
+    }),
+  };
+
   return (
-    <div className="flex flex-col gap-1">
-      <div className="font-bold">
+    <div className="form-control">
+      <label className="label font-bold" htmlFor="company-template-id">
         {t(IntlKeys.company.profile.templateIdLabel)}
-      </div>
+      </label>
 
       <AsyncCreatableSelect
+        name="company-template-id"
         styles={customStyles}
         placeholder={t(IntlKeys.company.profile.templatePlaceholder)}
         isClearable={true}
@@ -105,18 +93,14 @@ const CompanyTemplateId: FC = () => {
         cacheOptions={true}
         createOptionPosition="first"
         classNames={{
-          control: (
-            state: ControlProps<
-              ApiSearchResultSnapshotResponse,
-              false,
-              GroupBase<ApiSearchResultSnapshotResponse>
-            >
-          ) => "select select-bordered",
+          control: () => "2xl:max-w-2xl",
         }}
-        value={
-          {
-            id: user.config.companyTemplateSnapshotId,
-          } as ApiSearchResultSnapshotResponse
+        defaultValue={
+          user.config.companyTemplateSnapshotId
+            ? ({
+                id: user.config.companyTemplateSnapshotId,
+              } as ApiSearchResultSnapshotResponse)
+            : undefined
         }
         loadOptions={loadOptions}
         getOptionLabel={(option) =>
