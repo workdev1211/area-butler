@@ -802,7 +802,7 @@ export class OnOfficeService {
       integrationUser.parameters,
     );
 
-    if (valuesToDelete.values.length) {
+    if (valuesToDelete.length) {
       queryBuilder.deleteMultiselectValues(valuesToDelete);
     }
 
