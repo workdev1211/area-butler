@@ -1,12 +1,13 @@
 import { IsMongoId, IsOptional } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
+import { OmitType } from '@nestjs/swagger';
 
-import { IApiCompanyConfig } from '@area-butler-types/company';
+import { IApiCompanyConfig, ICompanyConfig } from '@area-butler-types/company';
 import CompanyConfigDto from './company-config.dto';
 
 @Exclude()
 class ApiCompanyConfigDto
-  extends CompanyConfigDto
+  extends OmitType(CompanyConfigDto, ['templateSnapshotId'])
   implements IApiCompanyConfig
 {
   @Expose()
@@ -15,9 +16,9 @@ class ApiCompanyConfigDto
       value,
       obj: { templateSnapshotId },
     }: {
-      obj: IApiCompanyConfig;
+      obj: ICompanyConfig;
       value: string;
-    }): string => value || templateSnapshotId,
+    }): string => (value === null || value ? value : templateSnapshotId),
     {
       toClassOnly: true,
     },
@@ -25,23 +26,6 @@ class ApiCompanyConfigDto
   @IsOptional()
   @IsMongoId()
   companyTemplateSnapshotId?: string;
-
-  @Expose()
-  @Transform(
-    ({
-      value,
-      obj: { companyTemplateSnapshotId },
-    }: {
-      obj: IApiCompanyConfig;
-      value: string;
-    }): string => companyTemplateSnapshotId || value,
-    {
-      toClassOnly: true,
-    },
-  )
-  @IsOptional()
-  @IsMongoId()
-  templateSnapshotId?: string;
 }
 
 export default ApiCompanyConfigDto;

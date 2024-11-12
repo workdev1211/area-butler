@@ -8,7 +8,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
 import {
   IApiMapboxStyle,
@@ -17,7 +17,7 @@ import {
   TAreaButlerExportTypes,
 } from '@area-butler-types/types';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
-import { ICompanyConfig } from '@area-butler-types/company';
+import { IApiCompanyConfig, ICompanyConfig } from '@area-butler-types/company';
 import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
 import ApiUserExportFontDto from '../../user/dto/api-user-export-font.dto';
 import ApiMapboxStyleDto from '../../dto/api-mapbox-style.dto';
@@ -93,6 +93,21 @@ class CompanyConfigDto implements ICompanyConfig {
   poiIcons?: IApiPoiIcons;
 
   @Expose()
+  @Transform(
+    ({
+      value,
+      obj: { companyTemplateSnapshotId },
+    }: {
+      obj: IApiCompanyConfig;
+      value: string;
+    }): string =>
+      companyTemplateSnapshotId === null || companyTemplateSnapshotId
+        ? companyTemplateSnapshotId
+        : value,
+    {
+      toClassOnly: true,
+    },
+  )
   @IsOptional()
   @IsMongoId()
   templateSnapshotId?: string;
