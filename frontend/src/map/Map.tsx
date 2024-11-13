@@ -8,7 +8,6 @@ import {
   useRef,
   useState,
 } from "react";
-import center from "@turf/center";
 import { toPng } from "html-to-image";
 import { renderToStaticMarkup } from "react-dom/server";
 

@@ -236,6 +236,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
         ...generalFormRef.current!.values,
         ...locDescFormRef.current!.values,
         isForOnePage: true,
+        maxCharactersLength: 500,
       }
     );
 
