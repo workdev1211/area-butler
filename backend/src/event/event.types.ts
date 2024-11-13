@@ -7,7 +7,7 @@ import {
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 export enum EventType {
-  INTEGRATION_USER_CREATED_EVENT = 'INTEGRATION_USER_CREATED_EVENT',
+  INT_USER_CREATED_EVENT = 'INT_USER_CREATED_EVENT',
   USER_CREATED_EVENT = 'USER_CREATED_EVENT',
   // not used for the moment
   // USER_CONSENT_EVENT = 'USER_CONSENT_EVENT',
@@ -23,8 +23,8 @@ export interface IUserCreatedEvent {
   user: UserDocument;
 }
 
-export interface IIntegrationUserCreatedEvent {
-  integrationUser: TIntegrationUserDocument;
+export interface IIntUserCreatedEvent {
+  user: TIntegrationUserDocument;
 }
 
 export interface ITrialDataRemoveEvent {

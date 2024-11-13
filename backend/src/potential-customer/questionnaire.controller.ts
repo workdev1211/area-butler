@@ -15,7 +15,7 @@ export class QuestionnaireController {
     @Body() questionnaireRequest: ApiUpsertQuestionnaireDto,
   ) {
     try {
-      await this.potentialCustomerService.upsertCustomerFromQuestionnaire(
+      await this.potentialCustomerService.upsertFromQuestionnaire(
         questionnaireRequest,
       );
     } catch (err) {

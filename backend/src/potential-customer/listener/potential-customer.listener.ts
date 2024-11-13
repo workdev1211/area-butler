@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
 
 import {
   EventType,
-  IIntegrationUserCreatedEvent,
+  IIntUserCreatedEvent,
   IUserCreatedEvent,
 } from '../../event/event.types';
 import { PotentialCustomerService } from '../potential-customer.service';
+import { OnEvents } from '../../shared/decorators/on-events.decorator';
 
 @Injectable()
 export class PotentialCustomerListener {
@@ -14,20 +14,12 @@ export class PotentialCustomerListener {
     private readonly potentialCustomerService: PotentialCustomerService,
   ) {}
 
-  // Array doesn't work as expected for the 'OnEvent' decorator
-  @OnEvent(EventType.USER_CREATED_EVENT, { async: true })
-  private async handleUserCreatedEvent({
+  @OnEvents([EventType.INT_USER_CREATED_EVENT, EventType.USER_CREATED_EVENT], {
+    async: true,
+  })
+  private handleUserCreatedEvent({
     user,
-  }: IUserCreatedEvent): Promise<void> {
-    await this.potentialCustomerService.createDefaultPotentialCustomers(user);
-  }
-
-  @OnEvent(EventType.INTEGRATION_USER_CREATED_EVENT, { async: true })
-  private async handleIntegrationUserCreatedEvent({
-    integrationUser,
-  }: IIntegrationUserCreatedEvent): Promise<void> {
-    await this.potentialCustomerService.createDefaultPotentialCustomers(
-      integrationUser,
-    );
+  }: IUserCreatedEvent | IIntUserCreatedEvent): void {
+    void this.potentialCustomerService.createDefault(user);
   }
 }

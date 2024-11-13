@@ -33,7 +33,7 @@ export class PotentialCustomerIntController {
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
-      await this.potentialCustomerService.createPotentialCustomer(
+      await this.potentialCustomerService.create(
         integrationUser,
         potentialCustomer,
       ),
@@ -74,7 +74,7 @@ export class PotentialCustomerIntController {
     @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomerDto>,
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
-      await this.potentialCustomerService.updatePotentialCustomer(
+      await this.potentialCustomerService.update(
         integrationUser,
         id,
         potentialCustomer,
@@ -89,9 +89,6 @@ export class PotentialCustomerIntController {
     @Param('id') id: string,
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<void> {
-    return this.potentialCustomerService.deletePotentialCustomer(
-      integrationUser,
-      id,
-    );
+    return this.potentialCustomerService.delete(integrationUser, id);
   }
 }

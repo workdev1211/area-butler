@@ -47,38 +47,7 @@ export class PotentialCustomerService {
     private readonly userService: UserService,
   ) {}
 
-  async findOne(
-    user: TUnitedUser,
-    filterQuery: FilterQuery<PotentialCustomerDocument>,
-    projectQuery?: ProjectionFields<PotentialCustomerDocument>,
-  ): Promise<PotentialCustomerDocument> {
-    return this.potentialCustomerModel.findOne(
-      this.injectUserIds(user, filterQuery),
-      projectQuery,
-    );
-  }
-
-  async findMany(
-    user: TUnitedUser,
-    projectQuery?: TProjectQuery,
-  ): Promise<PotentialCustomerDocument[]> {
-    return this.potentialCustomerModel.find(
-      this.injectUserIds(user),
-      projectQuery,
-    );
-  }
-
-  async fetchNames(
-    user: UserDocument | TIntegrationUserDocument,
-  ): Promise<string[]> {
-    const potentialCustomers = await this.findMany(user, {
-      name: 1,
-    });
-
-    return potentialCustomers.map(({ name }) => name);
-  }
-
-  async createPotentialCustomer(
+  async create(
     user: UserDocument | TIntegrationUserDocument,
     { ...upsertData }: ApiUpsertPotentialCustomer,
     subscriptionCheck = true,
@@ -111,7 +80,7 @@ export class PotentialCustomerService {
     return new this.potentialCustomerModel(potentialCustomerDoc).save();
   }
 
-  async createDefaultPotentialCustomers(
+  async createDefault(
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<void> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -133,66 +102,7 @@ export class PotentialCustomerService {
     );
   }
 
-  async updatePotentialCustomer(
-    user: UserDocument | TIntegrationUserDocument,
-    potentialCustomerId: string,
-    { ...upsertData }: Partial<ApiUpsertPotentialCustomer>,
-  ): Promise<PotentialCustomerDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    const potentialCustomer = await this.potentialCustomerModel.findById(
-      potentialCustomerId,
-    );
-
-    if (!potentialCustomer) {
-      throw new HttpException('Potential customer not found!', 400);
-    }
-
-    const isInvalidChange = isIntegrationUser
-      ? potentialCustomer.integrationParams.integrationUserId !==
-        user.integrationUserId
-      : potentialCustomer.userId !== user.id;
-
-    if (isInvalidChange) {
-      throw new HttpException('Invalid change!', 400);
-    }
-
-    return this.potentialCustomerModel.findByIdAndUpdate(
-      potentialCustomerId,
-      {
-        ...upsertData,
-      },
-      { new: true },
-    );
-  }
-
-  async deletePotentialCustomer(
-    user: UserDocument | TIntegrationUserDocument,
-    potentialCustomerId: string,
-  ): Promise<void> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    const potentialCustomer = await this.potentialCustomerModel.findById(
-      potentialCustomerId,
-    );
-
-    if (!potentialCustomer) {
-      throw new HttpException('Potential customer not found!', 400);
-    }
-
-    const isInvalidChange = isIntegrationUser
-      ? potentialCustomer.integrationParams.integrationUserId !==
-        user.integrationUserId
-      : potentialCustomer.userId !== user.id;
-
-    if (isInvalidChange) {
-      throw new HttpException('Invalid delete!', 400);
-    }
-
-    await potentialCustomer.deleteOne();
-  }
-
-  async insertQuestionnaireRequest(
+  async insertQuestionnaire(
     user: UserDocument,
     { ...upsertData }: ApiUpsertQuestionnaireRequest,
   ): Promise<QuestionnaireRequestDocument> {
@@ -230,7 +140,7 @@ export class PotentialCustomerService {
     return questionnaire;
   }
 
-  async upsertCustomerFromQuestionnaire({
+  async upsertFromQuestionnaire({
     token,
     customer,
   }: ApiUpsertQuestionnaire): Promise<void> {
@@ -261,7 +171,7 @@ export class PotentialCustomerService {
     };
 
     if (!existingCustomer) {
-      const newCustomer = await this.createPotentialCustomer(user, upsertData);
+      const newCustomer = await this.create(user, upsertData);
 
       const mailProps: IMailProps = {
         to: [{ name: user.config.fullname, email: user.email }],
@@ -275,8 +185,98 @@ export class PotentialCustomerService {
 
       await this.mailSender.sendMail(mailProps);
     } else {
-      await this.updatePotentialCustomer(user, existingCustomer.id, upsertData);
+      await this.update(user, existingCustomer.id, upsertData);
     }
+  }
+
+  async findOne(
+    user: TUnitedUser,
+    filterQuery: FilterQuery<PotentialCustomerDocument>,
+    projectQuery?: ProjectionFields<PotentialCustomerDocument>,
+  ): Promise<PotentialCustomerDocument> {
+    return this.potentialCustomerModel.findOne(
+      this.injectUserIds(user, filterQuery),
+      projectQuery,
+    );
+  }
+
+  async findMany(
+    user: TUnitedUser,
+    projectQuery?: TProjectQuery,
+  ): Promise<PotentialCustomerDocument[]> {
+    return this.potentialCustomerModel.find(
+      this.injectUserIds(user),
+      projectQuery,
+    );
+  }
+
+  async fetchNames(
+    user: UserDocument | TIntegrationUserDocument,
+  ): Promise<string[]> {
+    const potentialCustomers = await this.findMany(user, {
+      name: 1,
+    });
+
+    return potentialCustomers.map(({ name }) => name);
+  }
+
+  async update(
+    user: UserDocument | TIntegrationUserDocument,
+    potentialCustomerId: string,
+    { ...upsertData }: Partial<ApiUpsertPotentialCustomer>,
+  ): Promise<PotentialCustomerDocument> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    const potentialCustomer = await this.potentialCustomerModel.findById(
+      potentialCustomerId,
+    );
+
+    if (!potentialCustomer) {
+      throw new HttpException('Potential customer not found!', 400);
+    }
+
+    const isInvalidChange = isIntegrationUser
+      ? potentialCustomer.integrationParams.integrationUserId !==
+        user.integrationUserId
+      : potentialCustomer.userId !== user.id;
+
+    if (isInvalidChange) {
+      throw new HttpException('Invalid change!', 400);
+    }
+
+    return this.potentialCustomerModel.findByIdAndUpdate(
+      potentialCustomerId,
+      {
+        ...upsertData,
+      },
+      { new: true },
+    );
+  }
+
+  async delete(
+    user: UserDocument | TIntegrationUserDocument,
+    potentialCustomerId: string,
+  ): Promise<void> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    const potentialCustomer = await this.potentialCustomerModel.findById(
+      potentialCustomerId,
+    );
+
+    if (!potentialCustomer) {
+      throw new HttpException('Potential customer not found!', 400);
+    }
+
+    const isInvalidChange = isIntegrationUser
+      ? potentialCustomer.integrationParams.integrationUserId !==
+        user.integrationUserId
+      : potentialCustomer.userId !== user.id;
+
+    if (isInvalidChange) {
+      throw new HttpException('Invalid delete!', 400);
+    }
+
+    await potentialCustomer.deleteOne();
   }
 
   private injectUserIds(

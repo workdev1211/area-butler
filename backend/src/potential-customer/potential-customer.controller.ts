@@ -38,9 +38,9 @@ export class PotentialCustomerController extends AuthenticatedController {
   async fetchPotentialCustomers(
     @InjectUser() user: UserDocument,
   ): Promise<ApiPotentialCustomer[]> {
-    return (
-      await this.potentialCustomerService.findMany(user)
-    ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p, user.id));
+    return (await this.potentialCustomerService.findMany(user)).map((p) =>
+      mapPotentialCustomerToApiPotentialCustomer(p, user.id),
+    );
   }
 
   @ApiOperation({ description: 'Fetch potential customer names' })
@@ -56,10 +56,7 @@ export class PotentialCustomerController extends AuthenticatedController {
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
-      await this.potentialCustomerService.createPotentialCustomer(
-        user,
-        potentialCustomer,
-      ),
+      await this.potentialCustomerService.create(user, potentialCustomer),
       user.id,
     );
   }
@@ -71,7 +68,7 @@ export class PotentialCustomerController extends AuthenticatedController {
     @Body() questionnaireRequest: ApiUpsertQuestionnaireRequestDto,
   ): Promise<ApiQuestionnaireRequest> {
     return mapQuestionnaireRequestToApiQuestionnaireRequest(
-      await this.potentialCustomerService.insertQuestionnaireRequest(
+      await this.potentialCustomerService.insertQuestionnaire(
         user,
         questionnaireRequest,
       ),
@@ -86,11 +83,7 @@ export class PotentialCustomerController extends AuthenticatedController {
     @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomerDto>,
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
-      await this.potentialCustomerService.updatePotentialCustomer(
-        user,
-        id,
-        potentialCustomer,
-      ),
+      await this.potentialCustomerService.update(user, id, potentialCustomer),
       user.id,
     );
   }
@@ -101,6 +94,6 @@ export class PotentialCustomerController extends AuthenticatedController {
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
   ): void {
-    void this.potentialCustomerService.deletePotentialCustomer(user, id);
+    void this.potentialCustomerService.delete(user, id);
   }
 }

@@ -73,8 +73,8 @@ export class IntegrationUserService {
         : undefined,
     });
 
-    void this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
-      integrationUser,
+    void this.eventEmitter.emitAsync(EventType.INT_USER_CREATED_EVENT, {
+      user: integrationUser,
     });
 
     return integrationUser;
