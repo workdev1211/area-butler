@@ -88,4 +88,4 @@ export const buildOnOfficeQueryString = (
 };
 
 export const parseOnOfficeFloat = (value?: string): number | undefined =>
-  value ? parseFloat(value.replace('.', '').replace(',', '.')) : undefined;
+  value ? parseFloat(value.replace(/\./gi, '').replace(',', '.')) : undefined;
