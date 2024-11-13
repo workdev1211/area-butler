@@ -19,6 +19,12 @@ export enum EventType {
   ADDRESS_EXPIRATION_INCREASE_EVENT = 'ADDRESS_EXPIRATION_INCREASE_EVENT',
 }
 
+export enum PotentCustomerEventEnum {
+  created = 'potential_customer.created',
+  deleted = 'potential_customer.deleted',
+  updated = 'potential_customer.updated',
+}
+
 export interface IUserCreatedEvent {
   user: UserDocument;
 }

@@ -725,13 +725,12 @@ export class OnOfficeService {
     );
   }
 
-  private async syncPotentCustomers(
+  async syncPotentCustomers(
     integrationUser: TIntegrationUserDocument,
     multiselectValues: IOnOfficeMulSelValue[],
   ): Promise<void> {
-    const existPotentCusNames = await this.potentialCustomerService.fetchNames(
-      integrationUser,
-    );
+    const existPotentCusNames =
+      await this.potentialCustomerService.fetchNamesForSync(integrationUser);
 
     const sortedValues = structuredClone(multiselectValues).sort(
       ({ position: posA }, { position: posB }) => posA - posB,
@@ -810,6 +809,11 @@ export class OnOfficeService {
       queryBuilder.createMultiselectValues(valuesToCreate);
     }
 
-    await queryBuilder.exec();
+    await queryBuilder.exec().catch(() => {
+      this.logger.debug(
+        this.syncPotentCustomers.name,
+        integrationUser.parameters,
+      );
+    });
   }
 }

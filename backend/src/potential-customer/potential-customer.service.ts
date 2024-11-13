@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import {
   PotentialCustomer,
@@ -22,7 +23,6 @@ import {
   questionnaireSubmissionTemplateId,
 } from '../shared/constants/email';
 import { defaultPotentialCustomers } from '../shared/constants/potential-customers';
-import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   ApiUpsertPotentialCustomer,
   ApiUpsertQuestionnaire,
@@ -31,6 +31,10 @@ import {
 import { UserService } from '../user/user.service';
 import { SubscriptionService } from '../user/subscription.service';
 import { TUnitedUser } from '../shared/types/user';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import { PotentCustomerEventEnum } from '../event/event.types';
+import { injectUserFilter, injectUserParams } from '../shared/functions/user';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 type TFilterQuery = FilterQuery<PotentialCustomerDocument>;
 type TProjectQuery = ProjectionFields<PotentialCustomerDocument>;
@@ -42,13 +46,14 @@ export class PotentialCustomerService {
     private readonly potentialCustomerModel: Model<PotentialCustomerDocument>,
     @InjectModel(QuestionnaireRequest.name)
     private readonly questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
+    private readonly eventEmitter: EventEmitter2,
     private readonly mailSender: MailSenderService,
     private readonly subscriptionService: SubscriptionService,
     private readonly userService: UserService,
   ) {}
 
   async create(
-    user: UserDocument | TIntegrationUserDocument,
+    user: TUnitedUser,
     { ...upsertData }: ApiUpsertPotentialCustomer,
     subscriptionCheck = true,
   ): Promise<PotentialCustomerDocument> {
@@ -64,40 +69,27 @@ export class PotentialCustomerService {
     }
 
     const potentialCustomerDoc = { ...upsertData };
+    injectUserParams(user, potentialCustomerDoc);
 
-    Object.assign(
+    const newPotentialCustomer = await this.potentialCustomerModel.create(
       potentialCustomerDoc,
-      isIntegrationUser
-        ? {
-            integrationParams: {
-              integrationUserId: user.integrationUserId,
-              integrationType: user.integrationType,
-            },
-          }
-        : { userId: user.id },
     );
 
-    return new this.potentialCustomerModel(potentialCustomerDoc).save();
+    if (
+      isIntegrationUser &&
+      user.integrationType === IntegrationTypesEnum.ON_OFFICE
+    ) {
+      void this.eventEmitter.emitAsync(PotentCustomerEventEnum.created, user);
+    }
+
+    return newPotentialCustomer;
   }
 
-  async createDefault(
-    user: UserDocument | TIntegrationUserDocument,
-  ): Promise<void> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    const userData = isIntegrationUser
-      ? {
-          integrationParams: {
-            integrationUserId: user.integrationUserId,
-            integrationType: user.integrationType,
-          },
-        }
-      : { userId: user.id };
-
-    await this.potentialCustomerModel.insertMany(
+  createDefault(user: TUnitedUser): void {
+    void this.potentialCustomerModel.insertMany(
       defaultPotentialCustomers.map((potentialCustomer) => ({
         ...potentialCustomer,
-        ...userData,
+        ...injectUserParams(user),
       })),
     );
   }
@@ -106,7 +98,7 @@ export class PotentialCustomerService {
     user: UserDocument,
     { ...upsertData }: ApiUpsertQuestionnaireRequest,
   ): Promise<QuestionnaireRequestDocument> {
-    await this.subscriptionService.checkSubscriptionViolation(
+    this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
       (subscriptionPlan) =>
         !user.subscription?.appFeatures?.sendCustomerQuestionnaireRequest &&
@@ -158,11 +150,9 @@ export class PotentialCustomerService {
       userId,
     });
 
-    const customers = await this.findMany(user);
-
-    const existingCustomer = customers.find(
-      (c) => c.email?.toLowerCase() === email.toLowerCase(),
-    );
+    const existingCustomer = await this.findOne(user, {
+      filterQuery: { email: `/^${email}$/i` },
+    });
 
     const upsertData = {
       ...customer,
@@ -170,149 +160,137 @@ export class PotentialCustomerService {
       email,
     };
 
-    if (!existingCustomer) {
-      const newCustomer = await this.create(user, upsertData);
-
-      const mailProps: IMailProps = {
-        to: [{ name: user.config.fullname, email: user.email }],
-        templateId: questionnaireSubmissionTemplateId,
-        params: {
-          href: `${configService.getBaseAppUrl()}/potential-customers/${
-            newCustomer.id
-          }`,
-        },
-      };
-
-      await this.mailSender.sendMail(mailProps);
-    } else {
-      await this.update(user, existingCustomer.id, upsertData);
+    if (existingCustomer) {
+      void this.update(user, existingCustomer.id, upsertData);
+      return;
     }
+
+    const newCustomer = await this.create(user, upsertData);
+
+    const mailProps: IMailProps = {
+      to: [{ name: user.config.fullname, email: user.email }],
+      templateId: questionnaireSubmissionTemplateId,
+      params: {
+        href: `${configService.getBaseAppUrl()}/potential-customers/${
+          newCustomer.id
+        }`,
+      },
+    };
+
+    await this.mailSender.sendMail(mailProps);
   }
 
   async findOne(
     user: TUnitedUser,
-    filterQuery: FilterQuery<PotentialCustomerDocument>,
-    projectQuery?: ProjectionFields<PotentialCustomerDocument>,
+    filterQuery?: TFilterQuery,
+    projectQuery?: TProjectQuery,
   ): Promise<PotentialCustomerDocument> {
     return this.potentialCustomerModel.findOne(
-      this.injectUserIds(user, filterQuery),
+      injectUserFilter(user, filterQuery),
       projectQuery,
     );
   }
 
   async findMany(
     user: TUnitedUser,
+    filterQuery?: TFilterQuery,
     projectQuery?: TProjectQuery,
   ): Promise<PotentialCustomerDocument[]> {
     return this.potentialCustomerModel.find(
-      this.injectUserIds(user),
+      injectUserFilter(user, filterQuery),
       projectQuery,
     );
   }
 
-  async fetchNames(
-    user: UserDocument | TIntegrationUserDocument,
-  ): Promise<string[]> {
-    const potentialCustomers = await this.findMany(user, {
+  async fetchNames(user: TUnitedUser): Promise<string[]> {
+    const potentialCustomers = await this.findMany(user, undefined, {
       name: 1,
     });
 
-    return potentialCustomers.map(({ name }) => name);
+    return [...new Set(potentialCustomers.map(({ name }) => name))];
+  }
+
+  async fetchNamesForSync(
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<string[]> {
+    const filterQuery: TFilterQuery = {};
+
+    filterQuery['integrationParams.integrationUserId'] =
+      integrationUser.parentUser
+        ? integrationUser.parentUser.integrationUserId
+        : integrationUser.integrationUserId;
+    filterQuery['integrationParams.integrationType'] =
+      integrationUser.integrationType;
+
+    const potentialCustomers = await this.potentialCustomerModel.find(
+      filterQuery,
+      {
+        name: 1,
+      },
+    );
+
+    return [...new Set(potentialCustomers.map(({ name }) => name))];
   }
 
   async update(
-    user: UserDocument | TIntegrationUserDocument,
+    user: TUnitedUser,
     potentialCustomerId: string,
     { ...upsertData }: Partial<ApiUpsertPotentialCustomer>,
   ): Promise<PotentialCustomerDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
+    const filterQuery: TFilterQuery = injectUserFilter(user, {
+      _id: new Types.ObjectId(potentialCustomerId),
+    });
 
-    const potentialCustomer = await this.potentialCustomerModel.findById(
-      potentialCustomerId,
+    const potentialCustomer = await this.potentialCustomerModel.findOne(
+      filterQuery,
     );
 
     if (!potentialCustomer) {
       throw new HttpException('Potential customer not found!', 400);
     }
 
-    const isInvalidChange = isIntegrationUser
-      ? potentialCustomer.integrationParams.integrationUserId !==
-        user.integrationUserId
-      : potentialCustomer.userId !== user.id;
+    const updatedPotentCustomer =
+      await this.potentialCustomerModel.findOneAndUpdate(
+        filterQuery,
+        {
+          ...upsertData,
+        },
+        { new: true },
+      );
 
-    if (isInvalidChange) {
-      throw new HttpException('Invalid change!', 400);
+    if (
+      'integrationUserId' in user &&
+      user.integrationType === IntegrationTypesEnum.ON_OFFICE &&
+      potentialCustomer.name !== updatedPotentCustomer.name
+    ) {
+      void this.eventEmitter.emitAsync(PotentCustomerEventEnum.updated, user);
     }
 
-    return this.potentialCustomerModel.findByIdAndUpdate(
-      potentialCustomerId,
-      {
-        ...upsertData,
-      },
-      { new: true },
-    );
+    return updatedPotentCustomer;
   }
 
-  async delete(
-    user: UserDocument | TIntegrationUserDocument,
-    potentialCustomerId: string,
-  ): Promise<void> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    const potentialCustomer = await this.potentialCustomerModel.findById(
-      potentialCustomerId,
+  async delete(user: TUnitedUser, potentialCustomerId: string): Promise<void> {
+    const potentialCustomer = await this.potentialCustomerModel.findOne(
+      injectUserParams(user, { _id: new Types.ObjectId(potentialCustomerId) }),
     );
 
     if (!potentialCustomer) {
       throw new HttpException('Potential customer not found!', 400);
-    }
-
-    const isInvalidChange = isIntegrationUser
-      ? potentialCustomer.integrationParams.integrationUserId !==
-        user.integrationUserId
-      : potentialCustomer.userId !== user.id;
-
-    if (isInvalidChange) {
-      throw new HttpException('Invalid delete!', 400);
     }
 
     await potentialCustomer.deleteOne();
-  }
-
-  private injectUserIds(
-    user: TUnitedUser,
-    filterQuery: TFilterQuery = {},
-  ): TFilterQuery {
-    const resFilterQuery: TFilterQuery = {
-      ...filterQuery,
-    };
 
     const isIntegrationUser = 'integrationUserId' in user;
-    const userIds: (Types.ObjectId | string)[] = [];
 
-    if (!isIntegrationUser) {
-      userIds.push(user._id);
-
-      if (user.parentUser) {
-        userIds.push(user.parentUser._id);
-      }
-
-      resFilterQuery.userId = { $in: userIds };
-
-      return resFilterQuery;
+    if (
+      isIntegrationUser &&
+      user.integrationType === IntegrationTypesEnum.ON_OFFICE
+    ) {
+      void this.eventEmitter.emitAsync(
+        PotentCustomerEventEnum.deleted,
+        user,
+        potentialCustomer.name,
+      );
     }
-
-    userIds.push(user.integrationUserId);
-
-    if (user.parentUser) {
-      userIds.push(user.parentUser.integrationUserId);
-    }
-
-    Object.assign(resFilterQuery, {
-      'integrationParams.integrationUserId': { $in: userIds },
-      'integrationParams.integrationType': user.integrationType,
-    });
-
-    return resFilterQuery;
   }
 }
