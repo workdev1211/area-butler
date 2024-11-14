@@ -18,6 +18,7 @@ import { CompanyModule } from '../company/company.module';
 import { OnOfficeEstateService } from './service/on-office-estate.service';
 import { PotentialCustomerModule } from '../potential-customer/potential-customer.module';
 import { OnOfficeQueryBuilderService } from './service/query-builder/on-office-query-builder.service';
+import { OnOfficeListener } from './listener/on-office.listener';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { OnOfficeQueryBuilderService } from './service/query-builder/on-office-q
   ],
   controllers: [OnOfficeController, OnOfficeWebhookController],
   providers: [
+    OnOfficeListener,
     OnOfficeService,
     OnOfficeEstateService,
     OnOfficeWebhookService,

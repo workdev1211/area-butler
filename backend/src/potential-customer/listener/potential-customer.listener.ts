@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 
 import {
   EventType,
@@ -6,7 +7,6 @@ import {
   IUserCreatedEvent,
 } from '../../event/event.types';
 import { PotentialCustomerService } from '../potential-customer.service';
-import { OnEvents } from '../../shared/decorators/on-events.decorator';
 
 @Injectable()
 export class PotentialCustomerListener {
@@ -14,7 +14,16 @@ export class PotentialCustomerListener {
     private readonly potentialCustomerService: PotentialCustomerService,
   ) {}
 
-  @OnEvents([EventType.INT_USER_CREATED_EVENT, EventType.USER_CREATED_EVENT], {
+  @OnEvent(EventType.INT_USER_CREATED_EVENT, {
+    async: true,
+  })
+  private handleIntUserCreatedEvent({
+    user,
+  }: IUserCreatedEvent | IIntUserCreatedEvent): void {
+    void this.potentialCustomerService.createDefault(user);
+  }
+
+  @OnEvent(EventType.USER_CREATED_EVENT, {
     async: true,
   })
   private handleUserCreatedEvent({

@@ -5,7 +5,6 @@ import { PotentCustomerEventEnum } from '../../event/event.types';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { OnOfficeQueryBuilderService } from '../service/query-builder/on-office-query-builder.service';
 import { OnOfficeService } from '../service/on-office.service';
-import { OnEvents } from '../../shared/decorators/on-events.decorator';
 
 @Injectable()
 export class OnOfficeListener {
@@ -14,22 +13,18 @@ export class OnOfficeListener {
     private onOfficeQueryBuilderService: OnOfficeQueryBuilderService,
   ) {}
 
-  @OnEvents(
-    [PotentCustomerEventEnum.created, PotentCustomerEventEnum.updated],
-    { async: true },
-  )
-  private async handlePotentCustomerCreatedEvent(
+  @OnEvent(PotentCustomerEventEnum.created, { async: true })
+  private handlePotCustomerCreatedEvent(
+    integrationUser: TIntegrationUserDocument,
+  ): void {
+    void this.handlePotCustomerCrtUpdEvents(integrationUser);
+  }
+
+  @OnEvent(PotentCustomerEventEnum.updated, { async: true })
+  private async handlePotCustomerUpdatedEvent(
     integrationUser: TIntegrationUserDocument,
   ): Promise<void> {
-    const { getMultiselectValues } = await this.onOfficeQueryBuilderService
-      .setUserParams(integrationUser.parameters)
-      .getMultiselectValues()
-      .exec();
-
-    void this.onOfficeService.syncPotentCustomers(
-      integrationUser,
-      getMultiselectValues,
-    );
+    void this.handlePotCustomerCrtUpdEvents(integrationUser);
   }
 
   @OnEvent(PotentCustomerEventEnum.deleted, { async: true })
@@ -41,5 +36,19 @@ export class OnOfficeListener {
       .setUserParams(integrationUser.parameters)
       .deleteMultiselectValues([potentCustomerName])
       .exec();
+  }
+
+  private async handlePotCustomerCrtUpdEvents(
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<void> {
+    const { getMultiselectValues } = await this.onOfficeQueryBuilderService
+      .setUserParams(integrationUser.parameters)
+      .getMultiselectValues()
+      .exec();
+
+    void this.onOfficeService.syncPotentCustomers(
+      integrationUser,
+      getMultiselectValues,
+    );
   }
 }
