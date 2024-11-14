@@ -555,7 +555,8 @@
     "yourCardSnippet": "Your card snippet",
     "noteField": "Note field",
     "directLink": "Direct link",
-    "htmlSnippet": "HTML Snippet"
+    "htmlSnippet": "HTML Snippet",
+    "companyTemplate": "Company template"
   },
   "imageUpload": {
     "supportedFormats": "Supported formats: png, jpg, svg, maximum size: 5MB",

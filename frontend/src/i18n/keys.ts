@@ -609,6 +609,7 @@ export const IntlKeys = {
     noteField: "mapSnapshots.noteField",
     directLink: "mapSnapshots.directLink",
     htmlSnippet: "mapSnapshots.htmlSnippet",
+    companyTemplate: "mapSnapshots.companyTemplate",
   },
   companyProfile: {
     title: "companyProfile.title",

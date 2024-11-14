@@ -28,14 +28,17 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   openCodeSnippetModal,
 }) => {
   const { t } = useTranslation();
-  const { userState, userDispatch } = useContext(UserContext);
+  const {
+    userState: { embeddableMaps },
+    userDispatch,
+  } = useContext(UserContext);
 
   const history = useHistory();
   const { duplicateSnapshot, deleteSnapshot } = useLocationData();
   const { createDirectLink } = useTools();
   const { getCurrentUser, updateUserConfig } = useUserState();
   const {
-    config: { templateSnapshotId },
+    config: { companyTemplateSnapshotId, templateSnapshotId },
   } = getCurrentUser();
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
@@ -57,7 +60,7 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
 
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAPS,
-          payload: [...userState.embeddableMaps, duplicatedSnapshot],
+          payload: [...embeddableMaps, duplicatedSnapshot],
         });
       }
     } catch (err) {
@@ -140,6 +143,47 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
     </FormModal>
   );
 
+  let SetTemplateButton: FC | undefined;
+
+  if (snapshot.id === companyTemplateSnapshotId) {
+    SetTemplateButton = () => (
+      <button
+        className="ml-5 rounded btn-xs btn-info cursor-default"
+        disabled={true}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        {t(IntlKeys.mapSnapshots.companyTemplate)}
+      </button>
+    );
+  }
+
+  if (!SetTemplateButton) {
+    SetTemplateButton = () =>
+      snapshot.id === templateSnapshotId ? (
+        <button
+          className="ml-5 rounded btn-xs btn-accent"
+          onClick={(e) => {
+            e.stopPropagation();
+            void updateTemplateSnapshotId(null);
+          }}
+        >
+          {t(IntlKeys.mapSnapshots.cancelTemplate)}
+        </button>
+      ) : (
+        <button
+          className="ml-5 rounded btn-xs btn-primary"
+          onClick={async (e) => {
+            e.stopPropagation();
+            await updateTemplateSnapshotId(snapshot.id);
+          }}
+        >
+          {t(IntlKeys.mapSnapshots.setAsTemplate)}
+        </button>
+      );
+  }
+
   return (
     <tr
       className="cursor-pointer"
@@ -193,27 +237,7 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
           >
             {t(IntlKeys.mapSnapshots.copyLink)}
           </button>
-          {snapshot.id === templateSnapshotId ? (
-            <button
-              className="ml-5 rounded btn-xs btn-accent"
-              onClick={(e) => {
-                e.stopPropagation();
-                void updateTemplateSnapshotId(null);
-              }}
-            >
-              {t(IntlKeys.mapSnapshots.cancelTemplate)}
-            </button>
-          ) : (
-            <button
-              className="ml-5 rounded btn-xs btn-primary"
-              onClick={async (e) => {
-                e.stopPropagation();
-                await updateTemplateSnapshotId(snapshot.id);
-              }}
-            >
-              {t(IntlKeys.mapSnapshots.setAsTemplate)}
-            </button>
-          )}
+          <SetTemplateButton />
           <div />
           <button
             className="ml-5 rounded btn-xs btn-primary"
