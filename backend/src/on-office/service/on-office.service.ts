@@ -541,23 +541,6 @@ export class OnOfficeService {
       .getMultiselectValues()
       .exec();
 
-    if (color || logo) {
-      await this.companyService.updateOne(
-        { _id: integrationUser.company._id },
-        {
-          $set: {
-            accessToken: extendedClaim,
-            'config.color': color
-              ? `#${color}`
-              : (integrationUser || teamUser).company.config?.color,
-            'config.logo': logo
-              ? convertBase64ContentToUri(logo)
-              : (integrationUser || teamUser).company.config?.logo,
-          },
-        },
-      );
-    }
-
     if (integrationUser) {
       integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
         integrationUser.id,
@@ -594,6 +577,25 @@ export class OnOfficeService {
         },
         parentId: parentUser?.id,
       });
+
+      integrationUser.company = teamUser.company;
+    }
+
+    if (color || logo) {
+      await this.companyService.updateOne(
+        { _id: integrationUser.company._id },
+        {
+          $set: {
+            accessToken: extendedClaim,
+            'config.color': color
+              ? `#${color}`
+              : (integrationUser || teamUser).company.config?.color,
+            'config.logo': logo
+              ? convertBase64ContentToUri(logo)
+              : (integrationUser || teamUser).company.config?.logo,
+          },
+        },
+      );
     }
 
     await this.syncPotentCustomers(integrationUser, getMultiselectValues);
