@@ -27,7 +27,9 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
 
   async exec(): Promise<IOnOfficeActionResults> {
     if (!this.actions.size) {
-      throw new UnprocessableEntityException();
+      throw new UnprocessableEntityException(
+        'No actions are going to be executed!',
+      );
     }
 
     const request: IApiOnOfficeRequest = {
@@ -39,7 +41,7 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
 
     OnOfficeApiService.checkResponseIsSuccess(
       `${OnOfficeQueryBuilder.name} --> ${this.exec.name}`,
-      'The onOffice test failed!',
+      `Following actions failed: ${[...this.actions.keys()].join(', ')}!`,
       request,
       response,
     );
@@ -115,7 +117,7 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
           }
 
           case OnOfficeActionTypeEnum.GET_ESTATE_DATA: {
-            result[actionType] = currentValue.data.records[0].elements;
+            result[actionType] = currentValue.data.records[0]?.elements;
             break;
           }
 

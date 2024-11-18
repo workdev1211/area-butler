@@ -1,4 +1,4 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { createHmac } from 'crypto';
@@ -58,10 +58,11 @@ export class OnOfficeApiService {
   static checkResponseIsSuccess(
     serviceName: string,
     errorMessage: string,
-    request: IApiOnOfficeRequest,
+    request: IApiOnOfficeRequest, // should be removed in the future if the current logging is enough
     response: IApiOnOfficeResponse,
   ): void {
     let responseIsSuccess = false;
+    const errorMessages: string[] = [];
 
     try {
       const {
@@ -76,19 +77,47 @@ export class OnOfficeApiService {
       responseIsSuccess = results.reduce(
         (
           result,
-          { status: { errorcode: actionErrorCode, message: actionMessage } },
-        ) => result && actionErrorCode === 0 && actionMessage === 'OK',
+          {
+            actionid: respActionId,
+            resourcetype: respResourceType,
+            status: { errorcode: actionErrorCode, message: actionMessage },
+          },
+        ) => {
+          if (actionErrorCode !== 0) {
+            errorMessages.push(
+              `Action: ${respActionId.replace(
+                /^.+:(\w+)$/,
+                '$1',
+              )}:${respResourceType}. Error code: ${actionErrorCode}.${
+                actionMessage ? ` Message: ${actionMessage}.` : ''
+              }`,
+            );
+          }
+
+          return result && actionErrorCode === 0 && actionMessage === 'OK';
+        },
         responseCode === 200 &&
           responseErrorCode === 0 &&
           responseMessage === 'OK',
       );
     } catch (e) {
-      this.logger.error(this.checkResponseIsSuccess.name, e);
+      this.logger.error(
+        this.checkResponseIsSuccess.name,
+        `Service: ${serviceName}`,
+        e,
+      );
     }
 
     if (!responseIsSuccess) {
-      this.logger.error(`Service: ${serviceName}`, request, response);
-      throw new HttpException(errorMessage, 400);
+      this.logger.error(`Service: ${serviceName}.`);
+
+      errorMessages.forEach((message, i) => {
+        this.logger.error(
+          `${errorMessages.length > 1 ? `${i + 1}. ` : ''}${message}`,
+        );
+      });
+
+      throw new BadRequestException(errorMessage);
     }
   }
 }

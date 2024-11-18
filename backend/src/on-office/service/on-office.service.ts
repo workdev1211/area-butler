@@ -1,7 +1,8 @@
 import {
-  HttpException,
+  BadRequestException,
   Injectable,
   Logger,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -471,7 +472,7 @@ export class OnOfficeService {
       signature,
     );
 
-    throw new HttpException('Request verification failed!', 400);
+    throw new UnauthorizedException('Request verification failed!');
   }
 
   async performLogin({
@@ -490,22 +491,25 @@ export class OnOfficeService {
       { integrationUserId },
     );
 
-    const parentUser =
-      integrationUser?.parentUser ||
-      (!integrationUser?.isParent
-        ? await this.integrationUserService.findOne(this.integrationType, {
-            'parameters.customerWebId': customerWebId,
-            'parameters.token': { $exists: true },
-            'parameters.apiKey': { $exists: true },
-            isParent: true,
-          })
-        : undefined);
+    let parentUser: TIntegrationUserDocument;
 
-    let teamUser: TIntegrationUserDocument;
+    if (integrationUser?.parentUser) {
+      parentUser = integrationUser.parentUser;
+      parentUser.company = integrationUser.company;
+    } else {
+      parentUser = await this.integrationUserService.findOne(
+        this.integrationType,
+        {
+          'parameters.customerWebId': customerWebId,
+          'parameters.token': { $exists: true },
+          'parameters.apiKey': { $exists: true },
+          isParent: true,
+        },
+      );
+    }
 
-    if (!integrationUser) {
-      teamUser =
-        parentUser ||
+    const teamUser = !integrationUser
+      ? parentUser ||
         (await this.integrationUserService.findOne(
           this.integrationType,
           {
@@ -514,12 +518,15 @@ export class OnOfficeService {
             'parameters.apiKey': { $exists: true },
           },
           { companyId: 1, parameters: 1 },
-        ));
-    }
+        ))
+      : undefined;
 
     if (!integrationUser && !teamUser) {
       this.logger.debug(this.login, integrationUserId, customerWebId, userId);
-      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+
+      throw new UnprocessableEntityException(
+        'Die App muss neu aktiviert werden.', // The app must be reactivated.
+      );
     }
 
     const userParams: IApiIntUserOnOfficeParams = {
@@ -540,6 +547,10 @@ export class OnOfficeService {
       .getEstateData(estateId)
       .getMultiselectValues()
       .exec();
+
+    if (!estateData) {
+      throw new BadRequestException('Estate data is missing!');
+    }
 
     if (integrationUser) {
       integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
@@ -579,6 +590,7 @@ export class OnOfficeService {
       });
 
       integrationUser.company = teamUser.company;
+      integrationUser.parentUser = parentUser;
     }
 
     if (color || logo) {
@@ -599,10 +611,6 @@ export class OnOfficeService {
     }
 
     await this.syncPotentCustomers(integrationUser, getMultiselectValues);
-
-    if (!integrationUser.parentUser && parentUser) {
-      integrationUser.parentUser = parentUser;
-    }
 
     const processedEstateData =
       await this.onOfficeEstateService.processEstateData(
