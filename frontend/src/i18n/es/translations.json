@@ -590,7 +590,14 @@
     "yourCurrentPlan": "Su plan actual y su contingente",
     "currentPlan": "Plan actual",
     "managePaymentAndSubscription": "Gestión de pagos y suscripciones",
-    "requestExecuted": "Solicitudes ejecutadas"
+    "requestExecuted": "Solicitudes ejecutadas",
+    "settingAppliedTooltip": "Esta configuración se aplica a su primera tarjeta",
+    "locationDescription": "Descripción de la ubicación",
+    "locationRealEstateDescription": "Descripción de la ubicación del inmueble",
+    "realEstateDescription": "Descripción del inmueble",
+    "inlineFrame": "Marco en línea",
+    "linkWithAddress": "Enlace con dirección",
+    "linkWoAddress": "Enlace sin dirección"
   },
   "tour": {
     "tourEndingError": "Error al finalizar la visita",

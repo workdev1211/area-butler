@@ -642,6 +642,13 @@ export const IntlKeys = {
     currentPlan: "yourProfile.currentPlan",
     managePaymentAndSubscription: "yourProfile.managePaymentAndSubscription",
     requestExecuted: "yourProfile.requestExecuted",
+    settingAppliedTooltip: "yourProfile.settingAppliedTooltip",
+    locationDescription: "yourProfile.locationDescription",
+    locationRealEstateDescription: "yourProfile.locationRealEstateDescription",
+    realEstateDescription: "yourProfile.realEstateDescription",
+    inlineFrame: "yourProfile.inlineFrame",
+    linkWithAddress: "yourProfile.linkWithAddress",
+    linkWoAddress: "yourProfile.linkWoAddress"
   },
   tour: {
     tourEndingError: "tour.tourEndingError",

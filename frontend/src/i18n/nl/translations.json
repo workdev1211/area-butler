@@ -590,7 +590,14 @@
     "yourCurrentPlan": "Je huidige plan en je voorwaardelijke",
     "currentPlan": "Huidig plan",
     "managePaymentAndSubscription": "Beheer betalingen en abonnementen",
-    "requestExecuted": "Uitgevoerde verzoeken"
+    "requestExecuted": "Uitgevoerde verzoeken",
+    "settingAppliedTooltip": "Deze instelling wordt toegepast op je eerste kaart",
+    "locationDescription": "Locatiebeschrijving",
+    "locationRealEstateDescription": "Locatie beschrijving onroerend goed",
+    "realEstateDescription": "Beschrijving onroerend goed",
+    "inlineFrame": "Inline frame",
+    "linkWithAddress": "Link met adres",
+    "linkWoAddress": "Link zonder adres"
   },
   "tour": {
     "tourEndingError": "Fout bij het beëindigen van de tour",

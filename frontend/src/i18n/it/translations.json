@@ -590,7 +590,14 @@
     "yourCurrentPlan": "Il vostro piano attuale e il vostro contingente",
     "currentPlan": "Piano attuale",
     "managePaymentAndSubscription": "Gestione dei pagamenti e degli abbonamenti",
-    "requestExecuted": "Richieste eseguite"
+    "requestExecuted": "Richieste eseguite",
+    "settingAppliedTooltip": "Questa impostazione viene applicata alla prima mappa",
+    "locationDescription": "Descrizione della posizione",
+    "locationRealEstateDescription": "Descrizione immobile posizione",
+    "realEstateDescription": "Descrizione immobile",
+    "inlineFrame": "Frame in linea",
+    "linkWithAddress": "Collegamento con indirizzo",
+    "linkWoAddress": "Collegamento senza indirizzo"
   },
   "tour": {
     "tourEndingError": "Errore al termine del tour",

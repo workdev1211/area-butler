@@ -87,14 +87,19 @@ const CompanyExportSettings: FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <h1 className="font-bold text-xl">
         {t(IntlKeys.yourProfile.exportSettings)}
       </h1>
 
       {t(IntlKeys.yourProfile.exportSettingsDescription)}
 
-      <ImageUpload image={logo} setImage={setLogo} onChange={updateLogo} />
+      <ImageUpload
+        image={logo}
+        setImage={setLogo}
+        onChange={updateLogo}
+        tooltip={t(IntlKeys.yourProfile.settingAppliedTooltip)}
+      />
 
       <ImageUpload
         image={mapIcon}
@@ -105,7 +110,12 @@ const CompanyExportSettings: FC = () => {
         uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
       />
 
-      <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
+      <ColorPicker
+        color={color}
+        setColor={setColor}
+        onChange={updateColor}
+        tooltip={t(IntlKeys.yourProfile.settingAppliedTooltip)}
+      />
 
       {(!!user.config.logo || !!user.config.color || !!user.config.mapIcon) && (
         <button

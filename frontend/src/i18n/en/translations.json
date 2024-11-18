@@ -591,7 +591,14 @@
     "yourCurrentPlan": "Your current plan and your contingent",
     "currentPlan": "Current plan",
     "managePaymentAndSubscription": "Manage payment and subscription",
-    "requestExecuted": "Requests executed"
+    "requestExecuted": "Requests executed",
+    "settingAppliedTooltip": "This setting is applied to your first map",
+    "locationDescription": "Location description",
+    "locationRealEstateDescription": "Location real estate description",
+    "realEstateDescription": "Real estate description",
+    "inlineFrame": "Inline frame",
+    "linkWithAddress": "Link with address",
+    "linkWoAddress": "Link without address"
   },
   "tour": {
     "tourEndingError": "Error when ending the tour",

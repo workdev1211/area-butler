@@ -1,4 +1,5 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
+import { v4 } from "uuid";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -11,10 +12,13 @@ import CompanyExportSettings from "../company/CompanyExportSettings";
 import { deriveTotalRequestContingent } from "../shared/shared.functions";
 import { useUserState } from "../hooks/userstate";
 import CompanyTemplateId from "../company/CompanyTemplateId";
+import CompanyProfileFormHandler from "../company/form/CompanyProfileFormHandler";
 
 const CompanyProfilePage: FC = () => {
   const { fetchCurrentUser, getCurrentUser } = useUserState();
   const { t } = useTranslation();
+
+  const [isBusy, setIsBusy] = useState(false);
 
   const user = getCurrentUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -45,14 +49,42 @@ const CompanyProfilePage: FC = () => {
     );
   };
 
+  const formId = `form-${v4()}`;
+
+  const SubmitButton: FC = () => {
+    if (!isIntegrationUser) {
+      return null;
+    }
+
+    const classes = "btn bg-primary-gradient w-full sm:w-auto ml-auto";
+
+    return (
+      <button
+        form={formId}
+        key="submit"
+        type="submit"
+        disabled={isBusy}
+        className={`${isBusy ? "busy " : ""}${classes}`}
+      >
+        {t(IntlKeys.common.save)}
+      </button>
+    );
+  };
+
   return (
     <DefaultLayout
       title={t(IntlKeys.companyProfile.title)}
       withHorizontalPadding={true}
-      actionsBottom={[<BackButton to="/" key="company-config-back" />]}
+      actionsBottom={[
+        <BackButton to="/" key="company-config-back" />,
+        <SubmitButton key="customer-submit" />,
+      ]}
     >
       <div className="flex flex-col gap-3 my-3">
         {isCustomExportAvail && <CompanyExportSettings />}
+        {isIntegrationUser && (
+          <CompanyProfileFormHandler formId={formId} setIsBusy={setIsBusy} />
+        )}
         <SubscriptionLimitsOrSelection />
         <CompanyTemplateId />
       </div>
