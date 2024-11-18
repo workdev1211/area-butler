@@ -18,14 +18,11 @@ import {
   onOfficeLinkFieldMapper,
   onOfficeOpenAiFieldMapper,
 } from '../../../../../shared/constants/on-office/on-office-constants';
-import {
-  AreaButlerExportTypesEnum,
-  TAreaButlerExportTypes,
-} from '@area-butler-types/types';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { OnOfficeQueryBuilder } from './on-office-query-builder.abstract';
 import { OnOfficeActionTypeEnum } from '../../shared/on-office.types';
-import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
+import { TCompanyExportMatch } from '@area-butler-types/company';
 
 export class OnOfficeEstateMixin {
   createLink(
@@ -140,9 +137,7 @@ export class OnOfficeEstateMixin {
     this: OnOfficeQueryBuilder,
     estateId: string,
     textFieldsParams: TUpdEstTextFieldParams[],
-    exportMatching: Partial<
-      Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
-    >,
+    exportMatching: TCompanyExportMatch,
   ): ThisType<OnOfficeQueryBuilder> {
     this.checkUserParams();
 

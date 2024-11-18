@@ -5,16 +5,17 @@ import {
   IApiMapboxStyle,
   IApiUserExportFont,
   IApiPoiIcons,
-  TAreaButlerExportTypes,
 } from '@area-butler-types/types';
-import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
 import { TAvailableCountries } from '@area-butler-types/location';
 import { availableCountries } from '../../../../shared/constants/location';
 import {
   foreignIdGetSet,
   // TEMPLATE_SNAPSHOT_PATH,
 } from '../../shared/constants/schema';
-import { ICompanyConfig } from '@area-butler-types/company';
+import {
+  ICompanyConfig,
+  TCompanyExportMatch,
+} from '@area-butler-types/company';
 // import {
 //   SearchResultSnapshot,
 //   SearchResultSnapshotDocument,
@@ -39,7 +40,7 @@ class CompanyConfig implements ICompanyConfig {
   exportFonts?: IApiUserExportFont[];
 
   @Prop({ type: Object })
-  exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
+  exportMatching?: TCompanyExportMatch;
 
   @Prop({ type: Array })
   extraMapboxStyles?: IApiMapboxStyle[];

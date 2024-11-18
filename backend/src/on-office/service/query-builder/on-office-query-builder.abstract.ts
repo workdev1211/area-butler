@@ -1,10 +1,7 @@
 import { Logger, UnprocessableEntityException } from '@nestjs/common';
 
 import { IApiOnOfficeRequestAction } from '@area-butler-types/on-office';
-import {
-  IApiIntUserOnOfficeParams,
-  IIntUserExpMatchParams,
-} from '@area-butler-types/integration-user';
+import { IApiIntUserOnOfficeParams } from '@area-butler-types/integration-user';
 import {
   IOnOfficeActionResults,
   OnOfficeActionTypeEnum,
@@ -21,7 +18,7 @@ import {
   IApiIntCreateEstateLinkReq,
   TUpdEstTextFieldParams,
 } from '@area-butler-types/integration';
-import { TAreaButlerExportTypes } from '@area-butler-types/types';
+import { TCompanyExportMatch } from '@area-butler-types/company';
 
 export abstract class OnOfficeQueryBuilder {
   protected readonly actions: Map<
@@ -63,9 +60,7 @@ export abstract class OnOfficeQueryBuilder {
   updateTextFields: (
     estateId: string,
     textFieldsParams: TUpdEstTextFieldParams[],
-    exportMatching: Partial<
-      Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
-    >,
+    exportMatching: TCompanyExportMatch,
   ) => this;
 
   // multiselect

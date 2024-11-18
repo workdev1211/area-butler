@@ -14,11 +14,13 @@ import {
   IApiMapboxStyle,
   IApiUserExportFont,
   IApiPoiIcons,
-  TAreaButlerExportTypes,
 } from '@area-butler-types/types';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
-import { IApiCompanyConfig, ICompanyConfig } from '@area-butler-types/company';
-import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
+import {
+  IApiCompanyConfig,
+  ICompanyConfig,
+  TCompanyExportMatch,
+} from '@area-butler-types/company';
 import ApiUserExportFontDto from '../../user/dto/api-user-export-font.dto';
 import ApiMapboxStyleDto from '../../dto/api-mapbox-style.dto';
 import ApiPoiIconsDto from './api-poi-icons.dto';
@@ -49,9 +51,7 @@ class CompanyConfigDto implements ICompanyConfig {
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  exportMatching?: Partial<
-    Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
-  >;
+  exportMatching?: TCompanyExportMatch;
 
   @Expose()
   @Type(() => ApiMapboxStyleDto)

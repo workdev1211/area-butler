@@ -37,9 +37,7 @@ export interface ICompanyConfig {
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
   color?: string;
   exportFonts?: IApiUserExportFont[];
-  exportMatching?: Partial<
-    Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
-  >;
+  exportMatching?: TCompanyExportMatch;
   extraMapboxStyles?: IApiMapboxStyle[];
   isSpecialLink?: boolean;
   logo?: string;
@@ -50,6 +48,10 @@ export interface ICompanyConfig {
   // templateSnapshot?: SearchResultSnapshotDocument; // TODO currently buggy
   templateSnapshotId?: string;
 }
+
+export type TCompanyExportMatch = Partial<
+  Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
+>;
 
 export interface ICompanySchema {
   config?: ICompanyConfig;

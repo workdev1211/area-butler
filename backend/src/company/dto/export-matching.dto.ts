@@ -1,19 +1,14 @@
 import { IsObject, IsOptional, ValidateNested } from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
 
-import {
-  AreaButlerExportTypesEnum,
-  TAreaButlerExportTypes,
-} from '@area-butler-types/types';
-import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/types';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import ExportMatchingParams from './exp-match-params.dto';
 import ExpMatchParams from './exp-match-params.dto';
+import { TCompanyExportMatch } from '@area-butler-types/company';
 
 @Exclude()
-class ExportMatchingDto
-  implements Partial<Record<TAreaButlerExportTypes, IIntUserExpMatchParams>>
-{
+class ExportMatchingDto implements TCompanyExportMatch {
   @Expose()
   @Type(() => ExpMatchParams)
   @IsOptional()
