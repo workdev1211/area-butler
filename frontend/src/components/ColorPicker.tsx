@@ -1,28 +1,30 @@
-import React, { useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
-import "./ColorPicker.scss";
 import { SketchPicker } from "react-color";
 import useOnClickOutside from "../hooks/onclickoutside";
+import TooltipBadge from "./TooltipBadge";
 
-export interface ColorPickerProps {
-  label?: string;
-  color?: string;
+interface IColorPickerProps {
   setColor: (color: string) => void;
   onChange: (color: string) => void;
+  color?: string;
+  label?: string;
+  tooltip?: string;
 }
 
-const ColorPicker: React.FunctionComponent<ColorPickerProps> = ({
+const ColorPicker: FC<IColorPickerProps> = ({
   color,
   setColor,
   label,
-  onChange
+  onChange,
+  tooltip,
 }) => {
   const { t } = useTranslation();
   const pickerRef = useRef(null);
-  const [showPopover, setShowPopover] = useState(false);
+  const [isShowPopover, setIsShowPopover] = useState(false);
 
   const handleChange = (newColor: string) => {
     setColor(newColor);
@@ -30,27 +32,34 @@ const ColorPicker: React.FunctionComponent<ColorPickerProps> = ({
 
   useOnClickOutside(pickerRef, () => {
     onChange(color!);
-    setShowPopover(false);
+    setIsShowPopover(false);
   });
 
   return (
-    <div className="color-picker">
-      <div>
-        <label htmlFor="color-picker">{label || t(IntlKeys.yourProfile.yourPrimaryColor)}:</label>
-        <div
-          className="color-picker-field mt-1"
-          onClick={() => setShowPopover(!showPopover)}
-          style={{ backgroundColor: color || "#FFFFFF" }}
-        />
-        {showPopover && (
-          <div className="color-picker-popover" ref={pickerRef}>
-            <SketchPicker
-              color={color}
-              onChangeComplete={newColor => handleChange(newColor.hex)}
-            />
+    <div>
+      <label htmlFor="color-picker" className="label">
+        <div className="indicator">
+          <div className="text-lg pr-3">
+            {label || t(IntlKeys.yourProfile.yourPrimaryColor)}
           </div>
-        )}
-      </div>
+          {tooltip && <TooltipBadge tooltip={tooltip} />}
+        </div>
+      </label>
+
+      <div
+        className="w-[100px] h-[60px] border-2 border-dashed border-[var(--base-anthracite)] cursor-pointer mt-1"
+        onClick={() => setIsShowPopover(!isShowPopover)}
+        style={{ backgroundColor: color || "#FFFFFF" }}
+      />
+
+      {isShowPopover && (
+        <div className="absolute z-10" ref={pickerRef}>
+          <SketchPicker
+            color={color}
+            onChangeComplete={(newColor) => handleChange(newColor.hex)}
+          />
+        </div>
+      )}
     </div>
   );
 };
