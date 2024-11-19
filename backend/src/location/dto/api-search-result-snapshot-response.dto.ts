@@ -1,5 +1,5 @@
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
-import { LeanDocument } from 'mongoose';
+import { Document } from 'mongoose';
 
 import {
   ApiCoordinates,
@@ -16,7 +16,7 @@ import ApiSearchResultSnapshotDto from './snapshot/api-search-result-snapshot.dt
 import ApiSearchResultSnapshotConfigDto from './snapshot/api-search-result-snapshot-config.dto';
 import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
-export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
+export type TSnapshotResDtoData = SearchResultSnapshotDocument & {
   isAddressShown?: boolean;
   isEmbedded?: boolean;
   isTrial?: boolean;

@@ -210,7 +210,7 @@ export class RealEstateListingService {
   }
 
   async updateLocationIndices(): Promise<void> {
-    const total = await this.realEstateListingModel.find().count();
+    const total = await this.realEstateListingModel.find().countDocuments();
     const limit = 100;
     this.logger.log('Location index update starting!');
 

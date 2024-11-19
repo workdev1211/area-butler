@@ -179,7 +179,7 @@ export class SubscriptionService {
   }
 
   async countAllUserSubscriptions(userId: string): Promise<number> {
-    return this.subscriptionModel.count({ userId });
+    return this.subscriptionModel.countDocuments({ userId });
   }
 
   async renewSubscription(

@@ -148,7 +148,7 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
 }
 
 export const SearchResultSnapshotSchema: SchemaType<SearchResultSnapshotDocument> =
-  SchemaFactory.createForClass(SearchResultSnapshot);
+  SchemaFactory.createForClass(SearchResultSnapshot) as SchemaType<SearchResultSnapshotDocument>;
 
 SearchResultSnapshotSchema.virtual(SNAPSHOT_USER_PATH, {
   ref: User.name,

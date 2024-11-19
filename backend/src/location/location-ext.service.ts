@@ -275,7 +275,7 @@ export class LocationExtService {
     };
 
     const limit = 100;
-    const snapshotCount = await this.searchResultSnapshotModel.count();
+    const snapshotCount = await this.searchResultSnapshotModel.countDocuments();
 
     for (let skip = 0; skip < snapshotCount; skip += limit) {
       const snapshots = await this.searchResultSnapshotModel

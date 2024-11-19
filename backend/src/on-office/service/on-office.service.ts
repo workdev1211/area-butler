@@ -325,7 +325,7 @@ export class OnOfficeService {
           product,
         }).save();
 
-        product.transactionDbId = id;
+        product.transactionDbId = id as string;
 
         return product;
       }),

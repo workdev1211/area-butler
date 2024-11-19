@@ -1,4 +1,4 @@
-import { LinkDescription } from '@paypal/paypal-js/types/apis/orders';
+import { LinkDescription, } from '@paypal/paypal-js/types/apis/orders';
 
 export interface IPaypalAccessToken {
   scope: string;

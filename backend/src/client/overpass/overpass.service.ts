@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as harversine from 'haversine';
-import { point, Properties } from '@turf/helpers';
+import { point } from '@turf/helpers';
+import { GeoJsonProperties } from 'geojson';
 import circle from '@turf/circle';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { HttpService } from '@nestjs/axios';
@@ -154,7 +155,7 @@ export class OverpassService {
       return result;
     }, []);
 
-    const CIRCLE_OPTIONS: Properties = { units: 'meters' };
+    const CIRCLE_OPTIONS: GeoJsonProperties = { units: 'meters' };
 
     const findDuplicates = (
       elements: ApiOsmLocation[],

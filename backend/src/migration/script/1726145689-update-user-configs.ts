@@ -37,16 +37,14 @@ export const up = async ({
       language,
       showTour,
       templateSnapshotId,
-    } = (
-      user as UserDocument & {
-        apiConnections: TApiUserExtConnections;
-        apiKeyParams: IApiKeyParams;
-        fullname: string;
-        language: LanguageTypeEnum;
-        showTour: TApiUserStudyTours;
-        templateSnapshotId: string;
-      }
-    ).toObject();
+    } = user.toObject() as UserDocument & {
+      apiConnections: TApiUserExtConnections;
+      apiKeyParams: IApiKeyParams;
+      fullname: string;
+      language: LanguageTypeEnum;
+      showTour: TApiUserStudyTours;
+      templateSnapshotId: string;
+    };
 
     const config: IUserConfig = {
       apiKeyParams,

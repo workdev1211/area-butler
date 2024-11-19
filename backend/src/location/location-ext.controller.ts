@@ -75,7 +75,7 @@ export class LocationExtController extends ApiKeyAuthController {
   })
   @Post('snapshot-data')
   @UseGuards(ThrottlerGuard)
-  @Throttle(1, 5) // ttl is given in seconds
+  @Throttle({ default: { limit: 1, ttl: 5000 } }) // ttl is given in seconds
   async fetchSnapshotData(
     @InjectUser() user: UserDocument,
     @Body()

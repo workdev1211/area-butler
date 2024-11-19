@@ -206,7 +206,7 @@ export class IntegrationUserService {
   }
 
   bulkWrite(writes: any[]): Promise<BulkWriteResult> {
-    return this.integrationUserModel.bulkWrite(writes);
+    return this.integrationUserModel.bulkWrite(writes) as Promise<BulkWriteResult>;
   }
 
   async createMapboxAccessToken(

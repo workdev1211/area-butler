@@ -1,4 +1,4 @@
-import { Feature, Polygon } from '@turf/helpers';
+import { Feature, Polygon } from 'geojson';
 import circle from '@turf/circle';
 
 import { ApiCoordinates } from '@area-butler-types/types';

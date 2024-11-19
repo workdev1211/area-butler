@@ -91,7 +91,7 @@ export class MigrationService {
     processDocumentAsync,
   }: TBatchProcessParams<T>): Promise<void> {
     const model: Model<T> = findQuery.model;
-    const total = await model.count(findQuery.getFilter());
+    const total = await model.countDocuments(findQuery.getFilter());
     this.logger.log(`Batch processing of ${total} documents has started.`);
     const limit = BATCH_LIMIT;
 
@@ -118,7 +118,7 @@ export class MigrationService {
     processDocumentAsync,
   }: TBulkProcessParams<T>): Promise<void> {
     const model: Model<T> = findQuery.model;
-    const total = await model.count(findQuery.getFilter());
+    const total = await model.countDocuments(findQuery.getFilter());
     this.logger.log(`Bulk processing of ${total} documents has started.`);
     const limit = BATCH_LIMIT;
 
