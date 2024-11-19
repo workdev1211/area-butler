@@ -48,7 +48,7 @@ export class RealEstateListingService {
     // Further object creation is no longer possible for the current plan
     subscriptionCheck &&
       this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
+        user.subscription?.type,
         (subscriptionPlan) => !subscriptionPlan,
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
       );

@@ -66,7 +66,7 @@ export class User {
   parentId: string;
 
   parentUser: UserDocument;
-  subscription: SubscriptionDocument;
+  subscription?: SubscriptionDocument;
 }
 
 export const retrieveTotalRequestContingent = (

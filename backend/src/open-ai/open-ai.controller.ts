@@ -147,7 +147,7 @@ export class OpenAiController extends AuthenticatedController {
   // TODO think about moving the check to the UserSubscriptionPipe
   private checkIsOpenAiAvail(user: UserDocument): void {
     this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
+      user.subscription?.type,
       (subscriptionPlan) =>
         !user.subscription?.appFeatures?.openAi &&
         !subscriptionPlan.appFeatures.openAi,

@@ -79,8 +79,8 @@ export class ZensusAtlasService {
     const isIntegrationUser = 'integrationUserId' in user;
 
     if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
+      this.subscriptionService.checkSubscriptionViolation(
+        user.subscription?.type,
         (subscriptionPlan) =>
           !user.subscription?.appFeatures?.dataSources?.includes(
             ApiDataSource.CENSUS,

@@ -315,8 +315,8 @@ export class FetchSnapshotService {
     const isIntegrationUser = 'integrationUserId' in user;
 
     if (!isIntegrationUser && isCheckSubscription) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
+      this.subscriptionService.checkSubscriptionViolation(
+        user.subscription?.type,
         (subscriptionPlan) =>
           !user.subscription?.appFeatures?.htmlSnippet &&
           !subscriptionPlan.appFeatures.htmlSnippet,

@@ -163,6 +163,10 @@ export class SubscriptionService {
     checkFunction: (subscription: ApiSubscriptionPlanDto) => boolean,
     errorMessage: string,
   ): void {
+    if (!subscriptionType) {
+      throw new HttpException('Subscription type not found!', 402);
+    }
+
     if (checkFunction(allSubscriptions[subscriptionType])) {
       throw new HttpException(errorMessage, 400);
     }

@@ -70,7 +70,7 @@ export class RealEstateCrmImportService {
     connectType: ApiRealEstateExtSourcesEnum,
   ): Promise<string[]> {
     this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
+      user.subscription?.type,
       (subscriptionPlan) => !subscriptionPlan,
       'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
     );
@@ -111,7 +111,7 @@ export class RealEstateCrmImportService {
     { connectType, ...connectSettings }: IApiUserExtConnectSettingsReq,
   ): Promise<void> {
     this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
+      user.subscription?.type,
       (subscriptionPlan) => !subscriptionPlan,
       'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
     );

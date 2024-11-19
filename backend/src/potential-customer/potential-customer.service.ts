@@ -62,7 +62,7 @@ export class PotentialCustomerService {
     if (!isIntegrationUser) {
       subscriptionCheck &&
         this.subscriptionService.checkSubscriptionViolation(
-          user.subscription.type,
+          user.subscription?.type,
           (subscriptionPlan) => !subscriptionPlan,
           'Weitere Interessentenerstellung ist im aktuellen Plan nicht mehr möglich',
         );
@@ -99,7 +99,7 @@ export class PotentialCustomerService {
     { ...upsertData }: ApiUpsertQuestionnaireRequest,
   ): Promise<QuestionnaireRequestDocument> {
     this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
+      user.subscription?.type,
       (subscriptionPlan) =>
         !user.subscription?.appFeatures?.sendCustomerQuestionnaireRequest &&
         !subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest,

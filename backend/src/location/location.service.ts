@@ -117,8 +117,8 @@ export class LocationService {
         });
       }
 
-      await this.subscriptionService.checkSubscriptionViolation(
-        resultUser.subscription.type,
+      this.subscriptionService.checkSubscriptionViolation(
+        resultUser.subscription?.type,
         () =>
           resultUser.requestsExecuted + 1 >
           retrieveTotalRequestContingent(resultUser).reduce(
@@ -329,8 +329,8 @@ export class LocationService {
     const isIntegrationUser = 'integrationUserId' in user;
 
     if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
+      this.subscriptionService.checkSubscriptionViolation(
+        user.subscription?.type,
         (subscriptionPlan) =>
           !user.subscription?.appFeatures?.htmlSnippet &&
           !subscriptionPlan.appFeatures.htmlSnippet,

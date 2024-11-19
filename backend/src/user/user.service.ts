@@ -341,8 +341,8 @@ export class UserService {
   ): Promise<UserDocument> {
     const user = await this.findByEmail(email, { id: 1, companyId: 1 });
 
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
+    this.subscriptionService.checkSubscriptionViolation(
+      user.subscription?.type,
       (subscriptionPlan) =>
         !user.subscription?.appFeatures?.canCustomizeExport &&
         !subscriptionPlan.appFeatures.canCustomizeExport,
