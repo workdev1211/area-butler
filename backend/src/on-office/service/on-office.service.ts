@@ -593,22 +593,10 @@ export class OnOfficeService {
       integrationUser.parentUser = parentUser;
     }
 
-    if (color || logo) {
-      await this.companyService.updateOne(
-        { _id: integrationUser.company._id },
-        {
-          $set: {
-            accessToken: extendedClaim,
-            'config.color': color
-              ? `#${color}`
-              : (integrationUser || teamUser).company.config?.color,
-            'config.logo': logo
-              ? convertBase64ContentToUri(logo)
-              : (integrationUser || teamUser).company.config?.logo,
-          },
-        },
-      );
-    }
+    await this.companyService.updateConfig(integrationUser.company._id, {
+      color: color ? `#${color}` : undefined,
+      logo: logo ? convertBase64ContentToUri(logo) : undefined,
+    });
 
     await this.syncPotentCustomers(integrationUser, getMultiselectValues);
 

@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import * as dayjs from 'dayjs';
 
 import { OnOfficeApiService } from '../../../client/on-office/on-office-api.service';
@@ -18,6 +22,7 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
   }
 
   setUserParams(userParams: IApiIntUserOnOfficeParams): this {
+    this.actions.clear();
     this.timestamp = dayjs().unix();
     this.userParams = userParams;
     this.checkUserParams();
@@ -39,12 +44,17 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    OnOfficeApiService.checkResponseIsSuccess(
-      `${OnOfficeQueryBuilder.name} --> ${this.exec.name}`,
-      `Following actions failed: ${[...this.actions.keys()].join(', ')}!`,
-      request,
-      response,
-    );
+    try {
+      OnOfficeApiService.checkResponseIsSuccess(
+        `${OnOfficeQueryBuilder.name} ---> ${this.exec.name}`,
+        `Following actions failed: ${[...this.actions.keys()].join(', ')}!`,
+        request,
+        response,
+      );
+    } catch (e) {
+      this.logger.debug(this.exec.name, this.userParams);
+      throw new BadRequestException(e);
+    }
 
     this.userParams = undefined;
     this.timestamp = undefined;
