@@ -79,6 +79,7 @@ export class OnOfficeApiService {
           result,
           {
             actionid: respActionId,
+            resourceid: resourceId,
             resourcetype: respResourceType,
             status: { errorcode: actionErrorCode, message: actionMessage },
           },
@@ -88,9 +89,11 @@ export class OnOfficeApiService {
               `Action: ${respActionId.replace(
                 /^.+:(\w+)$/,
                 '$1',
-              )}:${respResourceType}. Error code: ${actionErrorCode}.${
-                actionMessage ? ` Message: ${actionMessage}.` : ''
-              }`,
+              )}:${respResourceType}.` +
+                `${resourceId ? ` Resource id: ${resourceId}.` : ''}` +
+                ` Error code: ${actionErrorCode}.${
+                  actionMessage ? ` Message: ${actionMessage}.` : ''
+                }`,
             );
           }
 

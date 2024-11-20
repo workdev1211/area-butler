@@ -1,9 +1,4 @@
-import {
-  IsNotEmpty,
-  IsObject,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsNotEmpty, IsObject, IsUrl, ValidateNested } from 'class-validator';
 import { Exclude, Expose, Type } from 'class-transformer';
 
 import {
@@ -16,7 +11,7 @@ import ApiOnOfficeLoginQueryParamsDto from './api-on-office-login-query-params.d
 class ApiOnOfficeLoginReqDto implements IApiOnOfficeLoginReq {
   @Expose()
   @IsNotEmpty()
-  @IsString()
+  @IsUrl()
   url: string;
 
   @Expose()

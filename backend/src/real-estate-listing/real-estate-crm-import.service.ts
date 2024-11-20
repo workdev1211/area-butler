@@ -49,6 +49,7 @@ import { PlaceService } from '../place/place.service';
 import ApiPropstackWebhookToAreaButlerDto from './dto/api-propstack-webhook-to-area-butler.dto';
 import { estateFields } from '../on-office/shared/on-office.constants';
 import { IApiUserExtConnectSettingsReq } from '@area-butler-types/types';
+import { processOnOfficeEstateId } from '../on-office/shared/on-office.functions';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -460,14 +461,12 @@ export class RealEstateCrmImportService {
     // const testData = [''];
     const chunks = createChunks(realEstates, 100);
 
+    const userId = isIntegrationUser
+      ? `${user.integrationUserId} / ${user.integrationType}`
+      : user.id;
+
     this.logger.log(
-      `User ${
-        isIntegrationUser
-          ? `${user.integrationUserId} / ${user.integrationType}`
-          : user.id
-      } is going to import ${totalCount} real estates from onOffice split into ${
-        chunks.length
-      } chunks.`,
+      `User ${userId} is going to import ${totalCount} real estates from onOffice split into ${chunks.length} chunks.`,
     );
 
     for (const chunk of chunks) {
@@ -498,19 +497,12 @@ export class RealEstateCrmImportService {
           location: locationAddress,
         });
 
-        // onOffice provides id numbers higher than 1000 with the dot thousand separator
-        // could be due to the 'formatoutput' parameter
-        const realEstateIdNum = parseInt(
-          realEstate.Id.replace(/([., ])*/g, ''),
-          10,
-        );
+        const realEstateId = processOnOfficeEstateId(realEstate.Id);
 
-        if (!place || typeof realEstateIdNum !== 'number') {
+        if (!place || !realEstateId) {
           errorIds.push(realEstate.Id);
           continue;
         }
-
-        const realEstateId = `${realEstateIdNum}`;
 
         // LEFT FOR DEBUGGING PURPOSES
         // testData.push(

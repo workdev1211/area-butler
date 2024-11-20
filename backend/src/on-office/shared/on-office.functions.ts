@@ -62,3 +62,17 @@ export const convertOnOfficeProdToIntUserProd = ({
 
   return integrationUserProducts;
 };
+
+// onOffice provides id numbers higher than 1000 with the dot thousand separator
+// could be due to the 'formatoutput' parameter
+export const processOnOfficeEstateId = (
+  realEstateId: string,
+): string | undefined => {
+  const realEstateIdNum = parseInt(realEstateId.replace(/\D/g, ''), 10);
+
+  if (typeof realEstateIdNum !== 'number') {
+    return;
+  }
+
+  return `${realEstateIdNum}`;
+};

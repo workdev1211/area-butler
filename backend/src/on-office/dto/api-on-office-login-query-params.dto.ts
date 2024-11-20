@@ -1,7 +1,8 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 import { IApiOnOfficeLoginQueryParams } from '@area-butler-types/on-office';
+import { processOnOfficeEstateId } from '../shared/on-office.functions';
 
 @Exclude()
 class ApiOnOfficeLoginQueryParamsDto implements IApiOnOfficeLoginQueryParams {
@@ -21,6 +22,9 @@ class ApiOnOfficeLoginQueryParamsDto implements IApiOnOfficeLoginQueryParams {
   customerWebId: string;
 
   @Expose()
+  @Transform(({ value }: { value: string }) => processOnOfficeEstateId(value), {
+    toClassOnly: true,
+  })
   @IsNotEmpty()
   @IsString()
   estateId: string;

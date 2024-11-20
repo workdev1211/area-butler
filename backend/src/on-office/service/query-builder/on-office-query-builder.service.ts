@@ -52,7 +52,12 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
         response,
       );
     } catch (e) {
-      this.logger.debug(this.exec.name, this.userParams);
+      this.logger.debug(
+        this.exec.name,
+        [...this.actions.keys()].join(', '),
+        this.userParams,
+      );
+
       throw new BadRequestException(e);
     }
 

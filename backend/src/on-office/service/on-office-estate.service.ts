@@ -1,4 +1,8 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
 import { IApiOnOfficeRealEstate } from '@area-butler-types/on-office';
@@ -13,11 +17,12 @@ import { RealEstateListingIntService } from '../../real-estate-listing/real-esta
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import ApiOnOfficeToAreaButlerDto from '../../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
-import { parseOnOfficeFloat } from '../../shared/functions/on-office';
+import { ApiCoordinates } from '@area-butler-types/types';
 import { PlaceService } from '../../place/place.service';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 import structuredClone from '@ungap/structured-clone';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
+import { processOnOfficeEstateId } from '../shared/on-office.functions';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -74,6 +79,7 @@ export class OnOfficeEstateService {
     await queryBuilder.exec();
   }
 
+  // should be the only method to save estate record to our db
   async processEstateData(
     integrationUser: TIntegrationUserDocument,
     estateData: IApiOnOfficeRealEstate,
@@ -93,9 +99,9 @@ export class OnOfficeEstateService {
 
     let locationAddress = `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
 
-    const locationCoordinates = {
-      lat: parseOnOfficeFloat(lat),
-      lng: parseOnOfficeFloat(lng),
+    const locationCoordinates: ApiCoordinates = {
+      lat: parseFloat(lat),
+      lng: parseFloat(lng),
     };
 
     let place = await this.placeService.fetchPlace({
@@ -114,17 +120,29 @@ export class OnOfficeEstateService {
 
     if (!place) {
       this.logger.error(
-        this.processEstateData.name,
+        `${this.processEstateData.name}. User ${integrationUser.integrationUserId}. Estate ${estateId}.`,
         locationAddress,
         locationCoordinates,
       );
 
-      throw new HttpException('Adresse nicht gefunden!', 400); // Address is not found
+      throw new UnprocessableEntityException('Adresse nicht gefunden!'); // Address is not found
+    }
+
+    const resultEstateId = processOnOfficeEstateId(estateId);
+
+    if (!resultEstateId) {
+      this.logger.error(
+        `${this.processEstateData.name}. User ${integrationUser.integrationUserId}. Estate ${estateId}.`,
+      );
+
+      throw new UnprocessableEntityException(
+        'onOffice real estate id could not be processed!!',
+      );
     }
 
     Object.assign(processedEstate, {
       integrationParams: {
-        integrationId: estateId,
+        integrationId: resultEstateId,
         integrationType: this.integrationType,
         integrationUserId: integrationUser.integrationUserId,
       },
