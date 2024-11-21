@@ -63,8 +63,7 @@ export class PropstackWebhookIntStrategy extends PassportStrategy(
           this.logger.debug(
             `\nRoute path: ${routePath}` +
               `\nAPI key: ${apiKey}` +
-              '\nReq body:',
-            reqBody,
+              `\nShop id: ${shopId}. Team id: ${teamId}. Broker id: ${brokerId}.`,
           );
 
           return verified(new UnauthorizedException());
