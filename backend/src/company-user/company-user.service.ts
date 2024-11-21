@@ -20,6 +20,7 @@ import CompanyConfigDto from '../company/dto/company-config.dto';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
+import { ICompanyPreset } from '@area-butler-types/company';
 
 @Injectable()
 export class CompanyUserService {
@@ -107,6 +108,45 @@ export class CompanyUserService {
     }
 
     await this.companyService.updateConfig(user.company._id, companyConfigDto);
+
+    const isIntegrationUser = 'integrationUserId' in user;
+    const filterQuery: FilterQuery<TIntegrationUserDocument | UserDocument> = {
+      _id: user._id,
+    };
+
+    return isIntegrationUser
+      ? await this.integrationUserService.findOneCore(filterQuery)
+      : await this.userService.findOneCore(filterQuery);
+  }
+
+  updatePresets(
+    user: TIntegrationUserDocument,
+    preset: ICompanyPreset,
+  ): Promise<TIntegrationUserDocument>;
+
+  updatePresets(
+    user: UserDocument,
+    preset: ICompanyPreset,
+  ): Promise<UserDocument>;
+
+  async updatePresets(
+    user: TIntegrationUserDocument | UserDocument,
+    preset: ICompanyPreset,
+  ): Promise<TIntegrationUserDocument | UserDocument> {
+    if (!user.isAdmin) {
+      throw new ForbiddenException();
+    }
+
+    const companyPresets = user.company.config.presets || [];
+    const samePresetIndex = companyPresets.findIndex(
+      (p) => p.type === preset.type,
+    );
+    if (samePresetIndex > -1) companyPresets[samePresetIndex] = preset;
+    else companyPresets.push(preset);
+
+    await this.companyService.updateConfig(user.company._id, {
+      presets: companyPresets,
+    });
 
     const isIntegrationUser = 'integrationUserId' in user;
     const filterQuery: FilterQuery<TIntegrationUserDocument | UserDocument> = {

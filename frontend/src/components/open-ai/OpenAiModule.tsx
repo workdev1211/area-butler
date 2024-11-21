@@ -1,9 +1,7 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
-
-import { FormikProps } from "formik/dist/types";
 
 import {
   IApiOpenAiQuery,
@@ -30,6 +28,9 @@ import { UserContext } from "../../context/UserContext";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { IIntUserExpMatchParams } from "../../../../shared/types/integration-user";
+import { TFormikInnerRef } from "../../shared/shared.types";
+import { useUserState } from "../../hooks/userstate";
+import { IOpenAiPresetValues } from "./OpenAiChat";
 
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
@@ -43,6 +44,10 @@ interface IOpenAiModuleProps {
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
   searchResultSnapshotId?: string;
   fixedQueryType?: undefined | boolean;
+  generalFormRef: TFormikInnerRef<IOpenAiGeneralFormValues>;
+  locDescFormRef: TFormikInnerRef<IOpenAiLocDescFormValues>;
+  realEstDescFormRef: TFormikInnerRef<IApiOpenAiRealEstDescQuery>;
+  formRef: TFormikInnerRef<IApiOpenAiQuery>;
 }
 
 const OpenAiModule: FC<IOpenAiModuleProps> = ({
@@ -53,6 +58,10 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   onQueryTypeChange,
   searchResultSnapshotId,
   fixedQueryType,
+  generalFormRef,
+  locDescFormRef,
+  realEstDescFormRef,
+  formRef,
 }) => {
   const { t } = useTranslation();
   const {
@@ -69,24 +78,27 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   } = useContext(UserContext);
   const config = user?.config;
 
-  const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
-  const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
-  const realEstDescFormRef =
-    useRef<FormikProps<IApiOpenAiRealEstDescQuery>>(null);
-  const formRef = useRef<FormikProps<IApiOpenAiQuery>>(null);
-
-  const { fetchOpenAiResponse } = useOpenAi();
-
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
   >(initialQueryType);
-  
+
+  const { getCurrentUser } = useUserState();
+
+  const currentUser = getCurrentUser();
+
+  const [preset, setPreset] = useState(
+    currentUser.config.presets?.find((p) => p.type === (queryType as string))
+      ?.values as IOpenAiPresetValues
+  );
+
+  const { fetchOpenAiResponse } = useOpenAi();
+
   const defaultTextLength =
     queryType &&
     config?.exportMatching &&
     (config?.exportMatching as Record<string, IIntUserExpMatchParams>)[
       queryType
-      ].maxTextLength;
+    ]?.maxTextLength;
 
   const resultQueryTypes = (
     searchResultSnapshotId
@@ -200,9 +212,30 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
     ) {
       onModuleStatusChange(true);
     }
+    setPreset(
+      currentUser.config.presets?.find((p) => p.type === (queryType as string))
+        ?.values as IOpenAiPresetValues
+    );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryType]);
+
+  useEffect(() => {
+    if (preset?.general) {
+      generalFormRef.current?.setValues(preset.general);
+    }
+    if (preset?.locationDescription) {
+      locDescFormRef.current?.setValues(preset.locationDescription);
+    }
+    if (preset?.query) {
+      formRef.current?.setValues(preset.query);
+    }
+    if (preset?.realEstateDescription) {
+      realEstDescFormRef.current?.setValues(preset.realEstateDescription);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preset]);
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-0">
@@ -262,7 +295,9 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiLocDescForm
             formId="open-ai-loc-desc-form"
-            initialValues={cachedOpenAi.locationDescription}
+            initialValues={
+              preset?.locationDescription || cachedOpenAi.locationDescription
+            }
             onValuesChange={(values) => {
               cachingDispatch({
                 type: CachingActionTypesEnum.SET_OPEN_AI,
@@ -282,7 +317,10 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiRealEstDescForm
             formId="open-ai-real-est-desc-form"
-            initialValues={cachedOpenAi.realEstateDescription}
+            initialValues={
+              preset?.realEstateDescription ||
+              cachedOpenAi.realEstateDescription
+            }
             onValuesChange={(values) => {
               onModuleStatusChange(
                 !!queryType &&
@@ -305,7 +343,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiQueryForm
             formId="open-ai-formal-to-informal-form"
-            initialValues={cachedOpenAi.query}
+            initialValues={preset?.query || cachedOpenAi.query}
             onValuesChange={(values) => {
               onModuleStatusChange(!!queryType && !!values.text);
 
@@ -331,7 +369,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
 
             <OpenAiGeneralForm
               formId="open-ai-general-form"
-              initialValues={cachedOpenAi.general}
+              initialValues={preset?.general || cachedOpenAi.general}
               defaultTextLength={defaultTextLength || 2000}
               onValuesChange={(values) => {
                 cachingDispatch({

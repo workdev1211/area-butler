@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Put,
   Patch,
   Post,
   UseGuards,
@@ -14,6 +15,7 @@ import { CompanyUserService } from './company-user.service';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
+import CompanyPresetDto from '../company/dto/api-company-preset.dto';
 import { ApiUser } from '@area-butler-types/types';
 import { UserService } from '../user/service/user.service';
 import { UpsertUserInterceptor } from './interceptor/upsert-user.interceptor';
@@ -54,6 +56,18 @@ export class CompanyUserController {
   ): Promise<ApiUser> {
     return this.userService.convertDocToApiUser(
       await this.companyUserService.updateCompanyConfig(user, config),
+    );
+  }
+
+  @ApiProperty({ description: 'Create or update company preset' })
+  @UseGuards(UserGuard)
+  @Put('config/preset')
+  async addPreset(
+    @InjectUser() user: UserDocument,
+    @Body() config: CompanyPresetDto,
+  ): Promise<ApiUser> {
+    return this.userService.convertDocToApiUser(
+      await this.companyUserService.updatePresets(user, config),
     );
   }
 }

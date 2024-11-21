@@ -47,6 +47,28 @@ export interface ICompanyConfig {
   poiIcons?: IApiPoiIcons;
   // templateSnapshot?: SearchResultSnapshotDocument; // TODO currently buggy
   templateSnapshotId?: string;
+  presets?: ICompanyPreset[]
+}
+
+export enum PresetTypesEnum {
+  SCREENSHOT = "SCREENSHOT",
+  DISTRICT_DESC = "DISTRICT_DESC",
+  FACEBOOK_POST = "FACEBOOK_POST",
+  FORMAL_TO_INFORMAL = "FORMAL_TO_INFORMAL",
+  GENERAL_QUESTION = "GENERAL_QUESTION",
+  IMPROVE_TEXT = "IMPROVE_TEXT",
+  INSTAGRAM_CAPTION = "INSTAGRAM_CAPTION",
+  LOCATION_DESCRIPTION = "LOCATION_DESCRIPTION",
+  LOCATION_REAL_ESTATE_DESCRIPTION = "LOCATION_REAL_ESTATE_DESCRIPTION",
+  MACRO_LOC_DESC = "MACRO_LOC_DESC",
+  MICRO_LOC_DESC = "MICRO_LOC_DESC",
+  REAL_ESTATE_DESCRIPTION = "REAL_ESTATE_DESCRIPTION",
+  EQUIPMENT_DESCRIPTION = "EQUIPMENT_DESCRIPTION",
+}
+
+export interface ICompanyPreset {
+  type: PresetTypesEnum;
+  values: Record<string, unknown>;
 }
 
 export type TCompanyExportMatch = Partial<

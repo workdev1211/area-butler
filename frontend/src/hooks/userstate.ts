@@ -20,6 +20,7 @@ import { useIntegrationTools } from "./integration/integrationtools";
 import { defaultErrorMessage } from "../../../shared/constants/error";
 import { IUserConfig } from "../../../shared/types/user";
 import { IApiCompanyConfig } from "../../../shared/types/company";
+import { PresetTypesEnum } from "../../../shared/types/company";
 
 export const useUserState = () => {
   const {
@@ -31,7 +32,7 @@ export const useUserState = () => {
   } = useContext(SearchContext);
 
   const { i18n, t } = useTranslation();
-  const { get, patch } = useHttp();
+  const { get, patch, put } = useHttp();
   const { checkIsSubActive } = useIntegrationTools();
   const isIntegrationUser = !!integrationUser;
 
@@ -212,6 +213,29 @@ export const useUserState = () => {
     }
   };
 
+  const updateCompanyPreset = async (config: {
+    type: PresetTypesEnum;
+    values: Record<string, unknown>;
+  }): Promise<void> => {
+    const url = isIntegrationUser
+      ? "/api/company-user-int/config/preset"
+      : "/api/company-user/config/preset";
+
+    const user = (await put<ApiUser | IApiIntegrationUser>(url, config)).data;
+
+    if (isIntegrationUser) {
+      userDispatch({
+        type: UserActionTypes.SET_INTEGRATION_USER,
+        payload: user as IApiIntegrationUser,
+      });
+    } else {
+      userDispatch({
+        type: UserActionTypes.SET_USER,
+        payload: user as ApiUser,
+      });
+    }
+  };
+
   return {
     checkIsFeatAvailable,
     fetchCurrentUser,
@@ -221,5 +245,6 @@ export const useUserState = () => {
     hideTours,
     updateCompanyConfig,
     updateUserConfig,
+    updateCompanyPreset,
   };
 };

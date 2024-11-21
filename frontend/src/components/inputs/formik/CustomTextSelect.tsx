@@ -81,8 +81,8 @@ const CustomTextSelect: FC<ICustomTextSelectProps> = ({
             setValue(selectedOptions[0].text);
           }}
         >
-          {selectOptions.map(({ text, value }) => (
-            <option key={value} value={value}>
+          {selectOptions.map(({ text, value: sValue }) => (
+            <option key={sValue} value={sValue} selected={text === value}>
               {text}
             </option>
           ))}

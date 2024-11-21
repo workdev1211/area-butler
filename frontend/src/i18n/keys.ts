@@ -208,6 +208,9 @@ export const IntlKeys = {
       publicLink: "snapshotEditor.dataTab.publicLink",
       qrCodeLink: "snapshotEditor.dataTab.qrCodeLink",
       download: "snapshotEditor.dataTab.download",
+      saveAsPreset: "snapshotEditor.dataTab.saveAsPreset",
+      saveAsPresetSuccess: "snapshotEditor.dataTab.saveAsPresetSuccess",
+      saveAsPresetError: "snapshotEditor.dataTab.saveAsPresetError",
       qrCodeFileName: "snapshotEditor.dataTab.qrCodeFileName",
       legendPOIIcons: "snapshotEditor.dataTab.legendPOIIcons",
       iframeForWebsite: "snapshotEditor.dataTab.iframeForWebsite",
@@ -648,7 +651,7 @@ export const IntlKeys = {
     realEstateDescription: "yourProfile.realEstateDescription",
     inlineFrame: "yourProfile.inlineFrame",
     linkWithAddress: "yourProfile.linkWithAddress",
-    linkWoAddress: "yourProfile.linkWoAddress"
+    linkWoAddress: "yourProfile.linkWoAddress",
   },
   tour: {
     tourEndingError: "tour.tourEndingError",

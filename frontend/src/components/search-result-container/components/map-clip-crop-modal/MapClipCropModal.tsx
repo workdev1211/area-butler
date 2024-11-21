@@ -18,6 +18,8 @@ import {
   getRealEstateListingsIcon,
   preferredLocationsTitle,
   toastDefaultError,
+  toastError,
+  toastSuccess,
 } from "../../../../shared/shared.functions";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import { MapClipQrCode } from "./MapClipQrCode";
@@ -33,6 +35,7 @@ import {
   UnitsOfTransportation,
 } from "../../../../../../shared/types/types";
 import downloadIcon from "../../../../assets/icons/download.svg";
+import uploadIcon from "../../../../assets/icons/upload_file.svg";
 import caretIcon from "../../../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import shareIcon from "../../../../assets/icons/share.svg";
 import cropIcon from "../../../../assets/icons/scissors.svg";
@@ -40,6 +43,8 @@ import walkIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-i
 import bicycleIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import { integrationNames } from "../../../../../../shared/constants/integration";
+import { PresetTypesEnum } from "../../../../../../shared/types/company";
+import { useUserState } from "../../../../hooks/userstate";
 
 interface ICropParams {
   name: string;
@@ -143,6 +148,12 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> =>
     reader.readAsDataURL(blob);
   });
 
+interface IScreenshotPreset {
+  isShownQrCode: boolean;
+  isShownLegend: boolean;
+  isShownIsochrones: boolean;
+}
+
 const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   mapClipping,
   entityGroups,
@@ -159,8 +170,14 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   const [overlayRef, setOverlayRef] = useState<HTMLDivElement | null>(null);
 
   const { integrationType } = useContext(ConfigContext);
+  const { getCurrentUser, updateCompanyPreset } = useUserState();
   const { t } = useTranslation();
   const { t: outputT } = useTranslation("", { lng: outputLanguage });
+
+  const currentUser = getCurrentUser();
+  const screenshotPreset = currentUser.config.presets?.find(
+    (p) => p.type === PresetTypesEnum.SCREENSHOT
+  )?.values as IScreenshotPreset | undefined;
 
   const fourToThreeCropParams = {
     name: "4:3",
@@ -198,9 +215,15 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   );
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
-  const [isShownQrCode, setIsShownQrCode] = useState(true);
-  const [isShownLegend, setIsShownLegend] = useState(true);
-  const [isShownIsochrones, setIsShownIsochrones] = useState(true);
+  const [isShownQrCode, setIsShownQrCode] = useState(
+    screenshotPreset?.isShownQrCode ?? true
+  );
+  const [isShownLegend, setIsShownLegend] = useState(
+    screenshotPreset?.isShownLegend ?? true
+  );
+  const [isShownIsochrones, setIsShownIsochrones] = useState(
+    screenshotPreset?.isShownIsochrones ?? true
+  );
 
   const ListItem: FC<EntityGroup> = (group) => {
     const isRealEstateListing = group.items[0].name === realEstateListingsTitle;
@@ -287,8 +310,29 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     }
   };
 
+  const saveAsPreset = async () => {
+    try {
+      await updateCompanyPreset({
+        type: PresetTypesEnum.SCREENSHOT,
+        values: {
+          isShownIsochrones: isShownIsochrones,
+          isShownLegend: isShownLegend,
+          isShownQrCode: isShownQrCode,
+        },
+      });
+      toastSuccess(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetSuccess));
+    } catch (e) {
+      console.error(e);
+      toastError(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetError));
+    }
+  };
+
   const setQrCodeFunc = useCallback(async () => {
-    const rawQrCodeImage = await getQrCodeBase64(directLink!, color, invertColor);
+    const rawQrCodeImage = await getQrCodeBase64(
+      directLink!,
+      color,
+      invertColor
+    );
     setQrCode(rawQrCodeImage);
   }, [directLink, color, invertColor]);
 
@@ -607,6 +651,19 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                       className="invert h-full mr-2"
                     />
                     {t(IntlKeys.snapshotEditor.dataTab.download)}
+                  </li>
+                )}
+                {currentUser.isAdmin && (
+                  <li
+                    className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
+                    onClick={saveAsPreset}
+                  >
+                    <img
+                      src={uploadIcon}
+                      alt="icon-preset"
+                      className="invert h-full mr-2"
+                    />
+                    {t(IntlKeys.snapshotEditor.dataTab.saveAsPreset)}
                   </li>
                 )}
               </ul>

@@ -4,7 +4,13 @@ import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
 import OpenAiModule from "./OpenAiModule";
-import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
+import {
+  IApiOpenAiQuery,
+  IApiOpenAiRealEstDescQuery,
+  IOpenAiGeneralFormValues,
+  IOpenAiLocDescFormValues,
+  OpenAiQueryTypeEnum,
+} from "../../../../shared/types/open-ai";
 import copy from "copy-to-clipboard";
 import personIcon from "../../assets/icons/person.svg";
 import areaButlerLogo from "../../assets/icons/areabutler.svg";
@@ -26,8 +32,13 @@ import {
   openAiTextLengthOptions,
   openAiTonalities,
 } from "../../../../shared/constants/open-ai";
-import { toastSuccess } from "../../shared/shared.functions";
+import { toastSuccess, toastError } from "../../shared/shared.functions";
 import { SearchContext } from "../../context/SearchContext";
+import caretIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
+import uploadIcon from "../../assets/icons/upload_file.svg";
+import { useUserState } from "../../hooks/userstate";
+import { PresetTypesEnum } from "../../../../shared/types/company";
+import { FormikProps } from "formik/dist/types";
 
 interface IOpenAiChatProps {
   searchResultSnapshotId: string;
@@ -49,6 +60,13 @@ interface IGeneratedTexts {
   queryResponse: string;
 }
 
+export interface IOpenAiPresetValues {
+  locationDescription?: IOpenAiLocDescFormValues;
+  realEstateDescription?: IApiOpenAiRealEstDescQuery;
+  query?: IApiOpenAiQuery;
+  general?: IOpenAiGeneralFormValues;
+}
+
 const OpenAiChat: FC<IOpenAiChatProps> = ({
   searchResultSnapshotId,
   queryType,
@@ -59,6 +77,10 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
   integrationType,
   fixedQueryType,
 }) => {
+  const { getCurrentUser, updateCompanyPreset } = useUserState();
+
+  const currentUser = getCurrentUser();
+
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const {
     searchContextState: { responseConfig },
@@ -71,11 +93,77 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
   const [isImproveDialogEnabled, setIsImproveDialogEnabled] = useState(false);
   const [queryResponses, setQueryResponse] = useState<IGeneratedTexts[]>([]);
 
+  const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
+  const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
+  const realEstDescFormRef =
+    useRef<FormikProps<IApiOpenAiRealEstDescQuery>>(null);
+  const formRef = useRef<FormikProps<IApiOpenAiQuery>>(null);
+  const queryTypeRef = useRef(queryType);
+
   const { t } = useTranslation();
   const { fetchOpenAiResponse } = useOpenAi();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const saveAsPreset = async () => {
+    const values = {} as IOpenAiPresetValues;
+
+    if (
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.FACEBOOK_POST,
+        OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
+        OpenAiQueryTypeEnum.MACRO_LOC_DESC,
+        OpenAiQueryTypeEnum.MICRO_LOC_DESC,
+        OpenAiQueryTypeEnum.DISTRICT_DESC,
+      ].includes(queryTypeRef.current as OpenAiQueryTypeEnum)
+    ) {
+      values.locationDescription = locDescFormRef.current?.values;
+    }
+
+    if (
+      [
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+        OpenAiQueryTypeEnum.FACEBOOK_POST,
+        OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
+      ].includes(queryTypeRef.current as OpenAiQueryTypeEnum)
+    ) {
+      values.realEstateDescription = realEstDescFormRef.current?.values;
+    }
+
+    if (
+      [
+        OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+        OpenAiQueryTypeEnum.GENERAL_QUESTION,
+      ].includes(queryTypeRef.current as OpenAiQueryTypeEnum)
+    ) {
+      values.query = formRef.current?.values;
+    }
+
+    if (
+      ![
+        OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+        OpenAiQueryTypeEnum.GENERAL_QUESTION,
+      ].includes(queryTypeRef.current as OpenAiQueryTypeEnum)
+    ) {
+      values.general = generalFormRef.current?.values;
+    }
+
+    try {
+      await updateCompanyPreset({
+        type: queryTypeRef.current as string as PresetTypesEnum,
+        values: values as Record<string, unknown>,
+      });
+      toastSuccess(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetSuccess));
+    } catch (e) {
+      console.error(e);
+      toastError(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetError));
+    }
   };
 
   const editInputRef = useRef<null | HTMLTextAreaElement>(null);
@@ -345,11 +433,18 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
               />
             ) : (
               <OpenAiModule
+                realEstDescFormRef={realEstDescFormRef}
+                generalFormRef={generalFormRef}
+                locDescFormRef={locDescFormRef}
+                formRef={formRef}
                 initialQueryType={queryType}
                 fixedQueryType={fixedQueryType}
                 searchResultSnapshotId={searchResultSnapshotId}
                 onModuleStatusChange={(isReady): void => {
                   setIsGenerateButtonDisabled(!isReady);
+                }}
+                onQueryTypeChange={(newQueryType) => {
+                  queryTypeRef.current = newQueryType;
                 }}
                 isFetchResponse={isFetchResponse && !isImproveDialogEnabled}
                 onResponseFetched={(responseText, queryType, query): void => {
@@ -369,7 +464,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                 }}
               />
             )}
-            <div className="flex justify justify-between mt-2">
+            <div className="flex justify justify-end mt-2 gap-2">
               {queryResponses && queryResponses.length > 0 && (
                 <button
                   className="btn btn-base-silver"
@@ -413,6 +508,33 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                   ? t(IntlKeys.snapshotEditor.dataTab.generate)
                   : t(IntlKeys.common.unlock)}
               </button>
+              <div className="dropdown dropdown-hover dropdown-top dropdown-end">
+                <button className="btn btn-primary dropdown-btn w-14">
+                  <img
+                    src={caretIcon}
+                    alt="icon-dropdown"
+                    className="rotate-180"
+                  />
+                </button>
+                <ul
+                  className="dropdown-content text-right"
+                  style={{ top: "auto", background: "none" }}
+                >
+                  {currentUser.isAdmin && (
+                    <li
+                      className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
+                      onClick={saveAsPreset}
+                    >
+                      <img
+                        src={uploadIcon}
+                        alt="icon-preset"
+                        className="invert h-full mr-2"
+                      />
+                      {t(IntlKeys.snapshotEditor.dataTab.saveAsPreset)}
+                    </li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
