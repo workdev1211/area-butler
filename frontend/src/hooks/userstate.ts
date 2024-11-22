@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import dayjs from "dayjs";
+import { AxiosResponse } from "axios";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "../i18n/keys";
@@ -13,14 +14,33 @@ import {
 } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import { useHttp } from "./http";
-import { toastDefaultError, toastError } from "../shared/shared.functions";
+import {
+  toastDefaultError,
+  toastError,
+  toastSuccess,
+} from "../shared/shared.functions";
 import { checkIsSearchNotUnlocked } from "../../../shared/functions/integration.functions";
 import { SearchContext } from "../context/SearchContext";
 import { useIntegrationTools } from "./integration/integrationtools";
 import { defaultErrorMessage } from "../../../shared/constants/error";
-import { IUserConfig } from "../../../shared/types/user";
-import { IApiCompanyConfig } from "../../../shared/types/company";
-import { PresetTypesEnum } from "../../../shared/types/company";
+import { IUserConfig, TUnitedApiUser } from "../../../shared/types/user";
+import {
+  IApiCompanyConfig,
+  IApiCompanyPreset,
+} from "../../../shared/types/company";
+
+interface IUpdateConfigParams<
+  T extends IApiCompanyConfig | IUserConfig | IApiCompanyPreset
+> {
+  config: TNullable<Partial<T>>;
+  url: string;
+  errorMessage?: string;
+  successMessage?: string;
+  updateFunc?: (
+    url: string,
+    body: object
+  ) => Promise<AxiosResponse<TUnitedApiUser>>;
+}
 
 export const useUserState = () => {
   const {
@@ -182,7 +202,7 @@ export const useUserState = () => {
       ? "/api/company-user-int/config/company"
       : "/api/company-user/config/company";
 
-    await updateConfig<IApiCompanyConfig>(url, config);
+    await updateConfig<IApiCompanyConfig>({ config, url });
   };
 
   const updateUserConfig = async (
@@ -192,48 +212,45 @@ export const useUserState = () => {
       ? "/api/integration-users/config"
       : "/api/users/config";
 
-    await updateConfig<IUserConfig>(url, config);
+    await updateConfig<IUserConfig>({ config, url });
   };
 
-  const updateConfig = async <T extends IApiCompanyConfig | IUserConfig>(
-    url: string,
-    config: TNullable<Partial<T>>
-  ): Promise<void> => {
-    let currentUser: ApiUser | IApiIntegrationUser;
+  const updateConfig = async <
+    T extends IApiCompanyConfig | IUserConfig | IApiCompanyPreset
+  >({
+    config,
+    url,
+    errorMessage = t(IntlKeys.common.errorOccurred),
+    successMessage = t(IntlKeys.yourProfile.profileUpdated),
+    updateFunc = patch,
+  }: IUpdateConfigParams<T>): Promise<void> => {
+    let currentUser: TUnitedApiUser;
 
     try {
-      currentUser = (await patch<ApiUser | IApiIntegrationUser>(url, config))
-        .data;
-
+      currentUser = (await updateFunc(url, config)).data;
       setUserContext(currentUser);
+      toastSuccess(successMessage);
     } catch (e) {
       console.error(e);
-      toastError(t(IntlKeys.common.errorOccurred));
-      throw new Error(t(IntlKeys.common.errorOccurred));
+      toastError(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
-  const updateCompanyPreset = async (config: {
-    type: PresetTypesEnum;
-    values: Record<string, unknown>;
-  }): Promise<void> => {
+  const upsertCompanyPreset = async (
+    preset: IApiCompanyPreset
+  ): Promise<void> => {
     const url = isIntegrationUser
-      ? "/api/company-user-int/config/preset"
-      : "/api/company-user/config/preset";
+      ? "/api/company-user-int/config/company/preset"
+      : "/api/company-user/config/company/preset";
 
-    const user = (await put<ApiUser | IApiIntegrationUser>(url, config)).data;
-
-    if (isIntegrationUser) {
-      userDispatch({
-        type: UserActionTypes.SET_INTEGRATION_USER,
-        payload: user as IApiIntegrationUser,
-      });
-    } else {
-      userDispatch({
-        type: UserActionTypes.SET_USER,
-        payload: user as ApiUser,
-      });
-    }
+    await updateConfig({
+      url,
+      config: preset,
+      errorMessage: t(IntlKeys.snapshotEditor.dataTab.saveAsPresetError),
+      successMessage: t(IntlKeys.snapshotEditor.dataTab.saveAsPresetSuccess),
+      updateFunc: put,
+    });
   };
 
   return {
@@ -245,6 +262,6 @@ export const useUserState = () => {
     hideTours,
     updateCompanyConfig,
     updateUserConfig,
-    updateCompanyPreset,
+    upsertCompanyPreset,
   };
 };

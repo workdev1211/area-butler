@@ -170,14 +170,16 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   const [overlayRef, setOverlayRef] = useState<HTMLDivElement | null>(null);
 
   const { integrationType } = useContext(ConfigContext);
-  const { getCurrentUser, updateCompanyPreset } = useUserState();
+  const { getCurrentUser, upsertCompanyPreset } = useUserState();
   const { t } = useTranslation();
   const { t: outputT } = useTranslation("", { lng: outputLanguage });
 
   const currentUser = getCurrentUser();
-  const screenshotPreset = currentUser.config.presets?.find(
-    (p) => p.type === PresetTypesEnum.SCREENSHOT
-  )?.values as IScreenshotPreset | undefined;
+  const screenshotPreset = (
+    currentUser.config.presets
+      ? currentUser.config.presets[PresetTypesEnum.SCREENSHOT]
+      : undefined
+  ) as IScreenshotPreset | undefined;
 
   const fourToThreeCropParams = {
     name: "4:3",
@@ -310,9 +312,9 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     }
   };
 
-  const saveAsPreset = async () => {
+  const saveAsPreset = async (): Promise<void> => {
     try {
-      await updateCompanyPreset({
+      await upsertCompanyPreset({
         type: PresetTypesEnum.SCREENSHOT,
         values: {
           isShownIsochrones: isShownIsochrones,

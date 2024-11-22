@@ -1,4 +1,5 @@
 import {
+  ApiUser,
   LanguageTypeEnum,
   TApiUserExtConnections,
   TApiUserStudyTours,
@@ -9,6 +10,7 @@ import { TCompanyDocument } from "../../backend/src/company/schema/company.schem
 import { ApiRequestContingent } from "./subscription-plan";
 import { SubscriptionDocument } from "../../backend/src/user/schema/subscription.schema";
 import { UserDocument } from "../../backend/src/user/schema/user.schema";
+import { IApiIntegrationUser } from "./integration-user";
 
 export interface IUserSchema {
   companyId: string;
@@ -47,3 +49,5 @@ export enum UserRoleEnum {
   admin = "admin",
   user = "user",
 }
+
+export type TUnitedApiUser = ApiUser | IApiIntegrationUser;

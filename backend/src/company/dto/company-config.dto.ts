@@ -20,13 +20,13 @@ import {
   IApiCompanyConfig,
   ICompanyConfig,
   TCompanyExportMatch,
-  ICompanyPreset,
+  TCompanyPresets,
 } from '@area-butler-types/company';
 import ApiUserExportFontDto from '../../user/dto/api-user-export-font.dto';
 import ApiMapboxStyleDto from '../../dto/api-mapbox-style.dto';
 import ApiPoiIconsDto from './api-poi-icons.dto';
 import ExportMatchingDto from './export-matching.dto';
-import ApiCompanyPresetDto from './api-company-preset.dto';
+import CompanyPresetDto from './company-preset.dto';
 
 @Exclude()
 class CompanyConfigDto implements ICompanyConfig {
@@ -115,11 +115,11 @@ class CompanyConfigDto implements ICompanyConfig {
   templateSnapshotId?: string;
 
   @Expose()
+  @Type(() => CompanyPresetDto)
   @IsOptional()
-  @Type(() => ApiCompanyPresetDto)
-  @IsArray()
-  @ValidateNested({ each: true })
-  presets?: ICompanyPreset[];
+  @IsObject()
+  @ValidateNested()
+  presets?: TCompanyPresets;
 }
 
 export default CompanyConfigDto;

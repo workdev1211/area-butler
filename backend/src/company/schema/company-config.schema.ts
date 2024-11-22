@@ -15,7 +15,7 @@ import {
 import {
   ICompanyConfig,
   TCompanyExportMatch,
-  ICompanyPreset,
+  TCompanyPresets,
 } from '@area-butler-types/company';
 // import {
 //   SearchResultSnapshot,
@@ -64,8 +64,8 @@ class CompanyConfig implements ICompanyConfig {
   @Prop({ type: Object })
   poiIcons?: IApiPoiIcons;
 
-  @Prop({ type: Array })
-  presets?: ICompanyPreset[];
+  @Prop({ type: Object })
+  presets?: TCompanyPresets;
 
   @Prop({
     type: SchemaTypes.ObjectId,

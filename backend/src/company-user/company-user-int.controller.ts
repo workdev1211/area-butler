@@ -16,7 +16,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import { ConvertIntUserService } from '../user/service/convert-int-user.service';
 import { UserGuard } from '../user/user.guard';
-import CompanyPresetDto from '../company/dto/api-company-preset.dto';
+import ApiCompanyPresetDto from '../company/dto/api-company-preset.dto';
 
 @ApiTags('company', 'user')
 @Controller('api/company-user-int')
@@ -43,13 +43,16 @@ export class CompanyUserIntController {
 
   @ApiProperty({ description: 'Create or update company preset' })
   @UseGuards(UserGuard)
-  @Put('config/preset')
-  async addPreset(
+  @Put('config/company/preset')
+  async upsertCompanyPreset(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() preset: CompanyPresetDto,
+    @Body() preset: ApiCompanyPresetDto,
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserService.convertDocToApiIntUser(
-      await this.companyUserService.updatePresets(integrationUser, preset),
+      await this.companyUserService.upsertCompanyPreset(
+        integrationUser,
+        preset,
+      ),
     );
   }
 }

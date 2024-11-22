@@ -1,18 +1,22 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsObject,
-} from 'class-validator';
+import { IsIn, IsNotEmpty, IsObject } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { ICompanyPreset, PresetTypesEnum } from '@area-butler-types/company';
+import {
+  IApiCompanyPreset,
+  PresetTypesEnum,
+  TPresetTypes,
+} from '@area-butler-types/company';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
 @Exclude()
-class CompanyPresetDto implements ICompanyPreset{
+class ApiCompanyPresetDto implements IApiCompanyPreset {
   @Expose()
   @IsNotEmpty()
-  @IsEnum(PresetTypesEnum)
-  type: PresetTypesEnum;
+  @IsIn([
+    ...Object.values(OpenAiQueryTypeEnum),
+    ...Object.values(PresetTypesEnum),
+  ])
+  type: TPresetTypes;
 
   @Expose()
   @IsNotEmpty()
@@ -20,4 +24,4 @@ class CompanyPresetDto implements ICompanyPreset{
   values: Record<string, unknown>;
 }
 
-export default CompanyPresetDto;
+export default ApiCompanyPresetDto;

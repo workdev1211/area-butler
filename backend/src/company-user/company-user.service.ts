@@ -15,12 +15,16 @@ import { TRIAL_PRICE_ID } from '../../../shared/constants/subscription/trial';
 import { CompanyService } from '../company/company.service';
 import { UserService } from '../user/service/user.service';
 import { SubscriptionService } from '../user/service/subscription.service';
-import { IApiCompanyConfig } from '@area-butler-types/company';
+import {
+  IApiCompanyConfig,
+  IApiCompanyPreset,
+} from '@area-butler-types/company';
 import CompanyConfigDto from '../company/dto/company-config.dto';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
-import { ICompanyPreset } from '@area-butler-types/company';
+import { TUnitedUser } from '../shared/types/user';
+import structuredClone from '@ungap/structured-clone';
 
 @Injectable()
 export class CompanyUserService {
@@ -78,9 +82,9 @@ export class CompanyUserService {
   ): Promise<UserDocument>;
 
   async updateCompanyConfig(
-    user: TIntegrationUserDocument | UserDocument,
+    user: TUnitedUser,
     config: Partial<IApiCompanyConfig>,
-  ): Promise<TIntegrationUserDocument | UserDocument> {
+  ): Promise<TUnitedUser> {
     // TODO Add a decorator and a guard with renaming old 'Role' to 'TechRole'
     if (!user.isAdmin) {
       throw new ForbiddenException();
@@ -119,30 +123,28 @@ export class CompanyUserService {
       : await this.userService.findOneCore(filterQuery);
   }
 
-  updatePresets(
+  upsertCompanyPreset(
     user: TIntegrationUserDocument,
-    preset: ICompanyPreset,
+    preset: IApiCompanyPreset,
   ): Promise<TIntegrationUserDocument>;
 
-  updatePresets(
+  upsertCompanyPreset(
     user: UserDocument,
-    preset: ICompanyPreset,
+    preset: IApiCompanyPreset,
   ): Promise<UserDocument>;
 
-  async updatePresets(
-    user: TIntegrationUserDocument | UserDocument,
-    preset: ICompanyPreset,
-  ): Promise<TIntegrationUserDocument | UserDocument> {
+  async upsertCompanyPreset(
+    user: TUnitedUser,
+    preset: IApiCompanyPreset,
+  ): Promise<TUnitedUser> {
     if (!user.isAdmin) {
       throw new ForbiddenException();
     }
 
-    const companyPresets = user.company.config.presets || [];
-    const samePresetIndex = companyPresets.findIndex(
-      (p) => p.type === preset.type,
-    );
-    if (samePresetIndex > -1) companyPresets[samePresetIndex] = preset;
-    else companyPresets.push(preset);
+    const companyPresets = user.company.config.presets
+      ? structuredClone(user.company.config.presets)
+      : {};
+    companyPresets[preset.type] = preset.values;
 
     await this.companyService.updateConfig(user.company._id, {
       presets: companyPresets,

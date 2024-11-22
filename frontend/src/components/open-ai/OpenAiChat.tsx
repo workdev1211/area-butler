@@ -1,4 +1,5 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FormikProps } from "formik/dist/types";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -32,13 +33,11 @@ import {
   openAiTextLengthOptions,
   openAiTonalities,
 } from "../../../../shared/constants/open-ai";
-import { toastSuccess, toastError } from "../../shared/shared.functions";
+import { toastSuccess } from "../../shared/shared.functions";
 import { SearchContext } from "../../context/SearchContext";
 import caretIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import uploadIcon from "../../assets/icons/upload_file.svg";
 import { useUserState } from "../../hooks/userstate";
-import { PresetTypesEnum } from "../../../../shared/types/company";
-import { FormikProps } from "formik/dist/types";
 
 interface IOpenAiChatProps {
   searchResultSnapshotId: string;
@@ -77,7 +76,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
   integrationType,
   fixedQueryType,
 }) => {
-  const { getCurrentUser, updateCompanyPreset } = useUserState();
+  const { getCurrentUser, upsertCompanyPreset } = useUserState();
 
   const currentUser = getCurrentUser();
 
@@ -154,16 +153,10 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
       values.general = generalFormRef.current?.values;
     }
 
-    try {
-      await updateCompanyPreset({
-        type: queryTypeRef.current as string as PresetTypesEnum,
-        values: values as Record<string, unknown>,
-      });
-      toastSuccess(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetSuccess));
-    } catch (e) {
-      console.error(e);
-      toastError(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetError));
-    }
+    await upsertCompanyPreset({
+      type: queryTypeRef.current as string as OpenAiQueryTypeEnum,
+      values: values as Record<string, unknown>,
+    });
   };
 
   const editInputRef = useRef<null | HTMLTextAreaElement>(null);

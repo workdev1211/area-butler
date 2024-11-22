@@ -87,8 +87,9 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const currentUser = getCurrentUser();
 
   const [preset, setPreset] = useState(
-    currentUser.config.presets?.find((p) => p.type === (queryType as string))
-      ?.values as IOpenAiPresetValues
+    (currentUser.config.presets
+      ? currentUser.config.presets[queryType as OpenAiQueryTypeEnum]
+      : undefined) as IOpenAiPresetValues | undefined
   );
 
   const { fetchOpenAiResponse } = useOpenAi();
@@ -213,8 +214,9 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
       onModuleStatusChange(true);
     }
     setPreset(
-      currentUser.config.presets?.find((p) => p.type === (queryType as string))
-        ?.values as IOpenAiPresetValues
+      (currentUser.config.presets
+        ? currentUser.config.presets[queryType as OpenAiQueryTypeEnum]
+        : undefined) as IOpenAiPresetValues | undefined
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
