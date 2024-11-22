@@ -18,7 +18,6 @@ import {
   ApiUpdateSearchResultSnapshot,
   MeansOfTransportation,
 } from '@area-butler-types/types';
-import { UserDocument } from '../user/schema/user.schema';
 import { UserService } from '../user/service/user.service';
 import {
   ApiSubscriptionLimitsEnum,
@@ -26,13 +25,13 @@ import {
 } from '@area-butler-types/subscription-plan';
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
 import { RoutingService } from '../routing/routing.service';
 import { FetchSnapshotService } from './fetch-snapshot.service';
 import { PlaceService } from '../place/place.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { TUnitedUser } from '../shared/types/user';
 
 interface ICreateSnapshotParams {
   snapshotReq: ApiCreateSnapshotReq;
@@ -58,7 +57,7 @@ export class SnapshotService {
   ) {}
 
   async createSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
+    user: TUnitedUser,
     {
       config,
       externalId,
@@ -211,7 +210,7 @@ export class SnapshotService {
   }
 
   async duplicateSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
+    user: TUnitedUser,
     snapshotId: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDoc(user, {
@@ -239,7 +238,7 @@ export class SnapshotService {
   }
 
   async updateSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
+    user: TUnitedUser,
     snapshotId: string,
     {
       config,
@@ -295,10 +294,7 @@ export class SnapshotService {
     });
   }
 
-  async deleteSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
-    snapshotId: string,
-  ): Promise<void> {
+  async deleteSnapshot(user: TUnitedUser, snapshotId: string): Promise<void> {
     const filterQuery = await this.fetchSnapshotService.getFilterQueryWithUser(
       user,
       {
@@ -319,7 +315,7 @@ export class SnapshotService {
   }
 
   private async getSnapshotConfig(
-    user: UserDocument | TIntegrationUserDocument,
+    user: TUnitedUser,
   ): Promise<ApiSearchResultSnapshotConfig> {
     const isIntegrationUser = 'integrationUserId' in user;
     const userTemplateId = user.config.templateSnapshotId;
@@ -353,7 +349,11 @@ export class SnapshotService {
       }
     }
 
-    const templateSnapshotId = userTemplateId || parentTemplateId;
+    const templateSnapshotId =
+      userTemplateId ||
+      parentTemplateId ||
+      user.company.config?.templateSnapshotId;
+
     let templateSnapshot: ApiSearchResultSnapshotResponse;
 
     if (templateSnapshotId) {
