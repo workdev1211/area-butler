@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Patch,
-  Put,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Patch, Put, UseInterceptors } from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 import { CompanyUserService } from './company-user.service';
@@ -15,10 +8,9 @@ import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-int
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import { ConvertIntUserService } from '../user/service/convert-int-user.service';
-import { UserGuard } from '../user/user.guard';
 import ApiCompanyPresetDto from '../company/dto/api-company-preset.dto';
 
-@ApiTags('company', 'user')
+@ApiTags('company', 'user', 'integration')
 @Controller('api/company-user-int')
 export class CompanyUserIntController {
   constructor(
@@ -42,7 +34,7 @@ export class CompanyUserIntController {
   }
 
   @ApiProperty({ description: 'Create or update company preset' })
-  @UseGuards(UserGuard)
+  @UseInterceptors(InjectIntegrationUserInterceptor)
   @Put('config/company/preset')
   async upsertCompanyPreset(
     @InjectUser() integrationUser: TIntegrationUserDocument,

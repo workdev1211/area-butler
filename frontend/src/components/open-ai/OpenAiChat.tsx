@@ -78,7 +78,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
 }) => {
   const { getCurrentUser, upsertCompanyPreset } = useUserState();
 
-  const currentUser = getCurrentUser();
+  const user = getCurrentUser();
 
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const {
@@ -501,19 +501,19 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                   ? t(IntlKeys.snapshotEditor.dataTab.generate)
                   : t(IntlKeys.common.unlock)}
               </button>
-              <div className="dropdown dropdown-hover dropdown-top dropdown-end">
-                <button className="btn btn-primary dropdown-btn w-14">
-                  <img
-                    src={caretIcon}
-                    alt="icon-dropdown"
-                    className="rotate-180"
-                  />
-                </button>
-                <ul
-                  className="dropdown-content text-right"
-                  style={{ top: "auto", background: "none" }}
-                >
-                  {currentUser.isAdmin && (
+              {user.isAdmin && (
+                <div className="dropdown dropdown-hover dropdown-top dropdown-end">
+                  <button className="btn btn-primary dropdown-btn w-14">
+                    <img
+                      src={caretIcon}
+                      alt="icon-dropdown"
+                      className="rotate-180"
+                    />
+                  </button>
+                  <ul
+                    className="dropdown-content text-right"
+                    style={{ top: "auto", background: "none" }}
+                  >
                     <li
                       className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
                       onClick={saveAsPreset}
@@ -525,9 +525,9 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                       />
                       {t(IntlKeys.snapshotEditor.dataTab.saveAsPreset)}
                     </li>
-                  )}
-                </ul>
-              </div>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -6,7 +6,6 @@ import { IntlKeys } from "i18n/keys";
 import ImageUpload from "../components/ImageUpload";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import ColorPicker from "../components/ColorPicker";
-import { toastSuccess } from "../shared/shared.functions";
 import { useUserState } from "../hooks/userstate";
 
 const CompanyExportSettings: FC = () => {
@@ -27,44 +26,44 @@ const CompanyExportSettings: FC = () => {
   );
 
   const updateLogo = async (logo: string | null): Promise<void> => {
-    await updateCompanyConfig({ logo });
+    await updateCompanyConfig({ logo }, t(IntlKeys.yourProfile.logoSaved));
 
     userDispatch({
       type: UserActionTypes.SET_LOGO,
       payload: logo || undefined,
     });
-
-    toastSuccess(t(IntlKeys.yourProfile.logoSaved));
   };
 
   const updateMapIcon = async (mapIcon: string | null): Promise<void> => {
-    await updateCompanyConfig({ mapIcon });
+    await updateCompanyConfig({ mapIcon }, t(IntlKeys.yourProfile.logoSaved));
 
     userDispatch({
       type: UserActionTypes.SET_MAP_ICON,
       payload: mapIcon || undefined,
     });
-
-    toastSuccess(t(IntlKeys.yourProfile.logoSaved));
   };
 
   const updateColor = async (color: string | null): Promise<void> => {
-    await updateCompanyConfig({ color });
+    await updateCompanyConfig(
+      { color },
+      t(IntlKeys.yourProfile.primaryColorSaved)
+    );
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
       payload: color || undefined,
     });
-
-    toastSuccess(t(IntlKeys.yourProfile.primaryColorSaved));
   };
 
   const rollbackSettings = async (): Promise<void> => {
-    await updateCompanyConfig({
-      color: null,
-      logo: null,
-      mapIcon: null,
-    });
+    await updateCompanyConfig(
+      {
+        color: null,
+        logo: null,
+        mapIcon: null,
+      },
+      t(IntlKeys.yourProfile.exportSettingsReset)
+    );
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
@@ -82,8 +81,6 @@ const CompanyExportSettings: FC = () => {
     setColor(undefined);
     setLogo(undefined);
     setMapIcon(undefined);
-
-    toastSuccess(t(IntlKeys.yourProfile.exportSettingsReset));
   };
 
   return (

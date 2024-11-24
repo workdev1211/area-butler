@@ -196,13 +196,14 @@ export const useUserState = () => {
   };
 
   const updateCompanyConfig = async (
-    config: TNullable<Partial<IApiCompanyConfig>>
+    config: TNullable<Partial<IApiCompanyConfig>>,
+    successMessage?: string
   ): Promise<void> => {
     const url = isIntegrationUser
       ? "/api/company-user-int/config/company"
       : "/api/company-user/config/company";
 
-    await updateConfig<IApiCompanyConfig>({ config, url });
+    await updateConfig<IApiCompanyConfig>({ config, successMessage, url });
   };
 
   const updateUserConfig = async (
