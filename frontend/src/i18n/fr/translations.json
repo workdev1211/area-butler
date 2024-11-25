@@ -310,7 +310,10 @@
         "MEDIUM": "Le texte doit être de longueur moyenne.",
         "LONG": "Le texte doit être long et détaillé.",
         "SPECIFIC": "Définir le nombre de caractères souhaité pour le texte"
-      }
+      },
+      "saveAsPreset": "Reprendre la présélection",
+      "saveAsPresetSuccess": "Préréglage enregistré avec succès",
+      "saveAsPresetError": "Le préréglage n'a pas pu être repris"
     },
     "addNewLocationModalTitle": "Ajouter un nouveau lieu",
     "addNewLocationModalBtn": "Ajouter",
@@ -555,7 +558,8 @@
     "yourCardSnippet": "Votre snippet de carte",
     "noteField": "Champ de notes",
     "directLink": "Lien direct",
-    "htmlSnippet": "Snippet HTML"
+    "htmlSnippet": "Snippet HTML",
+    "companyTemplate": "Modèle d'organisation"
   },
   "imageUpload": {
     "supportedFormats": "Formats supportés : png, jpg, svg, taille maximale : 5MB",
@@ -591,12 +595,12 @@
     "currentPlan": "Plan actuel",
     "managePaymentAndSubscription": "Gérer le paiement et l'abonnement",
     "requestExecuted": "Demandes effectuées",
-    "settingAppliedTooltip": "Cette configuration est appliquée à votre première carte",
-    "locationDescription": "Description de la situation",
-    "locationRealEstateDescription": "Description du bien immobilier",
-    "realEstateDescription": "Description du bien immobilier",
+    "settingAppliedTooltip": "Ce paramètre s'applique à votre première carte",
+    "locationDescription": "Description de l'emplacement",
+    "locationRealEstateDescription": "Description de l'emplacement de l'immeuble",
+    "realEstateDescription": "Description de l'immobilier",
     "inlineFrame": "Cadre en ligne",
-    "linkWithAddress": "Lien avec adresse",
+    "linkWithAddress": "Lien avec l'adresse",
     "linkWoAddress": "Lien sans adresse"
   },
   "tour": {
