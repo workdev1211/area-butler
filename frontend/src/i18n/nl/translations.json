@@ -310,7 +310,10 @@
         "MEDIUM": "De tekst moet van gemiddelde lengte zijn.",
         "LONG": "De tekst moet lang en gedetailleerd zijn.",
         "SPECIFIC": "Stel het gewenste aantal tekens voor tekst in"
-      }
+      },
+      "saveAsPreset": "Standaardinstelling toepassen",
+      "saveAsPresetSuccess": "Standaardinstelling succesvol opgeslagen",
+      "saveAsPresetError": "Standaardinstelling kon niet worden toegepast"
     },
     "addNewLocationModalTitle": "Nieuwe locatie toevoegen",
     "addNewLocationModalBtn": "Voeg  toe",
@@ -555,7 +558,8 @@
     "yourCardSnippet": "Je kaartfragment",
     "noteField": "Opmerking veld",
     "directLink": "Directe link",
-    "htmlSnippet": "HTML-fragment"
+    "htmlSnippet": "HTML-fragment",
+    "companyTemplate": "Organisatiesjabloon"
   },
   "imageUpload": {
     "supportedFormats": "Ondersteunde formaten: png, jpg, svg, maximale grootte: 5MB",
@@ -593,7 +597,7 @@
     "requestExecuted": "Uitgevoerde verzoeken",
     "settingAppliedTooltip": "Deze instelling wordt toegepast op je eerste kaart",
     "locationDescription": "Locatiebeschrijving",
-    "locationRealEstateDescription": "Locatie beschrijving onroerend goed",
+    "locationRealEstateDescription": "Locatie vastgoed beschrijving",
     "realEstateDescription": "Beschrijving onroerend goed",
     "inlineFrame": "Inline frame",
     "linkWithAddress": "Link met adres",
