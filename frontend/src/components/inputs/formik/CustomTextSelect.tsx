@@ -34,13 +34,10 @@ const CustomTextSelect: FC<ICustomTextSelectProps> = ({
   const { value } = meta;
   const { setValue } = helpers;
 
-  let selectValue = emptyTextValue || selectOptions[0]?.value;
-
-  if (initialText) {
-    selectValue =
-      selectOptions.find(({ text }) => text === initialText)?.value ||
-      customTextValue;
-  }
+  const selectValue = initialText
+    ? selectOptions.find(({ text }) => text === initialText)?.value ||
+      customTextValue
+    : emptyTextValue || selectOptions[0]?.value;
 
   const [isCustomText, setIsCustomText] = useState(
     selectValue === customTextValue
@@ -82,7 +79,7 @@ const CustomTextSelect: FC<ICustomTextSelectProps> = ({
           }}
         >
           {selectOptions.map(({ text, value: sValue }) => (
-            <option key={sValue} value={sValue} selected={text === value}>
+            <option key={sValue} value={sValue}>
               {text}
             </option>
           ))}

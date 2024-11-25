@@ -501,7 +501,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                   ? t(IntlKeys.snapshotEditor.dataTab.generate)
                   : t(IntlKeys.common.unlock)}
               </button>
-              {user.isAdmin && (
+              {user.isAdmin && !isImproveDialogEnabled && (
                 <div className="dropdown dropdown-hover dropdown-top dropdown-end">
                   <button className="btn btn-primary dropdown-btn w-14">
                     <img
