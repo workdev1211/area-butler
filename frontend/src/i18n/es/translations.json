@@ -310,7 +310,10 @@
         "MEDIUM": "El texto debe tener una extensión media.",
         "LONG": "El texto debe ser largo y detallado.",
         "SPECIFIC": "Establezca el número deseado de caracteres para el texto"
-      }
+      },
+      "saveAsPreset": "Aplicar configuración por defecto",
+      "saveAsPresetSuccess": "La configuración predeterminada se ha guardado correctamente",
+      "saveAsPresetError": "No se ha podido aplicar la configuración por defecto"
     },
     "addNewLocationModalTitle": "Añadir nueva ubicación",
     "addNewLocationModalBtn": "Añadir",
@@ -555,7 +558,8 @@
     "yourCardSnippet": "Su fragmento de tarjeta",
     "noteField": "Campo de notas",
     "directLink": "Enlace directo",
-    "htmlSnippet": "Fragmento HTML"
+    "htmlSnippet": "Fragmento HTML",
+    "companyTemplate": "Modelo de organización"
   },
   "imageUpload": {
     "supportedFormats": "Formatos admitidos: png, jpg, svg, tamaño máximo: 5 MB",
@@ -591,12 +595,12 @@
     "currentPlan": "Plan actual",
     "managePaymentAndSubscription": "Gestión de pagos y suscripciones",
     "requestExecuted": "Solicitudes ejecutadas",
-    "settingAppliedTooltip": "Esta configuración se aplica a su primera tarjeta",
+    "settingAppliedTooltip": "Esta configuración se aplica a su primer mapa",
     "locationDescription": "Descripción de la ubicación",
-    "locationRealEstateDescription": "Descripción de la ubicación del inmueble",
-    "realEstateDescription": "Descripción del inmueble",
+    "locationRealEstateDescription": "Ubicación descripción inmobiliaria",
+    "realEstateDescription": "Descripción inmobiliaria",
     "inlineFrame": "Marco en línea",
-    "linkWithAddress": "Enlace con dirección",
+    "linkWithAddress": "Enlace con la dirección",
     "linkWoAddress": "Enlace sin dirección"
   },
   "tour": {
