@@ -310,7 +310,10 @@
         "MEDIUM": "The text should be of medium length.",
         "LONG": "The text should be long and detailed.",
         "SPECIFIC": "Specify the desired number of characters for text"
-      }
+      },
+      "saveAsPreset": "Save as preset",
+      "saveAsPresetSuccess": "Preset successfully saved",
+      "saveAsPresetError": "Preset could not be applied"
     },
     "addNewLocationModalTitle": "Add new location",
     "addNewLocationModalBtn": "Add",
@@ -556,7 +559,7 @@
     "noteField": "Note field",
     "directLink": "Direct link",
     "htmlSnippet": "HTML Snippet",
-    "companyTemplate": "Company template"
+    "companyTemplate": "Organization template"
   },
   "imageUpload": {
     "supportedFormats": "Supported formats: png, jpg, svg, maximum size: 5MB",
