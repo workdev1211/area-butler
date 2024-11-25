@@ -310,7 +310,10 @@
         "MEDIUM": "Der Text soll mittellang sein.",
         "LONG": "Der Text soll lang und ausführlich sein.",
         "SPECIFIC": "Gewünschte Zeichenanzahl für Text festlegen"
-      }
+      },
+      "saveAsPreset": "Voreinstellung übernehmen",
+      "saveAsPresetSuccess": "Voreinstellung erfolgreich gespeichert",
+      "saveAsPresetError": "Voreinstellung konnte nicht übernommen werden"
     },
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",
     "addNewLocationModalBtn": "Hinzufügen",
@@ -555,7 +558,8 @@
     "yourCardSnippet": "Ihr Karten-Snippet",
     "noteField": "Notizfeld",
     "directLink": "Direkt Link",
-    "htmlSnippet": "HTML Snippet"
+    "htmlSnippet": "HTML Snippet",
+    "companyTemplate": "Organisationsvorlage"
   },
   "imageUpload": {
     "supportedFormats": "Unterstützte Formate: png, jpg, svg, maximale Größe: 5MB",
@@ -593,9 +597,9 @@
     "requestExecuted": "Anfragen ausgeführt",
     "settingAppliedTooltip": "Diese Einstellung wird auf Ihre erste Karte angewendet",
     "locationDescription": "Lagebeschreibung",
-    "locationRealEstateDescription": "Standort Immobilienbeschreibung",
-    "realEstateDescription": "Immobilienbeschreibung",
-    "inlineFrame": "Inline-Frame",
+    "locationRealEstateDescription": "Exposébeschreibung",
+    "realEstateDescription": "Objektbeschreibung",
+    "inlineFrame": "iframe-Code",
     "linkWithAddress": "Link mit Adresse",
     "linkWoAddress": "Link ohne Adresse"
   },
