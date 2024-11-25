@@ -59,7 +59,7 @@ const OpenAiModal: FC<IOpenAiModalProps> = ({
   };
 
   return (
-    <div className="modal modal-open z-9999">
+    <div className="modal modal-open z-9000">
       <div className="modal-box modal-full-screen">
         <h1 className="text-xl flex items-center gap-2 p-3 border-b">
           {t(IntlKeys.snapshotEditor.dataTab.aiTextsFromMagicPen)}

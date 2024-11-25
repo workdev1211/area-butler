@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import EmbeddableMapsTable from "map-snapshots/EmbeddableMapsTable";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
@@ -17,7 +17,7 @@ const EmbeddableMapsModal: FunctionComponent<IEmbeddableMapsModalProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="modal modal-open z-9999">
+    <div className="modal modal-open z-9000">
       <div className="modal-box max-w-max">
         <h1 className="mb-5">{t(IntlKeys.realEstate.linkedCardSnippet)}</h1>
         <EmbeddableMapsTable embeddableMaps={embeddableMaps} />

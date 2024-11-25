@@ -18,7 +18,7 @@ const InformationModal: FC<IInformationModalProps> = ({
   const contentPaddingXRem = 1.5;
 
   return (
-    <div className="modal modal-open z-9999 backdrop-blur-sm w-auto">
+    <div className="modal modal-open z-9000 backdrop-blur-sm w-auto">
       <div
         className="modal-box p-0 sm:rounded-2xl"
         style={{

@@ -9,11 +9,11 @@ import {
   usePayPalScriptReducer,
 } from "@paypal/react-paypal-js";
 import {
-  CreateSubscriptionActions,
-  CreateOrderData,
   CreateOrderActions,
-  OnApproveData,
+  CreateOrderData,
+  CreateSubscriptionActions,
   OnApproveActions,
+  OnApproveData,
 } from "@paypal/paypal-js/types/components/buttons";
 
 import { useHttp } from "hooks/http";
@@ -152,7 +152,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
   }
 
   return (
-    <div className="modal modal-open z-9999 backdrop-blur-sm">
+    <div className="modal modal-open z-9000 backdrop-blur-sm">
       <div className="modal-box p-0 sm:rounded-2xl">
         <div
           className="flex justify-between px-6 py-3 rounded-t-2xl text-white"

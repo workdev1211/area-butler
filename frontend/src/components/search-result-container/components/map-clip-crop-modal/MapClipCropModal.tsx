@@ -18,8 +18,6 @@ import {
   getRealEstateListingsIcon,
   preferredLocationsTitle,
   toastDefaultError,
-  toastError,
-  toastSuccess,
 } from "../../../../shared/shared.functions";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import { MapClipQrCode } from "./MapClipQrCode";
@@ -322,10 +320,8 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
           isShownQrCode: isShownQrCode,
         },
       });
-      toastSuccess(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetSuccess));
     } catch (e) {
       console.error(e);
-      toastError(t(IntlKeys.snapshotEditor.dataTab.saveAsPresetError));
     }
   };
 
@@ -398,7 +394,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   }, [cropParams, imgRef, imgRef?.width]);
 
   return (
-    <div className="map-clip-crop-modal modal modal-open z-9999">
+    <div className="map-clip-crop-modal modal modal-open z-9000">
       <div className="modal-box">
         <ReactCrop
           className="react-image-crop"
@@ -627,10 +623,20 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                   className="rotate-180"
                 />
               </button>
-              <ul
-                className="dropdown-content text-right"
-                style={{ top: "auto", background: "none" }}
-              >
+              <ul className="dropdown-content !top-auto !bg-transparent flex flex-col items-end">
+                {currentUser.isAdmin && (
+                  <li
+                    className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
+                    onClick={saveAsPreset}
+                  >
+                    <img
+                      src={uploadIcon}
+                      alt="icon-preset"
+                      className="invert h-full mr-2"
+                    />
+                    {t(IntlKeys.snapshotEditor.dataTab.saveAsPreset)}
+                  </li>
+                )}
                 <li
                   className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
                   onClick={() => handleCropComplete(CropActionsEnum.CROP)}
@@ -653,19 +659,6 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
                       className="invert h-full mr-2"
                     />
                     {t(IntlKeys.snapshotEditor.dataTab.download)}
-                  </li>
-                )}
-                {currentUser.isAdmin && (
-                  <li
-                    className="btn btn-primary mb-1 whitespace-nowrap text-left w-max"
-                    onClick={saveAsPreset}
-                  >
-                    <img
-                      src={uploadIcon}
-                      alt="icon-preset"
-                      className="invert h-full mr-2"
-                    />
-                    {t(IntlKeys.snapshotEditor.dataTab.saveAsPreset)}
                   </li>
                 )}
               </ul>

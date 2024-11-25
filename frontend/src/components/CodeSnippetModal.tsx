@@ -84,7 +84,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
   }, [description]);
 
   return (
-    <div className="modal modal-open z-9999">
+    <div className="modal modal-open z-9000">
       <div className="modal-box flex flex-col">
         <div className="flex justify-between items-center">
           <div>{t(IntlKeys.mapSnapshots.yourCardSnippet)}</div>

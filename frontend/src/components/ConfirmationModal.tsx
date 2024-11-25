@@ -21,7 +21,7 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="modal modal-open z-9999">
+    <div className="modal modal-open z-9000">
       <div className="modal-box">
         <div className="text-lg">{text}</div>
 

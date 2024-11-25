@@ -1,4 +1,4 @@
-import { FunctionComponent, CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 
 import "./BusyModal.scss";
 import areaButlerIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
@@ -66,7 +66,7 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
   }
 
   return (
-    <div className="busy-modal modal modal-open z-9999">
+    <div className="busy-modal modal modal-open z-9000">
       <div className="modal-box">
         <div className="modal-header">Wird geladen</div>
         <div className="modal-content">
