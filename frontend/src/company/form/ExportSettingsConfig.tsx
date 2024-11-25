@@ -12,6 +12,12 @@ const ExportSettingsConfig: FC = () => {
 
   return (
     <div className="flex flex-col gap-3">
+      <h1 className="font-bold text-xl">
+        {t(IntlKeys.company.profile.exportMatching)}
+      </h1>
+
+      {t(IntlKeys.company.profile.exportMatchDescription)}
+
       <div className="form-control">
         <Input
           className="input input-bordered w-1/2"
@@ -39,6 +45,16 @@ const ExportSettingsConfig: FC = () => {
           type="text"
           label={t(IntlKeys.yourProfile.realEstateDescription)}
           placeholder={t(IntlKeys.yourProfile.realEstateDescription)}
+        />
+      </div>
+
+      <div className="form-control">
+        <Input
+          className="input input-bordered w-1/2"
+          name={`exportMatching.${OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION}.fieldId`}
+          type="text"
+          label={t(IntlKeys.yourProfile.equipmentDescription)}
+          placeholder={t(IntlKeys.yourProfile.equipmentDescription)}
         />
       </div>
 

@@ -558,6 +558,7 @@ export enum AreaButlerExportTypesEnum {
 export type TAreaButlerExportTypes =
   | Extract<
       OpenAiQueryTypeEnum,
+      | OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION
       | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
       | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
       | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION

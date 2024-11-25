@@ -317,55 +317,18 @@ export class SnapshotService {
   private async getSnapshotConfig(
     user: TUnitedUser,
   ): Promise<ApiSearchResultSnapshotConfig> {
-    const isIntegrationUser = 'integrationUserId' in user;
-    const userTemplateId = user.config.templateSnapshotId;
-    let parentUser = user.parentUser;
-    const parentUserId = user.parentId;
-    let parentTemplateId: string;
-
-    if (!userTemplateId) {
-      if (!parentUser) {
-        parentUser = isIntegrationUser
-          ? await this.integrationUserService.findByDbId(parentUserId, {
-              integrationUserId: 1,
-              integrationType: 1,
-              parameters: 1,
-              'config.templateSnapshotId': 1,
-            })
-          : await this.userService.findById({
-              userId: parentUserId,
-              projectQuery: {
-                'config.templateSnapshotId': 1,
-              },
-            });
-      }
-
-      if (parentUser) {
-        if (!isIntegrationUser) {
-          parentUser.subscription = user.subscription;
-        }
-
-        parentTemplateId = parentUser.config.templateSnapshotId;
-      }
-    }
-
     const templateSnapshotId =
-      userTemplateId ||
-      parentTemplateId ||
-      user.company.config?.templateSnapshotId;
+      user.config.templateSnapshotId || user.company.config?.templateSnapshotId;
 
     let templateSnapshot: ApiSearchResultSnapshotResponse;
 
     if (templateSnapshotId) {
-      templateSnapshot = await this.fetchSnapshotService.fetchSnapshot(
-        userTemplateId ? user : parentUser,
-        {
-          filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
-          projectQuery: { config: 1 },
-          isFetchRealEstate: false,
-          isNotCheckOwner: true,
-        },
-      );
+      templateSnapshot = await this.fetchSnapshotService.fetchSnapshot(user, {
+        filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
+        projectQuery: { config: 1 },
+        isFetchRealEstate: false,
+        isNotCheckOwner: true,
+      });
     }
 
     if (!templateSnapshot) {

@@ -45,6 +45,13 @@ export const CompanyProfileForm: FC<ICompanyProfileFormProps> = ({
               ?.fieldId) ||
           "",
       },
+      [OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]: {
+        fieldId:
+          (exportMatching &&
+            exportMatching[OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]
+              ?.fieldId) ||
+          "",
+      },
       [AreaButlerExportTypesEnum.LINK_WITH_ADDRESS]: {
         fieldId:
           (exportMatching &&
@@ -77,6 +84,9 @@ export const CompanyProfileForm: FC<ICompanyProfileFormProps> = ({
         fieldId: Yup.string(),
       }),
       [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: Yup.object({
+        fieldId: Yup.string(),
+      }),
+      [OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]: Yup.object({
         fieldId: Yup.string(),
       }),
       [AreaButlerExportTypesEnum.LINK_WITH_ADDRESS]: Yup.object({

@@ -599,6 +599,7 @@
     "locationDescription": "Location description",
     "locationRealEstateDescription": "Location real estate description",
     "realEstateDescription": "Real estate description",
+    "equipmentDescription": "Equipment description",
     "inlineFrame": "Inline frame",
     "linkWithAddress": "Link with address",
     "linkWoAddress": "Link without address"
@@ -781,7 +782,9 @@
   },
   "company": {
     "profile": {
-      "templatePlaceholder": "Type an address or existing snapshot id..."
+      "templatePlaceholder": "Type an address or existing snapshot id...",
+      "exportMatching": "Export matching",
+      "exportMatchDescription": "Places the specified data type in a specific field of the CRM used."
     },
     "templateIdLabel": "Select and fix template for all users"
   }

@@ -649,6 +649,7 @@ export const IntlKeys = {
     locationDescription: "yourProfile.locationDescription",
     locationRealEstateDescription: "yourProfile.locationRealEstateDescription",
     realEstateDescription: "yourProfile.realEstateDescription",
+    equipmentDescription: "yourProfile.equipmentDescription",
     inlineFrame: "yourProfile.inlineFrame",
     linkWithAddress: "yourProfile.linkWithAddress",
     linkWoAddress: "yourProfile.linkWoAddress",
@@ -847,6 +848,8 @@ export const IntlKeys = {
     profile: {
       templatePlaceholder: "company.profile.templatePlaceholder",
       templateIdLabel: "company.profile.templateIdLabel",
+      exportMatching: "company.profile.exportMatching",
+      exportMatchDescription: "company.profile.exportMatchDescription",
     },
   },
 };
