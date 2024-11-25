@@ -310,7 +310,10 @@
         "MEDIUM": "Il testo dovrebbe essere di media lunghezza.",
         "LONG": "Il testo dovrebbe essere lungo e dettagliato.",
         "SPECIFIC": "Impostare il numero di caratteri desiderato per il testo"
-      }
+      },
+      "saveAsPreset": "Applicare l'impostazione predefinita",
+      "saveAsPresetSuccess": "Impostazione predefinita salvata con successo",
+      "saveAsPresetError": "Impossibile applicare l'impostazione predefinita"
     },
     "addNewLocationModalTitle": "Aggiungi una nuova posizione",
     "addNewLocationModalBtn": "Aggiungi",
@@ -555,7 +558,8 @@
     "yourCardSnippet": "Il vostro frammento di scheda",
     "noteField": "Campo note",
     "directLink": "Collegamento diretto",
-    "htmlSnippet": "Snippet HTML"
+    "htmlSnippet": "Snippet HTML",
+    "companyTemplate": "Modello di organizzazione"
   },
   "imageUpload": {
     "supportedFormats": "Formati supportati: png, jpg, svg, dimensione massima: 5MB",
@@ -593,11 +597,11 @@
     "requestExecuted": "Richieste eseguite",
     "settingAppliedTooltip": "Questa impostazione viene applicata alla prima mappa",
     "locationDescription": "Descrizione della posizione",
-    "locationRealEstateDescription": "Descrizione immobile posizione",
-    "realEstateDescription": "Descrizione immobile",
-    "inlineFrame": "Frame in linea",
-    "linkWithAddress": "Collegamento con indirizzo",
-    "linkWoAddress": "Collegamento senza indirizzo"
+    "locationRealEstateDescription": "Descrizione dell'immobile in cui si trova",
+    "realEstateDescription": "Descrizione dell'immobile",
+    "inlineFrame": "Telaio in linea",
+    "linkWithAddress": "Collegamento con l'indirizzo",
+    "linkWoAddress": "Link senza indirizzo"
   },
   "tour": {
     "tourEndingError": "Errore al termine del tour",
