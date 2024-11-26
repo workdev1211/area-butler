@@ -1,9 +1,9 @@
 {
   "nav": {
     "environmentalAnalysis": "Analyse de l’emplacement",
-    "realEstates": "Mes biens immobiliers",
-    "potentialCustomers": "Mes groupes cibles",
-    "cards": "Mes cartes",
+    "realEstates": "Biens immobiliers",
+    "potentialCustomers": "Groupes cibles",
+    "cards": "Cartes",
     "profile": "Profil",
     "logout": "Se désinscrire",
     "menu": "Menu",
@@ -783,9 +783,9 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Tapez une adresse ou un identifiant d'instantané existant...",
+      "templateIdLabel": "Sélectionner et fixer le modèle pour tous les utilisateurs",
       "exportMatching": "Correspondance des exportations",
       "exportMatchDescription": "Place le type de données spécifié dans un champ spécifique du CRM utilisé."
-    },
-    "templateIdLabel": "Sélectionner et fixer le modèle pour tous les utilisateurs"
+    }
   }
 }
