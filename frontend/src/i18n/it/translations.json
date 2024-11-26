@@ -1,9 +1,9 @@
 {
   "nav": {
     "environmentalAnalysis": "Analisi della Posizione",
-    "realEstates": "Le mie proprietà",
-    "potentialCustomers": "I miei gruppi target",
-    "cards": "Le mie carte",
+    "realEstates": "Proprietà",
+    "potentialCustomers": "Gruppi target",
+    "cards": "Carte",
     "profile": "Profilo",
     "logout": "Disconnettersi",
     "menu": "Menu",
@@ -783,9 +783,9 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Digitare un indirizzo o l'id dell'istantanea esistente...",
+      "templateIdLabel": "Selezionare e fissare il modello per tutti gli utenti",
       "exportMatching": "Corrispondenza delle esportazioni",
       "exportMatchDescription": "Colloca il tipo di dati specificato in un campo specifico del CRM utilizzato."
-    },
-    "templateIdLabel": "Selezionare e fissare il modello per tutti gli utenti"
+    }
   }
 }
