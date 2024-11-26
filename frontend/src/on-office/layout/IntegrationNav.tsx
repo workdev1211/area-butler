@@ -185,7 +185,7 @@ const IntegrationNav: FC = () => {
               onOfficeRootEntries.includes(pathname)
             }
           >
-            Umgebungsanalyse
+            {t(IntlKeys.nav.environmentalAnalysis)}
           </NavLink>
 
           <NavLink
@@ -193,7 +193,7 @@ const IntegrationNav: FC = () => {
             className="nav-mobile-menu-link"
             aria-current="page"
           >
-            Mein KI-Assistent
+            {t(IntlKeys.nav.aiAssistant)}
           </NavLink>
 
           <NavLink
@@ -201,7 +201,7 @@ const IntegrationNav: FC = () => {
             className="nav-mobile-menu-link"
             aria-current="page"
           >
-            Meine Immobilien
+            {t(IntlKeys.nav.realEstates)}
           </NavLink>
 
           <NavLink
@@ -209,7 +209,7 @@ const IntegrationNav: FC = () => {
             className="nav-mobile-menu-link"
             aria-current="page"
           >
-            Meine Zielgruppen
+            {t(IntlKeys.nav.potentialCustomers)}
           </NavLink>
 
           <NavLink
@@ -217,7 +217,7 @@ const IntegrationNav: FC = () => {
             className="nav-mobile-menu-link"
             aria-current="page"
           >
-            Meine Karten
+            {t(IntlKeys.nav.cards)}
           </NavLink>
 
           {!checkIsSubActive() && (
@@ -226,7 +226,7 @@ const IntegrationNav: FC = () => {
               className="nav-mobile-menu-link"
               aria-current="page"
             >
-              Meine Produkte
+              {t(IntlKeys.nav.products)}
             </NavLink>
           )}
 
