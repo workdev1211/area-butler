@@ -163,7 +163,7 @@
     "moreInfo": "Mehr Informationen",
     "objectType": "Objekttyp",
     "size": "Größe",
-    "directlyToTheObject": "Direkt zum Objekt",
+    "directlyToTheObject": "Mehr Informationen",
     "hide": "Ausblenden",
     "notAllowedToUse": "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors.",
     "screenshotName": "Lageplan",
@@ -601,7 +601,8 @@
     "realEstateDescription": "Objektbeschreibung",
     "inlineFrame": "iframe-Code",
     "linkWithAddress": "Link mit Adresse",
-    "linkWoAddress": "Link ohne Adresse"
+    "linkWoAddress": "Link ohne Adresse",
+    "equipmentDescription": "Ausstattungsbeschreibung"
   },
   "tour": {
     "tourEndingError": "Fehler beim Beenden der Tour",
@@ -781,7 +782,9 @@
   },
   "company": {
     "profile": {
-      "templatePlaceholder": "Geben Sie eine Adresse oder eine vorhandene Snapshot-ID ein..."
+      "templatePlaceholder": "Geben Sie eine Adresse oder eine vorhandene Snapshot-ID ein...",
+      "exportMatching": "Export Zuordnung",
+      "exportMatchDescription": "Zuordnung der Informationen zu Feldern im verwendeten CRM."
     },
     "templateIdLabel": "Vorlage für alle User auswählen und fixieren"
   }
