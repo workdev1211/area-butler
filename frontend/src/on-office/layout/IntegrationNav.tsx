@@ -7,6 +7,7 @@ import { IntlKeys } from "i18n/keys";
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
+import SettingsIcon from "assets/icons/map-menu/04-konfiguration.svg";
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { UserContext } from "../../context/UserContext";
@@ -149,13 +150,24 @@ const IntegrationNav: FC = () => {
               )}
 
               {integrationUser?.isAdmin && (
-                <NavLink
-                  to="/company-profile"
-                  className="nav-link"
-                  aria-current="page"
-                >
-                  {t(IntlKeys.nav.companyProfile)}
-                </NavLink>
+                <div className="nav-usermenu my-auto px-5">
+                  <div className="nav-usermenu-button">
+                    <NavLink
+                      to={"/company-profile"}
+                      id="user-menu-button"
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      title={t(IntlKeys.nav.companyProfile)}
+                    >
+                      <img
+                        src={integrationUser?.config.logo || SettingsIcon}
+                        referrerPolicy="no-referrer"
+                        alt="company"
+                        className="max-w-14 max-h-14"
+                      />
+                    </NavLink>
+                  </div>
+                </div>
               )}
             </div>
           </div>

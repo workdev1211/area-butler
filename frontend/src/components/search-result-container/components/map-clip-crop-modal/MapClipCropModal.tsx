@@ -147,6 +147,7 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> =>
   });
 
 interface IScreenshotPreset {
+  ratio: string;
   isShownQrCode: boolean;
   isShownLegend: boolean;
   isShownIsochrones: boolean;
@@ -211,7 +212,8 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   const [qrCode, setQrCode] = useState<string>();
   const [cropState, setCropState] = useState<PercentCrop>();
   const [cropParams, setCropParams] = useState<ICropParams>(
-    fourToThreeCropParams
+    allCropParams.find((param) => param.name === screenshotPreset?.ratio) ||
+      fourToThreeCropParams
   );
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
@@ -315,6 +317,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       await upsertCompanyPreset({
         type: PresetTypesEnum.SCREENSHOT,
         values: {
+          ratio: cropParams.name,
           isShownIsochrones: isShownIsochrones,
           isShownLegend: isShownLegend,
           isShownQrCode: isShownQrCode,
