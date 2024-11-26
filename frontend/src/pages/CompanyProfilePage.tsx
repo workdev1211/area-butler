@@ -42,10 +42,16 @@ const CompanyProfilePage: FC = () => {
       return null;
     }
 
-    return !isHasSubscription || isRequestLimitReached ? (
-      <SubscriptionPlanSelection />
-    ) : (
-      <SubscriptionPlanLimits user={user} />
+    return (
+      <>
+        {!isHasSubscription || isRequestLimitReached ? (
+          <SubscriptionPlanSelection />
+        ) : (
+          <SubscriptionPlanLimits user={user} />
+        )}
+
+        <div className="divider" />
+      </>
     );
   };
 
@@ -81,10 +87,20 @@ const CompanyProfilePage: FC = () => {
       ]}
     >
       <div className="flex flex-col gap-3 my-3">
-        {isCustomExportAvail && <CompanyExportSettings />}
-        {isIntegrationUser && (
-          <CompanyProfileFormHandler formId={formId} setIsBusy={setIsBusy} />
+        {isCustomExportAvail && (
+          <>
+            <CompanyExportSettings />
+            <div className="divider" />
+          </>
         )}
+
+        {isIntegrationUser && (
+          <>
+            <CompanyProfileFormHandler formId={formId} setIsBusy={setIsBusy} />
+            <div className="divider" />
+          </>
+        )}
+
         <SubscriptionLimitsOrSelection />
         <CompanyTemplateId />
       </div>

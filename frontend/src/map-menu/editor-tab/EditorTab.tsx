@@ -271,7 +271,7 @@ const EditorTab: FC<IEditorTabProps> = ({
   return (
     <div className="editor-tab z-9000" data-tour="editor-map-menu">
       <div
-        q-id='poi-filter'
+        q-id="poi-filter"
         className={
           "collapse collapse-arrow view-option" +
           (isPoiVisibilityOpen ? " collapse-open" : " collapse-closed")
@@ -365,7 +365,7 @@ const EditorTab: FC<IEditorTabProps> = ({
       </div>
 
       <div
-        q-id='config'
+        q-id="config"
         className={
           "collapse collapse-arrow view-option" +
           (isConfigOptionsOpen ? " collapse-open" : " collapse-closed")
@@ -810,26 +810,16 @@ const EditorTab: FC<IEditorTabProps> = ({
 
             <li>
               <div className="flex-col items-baseline">
-                <div className="flex items-center gap-6 py-1">
-                  <ColorPicker
-                    label={t(IntlKeys.snapshotEditor.primaryColor)}
-                    color={color}
-                    setColor={setColor}
-                    onChange={(color) => {
-                      changeColor(color);
-                    }}
-                  />
-                  {config.primaryColor && (
-                    <button
-                      className="text-sm"
-                      onClick={() => {
-                        changeColor(undefined);
-                      }}
-                    >
-                      {t(IntlKeys.snapshotEditor.resetColor)}
-                    </button>
-                  )}
-                </div>
+                <ColorPicker
+                  color={color}
+                  isDisabled={isIntegrationUser}
+                  label={t(IntlKeys.snapshotEditor.primaryColor)}
+                  onChange={(color) => {
+                    changeColor(color);
+                  }}
+                  setColor={setColor}
+                />
+
                 <label className="cursor-pointer label justify-start">
                   <input
                     type="checkbox"
@@ -843,6 +833,7 @@ const EditorTab: FC<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
+
                   <span className="label-text">
                     {t(IntlKeys.snapshotEditor.invertBaseColor)}
                   </span>
@@ -850,28 +841,15 @@ const EditorTab: FC<IEditorTabProps> = ({
               </div>
             </li>
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <ImageUpload
-                  label={t(IntlKeys.snapshotEditor.cardsIcon)}
-                  uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
-                  inputId="map-icon-upload-button"
-                  image={mapIcon}
-                  setImage={setMapIcon}
-                  onChange={(newMapIcon) => {
-                    changeMapIcon(newMapIcon);
-                  }}
-                />
-                {config.mapIcon && (
-                  <button
-                    className="text-sm"
-                    onClick={() => {
-                      changeMapIcon(undefined);
-                    }}
-                  >
-                    {t(IntlKeys.snapshotEditor.resetIcon)}
-                  </button>
-                )}
-              </div>
+              <ImageUpload
+                image={mapIcon}
+                inputId="map-icon-upload-button"
+                label={t(IntlKeys.snapshotEditor.cardsIcon)}
+                onChange={(newMapIcon) => {
+                  changeMapIcon(newMapIcon);
+                }}
+                uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
+              />
             </li>
             <li className="font-bold">
               {t(IntlKeys.snapshotEditor.objectTooltip)}

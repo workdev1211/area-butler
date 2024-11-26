@@ -3,27 +3,29 @@ import { FC, ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
+import clearIcon from "../assets/icons/cross.svg";
 import { toastError } from "../shared/shared.functions";
 import TooltipBadge from "./TooltipBadge";
 
 interface IImageUploadProps {
-  label?: string;
-  uploadLabel?: string;
   image: string | undefined;
+  onChange: (image?: string) => void;
+
   inputId?: string;
-  setImage: (image: string | undefined) => void;
-  onChange: (logo: string) => void;
+  isDisabled?: boolean;
+  label?: string;
   tooltip?: string;
+  uploadLabel?: string;
 }
 
 const ImageUpload: FC<IImageUploadProps> = ({
   image,
-  setImage,
-  label,
-  uploadLabel,
   inputId = "upload-button",
+  isDisabled,
+  label,
   onChange,
   tooltip,
+  uploadLabel,
 }) => {
   const { t } = useTranslation();
 
@@ -39,11 +41,11 @@ const ImageUpload: FC<IImageUploadProps> = ({
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      setImage(`${reader.result}`);
       onChange(`${reader.result}`);
     };
 
     reader.onerror = (e) => {
+      toastError(t(IntlKeys.common.errorOccurred));
       console.error(`${t(IntlKeys.common.errorOccurred)}: `, e);
     };
   };
@@ -55,22 +57,23 @@ const ImageUpload: FC<IImageUploadProps> = ({
   };
 
   return (
-    <div className="flex flex-col">
-      <div>
-        <label htmlFor={inputId} className="label flex-col items-start">
-          <div className="indicator">
-            <div className="text-lg pr-3">
-              {label || t(IntlKeys.imageUpload.defaultLabel)}
-            </div>
-            {tooltip && <TooltipBadge tooltip={tooltip} />}
-          </div>
+    <div className="flex flex-col gap-2">
+      <div className="indicator">
+        <div className="text-lg pr-3">
+          {label || t(IntlKeys.imageUpload.defaultLabel)}
+        </div>
+        {tooltip && <TooltipBadge tooltip={tooltip} />}
+      </div>
 
+      <div className="flex items-center gap-6">
+        <label
+          htmlFor={inputId}
+          className="label flex-col items-start max-w-fit p-0"
+        >
           <div
-            className={`w-[150px] border-2 border-dashed border-[var(--base-anthracite)] ${
-              image
-                ? "p-[4px] mt-1"
-                : "flex items-center justify-center cursor-pointer h-[150px] mt-1"
-            }`}
+            className={`w-[150px] border-2 border-dashed border-[var(--base-anthracite)]${
+              isDisabled ? "" : " cursor-pointer"
+            } ${image ? "p-1" : "flex items-center justify-center h-[150px]"}`}
           >
             {image ? (
               <img src={image} alt="logo" />
@@ -79,16 +82,33 @@ const ImageUpload: FC<IImageUploadProps> = ({
                 {uploadLabel || t(IntlKeys.imageUpload.defaultUploadLabel)}
               </span>
             )}
+
+            {!isDisabled && (
+              <input
+                id={inputId}
+                className="hidden"
+                type="file"
+                accept="image/png,image/jpeg,image/svg"
+                onChange={handleChange}
+              />
+            )}
           </div>
         </label>
 
-        <input
-          id={inputId}
-          className="hidden"
-          type="file"
-          accept="image/png,image/jpeg,image/svg"
-          onChange={handleChange}
-        />
+        {!isDisabled && image && (
+          <img
+            className="w-5 h-5 cursor-pointer select-none"
+            src={clearIcon}
+            alt="clear"
+            onClick={() => {
+              onChange();
+            }}
+            style={{
+              filter:
+                "invert(16%) sepia(80%) saturate(3325%) hue-rotate(330deg) brightness(95%) contrast(101%)",
+            }}
+          />
+        )}
       </div>
 
       <small>{t(IntlKeys.imageUpload.supportedFormats)}</small>

@@ -78,8 +78,11 @@ const CompanyTemplateId: FC = () => {
   };
 
   return (
-    <div className="form-control">
-      <label className="label font-bold" htmlFor="company-template-id">
+    <div className="form-control gap-3">
+      <label
+        className="label font-bold text-xl p-0"
+        htmlFor="company-template-id"
+      >
         {t(IntlKeys.company.profile.templateIdLabel)}
       </label>
 

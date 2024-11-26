@@ -1,37 +1,42 @@
 import { FC, useRef, useState } from "react";
+import { SketchPicker } from "react-color";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
 
-import { SketchPicker } from "react-color";
+import clearIcon from "../assets/icons/cross.svg";
 import useOnClickOutside from "../hooks/onclickoutside";
 import TooltipBadge from "./TooltipBadge";
 
 interface IColorPickerProps {
-  setColor: (color: string) => void;
-  onChange: (color: string) => void;
+  onChange: (color?: string) => void;
+  setColor: (color?: string) => void;
+
   color?: string;
+  isDisabled?: boolean;
   label?: string;
   tooltip?: string;
 }
 
 const ColorPicker: FC<IColorPickerProps> = ({
   color,
-  setColor,
+  isDisabled,
   label,
   onChange,
+  setColor,
   tooltip,
 }) => {
   const { t } = useTranslation();
   const pickerRef = useRef(null);
+
   const [isShowPopover, setIsShowPopover] = useState(false);
 
-  const handleChange = (newColor: string) => {
-    setColor(newColor);
-  };
-
   useOnClickOutside(pickerRef, () => {
-    onChange(color!);
+    if (isDisabled) {
+      return;
+    }
+
+    onChange(color);
     setIsShowPopover(false);
   });
 
@@ -46,20 +51,46 @@ const ColorPicker: FC<IColorPickerProps> = ({
         </div>
       </label>
 
-      <div
-        className="w-[100px] h-[60px] border-2 border-dashed border-[var(--base-anthracite)] cursor-pointer mt-1"
-        onClick={() => setIsShowPopover(!isShowPopover)}
-        style={{ backgroundColor: color || "#FFFFFF" }}
-      />
+      <div className="flex items-center gap-6">
+        <div
+          className={
+            `w-[100px] h-[60px] border-2 border-dashed border-[var(--base-anthracite)] mt-1` +
+            `${isDisabled ? "" : " cursor-pointer"}`
+          }
+          onClick={() => {
+            if (isDisabled) {
+              return;
+            }
 
-      {isShowPopover && (
-        <div className="absolute z-10" ref={pickerRef}>
-          <SketchPicker
-            color={color}
-            onChangeComplete={(newColor) => handleChange(newColor.hex)}
+            setIsShowPopover(!isShowPopover);
+          }}
+          style={{ backgroundColor: color || "#FFFFFF" }}
+        />
+
+        {!isDisabled && isShowPopover && (
+          <div className="absolute z-10" ref={pickerRef}>
+            <SketchPicker
+              color={color}
+              onChangeComplete={(newColor) => setColor(newColor.hex)}
+            />
+          </div>
+        )}
+
+        {!isDisabled && color && (
+          <img
+            className="w-5 h-5 cursor-pointer select-none"
+            src={clearIcon}
+            alt="clear"
+            onClick={() => {
+              onChange();
+            }}
+            style={{
+              filter:
+                "invert(16%) sepia(80%) saturate(3325%) hue-rotate(330deg) brightness(95%) contrast(101%)",
+            }}
           />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
