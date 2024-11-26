@@ -1,9 +1,9 @@
 {
   "nav": {
     "environmentalAnalysis": "Locatieanalyse",
-    "realEstates": "Mijn eigendommen",
-    "potentialCustomers": "Mijn doelgroepen",
-    "cards": "Mijn kaarten",
+    "realEstates": "Eigendommen",
+    "potentialCustomers": "Doelgroepen",
+    "cards": "Kaarten",
     "profile": "Profiel",
     "logout": "Afmelden",
     "menu": "Menu",
@@ -783,9 +783,9 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Typ een adres of bestaande snapshot-id...",
+      "templateIdLabel": "Selecteer en bevestig sjabloon voor alle gebruikers",
       "exportMatching": "Overeenkomende export",
       "exportMatchDescription": "Plaatst het opgegeven gegevenstype in een specifiek veld van het gebruikte CRM."
-    },
-    "templateIdLabel": "Selecteer en bevestig sjabloon voor alle gebruikers"
+    }
   }
 }
