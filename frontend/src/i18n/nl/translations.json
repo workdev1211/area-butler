@@ -7,7 +7,9 @@
     "profile": "Profiel",
     "logout": "Afmelden",
     "menu": "Menu",
-    "companyProfile": "Bedrijfsprofiel"
+    "companyProfile": "Bedrijfsprofiel",
+    "aiAssistant": "AI-assistent",
+    "products": "Producten"
   },
   "snapshotEditor": {
     "map": "Kaart",
