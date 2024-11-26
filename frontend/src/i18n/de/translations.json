@@ -1,9 +1,11 @@
 {
   "nav": {
     "environmentalAnalysis": "Umgebungsanalyse",
+    "aiAssistant": "KI-Assistent",
     "realEstates": "Immobilien",
     "potentialCustomers": "Zielgruppen",
     "cards": "Karten",
+    "products": "Produkte",
     "profile": "Profil",
     "logout": "Abmelden",
     "menu": "Menü",

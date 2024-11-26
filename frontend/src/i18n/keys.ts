@@ -89,9 +89,11 @@ export const IntlKeys = {
 
   nav: {
     environmentalAnalysis: "nav.environmentalAnalysis",
+    aiAssistant: "nav.aiAssistant",
     realEstates: "nav.realEstates",
     potentialCustomers: "nav.potentialCustomers",
     cards: "nav.cards",
+    products: "nav.products",
     profile: "nav.profile",
     companyProfile: "nav.companyProfile",
     logout: "nav.logout",
