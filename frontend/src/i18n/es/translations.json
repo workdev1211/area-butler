@@ -7,7 +7,9 @@
     "profile": "Perfil",
     "logout": "Cerrar sesión",
     "menu": "Menú",
-    "companyProfile": "Perfil de la empresa"
+    "companyProfile": "Perfil de la empresa",
+    "aiAssistant": "Asistente de IA",
+    "products": "Productos"
   },
   "snapshotEditor": {
     "map": "Mapa",
