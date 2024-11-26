@@ -163,7 +163,7 @@
     "moreInfo": "More information",
     "objectType": "Object type",
     "size": "Size",
-    "directlyToTheObject": "Directly to the object",
+    "directlyToTheObject": "More information",
     "hide": "Hide",
     "notAllowedToUse": "Only the Business+ subscription allows the use of the map editor.",
     "screenshotName": "Site plan",
@@ -599,10 +599,10 @@
     "locationDescription": "Location description",
     "locationRealEstateDescription": "Location real estate description",
     "realEstateDescription": "Real estate description",
-    "equipmentDescription": "Equipment description",
     "inlineFrame": "Inline frame",
     "linkWithAddress": "Link with address",
-    "linkWoAddress": "Link without address"
+    "linkWoAddress": "Link without address",
+    "equipmentDescription": "Equipment description"
   },
   "tour": {
     "tourEndingError": "Error when ending the tour",
@@ -784,7 +784,7 @@
     "profile": {
       "templatePlaceholder": "Type an address or existing snapshot id...",
       "exportMatching": "Export matching",
-      "exportMatchDescription": "Places the specified data type in a specific field of the CRM used."
+      "exportMatchDescription": "Assignment of information to fields in the CRM used."
     },
     "templateIdLabel": "Select and fix template for all users"
   }
