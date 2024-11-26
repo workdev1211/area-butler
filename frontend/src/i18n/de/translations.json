@@ -1,15 +1,15 @@
 {
   "nav": {
     "environmentalAnalysis": "Umgebungsanalyse",
-    "aiAssistant": "KI-Assistent",
     "realEstates": "Immobilien",
     "potentialCustomers": "Zielgruppen",
     "cards": "Karten",
-    "products": "Produkte",
     "profile": "Profil",
     "logout": "Abmelden",
     "menu": "Menü",
-    "companyProfile": "Unternehmensprofil"
+    "companyProfile": "Unternehmensprofil",
+    "aiAssistant": "KI-Assistent",
+    "products": "Produkte"
   },
   "snapshotEditor": {
     "map": "Karte",
