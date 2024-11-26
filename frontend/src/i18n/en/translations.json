@@ -1,9 +1,9 @@
 {
   "nav": {
     "environmentalAnalysis": "Location analysis",
-    "realEstates": "My real estate",
-    "potentialCustomers": "My target groups",
-    "cards": "My maps",
+    "realEstates": "Real estate",
+    "potentialCustomers": "Target groups",
+    "cards": "Maps",
     "profile": "Profile",
     "logout": "Log out",
     "menu": "Menu",
@@ -783,9 +783,9 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Type an address or existing snapshot id...",
+      "templateIdLabel": "Select and fix template for all users",
       "exportMatching": "Export matching",
       "exportMatchDescription": "Assignment of information to fields in the CRM used."
-    },
-    "templateIdLabel": "Select and fix template for all users"
+    }
   }
 }
