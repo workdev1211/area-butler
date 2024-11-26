@@ -7,7 +7,9 @@
     "profile": "Profile",
     "logout": "Log out",
     "menu": "Menu",
-    "companyProfile": "Company profile"
+    "companyProfile": "Company profile",
+    "aiAssistant": "AI assistant",
+    "products": "Products"
   },
   "snapshotEditor": {
     "map": "Map",
