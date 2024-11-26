@@ -163,7 +163,7 @@
     "moreInfo": "Ulteriori informazioni",
     "objectType": "Tipo di oggetto",
     "size": "Dimensione",
-    "directlyToTheObject": "Direttamente all'oggetto",
+    "directlyToTheObject": "Ulteriori informazioni",
     "hide": "Nascondere",
     "notAllowedToUse": "Solo l'abbonamento Business+ consente di utilizzare l'editor di mappe.",
     "screenshotName": "Pianta del sito",
@@ -601,7 +601,8 @@
     "realEstateDescription": "Descrizione dell'immobile",
     "inlineFrame": "Telaio in linea",
     "linkWithAddress": "Collegamento con l'indirizzo",
-    "linkWoAddress": "Link senza indirizzo"
+    "linkWoAddress": "Link senza indirizzo",
+    "equipmentDescription": "Descrizione dell'apparecchiatura"
   },
   "tour": {
     "tourEndingError": "Errore al termine del tour",
@@ -781,7 +782,9 @@
   },
   "company": {
     "profile": {
-      "templatePlaceholder": "Digitare un indirizzo o l'id dell'istantanea esistente..."
+      "templatePlaceholder": "Digitare un indirizzo o l'id dell'istantanea esistente...",
+      "exportMatching": "Corrispondenza delle esportazioni",
+      "exportMatchDescription": "Colloca il tipo di dati specificato in un campo specifico del CRM utilizzato."
     },
     "templateIdLabel": "Selezionare e fissare il modello per tutti gli utenti"
   }
