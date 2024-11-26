@@ -163,7 +163,7 @@
     "moreInfo": "Plus d'informations",
     "objectType": "Type d'objet",
     "size": "Taille",
-    "directlyToTheObject": "Accès direct à l'objet",
+    "directlyToTheObject": "Plus d'informations",
     "hide": "Masquer",
     "notAllowedToUse": "Seul l'abonnement Business+ permet d'utiliser l'éditeur de cartes.",
     "screenshotName": "Plan de situation",
@@ -601,7 +601,8 @@
     "realEstateDescription": "Description de l'immobilier",
     "inlineFrame": "Cadre en ligne",
     "linkWithAddress": "Lien avec l'adresse",
-    "linkWoAddress": "Lien sans adresse"
+    "linkWoAddress": "Lien sans adresse",
+    "equipmentDescription": "Description de l'équipement"
   },
   "tour": {
     "tourEndingError": "Erreur lors de la fin de la tournée",
@@ -781,7 +782,9 @@
   },
   "company": {
     "profile": {
-      "templatePlaceholder": "Tapez une adresse ou un identifiant d'instantané existant..."
+      "templatePlaceholder": "Tapez une adresse ou un identifiant d'instantané existant...",
+      "exportMatching": "Correspondance des exportations",
+      "exportMatchDescription": "Place le type de données spécifié dans un champ spécifique du CRM utilisé."
     },
     "templateIdLabel": "Sélectionner et fixer le modèle pour tous les utilisateurs"
   }
