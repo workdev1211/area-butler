@@ -22,11 +22,10 @@ import { TFormikInnerRef } from "../../shared/shared.types";
 import { defaultTargetGroupName } from "../../../../shared/constants/potential-customer";
 import { usePotentialCustomerData } from "../../hooks/potentialcustomerdata";
 // import RangeInput from "../inputs/formik/RangeInput";
-import CustomTextSelect from "../inputs/formik/CustomTextSelect";
 import CustomNumberSelect from "../inputs/formik/CustomNumberSelect";
 import { ISelectTextValue } from "../../../../shared/types/types";
-import { camelize } from "../../../../shared/functions/shared.functions";
 import { useUserState } from "../../hooks/userstate";
+import CustomTextSelectV2 from "../inputs/formik/CustomTextSelectV2";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;
@@ -73,12 +72,12 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
 
   const custTargetGroupOption: ISelectTextValue = {
     text: t(IntlKeys.snapshotEditor.dataTab.enterYourOwnTargetGroup),
-    value: "custom",
+    value: t(IntlKeys.snapshotEditor.dataTab.enterYourOwnTargetGroup),
   };
 
   const defTargetGroupOption: ISelectTextValue = {
     text: t(IntlKeys.snapshotEditor.dataTab.defaultTargetGroupName),
-    value: "default",
+    value: t(IntlKeys.snapshotEditor.dataTab.defaultTargetGroupName),
   };
 
   const [targetGroupOptions, setTargetGroupOptions] = useState<
@@ -125,7 +124,7 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
 
       setTargetGroupOptions([
         defTargetGroupOption,
-        ...fetchedNames.map((name) => ({ text: name, value: camelize(name) })),
+        ...fetchedNames.map((name) => ({ text: name, value: name })),
         custTargetGroupOption,
       ]);
     };
@@ -144,19 +143,19 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
         }
       }}
       innerRef={formRef}
+      enableReinitialize={true}
     >
       {({ values }) => {
         return (
           <Form id={formId}>
-            <div className="form-control max-w-xs">
-              <CustomTextSelect
-                mainLabel={t(IntlKeys.snapshotEditor.dataTab.targetGroup)}
-                label={t(IntlKeys.snapshotEditor.dataTab.targetGroupName)}
-                placeholder={t(IntlKeys.snapshotEditor.dataTab.targetGroupName)}
+            <div className="max-w-xs">
+              <CustomTextSelectV2
                 name="targetGroupName"
+                label={t(IntlKeys.snapshotEditor.dataTab.targetGroup)}
+                inputLabel={t(IntlKeys.snapshotEditor.dataTab.targetGroupName)}
                 selectOptions={targetGroupOptions}
                 customTextValue={custTargetGroupOption.value}
-                initialText={initialValues?.targetGroupName}
+                placeholder={t(IntlKeys.snapshotEditor.dataTab.targetGroupName)}
                 textLengthLimit={250}
                 isInput={true}
               />
@@ -234,21 +233,20 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
               </div>
 
               <div className="grid w-full">
-                <CustomTextSelect
-                  mainLabel={t(
+                <CustomTextSelectV2
+                  name="customText"
+                  label={t(
                     IntlKeys.snapshotEditor.dataTab.furtherAIInstructions
                   )}
-                  label={t(IntlKeys.snapshotEditor.dataTab.resultsText, {
+                  inputLabel={t(IntlKeys.snapshotEditor.dataTab.resultsText, {
                     count: values.customText?.length,
                   })}
-                  placeholder={t(
-                    IntlKeys.snapshotEditor.dataTab.userDefinedText
-                  )}
-                  name="customText"
                   selectOptions={openAiCustomTextOptions}
                   customTextValue={OpenAiCustomTextEnum.CUSTOM}
                   emptyTextValue={OpenAiCustomTextEnum.NONE}
-                  initialText={customText}
+                  placeholder={t(
+                    IntlKeys.snapshotEditor.dataTab.userDefinedText
+                  )}
                 />
               </div>
             </div>
