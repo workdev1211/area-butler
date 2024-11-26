@@ -163,7 +163,7 @@
     "moreInfo": "Más información",
     "objectType": "Tipo de objeto",
     "size": "Talla",
-    "directlyToTheObject": "Directamente al objeto",
+    "directlyToTheObject": "Más información",
     "hide": "Ocultar",
     "notAllowedToUse": "Sólo la suscripción Business+ permite utilizar el editor de mapas.",
     "screenshotName": "Plano del emplazamiento",
@@ -601,7 +601,8 @@
     "realEstateDescription": "Descripción inmobiliaria",
     "inlineFrame": "Marco en línea",
     "linkWithAddress": "Enlace con la dirección",
-    "linkWoAddress": "Enlace sin dirección"
+    "linkWoAddress": "Enlace sin dirección",
+    "equipmentDescription": "Descripción del equipo"
   },
   "tour": {
     "tourEndingError": "Error al finalizar la visita",
@@ -781,7 +782,9 @@
   },
   "company": {
     "profile": {
-      "templatePlaceholder": "Escriba una dirección o un id. de instantánea existente..."
+      "templatePlaceholder": "Escriba una dirección o un id. de instantánea existente...",
+      "exportMatching": "Cotejo de exportaciones",
+      "exportMatchDescription": "Coloca el tipo de datos especificado en un campo específico del CRM utilizado."
     },
     "templateIdLabel": "Seleccionar y fijar la plantilla para todos los usuarios"
   }
