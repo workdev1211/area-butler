@@ -783,9 +783,9 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Escriba una dirección o un id. de instantánea existente...",
+      "templateIdLabel": "Seleccionar y fijar la plantilla para todos los usuarios",
       "exportMatching": "Cotejo de exportaciones",
       "exportMatchDescription": "Coloca el tipo de datos especificado en un campo específico del CRM utilizado."
-    },
-    "templateIdLabel": "Seleccionar y fijar la plantilla para todos los usuarios"
+    }
   }
 }
