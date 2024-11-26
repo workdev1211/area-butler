@@ -163,7 +163,7 @@
     "moreInfo": "Meer informatie",
     "objectType": "Type object",
     "size": "Maat",
-    "directlyToTheObject": "Rechtstreeks naar het object",
+    "directlyToTheObject": "Meer informatie",
     "hide": "Verberg",
     "notAllowedToUse": "Alleen met het Business+ abonnement kun je de kaarteditor gebruiken.",
     "screenshotName": "Plattegrond",
@@ -601,7 +601,8 @@
     "realEstateDescription": "Beschrijving onroerend goed",
     "inlineFrame": "Inline frame",
     "linkWithAddress": "Link met adres",
-    "linkWoAddress": "Link zonder adres"
+    "linkWoAddress": "Link zonder adres",
+    "equipmentDescription": "Beschrijving apparatuur"
   },
   "tour": {
     "tourEndingError": "Fout bij het beëindigen van de tour",
@@ -781,7 +782,9 @@
   },
   "company": {
     "profile": {
-      "templatePlaceholder": "Typ een adres of bestaande snapshot-id..."
+      "templatePlaceholder": "Typ een adres of bestaande snapshot-id...",
+      "exportMatching": "Overeenkomende export",
+      "exportMatchDescription": "Plaatst het opgegeven gegevenstype in een specifiek veld van het gebruikte CRM."
     },
     "templateIdLabel": "Selecteer en bevestig sjabloon voor alle gebruikers"
   }
