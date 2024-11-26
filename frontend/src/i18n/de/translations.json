@@ -1,9 +1,9 @@
 {
   "nav": {
     "environmentalAnalysis": "Umgebungsanalyse",
-    "realEstates": "Meine Immobilien",
-    "potentialCustomers": "Meine Zielgruppen",
-    "cards": "Meine Karten",
+    "realEstates": "Immobilien",
+    "potentialCustomers": "Zielgruppen",
+    "cards": "Karten",
     "profile": "Profil",
     "logout": "Abmelden",
     "menu": "Menü",
@@ -409,7 +409,7 @@
     "analysisRadius": "Mobilität & Analyseradius",
     "availableIn": "Erreichbar in",
     "unit": "Einheit",
-    "targetGroups": "Meine Zielgruppen",
+    "targetGroups": "Zielgruppen",
     "importantAddresses": "Wichtige Adressen: für Tür-zu-Tür Routen in der Karte",
     "addAddress": "Adresse hinzufügen",
     "shuttleRoute": "Pendelstrecke",
@@ -521,7 +521,7 @@
     "questionnaireText1": "Der AreaButler verschickt eine E-Mail an Ihren Interessenten. Diese\n            E-Mail enthält einen Link.",
     "questionnaireText2": "Über diesen kann Ihr Interessent nun seine bevorzugten\n            Fortbewegungsarten und Lokalitäten sowie seine/ihre wichtigen\n            Adressen eingeben.",
     "questionnaireText3": "Das Ergebnis der Analyse sieht Ihr Interessent nicht - dies können\n            Sie exklusiv bereitstellen.",
-    "questionnaireText4": "Sobald wir eine Antwort erhalten haben, erscheint der Interessent\n            unter \"Meine Interessenten\" zur Schnellauswahl.",
+    "questionnaireText4": "Sobald wir eine Antwort erhalten haben, erscheint der Interessent\n            unter \"Zielgruppen\" zur Schnellauswahl.",
     "questionnaireText5": "Dadurch sparen Sie Zeit und Mühe und bieten einen persönlichen\n          Extraservice.",
     "customerAgreesToReceive": "Der Kunde ist mit dem Erhalt von E-Mails vom AreaButler\n            einverstanden",
     "newTargetGroup": "Neue Zielgruppe",
@@ -626,7 +626,7 @@
       "welcome": "Willkommen beim AreaButler!",
       "welcomeDescription": "Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort\n          mit beliebigen Kriterien durchführen.",
       "lastSearchedAddresses": "Zeigt Ihnen die letzten gesuchten Adressen an",
-      "myRealEstates": "Hier können Sie Ihre, unter \"Meine Immobilien\" gespeicherten Objekte auswählen, um die Adresse automatisch auszufüllen",
+      "myRealEstates": "Hier können Sie Ihre, unter \"Immobilien\" gespeicherten Objekte auswählen, um die Adresse automatisch auszufüllen",
       "transportationType": "Hier können Sie den Umkreis der Suche bestimmen und einstellen, welche\n          Isochronen in Ihrer Karte angezeigt werden. Die Angabe erfolgt über\n          Meter oder Zeitangabe. Sie können drei Arten der Fortbewegung\n          auswählen (Zu Fuß, Fahrrad und/oder Auto)",
       "myCustomers": "Zeit sparen durch Ihre Zielgruppen: eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist, wie bei Ihren Objekten, auch für Ihre Zielgruppen möglich.",
       "importantAddress": "Hier können Sie bis zu vier wichtige Adressen hinterlegen. Diese werden in der Karte hervorgehoben. Ebenfalls steht eine Routenberechnung zu diesen wichtigen Adressen zur Verfügung.",
@@ -783,9 +783,9 @@
   "company": {
     "profile": {
       "templatePlaceholder": "Geben Sie eine Adresse oder eine vorhandene Snapshot-ID ein...",
+      "templateIdLabel": "Vorlage für alle User auswählen und fixieren",
       "exportMatching": "Export Zuordnung",
       "exportMatchDescription": "Zuordnung der Informationen zu Feldern im verwendeten CRM."
-    },
-    "templateIdLabel": "Vorlage für alle User auswählen und fixieren"
+    }
   }
 }
