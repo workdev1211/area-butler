@@ -45,9 +45,7 @@ export const useTools = () => {
       systemEnv !== "local"
         ? origin
         : `${origin.replace(/^(https?:\/\/\w*)(:.*)?$/, "$1")}:3002`
-    }/embed?token=${token}&language=${
-      tokenDataParams?.language || LanguageTypeEnum.de
-    }`;
+    }/embed?token=${token}`;
 
     if (typeof resIsAddressShown === "boolean") {
       url += `&isAddressShown=${resIsAddressShown}`;
