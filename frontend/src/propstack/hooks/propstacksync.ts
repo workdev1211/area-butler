@@ -12,9 +12,12 @@ import {
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { toastError } from "../../shared/shared.functions";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
+import { useContext } from "react";
+import { SearchContext } from "../../context/SearchContext";
 
 export const usePropstackSync = () => {
   const { post, get, patch, put } = useHttp();
+  const { searchContextState } = useContext(SearchContext);
 
   // Reserved for possible future use
   // const createPropertyLink = (
@@ -52,6 +55,12 @@ export const usePropstackSync = () => {
       updEstTextFieldData
     );
 
+  const sendPropertyTextFieldToPropstack = (
+    updEstTextFieldData: IApiIntUpdEstTextFieldReq
+  ): void => {
+    window.top?.postMessage(updEstTextFieldData.text, "*");
+  };
+  
   const fetchAvailPropstackStatuses =
     async (): Promise<IApiRealEstAvailIntStatuses> => {
       return (
@@ -75,6 +84,12 @@ export const usePropstackSync = () => {
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
       case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION: {
+        if (searchContextState.openAiQueryType && window.self !== window.top) {
+          sendPropertyTextFieldToPropstack(
+            sendToPropstackData as IApiIntUpdEstTextFieldReq
+          );
+        } 
+        
         return updatePropertyTextField(
           sendToPropstackData as IApiIntUpdEstTextFieldReq
         );
