@@ -148,28 +148,27 @@ const IntegrationNav: FC = () => {
                   {t(IntlKeys.nav.products)}
                 </NavLink>
               )}
-
-              {integrationUser?.isAdmin && (
-                <div className="nav-usermenu my-auto px-5">
-                  <div className="nav-usermenu-button">
-                    <NavLink
-                      to={"/company-profile"}
-                      id="user-menu-button"
-                      aria-expanded="false"
-                      aria-haspopup="true"
-                      title={t(IntlKeys.nav.companyProfile)}
-                    >
-                      <img
-                        src={integrationUser?.config.logo || SettingsIcon}
-                        referrerPolicy="no-referrer"
-                        alt="company"
-                        className="max-w-14 max-h-14"
-                      />
-                    </NavLink>
-                  </div>
-                </div>
-              )}
             </div>
+            {integrationUser?.isAdmin && (
+              <div className="nav-usermenu my-auto px-5">
+                <div className="nav-usermenu-button">
+                  <NavLink
+                    to={"/company-profile"}
+                    id="user-menu-button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    title={t(IntlKeys.nav.companyProfile)}
+                  >
+                    <img
+                      src={integrationUser?.config.logo || SettingsIcon}
+                      referrerPolicy="no-referrer"
+                      alt="company"
+                      className="max-w-14 max-h-14"
+                    />
+                  </NavLink>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

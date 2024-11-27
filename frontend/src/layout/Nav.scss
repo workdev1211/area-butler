@@ -12,7 +12,6 @@
     .nav-link {
       padding: 0 var(--nav-padding-x);
       line-height: normal;
-      flex-grow: 1;
       justify-content: space-around;
       color: var(--base-anthracite);
       @apply h-full font-medium flex items-center text-center;
