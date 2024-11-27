@@ -147,7 +147,7 @@ const convertBlobToBase64 = (blob: Blob): Promise<string> =>
   });
 
 interface IScreenshotPreset {
-  ratio: string;
+  cropParams: ICropParams;
   isShownQrCode: boolean;
   isShownLegend: boolean;
   isShownIsochrones: boolean;
@@ -209,11 +209,21 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
     },
   ];
 
+  if (
+    screenshotPreset?.cropParams &&
+    !allCropParams.some(
+      ({ aspect, name }) =>
+        aspect === screenshotPreset.cropParams.aspect &&
+        name === screenshotPreset.cropParams.name
+    )
+  ) {
+    allCropParams.push(screenshotPreset.cropParams);
+  }
+
   const [qrCode, setQrCode] = useState<string>();
   const [cropState, setCropState] = useState<PercentCrop>();
   const [cropParams, setCropParams] = useState<ICropParams>(
-    allCropParams.find((param) => param.name === screenshotPreset?.ratio) ||
-      fourToThreeCropParams
+    screenshotPreset?.cropParams || fourToThreeCropParams
   );
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
@@ -317,10 +327,10 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
       await upsertCompanyPreset({
         type: PresetTypesEnum.SCREENSHOT,
         values: {
-          ratio: cropParams.name,
-          isShownIsochrones: isShownIsochrones,
-          isShownLegend: isShownLegend,
-          isShownQrCode: isShownQrCode,
+          cropParams,
+          isShownIsochrones,
+          isShownLegend,
+          isShownQrCode,
         },
       });
     } catch (e) {
