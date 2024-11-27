@@ -98,7 +98,7 @@ const IntegrationNav: FC = () => {
             />
           </NavLink>
 
-          <div className="hidden lg:flex lg:items-center">
+          <div className="hidden lg:flex lg:items-center w-full">
             <div className="nav-links">
               <NavLink
                 to="/search"

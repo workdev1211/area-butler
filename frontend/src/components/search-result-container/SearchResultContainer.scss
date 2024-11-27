@@ -27,6 +27,11 @@
 
   &.map-menu-btn {
     right: 410px;
+    transition: right 0.2s;
+
+    img {
+      transition: transform 0.2s;
+    }
   }
 
   &.filter-menu-btn {
