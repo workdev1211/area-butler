@@ -29,6 +29,10 @@
     @apply absolute inset-y-0 flex items-center lg:hidden;
   }
 
+  .nav-usermenu-button {
+    @apply w-7;
+  }
+
   .nav-mobile-menu .nav-mobile-menu-link {
     @apply block px-3 py-2 rounded-md text-base font-medium;
 
