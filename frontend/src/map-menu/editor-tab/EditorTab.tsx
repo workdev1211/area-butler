@@ -812,7 +812,6 @@ const EditorTab: FC<IEditorTabProps> = ({
               <div className="flex-col items-baseline">
                 <ColorPicker
                   color={color}
-                  isDisabled={isIntegrationUser}
                   label={t(IntlKeys.snapshotEditor.primaryColor)}
                   onChange={(color) => {
                     changeColor(color);
