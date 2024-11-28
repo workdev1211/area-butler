@@ -3,7 +3,7 @@ import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
 import { CompanyUserService } from './company-user.service';
 import { InjectUser } from '../user/inject-user.decorator';
-import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
+import UpdateCompanyConfigDto from '../company/dto/update-company-config.dto';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
@@ -23,7 +23,7 @@ export class CompanyUserIntController {
   @Patch('config/company')
   async updateCompanyConfig(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() config: UpdateApiCompanyConfigDto,
+    @Body() config: UpdateCompanyConfigDto,
   ): Promise<IApiIntegrationUser> {
     return this.convertIntUserService.convertDocToApiIntUser(
       await this.companyUserService.updateCompanyConfig(

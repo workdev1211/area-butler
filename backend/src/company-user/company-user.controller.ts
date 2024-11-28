@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CompanyUserService } from './company-user.service';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
-import UpdateApiCompanyConfigDto from '../company/dto/update-api-company-config.dto';
+import UpdateCompanyConfigDto from '../company/dto/update-company-config.dto';
 import ApiCompanyPresetDto from '../company/dto/api-company-preset.dto';
 import { ApiUser } from '@area-butler-types/types';
 import { UserService } from '../user/service/user.service';
@@ -52,7 +52,7 @@ export class CompanyUserController {
   @Patch('config/company')
   async updateCompanyConfig(
     @InjectUser() user: UserDocument,
-    @Body() config: UpdateApiCompanyConfigDto,
+    @Body() config: UpdateCompanyConfigDto,
   ): Promise<ApiUser> {
     return this.userService.convertDocToApiUser(
       await this.companyUserService.updateCompanyConfig(user, config),
