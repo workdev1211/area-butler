@@ -57,8 +57,11 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
     type: String,
     unique: true,
     sparse: true,
-    validate: function (val: string): boolean {
-      return !this.token && !!val;
+    validate: function (
+      this: SearchResultSnapshotDocument,
+      value: string,
+    ): boolean {
+      return !this.token && !!value;
     },
   })
   addressToken: string;
@@ -76,8 +79,11 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
     type: String,
     unique: true,
     sparse: true,
-    validate: function (val: string): boolean {
-      return !this.token && !!val;
+    validate: function (
+      this: SearchResultSnapshotDocument,
+      value: string,
+    ): boolean {
+      return !this.token && !!value;
     },
   })
   unaddressToken: string;
@@ -115,8 +121,11 @@ export class SearchResultSnapshot implements ISearchResultSnapshotSchema {
   @Prop({
     type: String,
     index: true,
-    validate: function (val: string): boolean {
-      return !this.addressToken && !this.unaddressToken && !!val;
+    validate: function (
+      this: SearchResultSnapshotDocument,
+      value: string,
+    ): boolean {
+      return !this.addressToken && !this.unaddressToken && !!value;
     },
   })
   token?: string;

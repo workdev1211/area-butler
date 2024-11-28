@@ -207,13 +207,14 @@ export const useUserState = () => {
   };
 
   const updateUserConfig = async (
-    config: TNullable<Partial<IUserConfig>>
+    config: TNullable<Partial<IUserConfig>>,
+    successMessage?: string
   ): Promise<void> => {
     const url = isIntegrationUser
       ? "/api/integration-users/config"
       : "/api/users/config";
 
-    await updateConfig<IUserConfig>({ config, url });
+    await updateConfig<IUserConfig>({ config, successMessage, url });
   };
 
   const updateConfig = async <

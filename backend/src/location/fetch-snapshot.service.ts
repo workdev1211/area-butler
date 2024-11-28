@@ -269,7 +269,12 @@ export class FetchSnapshotService {
 
   async fetchCompanySnapshots(
     user: UserDocument | TIntegrationUserDocument,
-    { filterQuery, limitNumber = 0, skipNumber = 0 }: IFetchSnapshotsParams,
+    {
+      filterQuery,
+      projectQuery,
+      limitNumber = 0,
+      skipNumber = 0,
+    }: IFetchSnapshotsParams,
   ): Promise<ApiSearchResultSnapshotResponse[]> {
     // TODO change to 'Role' decorator
     // Old 'Role' decorator rename to 'TechRole'
@@ -282,6 +287,11 @@ export class FetchSnapshotService {
     const resFilterQuery: FilterQuery<SearchResultSnapshotDocument> = {
       ...filterQuery,
     };
+
+    if (resFilterQuery.id) {
+      resFilterQuery._id = new Types.ObjectId(resFilterQuery.id);
+      delete resFilterQuery.id;
+    }
 
     if (isIntegrationUser) {
       resFilterQuery.$or = [];
@@ -304,7 +314,7 @@ export class FetchSnapshotService {
     }
 
     const snapshotDocs = await this.searchResultSnapshotModel
-      .find(resFilterQuery, { 'snapshot.placesLocation.label': 1 })
+      .find(resFilterQuery, projectQuery)
       .sort({ updatedAt: -1 })
       .skip(skipNumber)
       .limit(limitNumber);

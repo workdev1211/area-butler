@@ -92,14 +92,15 @@ const SnapshotsTableRow: FC<ISnapshotsTableRowProps> = ({
   const updateTemplateSnapshotId = async (
     updatedTemplateId: string | null
   ): Promise<void> => {
-    await updateUserConfig({ templateSnapshotId: updatedTemplateId });
+    await updateUserConfig(
+      { templateSnapshotId: updatedTemplateId },
+      t(IntlKeys.mapSnapshots.templateSaved)
+    );
 
     userDispatch({
       type: UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID,
       payload: updatedTemplateId || undefined,
     });
-
-    toastSuccess(t(IntlKeys.mapSnapshots.templateSaved));
   };
 
   const OpenMapEditorButton: FC<{

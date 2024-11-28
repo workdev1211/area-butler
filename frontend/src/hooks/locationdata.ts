@@ -80,7 +80,7 @@ export const useLocationData = () => {
   };
 
   const fetchCompanySnapshots = async (
-    fetchReqParams?: Omit<IApiFetchReqParams, "project" | "sort">
+    fetchReqParams?: Omit<IApiFetchReqParams, "sort">
   ): Promise<ApiSearchResultSnapshotResponse[]> => {
     return (
       await post<ApiSearchResultSnapshotResponse[]>(

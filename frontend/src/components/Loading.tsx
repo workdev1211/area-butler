@@ -1,9 +1,11 @@
 import { FC } from "react";
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 export const Loading: FC = () => {
   const { t } = useTranslation();
+
   return (
     <div className="flex justify-center items-center p-3 gap-3">
       <div
@@ -20,8 +22,5 @@ export const Loading: FC = () => {
 
 export const LoadingMessage: FC = () => {
   const { t } = useTranslation();
-
-  return (
-    <div>{t(IntlKeys.common.pageLoading)}</div>
-  );
-}
+  return <div>{t(IntlKeys.common.pageLoading)}</div>;
+};
