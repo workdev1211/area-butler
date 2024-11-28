@@ -15,12 +15,20 @@ import { defaultRealEstType } from '../../../../shared/constants/open-ai';
 import { OpenAiExtService } from '../../open-ai/open-ai-ext.service';
 import { OnOfficeWebhookUrlEnum } from '../shared/on-office.types';
 import ApiOnOfficeLoginQueryParamsDto from '../dto/api-on-office-login-query-params.dto';
-import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
+import {
+  IntegrationActionTypeEnum,
+  IntegrationTypesEnum,
+  TUpdEstTextFieldParams,
+} from '@area-butler-types/integration';
 import { createDirectLink } from '../../shared/functions/shared';
 import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
 import { PotentialCustomerDocument } from '../../potential-customer/schema/potential-customer.schema';
 import { defaultPotentialCustomer } from '../../shared/constants/potential-customers';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
+import { RealEstateListingIntService } from '../../real-estate-listing/real-estate-listing-int.service';
+import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 
 interface IGenerateLocDescs {
   loginData: IPerformLoginData;
@@ -38,6 +46,7 @@ export class OnOfficeWebhookService {
     private readonly openAiExtService: OpenAiExtService,
     private readonly openAiService: OpenAiService,
     private readonly potentialCustomerService: PotentialCustomerService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly snapshotExtService: SnapshotExtService,
   ) {}
 
@@ -48,13 +57,11 @@ export class OnOfficeWebhookService {
     const { integrationUser, onOfficeEstate, place, realEstate } =
       await this.onOfficeService.performLogin(onOfficeQueryParams);
 
-    if (!integrationUser.subscription) {
-      this.logger.verbose(
-        `User ${integrationUser.integrationUserId} doesn't have a subscription. Endpoint: ${endpoint}.`,
-      );
-
-      return;
-    }
+    const resRealEstate = await this.getUnlockRealEst(
+      integrationUser,
+      endpoint,
+      realEstate,
+    );
 
     let fetchPotentCustomer: PotentialCustomerDocument;
 
@@ -92,7 +99,7 @@ export class OnOfficeWebhookService {
         integrationUser,
         place,
         potentialCustomer,
-        realEstate,
+        realEstate: resRealEstate,
       });
     }
 
@@ -108,7 +115,7 @@ export class OnOfficeWebhookService {
           integrationUser,
           onOfficeEstate,
           place,
-          realEstate,
+          realEstate: resRealEstate,
         },
         potentialCustomer,
         snapshotRes,
@@ -143,7 +150,7 @@ export class OnOfficeWebhookService {
       await this.onOfficeQueryBuilderService
         .setUserParams(integrationUser.parameters)
         .updateTextFields(
-          realEstate.integrationId,
+          resRealEstate.integrationId,
           textFieldParams,
           integrationUser.company.config.exportMatching,
         )
@@ -216,6 +223,40 @@ export class OnOfficeWebhookService {
         targetGroupName: potentialCustomer.name,
       },
       requiredLocDescTypes,
+    );
+  }
+
+  private async getUnlockRealEst(
+    integrationUser: TIntegrationUserDocument,
+    endpoint: OnOfficeWebhookUrlEnum,
+    realEstate: ApiRealEstateListing,
+  ): Promise<ApiRealEstateListing> {
+    if (integrationUser.subscription) {
+      return realEstate;
+    }
+
+    const actionType = [
+      OnOfficeWebhookUrlEnum.CREATE_LOC_DESCS,
+      OnOfficeWebhookUrlEnum.CREATE_LOC_DESCS_MAP,
+      OnOfficeWebhookUrlEnum.TARGET_GROUP,
+    ].includes(endpoint)
+      ? IntegrationActionTypeEnum.UNLOCK_OPEN_AI
+      : IntegrationActionTypeEnum.UNLOCK_SEARCH;
+
+    const integrationId = realEstate.integrationId;
+
+    await this.realEstateListingIntService.handleProductUnlock(
+      integrationUser,
+      { actionType, integrationId },
+    );
+
+    return mapRealEstateListingToApiRealEstateListing(
+      integrationUser,
+      await this.realEstateListingIntService.findOneOrFailByIntParams({
+        integrationId,
+        integrationUserId: integrationUser.integrationUserId,
+        integrationType: IntegrationTypesEnum.ON_OFFICE,
+      }),
     );
   }
 }
