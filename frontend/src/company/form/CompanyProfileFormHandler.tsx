@@ -24,7 +24,7 @@ const CompanyProfileFormHandler: FC<ICompProfFormHandlerProps> = ({
     if (resExportMatch) {
       Object.keys(resExportMatch).forEach((key: string) => {
         if (resExportMatch[key as TAreaButlerExportTypes]?.fieldId === "") {
-          delete resExportMatch[key as TAreaButlerExportTypes]; // Remove the key if the value is empty
+          delete resExportMatch[key as TAreaButlerExportTypes];
         }
       });
     }
