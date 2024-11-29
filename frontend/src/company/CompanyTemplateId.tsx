@@ -19,6 +19,7 @@ import {
 } from "../../../shared/types/types";
 import { debounce } from "../../../shared/functions/shared.functions";
 import { Loading } from "../components/Loading";
+import { toastError } from "../shared/shared.functions";
 
 const DEFAULT_DELAY_MS = 3000;
 const INITIAL_SNAPSHOT_NUM = 10;
@@ -71,7 +72,14 @@ const CompanyTemplateId: FC = () => {
 
       if (fetchedValue) {
         setDefaultValue(fetchedValue);
+        return;
       }
+
+      toastError(t(IntlKeys.common.errorOccurred));
+
+      console.error(
+        `Company template snapshot with id ${user.config.companyTemplateSnapshotId} not found!`
+      );
     };
 
     void fetchDefaultValue();
