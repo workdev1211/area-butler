@@ -19,7 +19,6 @@ import {
 } from "../../../shared/types/types";
 import { debounce } from "../../../shared/functions/shared.functions";
 import { Loading } from "../components/Loading";
-import { toastError } from "../shared/shared.functions";
 
 const DEFAULT_DELAY_MS = 3000;
 const INITIAL_SNAPSHOT_NUM = 10;
@@ -52,7 +51,7 @@ const CompanyTemplateId: FC = () => {
 
   const [fetchDelayInMs, setFetchDelayInMs] = useState<number>(0);
   const [defaultValue, setDefaultValue] =
-    useState<ApiSearchResultSnapshotResponse>();
+    useState<ApiSearchResultSnapshotResponse | null>();
 
   useEffect(() => {
     if (!user.config.companyTemplateSnapshotId) {
@@ -70,16 +69,7 @@ const CompanyTemplateId: FC = () => {
         },
       });
 
-      if (fetchedValue) {
-        setDefaultValue(fetchedValue);
-        return;
-      }
-
-      toastError(t(IntlKeys.common.errorOccurred));
-
-      console.error(
-        `Company template snapshot with id ${user.config.companyTemplateSnapshotId} not found!`
-      );
+      setDefaultValue(fetchedValue || null);
     };
 
     void fetchDefaultValue();
@@ -143,7 +133,7 @@ const CompanyTemplateId: FC = () => {
   };
 
   const isDefValueAvail = user.config.companyTemplateSnapshotId
-    ? !!defaultValue
+    ? defaultValue === null || !!defaultValue
     : true;
 
   return (
