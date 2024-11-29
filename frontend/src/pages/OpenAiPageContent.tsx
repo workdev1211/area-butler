@@ -11,7 +11,7 @@ import { FeatureTypeEnum } from "../../../shared/types/types";
 import { useUserState } from "../hooks/userstate";
 
 // TODO could be the same content with a 'OpenAiModal' component
-const OpenAiPageContent: FC = () => {
+const OpenAiPageContent: FC<{ embedded: boolean }> = ({ embedded = true }) => {
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState } = useContext(SearchContext);
 
@@ -44,7 +44,7 @@ const OpenAiPageContent: FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5 m-5">
+    <div className={!embedded ? "flex flex-col" : "flex flex-col gap-5 m-5"}>
       {unlockParams.isShownModal && (
         <ConfirmationModal
           closeModal={() => {
@@ -57,7 +57,9 @@ const OpenAiPageContent: FC = () => {
         />
       )}
 
-      <h1 className="text-xl gap-2">KI Texte aus der magischen Feder</h1>
+      {embedded && (
+        <h1 className="text-xl gap-2">KI Texte aus der magischen Feder</h1>
+      )}
 
       <OpenAiChat
         searchResultSnapshotId={searchContextState.snapshotId!!}

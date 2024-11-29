@@ -166,7 +166,7 @@ const PropstackContainer: FC = () => {
           </Route>
 
           <Route path="/open-ai-popup">
-            <OpenAiPopup />
+            <OpenAiPopup embedded={false} />
           </Route>
 
           {!checkIsSubActive() && (

@@ -13,7 +13,7 @@ const OpenAiPage: FunctionComponent = () => {
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
     >
-      <OpenAiPageContent />
+      <OpenAiPageContent embedded={true} />
     </DefaultLayout>
   );
 };
