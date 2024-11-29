@@ -493,7 +493,9 @@ export class OnOfficeService {
 
     let parentUser: TIntegrationUserDocument;
 
-    if (integrationUser?.parentUser) {
+    if (integrationUser?.isParent) {
+      parentUser = integrationUser;
+    } else if (integrationUser?.parentUser) {
       parentUser = integrationUser.parentUser;
       parentUser.company = integrationUser.company;
     } else {
@@ -553,17 +555,22 @@ export class OnOfficeService {
     }
 
     if (integrationUser) {
+      const parentId =
+        !parentUser?.id || integrationUser.id === parentUser.id
+          ? undefined
+          : parentUser.id;
+
       integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
         integrationUser.id,
         {
           $set: {
+            parentId,
             accessToken: extendedClaim,
             'parameters.extendedClaim': extendedClaim,
             'parameters.parameterCacheId': parameterCacheId,
             'parameters.customerName': customerName,
             'parameters.userName': userName,
             'parameters.email': email,
-            parentId: parentUser?.id,
           },
         },
       );

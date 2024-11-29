@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { AxiosResponse } from "axios";
 
 import { useHttp } from "../../hooks/http";
@@ -12,7 +13,6 @@ import {
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { toastError } from "../../shared/shared.functions";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
-import { useContext } from "react";
 import { SearchContext } from "../../context/SearchContext";
 
 export const usePropstackSync = () => {
@@ -60,7 +60,7 @@ export const usePropstackSync = () => {
   ): void => {
     window.top?.postMessage(updEstTextFieldData.text, "*");
   };
-  
+
   const fetchAvailPropstackStatuses =
     async (): Promise<IApiRealEstAvailIntStatuses> => {
       return (
@@ -88,8 +88,8 @@ export const usePropstackSync = () => {
           sendPropertyTextFieldToPropstack(
             sendToPropstackData as IApiIntUpdEstTextFieldReq
           );
-        } 
-        
+        }
+
         return updatePropertyTextField(
           sendToPropstackData as IApiIntUpdEstTextFieldReq
         );
