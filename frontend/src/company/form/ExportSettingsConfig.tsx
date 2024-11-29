@@ -78,15 +78,16 @@ const ExportSettingsConfig: FC = () => {
         />
       </div>
 
-      <div className="form-control">
-        <Input
-          className="input input-bordered w-1/2"
-          name={`exportMatching.${AreaButlerExportTypesEnum.INLINE_FRAME}.fieldId`}
-          type="text"
-          label={t(IntlKeys.yourProfile.inlineFrame)}
-          placeholder={t(IntlKeys.yourProfile.inlineFrame)}
-        />
-      </div>
+      {/* Left in case of a possible future usage */}
+      {/*<div className="form-control">*/}
+      {/*  <Input*/}
+      {/*    className="input input-bordered w-1/2"*/}
+      {/*    name={`exportMatching.${AreaButlerExportTypesEnum.INLINE_FRAME}.fieldId`}*/}
+      {/*    type="text"*/}
+      {/*    label={t(IntlKeys.yourProfile.inlineFrame)}*/}
+      {/*    placeholder={t(IntlKeys.yourProfile.inlineFrame)}*/}
+      {/*  />*/}
+      {/*</div>*/}
     </div>
   );
 };
