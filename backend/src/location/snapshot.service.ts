@@ -303,11 +303,16 @@ export class SnapshotService {
       false,
     );
 
-    const templateSnapshotId = user.config.templateSnapshotId;
+    const companyTemplateId = user.company.config?.templateSnapshotId;
+    const userTemplateId = user.config.templateSnapshotId;
 
-    if (templateSnapshotId === snapshotId) {
+    if (companyTemplateId === snapshotId) {
+      user.company.set('config.templateSnapshotId', undefined);
+      await user.company.save();
+    }
+
+    if (userTemplateId === snapshotId) {
       user.set('config.templateSnapshotId', undefined);
-
       await user.save();
     }
 
