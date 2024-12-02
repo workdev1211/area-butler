@@ -780,7 +780,8 @@
   },
   "errors": {
     "userNotFound": "User not found!",
-    "wrongIntegration": "Wrong integration type!"
+    "wrongIntegration": "Wrong integration type!",
+    "createSnapshot": "Please, create a snapshot first!"
   },
   "company": {
     "profile": {

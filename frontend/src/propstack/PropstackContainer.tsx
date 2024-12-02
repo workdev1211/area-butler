@@ -2,6 +2,9 @@ import { FC, lazy, Suspense, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import "react-toastify/dist/ReactToastify.css";
 import "./PropstackContainer.scss";
 
@@ -54,6 +57,7 @@ const PropstackContainer: FC = () => {
   const { pathname } = useLocation();
   const { handlePropstackLogin } = usePropstackLogin();
   const { checkIsSubActive } = useIntegrationTools();
+  const { t } = useTranslation();
 
   const [loginStatus, setLoginStatus] = useState<ILoginStatus>();
 
@@ -89,6 +93,11 @@ const PropstackContainer: FC = () => {
     }
 
     if (searchContextState.openAiQueryType) {
+      if (!searchContextState.snapshotId) {
+        alert(t(IntlKeys.errors.createSnapshot));
+        return;
+      }
+
       history.push("/open-ai-popup");
       return;
     }

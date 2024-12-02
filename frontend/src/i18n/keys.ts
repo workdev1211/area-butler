@@ -844,6 +844,7 @@ export const IntlKeys = {
   errors: {
     userNotFound: "errors.userNotFound",
     wrongIntegration: "errors.wrongIntegration",
+    createSnapshot: "errors.createSnapshot",
   },
 
   company: {
