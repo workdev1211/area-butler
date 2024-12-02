@@ -1,4 +1,5 @@
 import { FC, useContext, useEffect } from "react";
+import structuredClone from "@ungap/structured-clone";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -19,13 +20,40 @@ import {
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { SearchContext } from "../../context/SearchContext";
-import { openAiRealEstTypeOptions } from "../../../../shared/constants/open-ai";
+import {
+  defaultRealEstType,
+  openAiRealEstTypeOptions,
+} from "../../../../shared/constants/open-ai";
 import CustomTextSelect from "../inputs/formik/CustomTextSelect";
 import { ConfigContext } from "../../context/ConfigContext";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 
 interface IOpenAiRealEstDescFormListenProps {
   onValuesChange: (values: IApiOpenAiRealEstDescQuery) => void;
 }
+
+const getInitRealEstateId = (
+  initValues: IApiOpenAiRealEstDescQuery,
+  realEstates: ApiRealEstateListing[],
+  realEstate?: ApiRealEstateListing
+): string => {
+  if (
+    initValues &&
+    realEstates.some(({ id }) => id === initValues.realEstateId)
+  ) {
+    return initValues.realEstateId;
+  }
+
+  if (realEstate) {
+    return realEstate.id;
+  }
+
+  if (realEstates.length === 1) {
+    return realEstates[0].id;
+  }
+
+  return placeholderSelectOptionKey;
+};
 
 const OpenAiRealEstDescFormListener: FC<IOpenAiRealEstDescFormListenProps> = ({
   onValuesChange,
@@ -42,7 +70,7 @@ const OpenAiRealEstDescFormListener: FC<IOpenAiRealEstDescFormListenProps> = ({
 
 interface IOpenAiRealEstDescFormProps {
   formId: string;
-  initialValues: IApiOpenAiRealEstDescQuery;
+  initialValues?: IApiOpenAiRealEstDescQuery;
   onValuesChange?: (values: IApiOpenAiRealEstDescQuery) => void;
   onSubmit?: (values: IApiOpenAiRealEstDescQuery) => void;
   formRef?: TFormikInnerRef<IApiOpenAiRealEstDescQuery>;
@@ -83,6 +111,19 @@ const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationType]);
 
+  const resultInitValues = initialValues
+    ? structuredClone(initialValues)
+    : {
+        realEstateId: "",
+        realEstateType: defaultRealEstType,
+      };
+
+  resultInitValues.realEstateId = getInitRealEstateId(
+    resultInitValues,
+    listings,
+    realEstateListing
+  );
+
   const validationSchema = Yup.object({
     realEstateId: Yup.string(),
     realEstateType: Yup.string(),
@@ -90,7 +131,7 @@ const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={resultInitValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -110,7 +151,7 @@ const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
               )}
               name="realEstateId"
               disabled={listings.length < 2}
-              defaultValue={initialValues.realEstateId}
+              defaultValue={resultInitValues.realEstateId}
             >
               {listings.length > 1 && (
                 <option
@@ -137,7 +178,7 @@ const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
               name="realEstateType"
               selectOptions={openAiRealEstTypeOptions}
               customTextValue={OpenAiRealEstTypesEnum.CUSTOM}
-              initialText={initialValues?.realEstateType}
+              initialText={resultInitValues?.realEstateType}
             />
           </div>
 

@@ -591,3 +591,9 @@ export interface IApiFetchReqParams<T = object, U = object, V = object> {
   skip?: number;
   sort?: V;
 }
+
+export interface ITransportParamLabel {
+  label: "Zu Fuß" | "Fahrrad" | "Auto"; // enum
+  mode: "walking" | "cycling" | "driving"; // enum
+  type: MeansOfTransportation;
+}

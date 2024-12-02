@@ -10,10 +10,7 @@ import {
   IOpenAiLocDescFormValues,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
-import {
-  defaultRealEstType,
-  openAiQueryTypes,
-} from "../../../../shared/constants/open-ai";
+import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocDescForm from "./OpenAiLocDescForm";
@@ -33,7 +30,6 @@ import { IIntUserExpMatchParams } from "../../../../shared/types/integration-use
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useUserState } from "../../hooks/userstate";
 import { IOpenAiPresetValues } from "./OpenAiChat";
-import { RealEstateContext } from "../../context/RealEstateContext";
 
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
@@ -72,12 +68,9 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
     cachingDispatch,
   } = useContext(CachingContext);
   const {
-    searchContextState: { responseConfig, realEstateListing },
+    searchContextState: { responseConfig },
   } = useContext(SearchContext);
   const { integrationType } = useContext(ConfigContext);
-  const {
-    realEstateState: { listings },
-  } = useContext(RealEstateContext);
 
   const { getCurrentUser } = useUserState();
   const user = getCurrentUser();
@@ -94,38 +87,6 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   );
 
   const { fetchOpenAiResponse } = useOpenAi();
-
-  const realEstDescInitValues = (preset?.realEstateDescription
-    ? {
-        ...preset?.realEstateDescription,
-        realEstateId: "",
-      }
-    : cachedOpenAi.realEstateDescription) || {
-    realEstateId: "",
-    realEstateType: defaultRealEstType,
-  };
-
-  const getInitRealEstateId = (): string => {
-    if (
-      realEstDescInitValues &&
-      listings.some(({ id }) => id === realEstDescInitValues.realEstateId)
-    ) {
-      return realEstDescInitValues.realEstateId;
-    }
-
-    if (realEstateListing) {
-      return realEstateListing.id;
-    }
-
-    if (listings.length === 1) {
-      return listings[0].id;
-    }
-
-    return placeholderSelectOptionKey;
-  };
-
-  const realEstateId = getInitRealEstateId();
-  realEstDescInitValues.realEstateId = realEstateId;
 
   const defaultTextLength =
     queryType &&
@@ -246,6 +207,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
     ) {
       onModuleStatusChange(true);
     }
+
     setPreset(
       (user.config.presets
         ? user.config.presets[queryType as OpenAiQueryTypeEnum]
@@ -254,27 +216,6 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryType]);
-
-  // TODO should be refactored / checked the same way with OpenAiRealEstDescForm
-  useEffect(() => {
-    if (preset?.general) {
-      generalFormRef.current?.setValues(preset.general);
-    }
-    if (preset?.locationDescription) {
-      locDescFormRef.current?.setValues(preset.locationDescription);
-    }
-    if (preset?.query) {
-      formRef.current?.setValues(preset.query);
-    }
-    if (preset?.realEstateDescription) {
-      realEstDescFormRef.current?.setValues({
-        ...preset.realEstateDescription,
-        realEstateId,
-      });
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preset]);
 
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-0">
@@ -356,7 +297,11 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiRealEstDescForm
             formId="open-ai-real-est-desc-form"
-            initialValues={realEstDescInitValues}
+            initialValues={
+              preset?.realEstateDescription
+                ? { ...preset.realEstateDescription, realEstateId: "" }
+                : cachedOpenAi.realEstateDescription
+            }
             onValuesChange={(values) => {
               onModuleStatusChange(
                 !!queryType &&

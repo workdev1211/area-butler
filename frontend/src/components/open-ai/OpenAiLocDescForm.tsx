@@ -1,4 +1,5 @@
-import { FunctionComponent, useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
+import structuredClone from "@ungap/structured-clone";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -16,9 +17,9 @@ interface IOpenAiLocDescFormListenProps {
   onValuesChange: (values: IOpenAiLocDescFormValues) => void;
 }
 
-const OpenAiLocDescFormListener: FunctionComponent<
-  IOpenAiLocDescFormListenProps
-> = ({ onValuesChange }) => {
+const OpenAiLocDescFormListener: FC<IOpenAiLocDescFormListenProps> = ({
+  onValuesChange,
+}): null => {
   const { values } = useFormikContext<IOpenAiLocDescFormValues>();
 
   useEffect(() => {
@@ -37,7 +38,7 @@ interface IOpenAiLocDescFormProps {
   formRef?: TFormikInnerRef<IOpenAiLocDescFormValues>;
 }
 
-const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
+const OpenAiLocDescForm: FC<IOpenAiLocDescFormProps> = ({
   formId,
   initialValues,
   onValuesChange,
@@ -45,34 +46,29 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
   formRef,
 }) => {
   const { t } = useTranslation();
-  const { searchContextState } = useContext(SearchContext);
+  const {
+    searchContextState: { transportationParams },
+  } = useContext(SearchContext);
 
-  const meansOfTransportation = searchContextState.transportationParams
-    .map(({ type }) => {
-      const {
-        label,
-        type: value,
-        mode,
-      } = meansOfTransportations.find(
-        ({ type: constantType }) => type === constantType
-      )!;
-
-      return { label, value, mode };
-    })
+  const meansOfTransportation = transportationParams
+    .map(
+      ({ type: existingType }) =>
+        meansOfTransportations.find(
+          ({ type: constantType }) => constantType === existingType
+        )!
+    )
     .reverse();
 
-  const processedInitialValues = initialValues
-    ? {
-        ...initialValues,
-        meanOfTransportation: meansOfTransportation.some(
-          ({ value }) => value === initialValues?.meanOfTransportation
-        )
-          ? initialValues?.meanOfTransportation
-          : meansOfTransportation[0].value,
-      }
-    : {
-        meanOfTransportation: meansOfTransportation[0].value,
-      };
+  const resultInitValues = initialValues
+    ? structuredClone(initialValues)
+    : ({} as IOpenAiLocDescFormValues);
+
+  resultInitValues.meanOfTransportation =
+    (resultInitValues.meanOfTransportation &&
+      meansOfTransportation.find(
+        ({ type }) => type === resultInitValues?.meanOfTransportation
+      )?.type) ||
+    meansOfTransportation[0].type;
 
   const validationSchema = Yup.object({
     meanOfTransportation: Yup.string(),
@@ -80,13 +76,14 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
 
   return (
     <Formik
-      initialValues={processedInitialValues}
+      initialValues={resultInitValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
           onSubmit(values);
         }
       }}
+      enableReinitialize={true}
       innerRef={formRef}
     >
       <Form id={formId}>
@@ -96,10 +93,10 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
             placeholder={t(IntlKeys.snapshotEditor.dataTab.aiFieldOfKnowledge)}
             name="meanOfTransportation"
             disabled={meansOfTransportation.length === 1}
-            defaultValue={processedInitialValues.meanOfTransportation}
+            defaultValue={resultInitValues.meanOfTransportation}
           >
-            {meansOfTransportation.map(({ mode, value }) => (
-              <option value={value} key={value}>
+            {meansOfTransportation.map(({ mode, type }) => (
+              <option value={type} key={type}>
                 {t(
                   (
                     IntlKeys.common.transportationTypes as Record<

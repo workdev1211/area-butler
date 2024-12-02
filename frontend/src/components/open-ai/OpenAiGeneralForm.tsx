@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from "react";
+import structuredClone from "@ungap/structured-clone";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -33,7 +34,7 @@ interface IOpenAiGeneralFormListenerProps {
 
 const OpenAiGeneralFormListener: FC<IOpenAiGeneralFormListenerProps> = ({
   onValuesChange,
-}) => {
+}): null => {
   const { values } = useFormikContext<IOpenAiGeneralFormValues>();
 
   useEffect(() => {
@@ -84,10 +85,8 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
     ISelectTextValue[]
   >([defTargetGroupOption, custTargetGroupOption]);
 
-  const resultInitValues: IOpenAiGeneralFormValues = initialValues
-    ? {
-        ...initialValues,
-      }
+  const resultInitValues = initialValues
+    ? structuredClone(initialValues)
     : {
         tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
         targetGroupName: defaultTargetGroupName,
@@ -166,7 +165,9 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
                 label={t(IntlKeys.snapshotEditor.dataTab.textTonality)}
                 placeholder={t(IntlKeys.snapshotEditor.dataTab.textTonality)}
                 name="tonality"
-                defaultValue={OpenAiTonalityEnum.FORMAL_SERIOUS}
+                defaultValue={
+                  initialValues?.tonality || OpenAiTonalityEnum.FORMAL_SERIOUS
+                }
               >
                 {Object.values(OpenAiTonalityEnum).map((tonality) => (
                   <option value={tonality} key={tonality}>

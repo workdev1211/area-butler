@@ -60,10 +60,10 @@ interface IGeneratedTexts {
 }
 
 export interface IOpenAiPresetValues {
-  locationDescription?: IOpenAiLocDescFormValues;
-  realEstateDescription?: Omit<IApiOpenAiRealEstDescQuery, "realEstateId">;
-  query?: IApiOpenAiQuery;
   general?: IOpenAiGeneralFormValues;
+  locationDescription?: IOpenAiLocDescFormValues;
+  query?: IApiOpenAiQuery;
+  realEstateDescription?: Omit<IApiOpenAiRealEstDescQuery, "realEstateId">;
 }
 
 const OpenAiChat: FC<IOpenAiChatProps> = ({

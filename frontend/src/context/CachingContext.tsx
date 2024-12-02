@@ -5,7 +5,6 @@ import {
   ISortableEntityGroup,
 } from "../export/one-page/OnePageExportModal";
 import {
-  IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiQuery,
   IApiOpenAiRealEstDescQuery,
   IOpenAiGeneralFormValues,
@@ -17,9 +16,8 @@ import { IQrCodeState } from "../../../shared/types/export";
 interface IOpenAiCachingState {
   general?: IOpenAiGeneralFormValues;
   locationDescription?: IOpenAiLocDescFormValues;
-  realEstateDescription?: IApiOpenAiRealEstDescQuery;
-  locationRealEstateDescription?: IApiOpenAiLocRealEstDescQuery;
   query?: IApiOpenAiQuery;
+  realEstateDescription?: IApiOpenAiRealEstDescQuery;
 }
 
 interface IOnePageCachingState {

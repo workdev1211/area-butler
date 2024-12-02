@@ -1,7 +1,7 @@
-import { FunctionComponent, useEffect } from "react";
+import { FC, useEffect } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
@@ -14,9 +14,9 @@ interface IOpenAiQueryFormListenerProps {
   onValuesChange: (values: IApiOpenAiQuery) => void;
 }
 
-const OpenAiQueryFormListener: FunctionComponent<
+const OpenAiQueryFormListener: FC<
   IOpenAiQueryFormListenerProps
-> = ({ onValuesChange }) => {
+> = ({ onValuesChange }): null => {
   const { values } = useFormikContext<IApiOpenAiQuery>();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ interface IQueryFormProps {
   formRef?: TFormikInnerRef<IApiOpenAiQuery>;
 }
 
-const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
+const OpenAiQueryForm: FC<IQueryFormProps> = ({
   formId,
   initialValues = { text: "" },
   onValuesChange,

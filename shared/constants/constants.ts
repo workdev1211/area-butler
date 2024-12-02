@@ -1,5 +1,6 @@
 import {
   ApiTourNamesEnum,
+  ITransportParamLabel,
   MeansOfTransportation,
   TApiUserStudyTours,
   TPlaceholderSelectOptionKey,
@@ -44,7 +45,7 @@ export const unitsOfTransportation = [
   { label: "Kilometern", type: UnitsOfTransportation.KILOMETERS },
 ];
 
-export const meansOfTransportations = [
+export const meansOfTransportations: ITransportParamLabel[] = [
   { label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking" },
   { label: "Fahrrad", type: MeansOfTransportation.BICYCLE, mode: "cycling" },
   { label: "Auto", type: MeansOfTransportation.CAR, mode: "driving" },
