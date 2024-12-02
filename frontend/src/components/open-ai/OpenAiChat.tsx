@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from "react";
+import { FC, Fragment, useContext, useEffect, useRef, useState } from "react";
 import { FormikProps } from "formik/dist/types";
 
 import { useTranslation } from "react-i18next";
@@ -61,7 +61,7 @@ interface IGeneratedTexts {
 
 export interface IOpenAiPresetValues {
   locationDescription?: IOpenAiLocDescFormValues;
-  realEstateDescription?: IApiOpenAiRealEstDescQuery;
+  realEstateDescription?: Omit<IApiOpenAiRealEstDescQuery, "realEstateId">;
   query?: IApiOpenAiQuery;
   general?: IOpenAiGeneralFormValues;
 }
@@ -132,7 +132,16 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
         OpenAiQueryTypeEnum.INSTAGRAM_CAPTION,
       ].includes(queryTypeRef.current as OpenAiQueryTypeEnum)
     ) {
-      values.realEstateDescription = realEstDescFormRef.current?.values;
+      let realEstDescPreset = undefined;
+
+      if (realEstDescFormRef.current?.values) {
+        const { realEstateId, ...realEstDescFormData } =
+          realEstDescFormRef.current.values;
+
+        realEstDescPreset = realEstDescFormData;
+      }
+
+      values.realEstateDescription = realEstDescPreset;
     }
 
     if (
@@ -256,7 +265,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
         queryResponses.length > 0 &&
         queryResponses.map((genText, i) => {
           return (
-            <>
+            <Fragment key={`${genText.queryType}-${i}`}>
               {genText.query && (
                 <div className="grid grid-cols-12 gap-2 pb-3">
                   <div className="col-start-3 col-span-9 grid">
@@ -407,7 +416,7 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                   )}
                 </div>
               </div>
-            </>
+            </Fragment>
           );
         })}
       <div className="grid grid-cols-12 gap-2 pb-3">

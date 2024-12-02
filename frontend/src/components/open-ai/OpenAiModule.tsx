@@ -10,7 +10,10 @@ import {
   IOpenAiLocDescFormValues,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
-import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
+import {
+  defaultRealEstType,
+  openAiQueryTypes,
+} from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocDescForm from "./OpenAiLocDescForm";
@@ -24,13 +27,13 @@ import {
 } from "../../context/CachingContext";
 import OpenAiGeneralForm from "./OpenAiGeneralForm";
 import { SearchContext } from "../../context/SearchContext";
-import { UserContext } from "../../context/UserContext";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { IIntUserExpMatchParams } from "../../../../shared/types/integration-user";
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useUserState } from "../../hooks/userstate";
 import { IOpenAiPresetValues } from "./OpenAiChat";
+import { RealEstateContext } from "../../context/RealEstateContext";
 
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
@@ -69,30 +72,60 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
     cachingDispatch,
   } = useContext(CachingContext);
   const {
-    searchContextState: { responseConfig },
+    searchContextState: { responseConfig, realEstateListing },
   } = useContext(SearchContext);
   const { integrationType } = useContext(ConfigContext);
-
   const {
-    userState: { user },
-  } = useContext(UserContext);
+    realEstateState: { listings },
+  } = useContext(RealEstateContext);
+
+  const { getCurrentUser } = useUserState();
+  const user = getCurrentUser();
   const config = user?.config;
 
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
   >(initialQueryType);
 
-  const { getCurrentUser } = useUserState();
-
-  const currentUser = getCurrentUser();
-
   const [preset, setPreset] = useState(
-    (currentUser.config.presets
-      ? currentUser.config.presets[queryType as OpenAiQueryTypeEnum]
+    (user.config.presets
+      ? user.config.presets[queryType as OpenAiQueryTypeEnum]
       : undefined) as IOpenAiPresetValues | undefined
   );
 
   const { fetchOpenAiResponse } = useOpenAi();
+
+  const realEstDescInitValues = (preset?.realEstateDescription
+    ? {
+        ...preset?.realEstateDescription,
+        realEstateId: "",
+      }
+    : cachedOpenAi.realEstateDescription) || {
+    realEstateId: "",
+    realEstateType: defaultRealEstType,
+  };
+
+  const getInitRealEstateId = (): string => {
+    if (
+      realEstDescInitValues &&
+      listings.some(({ id }) => id === realEstDescInitValues.realEstateId)
+    ) {
+      return realEstDescInitValues.realEstateId;
+    }
+
+    if (realEstateListing) {
+      return realEstateListing.id;
+    }
+
+    if (listings.length === 1) {
+      return listings[0].id;
+    }
+
+    return placeholderSelectOptionKey;
+  };
+
+  const realEstateId = getInitRealEstateId();
+  realEstDescInitValues.realEstateId = realEstateId;
 
   const defaultTextLength =
     queryType &&
@@ -214,14 +247,15 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
       onModuleStatusChange(true);
     }
     setPreset(
-      (currentUser.config.presets
-        ? currentUser.config.presets[queryType as OpenAiQueryTypeEnum]
+      (user.config.presets
+        ? user.config.presets[queryType as OpenAiQueryTypeEnum]
         : undefined) as IOpenAiPresetValues | undefined
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryType]);
 
+  // TODO should be refactored / checked the same way with OpenAiRealEstDescForm
   useEffect(() => {
     if (preset?.general) {
       generalFormRef.current?.setValues(preset.general);
@@ -233,7 +267,10 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
       formRef.current?.setValues(preset.query);
     }
     if (preset?.realEstateDescription) {
-      realEstDescFormRef.current?.setValues(preset.realEstateDescription);
+      realEstDescFormRef.current?.setValues({
+        ...preset.realEstateDescription,
+        realEstateId,
+      });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -319,10 +356,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
         ].includes(queryType as OpenAiQueryTypeEnum) && (
           <OpenAiRealEstDescForm
             formId="open-ai-real-est-desc-form"
-            initialValues={
-              preset?.realEstateDescription ||
-              cachedOpenAi.realEstateDescription
-            }
+            initialValues={realEstDescInitValues}
             onValuesChange={(values) => {
               onModuleStatusChange(
                 !!queryType &&

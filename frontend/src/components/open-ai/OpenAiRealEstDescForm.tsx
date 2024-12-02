@@ -1,7 +1,7 @@
-import { FunctionComponent, useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
@@ -19,10 +19,7 @@ import {
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { SearchContext } from "../../context/SearchContext";
-import {
-  defaultRealEstType,
-  openAiRealEstTypeOptions,
-} from "../../../../shared/constants/open-ai";
+import { openAiRealEstTypeOptions } from "../../../../shared/constants/open-ai";
 import CustomTextSelect from "../inputs/formik/CustomTextSelect";
 import { ConfigContext } from "../../context/ConfigContext";
 
@@ -30,9 +27,9 @@ interface IOpenAiRealEstDescFormListenProps {
   onValuesChange: (values: IApiOpenAiRealEstDescQuery) => void;
 }
 
-const OpenAiRealEstDescFormListener: FunctionComponent<
-  IOpenAiRealEstDescFormListenProps
-> = ({ onValuesChange }) => {
+const OpenAiRealEstDescFormListener: FC<IOpenAiRealEstDescFormListenProps> = ({
+  onValuesChange,
+}) => {
   const { values } = useFormikContext<IApiOpenAiRealEstDescQuery>();
 
   useEffect(() => {
@@ -45,18 +42,15 @@ const OpenAiRealEstDescFormListener: FunctionComponent<
 
 interface IOpenAiRealEstDescFormProps {
   formId: string;
-  initialValues?: IApiOpenAiRealEstDescQuery;
+  initialValues: IApiOpenAiRealEstDescQuery;
   onValuesChange?: (values: IApiOpenAiRealEstDescQuery) => void;
   onSubmit?: (values: IApiOpenAiRealEstDescQuery) => void;
   formRef?: TFormikInnerRef<IApiOpenAiRealEstDescQuery>;
 }
 
-const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
+const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
   formId,
-  initialValues = {
-    realEstateId: "",
-    realEstateType: defaultRealEstType,
-  },
+  initialValues,
   onValuesChange,
   onSubmit,
   formRef,
@@ -89,30 +83,6 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationType]);
 
-  const getInitRealEstateId = (): string => {
-    if (
-      initialValues &&
-      listings.some(({ id }) => id === initialValues.realEstateId)
-    ) {
-      return initialValues.realEstateId;
-    }
-
-    if (realEstateListing) {
-      return realEstateListing.id;
-    }
-
-    if (listings.length === 1) {
-      return listings[0].id;
-    }
-
-    return "";
-  };
-
-  const resultInitValues: IApiOpenAiRealEstDescQuery = {
-    ...initialValues,
-    realEstateId: getInitRealEstateId(),
-  };
-
   const validationSchema = Yup.object({
     realEstateId: Yup.string(),
     realEstateType: Yup.string(),
@@ -120,7 +90,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
 
   return (
     <Formik
-      initialValues={resultInitValues}
+      initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -135,12 +105,12 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
             <Select
               className="select select-bordered w-full max-w-full"
               label={t(IntlKeys.snapshotEditor.dataTab.realEstate)}
-              placeholder={t(IntlKeys.snapshotEditor.dataTab.realEstatePlaceholder)}
+              placeholder={t(
+                IntlKeys.snapshotEditor.dataTab.realEstatePlaceholder
+              )}
               name="realEstateId"
               disabled={listings.length < 2}
-              defaultValue={
-                resultInitValues.realEstateId || placeholderSelectOptionKey
-              }
+              defaultValue={initialValues.realEstateId}
             >
               {listings.length > 1 && (
                 <option
@@ -167,7 +137,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
               name="realEstateType"
               selectOptions={openAiRealEstTypeOptions}
               customTextValue={OpenAiRealEstTypesEnum.CUSTOM}
-              initialText={resultInitValues?.realEstateType}
+              initialText={initialValues?.realEstateType}
             />
           </div>
 
