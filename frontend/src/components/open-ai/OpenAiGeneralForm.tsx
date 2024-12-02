@@ -141,8 +141,8 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
           onSubmit(values);
         }
       }}
-      innerRef={formRef}
       enableReinitialize={true}
+      innerRef={formRef}
     >
       {({ values }) => {
         return (

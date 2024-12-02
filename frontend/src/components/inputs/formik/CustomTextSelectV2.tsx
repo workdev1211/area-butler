@@ -6,13 +6,13 @@ import { ISelectTextValue } from "../../../../../shared/types/types";
 interface ICustomTextSelectProps {
   customTextValue: string;
   inputLabel: string;
-  label: string;
   name: string;
   selectOptions: ISelectTextValue[];
 
   emptyTextValue?: string;
   isDisabled?: boolean;
   isInput?: boolean;
+  label?: string;
   placeholder?: string;
   textLengthLimit?: number;
 }
@@ -57,9 +57,11 @@ const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
 
   return (
     <div className="form-control">
-      <label className="label">
-        <span className="label-text">{label}</span>
-      </label>
+      {label && (
+        <label className="label">
+          <span className="label-text">{label}</span>
+        </label>
+      )}
 
       <div className="input-bordered rounded-[var(--btn-border-radius)] p-2 pt-3">
         <div className="form-control">

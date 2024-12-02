@@ -2,8 +2,8 @@ import { ChangeEvent, FC, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import {
   allFurnishing,
@@ -20,7 +20,7 @@ import Input from "../components/inputs/formik/Input";
 import Select from "../components/inputs/formik/Select";
 import Checkbox from "../components/inputs/formik/Checkbox";
 import LocationAutocomplete from "../components/LocationAutocomplete";
-import CustomTextSelect from "../components/inputs/formik/CustomTextSelect";
+import CustomTextSelectV2 from "../components/inputs/formik/CustomTextSelectV2";
 import { ApiCoordinates, ISelectTextValue } from "../../../shared/types/types";
 import { TInitRealEstate } from "../pages/RealEstatePage";
 import { toastError } from "../shared/shared.functions";
@@ -83,8 +83,11 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
   const status1SelectOptions = Object.keys(
     ApiRealEstateStatusEnum
   ).map<ISelectTextValue>((status) => ({
-    text: t((IntlKeys.realEstate.statuses as Record<string, string>)[status], status),
-    value: status
+    text: t(
+      (IntlKeys.realEstate.statuses as Record<string, string>)[status],
+      status
+    ),
+    value: status,
   }));
 
   const statusCustTextValue = "custom";
@@ -161,7 +164,6 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      enableReinitialize={true}
       onSubmit={(values) => {
         if (!resultRealEstate.address || !resultRealEstate.coordinates) {
           toastError(t(IntlKeys.realEstate.enterRealEstateAddress));
@@ -174,6 +176,7 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
           coordinates: resultRealEstate.coordinates,
         });
       }}
+      enableReinitialize={true}
     >
       {(props) => {
         const { setFieldValue } = props;
@@ -186,21 +189,19 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
               </Checkbox>
             </div>
             <div className="form-control">
-              <CustomTextSelect
-                label={t(IntlKeys.common.marketingType)}
+              <CustomTextSelectV2
+                inputLabel={t(IntlKeys.common.marketingType)}
                 name="status"
                 selectOptions={status1SelectOptions}
                 customTextValue={statusCustTextValue}
-                initialText={resultRealEstate.status}
               />
             </div>
             <div className="form-control mt-3">
-              <CustomTextSelect
-                label={t(IntlKeys.common.status)}
+              <CustomTextSelectV2
+                inputLabel={t(IntlKeys.common.status)}
                 name="status2"
                 selectOptions={status2SelectOptions}
                 customTextValue={statusCustTextValue}
-                initialText={resultRealEstate.status2}
               />
             </div>
             <div className="form-control">
@@ -257,7 +258,11 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
               )}
               <div className="form-control flex-1">
                 <Input
-                  label={`${isMinPriceNeeded ? t(IntlKeys.realEstate.maxPrice): t(IntlKeys.common.price)} (€)`}
+                  label={`${
+                    isMinPriceNeeded
+                      ? t(IntlKeys.realEstate.maxPrice)
+                      : t(IntlKeys.common.price)
+                  } (€)`}
                   name="price"
                   type="number"
                   placeholder={t(IntlKeys.realEstate.pricePlaceholder)}
@@ -273,7 +278,14 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
                 >
                   {allRealEstateCostTypes.map((costType) => (
                     <option value={costType.type} key={costType.type}>
-                      {t((IntlKeys.realEstate.costTypes as Record<string, string>)[costType.type])}
+                      {t(
+                        (
+                          IntlKeys.realEstate.costTypes as Record<
+                            string,
+                            string
+                          >
+                        )[costType.type]
+                      )}
                     </option>
                   ))}
                 </Select>

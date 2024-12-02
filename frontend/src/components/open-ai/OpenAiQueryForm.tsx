@@ -14,9 +14,9 @@ interface IOpenAiQueryFormListenerProps {
   onValuesChange: (values: IApiOpenAiQuery) => void;
 }
 
-const OpenAiQueryFormListener: FC<
-  IOpenAiQueryFormListenerProps
-> = ({ onValuesChange }): null => {
+const OpenAiQueryFormListener: FC<IOpenAiQueryFormListenerProps> = ({
+  onValuesChange,
+}): null => {
   const { values } = useFormikContext<IApiOpenAiQuery>();
 
   useEffect(() => {
@@ -53,7 +53,6 @@ const OpenAiQueryForm: FC<IQueryFormProps> = ({
 
   return (
     <Formik
-      enableReinitialize={true}
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
@@ -61,6 +60,7 @@ const OpenAiQueryForm: FC<IQueryFormProps> = ({
           onSubmit(values);
         }
       }}
+      enableReinitialize={true}
       innerRef={formRef}
     >
       <Form id={formId}>

@@ -20,6 +20,7 @@ import {
   ResultStatusEnum,
 } from '@area-butler-types/types';
 import { getProcUpdateQuery } from '../shared/functions/shared';
+import { injectUserFilter } from '../shared/functions/user';
 
 interface IFetchByLocationParams {
   address: string;
@@ -70,22 +71,12 @@ export class RealEstateListingService {
     realEstateId: string,
     projectQuery?: ProjectionFields<IApiRealEstateListingSchema>,
   ): Promise<RealEstateListingDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-    const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
-      _id: new Types.ObjectId(realEstateId),
-    };
-
-    Object.assign(
-      filterQuery,
-      isIntegrationUser
-        ? {
-            'integrationParams.integrationUserId': user.integrationUserId,
-            'integrationParams.integrationType': user.integrationType,
-          }
-        : { userId: user.id },
+    return this.realEstateListingModel.findOne(
+      injectUserFilter<IApiRealEstateListingSchema>(user, {
+        _id: new Types.ObjectId(realEstateId),
+      }),
+      projectQuery,
     );
-
-    return this.realEstateListingModel.findOne(filterQuery, projectQuery);
   }
 
   async fetchRealEstateListings(
