@@ -780,7 +780,8 @@
   },
   "errors": {
     "userNotFound": "Usuario no encontrado.",
-    "wrongIntegration": "Tipo de integración incorrecto."
+    "wrongIntegration": "Tipo de integración incorrecto.",
+    "createSnapshot": "Es necesaria la creación de un mapa para realizar esta acción."
   },
   "company": {
     "profile": {
