@@ -212,11 +212,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       >((result, indexName) => {
         const column = columnHelper.accessor(
           (row) =>
-            row.locationIndices
-              ? row.locationIndices[
-                  (locationIndexNames as Record<string, string>)[indexName]
-                ]
-              : undefined,
+            row.locationIndices ? row.locationIndices[indexName] : undefined,
           {
             id: (locationIndexNames as Record<string, string>)[indexName],
             header: t(
