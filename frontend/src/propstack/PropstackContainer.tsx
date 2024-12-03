@@ -116,6 +116,14 @@ const PropstackContainer: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationUser?.accessToken, loginStatus]);
 
+  if (searchContextState.openAiQueryType && !searchContextState.snapshotId) {
+    return (
+      <div className="flex justify-center items-center h-screen text-lg not-sr-only">
+        {t(IntlKeys.errors.createSnapshot)}
+      </div>
+    );
+  }
+
   if (
     !integrationUser ||
     loginStatus?.requestStatus === ResultStatusEnum.FAILURE
