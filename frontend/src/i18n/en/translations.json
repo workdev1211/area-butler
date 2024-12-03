@@ -781,7 +781,7 @@
   "errors": {
     "userNotFound": "User not found!",
     "wrongIntegration": "Wrong integration type!",
-    "createSnapshot": "Please, create a snapshot first!"
+    "createSnapshot": "Map creation is needed to perform this action"
   },
   "company": {
     "profile": {
