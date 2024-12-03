@@ -780,7 +780,8 @@
   },
   "errors": {
     "userNotFound": "Utilisateur non trouvé !",
-    "wrongIntegration": "Mauvais type d'intégration !"
+    "wrongIntegration": "Mauvais type d'intégration !",
+    "createSnapshot": "La création d'une carte est nécessaire pour effectuer cette action"
   },
   "company": {
     "profile": {
