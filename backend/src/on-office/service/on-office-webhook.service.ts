@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { SnapshotExtService } from '../../location/snapshot-ext.service';
 import { IPerformLoginData, OnOfficeService } from './on-office.service';
-import { OpenAiService } from '../../open-ai/open-ai.service';
+import {
+  OpenAiService,
+  TFetchLocRealEstDescParams,
+} from '../../open-ai/open-ai.service';
 import {
   ApiSearchResultSnapshotResponse,
   AreaButlerExportTypesEnum,
@@ -190,38 +193,52 @@ export class OnOfficeWebhookService {
       onOfficeEstate: { lage, objektbeschreibung, ausstatt_beschr },
     },
   }: IGenerateLocDescs): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
-    const requiredLocDescTypes = Object.entries({
-      lage,
-      objektbeschreibung,
-      ausstatt_beschr,
-    }).reduce<Set<TOpenAiLocDescType>>((result, [key, value]) => {
-      const locDescType = onOfficeOpenAiFieldMapper.get(
-        key as OnOfficeOpenAiFieldEnum,
-      );
-
-      if (locDescType && !value) {
-        result.add(locDescType as TOpenAiLocDescType);
-      }
-
-      return result;
-    }, new Set());
-
     const resultSnapshotRes =
       snapshotRes ||
       (await this.openAiExtService.generateSnapshotRes({
         place,
         potentialCustomer,
       }));
+    const defaultData = {
+      realEstate,
+      meanOfTransportation: MeansOfTransportation.WALK,
+      realEstateType: realEstate.type || defaultRealEstType,
+      snapshotRes: resultSnapshotRes,
+      targetGroupName: potentialCustomer.name,
+    };
+    const requiredLocDescTypes = Object.entries({
+      lage,
+      objektbeschreibung,
+      ausstatt_beschr,
+    }).reduce<Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>>(
+      (result, [key, value]) => {
+        const locDescType = onOfficeOpenAiFieldMapper.get(
+          key as OnOfficeOpenAiFieldEnum,
+        );
+
+        const preset = integrationUser.company?.config?.presets?.[locDescType];
+
+        if (locDescType && !value) {
+          result[locDescType] = {
+            ...defaultData,
+            ...preset?.general,
+            ...preset?.locationDescription,
+            ...preset?.realEstateDescription,
+            realEstate: defaultData.realEstate,
+            snapshot: defaultData.snapshotRes,
+            targetGroupName:
+              defaultData.targetGroupName || preset?.general?.targetGroupName,
+          };
+        }
+
+        return result;
+      },
+      {} as Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>,
+    );
 
     return this.openAiService.batchFetchLocDescs(
       integrationUser,
-      {
-        realEstate,
-        meanOfTransportation: MeansOfTransportation.WALK,
-        realEstateType: realEstate.type || defaultRealEstType,
-        snapshotRes: resultSnapshotRes,
-        targetGroupName: potentialCustomer.name,
-      },
+      defaultData,
       requiredLocDescTypes,
     );
   }

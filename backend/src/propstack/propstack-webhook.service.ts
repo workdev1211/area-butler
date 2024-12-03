@@ -26,10 +26,16 @@ import {
   MeansOfTransportation,
   ResultStatusEnum,
 } from '@area-butler-types/types';
-import { OpenAiService } from '../open-ai/open-ai.service';
+import {
+  OpenAiService,
+  TFetchLocRealEstDescParams,
+} from '../open-ai/open-ai.service';
 import { PropstackTextFieldTypeEnum } from '@area-butler-types/propstack';
 import { propstackOpenAiFieldMapper } from '../../../shared/constants/propstack/propstack-constants';
-import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
+import {
+  OpenAiQueryTypeEnum,
+  TOpenAiLocDescType,
+} from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../shared/constants/open-ai';
 
 dayjs.extend(duration);
@@ -133,13 +139,34 @@ export class PropstackWebhookService {
     ) {
       return;
     }
-
-    const openAiDescs = await this.openAiService.batchFetchLocDescs(user, {
+    const defaultParams = {
       meanOfTransportation: MeansOfTransportation.WALK,
       realEstateId: realEstateListing.id,
       realEstateType: defaultRealEstType,
       snapshotId: snapshotResponse.id,
-    });
+    };
+
+    const openAiDescs = await this.openAiService.batchFetchLocDescs(
+      user,
+      defaultParams,
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+      ].reduce((res, type) => {
+        const preset = user.company?.config?.presets?.[type];
+        res[type] = {
+          ...defaultParams,
+          ...(preset?.general as Record<string, unknown>),
+          ...(preset?.locationDescription as Record<string, unknown>),
+          ...(preset?.realEstateType as Record<string, unknown>),
+          realEstateId: defaultParams.realEstateId,
+          snapshotId: defaultParams.snapshotId,
+        };
+        return res;
+      }, {} as Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>),
+    );
 
     const propstackOpenAiDescs = Object.entries(openAiDescs).reduce(
       (result, [openAiLocDescType, locDesc]) => {

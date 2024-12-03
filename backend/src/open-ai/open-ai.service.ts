@@ -31,7 +31,7 @@ type TFetchLocDescParams =
   | (IApiOpenAiLocDescQuery & { snapshotRes?: never })
   | (ILocDescQueryParams & { snapshotId?: never });
 
-type TFetchLocRealEstDescParams =
+export type TFetchLocRealEstDescParams =
   | (IApiOpenAiLocRealEstDescQuery & {
       realEstate?: never;
       snapshotRes?: never;
@@ -304,39 +304,56 @@ export class OpenAiService {
   async batchFetchLocDescs(
     user: UserDocument | TIntegrationUserDocument,
     locRealEstDescParams: TFetchLocRealEstDescParams,
-    requiredLocDescTypes?: Set<TOpenAiLocDescType>,
+    requiredLocDescTypes?: Record<
+      TOpenAiLocDescType,
+      TFetchLocRealEstDescParams
+    >,
   ): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
     const locDescMethods = {
       [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-        description: await this.fetchLocDesc(user, locRealEstDescParams),
+        description: await this.fetchLocDesc(
+          user,
+          requiredLocDescTypes?.[OpenAiQueryTypeEnum.LOCATION_DESCRIPTION] ||
+            locRealEstDescParams,
+        ),
       }),
       [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-        description: await this.fetchLocRealEstDesc(user, locRealEstDescParams),
+        description: await this.fetchLocRealEstDesc(
+          user,
+          requiredLocDescTypes?.[
+            OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+          ] || locRealEstDescParams,
+        ),
       }),
       [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-        description: await this.fetchRealEstDesc(user, locRealEstDescParams),
+        description: await this.fetchRealEstDesc(
+          user,
+          requiredLocDescTypes?.[OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION] ||
+            locRealEstDescParams,
+        ),
       }),
       [OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
         description: await this.fetchEquipmentDesc(
           user as TIntegrationUserDocument,
-          locRealEstDescParams,
+          requiredLocDescTypes?.[OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION] ||
+            locRealEstDescParams,
         ),
       }),
     };
 
-    const resLocDescMethods = requiredLocDescTypes
-      ? [...requiredLocDescTypes].map(
-          (locDescType) => locDescMethods[locDescType],
-        )
-      : Object.values(locDescMethods);
+    const resLocDescMethods = Object.values(locDescMethods).map(
+      (locDescMethod) => ({
+        locDescMethod,
+      }),
+    );
 
     return (
       await Promise.all(
-        resLocDescMethods.map((locDescMethod) => locDescMethod()),
+        resLocDescMethods.map(({ locDescMethod }) => locDescMethod()),
       )
     ).reduce((result, { locDescType, description }) => {
       result[locDescType] = description;
