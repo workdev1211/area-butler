@@ -780,7 +780,8 @@
   },
   "errors": {
     "userNotFound": "Gebruiker niet gevonden!",
-    "wrongIntegration": "Verkeerde integratietype!"
+    "wrongIntegration": "Verkeerde integratietype!",
+    "createSnapshot": "Om deze actie uit te voeren, is het maken van een kaart nodig"
   },
   "company": {
     "profile": {
