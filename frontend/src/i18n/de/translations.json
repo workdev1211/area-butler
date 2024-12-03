@@ -780,13 +780,14 @@
   },
   "errors": {
     "userNotFound": "Benutzer nicht gefunden!",
-    "wrongIntegration": "Falscher Integrationstyp!"
+    "wrongIntegration": "Falscher Integrationstyp!",
+    "createSnapshot": "Zum Ausführen dieser Aktion ist die Erstellung einer Karte erforderlich"
   },
   "company": {
     "profile": {
       "templatePlaceholder": "Geben Sie eine Adresse oder eine vorhandene Snapshot-ID ein...",
       "templateIdLabel": "Vorlage für alle User auswählen und fixieren",
-      "exportMatching": "Export Zuordnung",
+      "exportMatching": "Feld Mapping",
       "exportMatchDescription": "Zuordnung der Informationen zu Feldern im verwendeten CRM."
     }
   }
