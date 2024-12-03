@@ -780,7 +780,8 @@
   },
   "errors": {
     "userNotFound": "Utente non trovato!",
-    "wrongIntegration": "Tipo di integrazione sbagliato!"
+    "wrongIntegration": "Tipo di integrazione sbagliato!",
+    "createSnapshot": "Per eseguire questa azione è necessaria la creazione della mappa"
   },
   "company": {
     "profile": {
