@@ -32,6 +32,7 @@ import { RealEstateListingIntService } from '../../real-estate-listing/real-esta
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { checkIsSearchNotUnlocked } from '../../../../shared/functions/integration.functions';
 
 interface IGenerateLocDescs {
   loginData: IPerformLoginData;
@@ -248,10 +249,6 @@ export class OnOfficeWebhookService {
     endpoint: OnOfficeWebhookUrlEnum,
     realEstate: ApiRealEstateListing,
   ): Promise<ApiRealEstateListing> {
-    if (integrationUser.subscription) {
-      return realEstate;
-    }
-
     const actionType = [
       OnOfficeWebhookUrlEnum.CREATE_LOC_DESCS,
       OnOfficeWebhookUrlEnum.CREATE_LOC_DESCS_MAP,
@@ -259,6 +256,17 @@ export class OnOfficeWebhookService {
     ].includes(endpoint)
       ? IntegrationActionTypeEnum.UNLOCK_OPEN_AI
       : IntegrationActionTypeEnum.UNLOCK_SEARCH;
+
+    const isUnlockNotNeeded =
+      integrationUser.subscription ||
+      (actionType === IntegrationActionTypeEnum.UNLOCK_OPEN_AI &&
+        realEstate.openAiRequestQuantity) ||
+      (actionType === IntegrationActionTypeEnum.UNLOCK_SEARCH &&
+        checkIsSearchNotUnlocked(realEstate));
+
+    if (isUnlockNotNeeded) {
+      return realEstate;
+    }
 
     const integrationId = realEstate.integrationId;
 
