@@ -6,9 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "copyfe": "mkdir -p dist/static/main && mkdir -p dist/static/embed && mkdir -p dist/static/on-office && mkdir -p dist/static/propstack && mkdir -p dist/static/my-vivenda && cp -R ../frontend/build-main/* dist/static/main && cp -R ../frontend/build-embed/* dist/static/embed && cp -R ../frontend/build-on-office/* dist/static/on-office && cp -R ../frontend/build-propstack/* dist/static/propstack && cp -R ../frontend/build-my-vivenda/* dist/static/my-vivenda",
     "prebuild": "rimraf dist",
-    "build": "nest build && npm run copyfe",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

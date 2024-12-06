@@ -37,7 +37,7 @@ import { CompanyUserModule } from './company-user/company-user.module';
     ServeStaticModule.forRoot(
       {
         rootPath: join(__dirname, '..', '..', 'static/main'),
-        exclude: ['/embed/*', '/on-office/*', '/propstack/*', '/my-vivenda/*'],
+        exclude: ['/embed/(.*)', '/on-office/(.*)', '/propstack/(.*)', '/my-vivenda/(.*)'],
       },
       {
         serveRoot: '/embed',
