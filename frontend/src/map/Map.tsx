@@ -644,6 +644,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           } else {
             container?.classList.remove("small-markers");
           }
+
+          if (localMap.getZoom() < 17) {            
+            const els = document.getElementsByClassName("locality-marker");
+            [].forEach.call(els, function (elem: HTMLElement) { 	
+              elem.style.cssText = "width:5px;height:5px;padding:0px;border:none;background-color: " + elem.style.cssText.replace("border-color: ", "");
+              elem.firstChild && elem.firstChild.remove();
+            });
+          } else {
+            void drawAmenityMarkers();
+          }
         }
       });
 
@@ -1069,8 +1079,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
 
-    // draw POIs (amenities)
-    useEffect(() => {
+    const drawAmenityMarkers = () => {
       if (!currentMap) {
         return;
       }
@@ -1082,195 +1091,196 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         groupedEntitiesStringified
       );
 
-      const drawAmenityMarkers = () => {
-        currentMap!.removeLayer(amenityMarkerGroup);
+      currentMap!.removeLayer(amenityMarkerGroup);
 
-        amenityMarkerGroup = L.markerClusterGroup({
-          iconCreateFunction: (cluster) => {
-            const groupedMarkers = groupBy(
-              cluster.getAllChildMarkers().map((m) => m.getIcon().options),
-              (i: any) => i.iconUrl
-            );
-
-            const countedMarkers = Object.entries(groupedMarkers)
-              .map(([key, value]) => ({
-                key,
-                icon: (value as any)[0].html,
-                count: (value as any).length,
-              }))
-              .sort((a, b) => b.count - a.count);
-
-            const markerIcons = countedMarkers.map(
-              (cm) =>
-                '<div class="flex items-center gap-0.5">' +
-                cm.icon +
-                `<span class="cluster-icon-counter">${cm.count}</span>` +
-                "</div>"
-            );
-
-            return L.divIcon({
-              html:
-                '<div class="cluster-icon-wrapper">' +
-                markerIcons.join("") +
-                "</div>",
-              className: "cluster-icon",
-            });
-          },
-          maxClusterRadius: 200,
-          polygonOptions: { color: config?.primaryColor || "#fff" },
-          disableClusteringAtZoom: config?.groupItems ? 17 : 1,
-          spiderfyOnMaxZoom: false,
-          animate: true,
-          zoomToBoundsOnClick: true,
-        });
-
-        // set realEstateListing to active if theme is KF and group is real estate listings
-        // if (config?.theme === "KF") {
-        //   parsedEntityGroups = parsedEntityGroups.map((peg) => ({
-        //     ...peg,
-        //     active:
-        //       config.theme === "KF" && peg.title === realEstateListingsTitle
-        //         ? true
-        //         : peg.active,
-        //   }));
-        // }
-
-        // Add each POI to the marker cluster group
-        parsedEntities?.every((entity) => {
-          if (
-            !parsedEntityGroups.some(
-              ({ active, name }) =>
-                osmEntityMapper.getGrpNameByOsmName(entity.osmName) === name &&
-                active
-            )
-          ) {
-            return true;
-          }
-
-          const isRealEstateListing = entity.osmName === OsmName.property;
-          const isPreferredLocation = entity.osmName === OsmName.favorite;
-
-          if (
-            config?.hidePoiIcons &&
-            !isRealEstateListing &&
-            !isPreferredLocation
-          ) {
-            return true;
-          }
-
-          let markerIcon!: IPoiIcon;
-
-          if (isRealEstateListing) {
-            markerIcon = config?.mapIcon
-              ? {
-                  icon: config?.mapIcon,
-                  color:
-                    config.primaryColor ?? getRealEstateListingsIcon().color,
-                  isCustom: true,
-                }
-              : getRealEstateListingsIcon(mapPoiIcons);
-          }
-
-          if (isPreferredLocation) {
-            markerIcon = getPreferredLocationsIcon(mapPoiIcons);
-          }
-
-          if (!markerIcon) {
-            markerIcon = deriveIconForPoiGroup(
-              osmEntityMapper.getGrpNameByOsmName(entity.osmName),
-              mapPoiIcons
-            );
-          }
-
-          const resultingIconSize =
-            config?.iconSizes?.poiIconSize || defaultAmenityIconSize;
-          const leafletIconSize = new L.Point(
-            resultingIconSize,
-            resultingIconSize
+      amenityMarkerGroup = L.markerClusterGroup({
+        iconCreateFunction: (cluster) => {
+          const groupedMarkers = groupBy(
+            cluster.getAllChildMarkers().map((m) => m.getIcon().options),
+            (i: any) => i.iconUrl
           );
 
-          const resultingIconStyleSize =
-            ((config?.mapIcon || config?.primaryColor) &&
-              isRealEstateListing) ||
-            markerIcon.isCustom
-              ? resultingIconSize
-              : Math.floor(resultingIconSize / 2);
-          const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;
-          const backColorClass = entity.isFiltered
-            ? "bg-gray-200"
-            : markerIcon.isCustom
-            ? "bg-transparent"
-            : "bg-white";
+          const countedMarkers = Object.entries(groupedMarkers)
+            .map(([key, value]) => ({
+              key,
+              icon: (value as any)[0].html,
+              count: (value as any).length,
+            }))
+            .sort((a, b) => b.count - a.count);
 
-          let html = `<div class="locality-marker ${backColorClass}" style="border-color: ${
-            markerIcon.color
-          };${
-            entity.isFiltered ? "filter: brightness(75%) grayscale(100%);" : ""
-          }"><img src="${markerIcon.icon}" alt="marker-icon" class="${
-            entity.osmName
-          } locality-icon" style="${iconStyle}" /></div>`;
+          const markerIcons = countedMarkers.map(
+            (cm) =>
+              '<div class="flex items-center gap-0.5">' +
+              cm.icon +
+              `<span class="cluster-icon-counter">${cm.count}</span>` +
+              "</div>"
+          );
 
-          if ((config?.mapIcon && isRealEstateListing) || markerIcon.isCustom) {
-            html = `<img src="${
-              markerIcon.icon
-            }" alt="marker-icon-custom" class="${
-              entity.osmName
-            } locality-icon-custom ${backColorClass}" style="${iconStyle}${
-              entity.isFiltered
-                ? "filter: brightness(75%) grayscale(100%);"
-                : ""
-            }" />`;
-          } else if (config?.primaryColor && isRealEstateListing) {
-            html = renderToStaticMarkup(
-              <DefaultMarker
-                fill={config.primaryColor}
-                className="locality-icon-custom"
-                style={{
-                  width: "auto",
-                  height: resultingIconStyleSize,
-                  filter: entity.isFiltered
-                    ? "brightness(75%) grayscale(100%)"
-                    : "",
-                }}
-              />
-            );
-          }
-
-          const icon = L.divIcon({
-            iconUrl: markerIcon.icon,
-            shadowUrl: leafletShadow,
-            shadowSize: [0, 0],
-            iconSize: leafletIconSize,
-            className: `locality-marker-wrapper ${
-              (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
-                ? "locality-marker-wrapper-custom"
-                : ""
-            } icon-${entity.osmName}`,
-            html,
+          return L.divIcon({
+            html:
+              '<div class="cluster-icon-wrapper">' +
+              markerIcons.join("") +
+              "</div>",
+            className: "cluster-icon",
           });
+        },
+        maxClusterRadius: 200,
+        polygonOptions: { color: config?.primaryColor || "#fff" },
+        disableClusteringAtZoom: config?.groupItems ? 17 : 1,
+        spiderfyOnMaxZoom: false,
+        animate: true,
+        zoomToBoundsOnClick: true,
+      });
 
-          const marker = new IdMarker({
-            config,
-            entity,
-            searchAddress,
-            hideEntity: isEditorMode ? hideEntity : undefined,
-            latLng: entity.coordinates,
-            options: {
-              icon,
-            },
-          }).on("click", (e) => {
-            const marker = e.target;
-            marker.createOpenPopup();
-          });
+      // set realEstateListing to active if theme is KF and group is real estate listings
+      // if (config?.theme === "KF") {
+      //   parsedEntityGroups = parsedEntityGroups.map((peg) => ({
+      //     ...peg,
+      //     active:
+      //       config.theme === "KF" && peg.title === realEstateListingsTitle
+      //         ? true
+      //         : peg.active,
+      //   }));
+      // }
 
-          amenityMarkerGroup.addLayer(marker);
-
+      // Add each POI to the marker cluster group
+      parsedEntities?.every((entity) => {
+        if (
+          !parsedEntityGroups.some(
+            ({ active, name }) =>
+              osmEntityMapper.getGrpNameByOsmName(entity.osmName) === name &&
+              active
+          )
+        ) {
           return true;
+        }
+
+        const isRealEstateListing = entity.osmName === OsmName.property;
+        const isPreferredLocation = entity.osmName === OsmName.favorite;
+
+        if (
+          config?.hidePoiIcons &&
+          !isRealEstateListing &&
+          !isPreferredLocation
+        ) {
+          return true;
+        }
+
+        let markerIcon!: IPoiIcon;
+
+        if (isRealEstateListing) {
+          markerIcon = config?.mapIcon
+            ? {
+                icon: config?.mapIcon,
+                color:
+                  config.primaryColor ?? getRealEstateListingsIcon().color,
+                isCustom: true,
+              }
+            : getRealEstateListingsIcon(mapPoiIcons);
+        }
+
+        if (isPreferredLocation) {
+          markerIcon = getPreferredLocationsIcon(mapPoiIcons);
+        }
+
+        if (!markerIcon) {
+          markerIcon = deriveIconForPoiGroup(
+            osmEntityMapper.getGrpNameByOsmName(entity.osmName),
+            mapPoiIcons
+          );
+        }
+
+        const resultingIconSize =
+          config?.iconSizes?.poiIconSize || defaultAmenityIconSize;
+        const leafletIconSize = new L.Point(
+          resultingIconSize,
+          resultingIconSize
+        );
+
+        const resultingIconStyleSize =
+          ((config?.mapIcon || config?.primaryColor) &&
+            isRealEstateListing) ||
+          markerIcon.isCustom
+            ? resultingIconSize
+            : Math.floor(resultingIconSize / 2);
+        const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;
+        const backColorClass = entity.isFiltered
+          ? "bg-gray-200"
+          : markerIcon.isCustom
+          ? "bg-transparent"
+          : "bg-white";
+
+        let html = `<div class="locality-marker ${backColorClass}" style="border-color: ${
+          markerIcon.color
+        };${
+          entity.isFiltered ? "filter: brightness(75%) grayscale(100%);" : ""
+        }"><img src="${markerIcon.icon}" alt="marker-icon" class="${
+          entity.osmName
+        } locality-icon" style="${iconStyle}" /></div>`;
+
+        if ((config?.mapIcon && isRealEstateListing) || markerIcon.isCustom) {
+          html = `<img src="${
+            markerIcon.icon
+          }" alt="marker-icon-custom" class="${
+            entity.osmName
+          } locality-icon-custom ${backColorClass}" style="${iconStyle}${
+            entity.isFiltered
+              ? "filter: brightness(75%) grayscale(100%);"
+              : ""
+          }" />`;
+        } else if (config?.primaryColor && isRealEstateListing) {
+          html = renderToStaticMarkup(
+            <DefaultMarker
+              fill={config.primaryColor}
+              className="locality-icon-custom"
+              style={{
+                width: "auto",
+                height: resultingIconStyleSize,
+                filter: entity.isFiltered
+                  ? "brightness(75%) grayscale(100%)"
+                  : "",
+              }}
+            />
+          );
+        }
+
+        const icon = L.divIcon({
+          iconUrl: markerIcon.icon,
+          shadowUrl: leafletShadow,
+          shadowSize: [0, 0],
+          iconSize: leafletIconSize,
+          className: `locality-marker-wrapper ${
+            (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
+              ? "locality-marker-wrapper-custom"
+              : ""
+          } icon-${entity.osmName}`,
+          html,
         });
 
-        currentMap!.addLayer(amenityMarkerGroup);
-      };
+        const marker = new IdMarker({
+          config,
+          entity,
+          searchAddress,
+          hideEntity: isEditorMode ? hideEntity : undefined,
+          latLng: entity.coordinates,
+          options: {
+            icon,
+          },
+        }).on("click", (e) => {
+          const marker = e.target;
+          marker.createOpenPopup();
+        });
 
+        amenityMarkerGroup.addLayer(marker);
+
+        return true;
+      });
+
+      currentMap!.addLayer(amenityMarkerGroup);
+    };
+
+    // draw POIs (amenities)
+    useEffect(() => {
       void drawAmenityMarkers();
 
       // config?.showLocation and config?.showAddress are required for the "Objekt anzeigen" and "Adresse anzeigen" checkboxes
