@@ -740,7 +740,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
     // draw map icon (my location)
     useEffect(() => {
-      if (!currentMap || !config?.showLocation) {
+      if (!currentMap || (!config?.showAddress && !config?.showLocation)) {
         return;
       }
 
