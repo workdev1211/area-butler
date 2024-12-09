@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  IsBoolean,
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
@@ -21,6 +22,11 @@ class ExpMatchParams implements IIntUserExpMatchParams {
   @IsInt()
   @IsPositive()
   maxTextLength?: number;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  isSpecialLink?: boolean;
 }
 
 export default ExpMatchParams;

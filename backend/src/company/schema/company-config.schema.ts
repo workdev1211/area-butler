@@ -46,9 +46,6 @@ class CompanyConfig implements ICompanyConfig {
   @Prop({ type: Array })
   extraMapboxStyles?: IApiMapboxStyle[];
 
-  @Prop({ type: Boolean })
-  isSpecialLink?: boolean;
-
   @Prop({ type: String })
   logo?: string;
 

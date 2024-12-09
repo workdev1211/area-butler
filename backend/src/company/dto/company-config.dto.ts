@@ -1,6 +1,5 @@
 import {
   IsArray,
-  IsBoolean,
   IsEnum,
   IsMongoId,
   IsObject,
@@ -61,11 +60,6 @@ class CompanyConfigDto implements ICompanyConfig {
   @IsArray()
   @ValidateNested({ each: true })
   extraMapboxStyles?: IApiMapboxStyle[];
-
-  @Expose()
-  @IsOptional()
-  @IsBoolean()
-  isSpecialLink?: boolean;
 
   @Expose()
   @IsOptional()

@@ -381,6 +381,7 @@ export class PropstackService {
         is_embedable: true,
         on_landing_page: true,
         property_id: parseInt(integrationId, 10),
+        is_private: false,
       },
     );
   }

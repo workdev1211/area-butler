@@ -197,9 +197,18 @@ export class PropstackWebhookService {
         this.propstackApiService.createPropertyLink(propstackApiKey, {
           property_id: resultProperty.id,
           title: 'Interaktive Karte',
-          url: createDirectLink(snapshotResponse),
+          url: createDirectLink(snapshotResponse, true),
+          on_landing_page: false,
+          is_embedable: false,
+          is_private: true,
+        }),
+        this.propstackApiService.createPropertyLink(propstackApiKey, {
+          property_id: resultProperty.id,
+          title: 'Interaktive Karte',
+          url: createDirectLink(snapshotResponse, false),
           on_landing_page: true,
           is_embedable: true,
+          is_private: false,
         }),
       ])
     ).forEach((response) => {

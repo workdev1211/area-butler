@@ -45,7 +45,6 @@ export const up = async ({
     'config.color': 1,
     'config.exportMatching': 1,
     'config.extraMapboxStyles': 1,
-    'config.isSpecialLink': 1,
     'config.logo': 1,
     'config.mapboxAccessToken': 1,
     'config.mapIcon': 1,
