@@ -269,7 +269,7 @@ const EditorTab: FC<IEditorTabProps> = ({
   const backgroundColor = config.primaryColor || "var(--primary-gradient)";
 
   return (
-    <div className="editor-tab z-9000" data-tour="editor-map-menu">
+    <div className="editor-tab" data-tour="editor-map-menu">
       <div
         q-id="poi-filter"
         className={

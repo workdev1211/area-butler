@@ -39,7 +39,7 @@ const MapTab: FC<IMapTabProps> = ({
     responseConfig?.primaryColor || "var(--primary-gradient)";
 
   return (
-    <div className="map-tab z-9000">
+    <div className="map-tab">
       <Localities
         toggleAllLocalities={toggleAllLocalities}
         toggleRoute={toggleRoute}

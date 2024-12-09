@@ -40,7 +40,7 @@ const DataTab: FC<IDataTabProps> = ({
     "var(--primary-gradient)";
 
   return (
-    <div className="data-tab z-9000">
+    <div className="data-tab">
       <LocationExport
         snapshotId={snapshotId}
         hasOpenAiFeature={hasOpenAiFeature}

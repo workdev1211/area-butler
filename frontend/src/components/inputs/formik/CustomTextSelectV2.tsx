@@ -36,7 +36,7 @@ const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
   const [isCustomText, setIsCustomText] = useState(false);
 
   let selectedValue = selectOptions.find(
-    ({ text }) => text === currentText
+    ({ value }) => value === currentText
   )?.value;
 
   if (!selectedValue && !isCustomText && !currentText && emptyTextValue) {
@@ -50,16 +50,17 @@ const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
   useEffect(() => {
     setIsCustomText(
       initialText
-        ? !selectOptions.find(({ text }) => text === initialText)?.value
+        ? !selectOptions.find(({ value }) => value === initialText)?.value
         : false
     );
-  }, [initialText, selectOptions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialText]);
 
   return (
     <div className="form-control">
       {label && (
         <label className="label">
-          <span className="label-text">{label}</span>
+          <span className="label-text" style={{ zIndex: 0 }}>{label}</span>
         </label>
       )}
 
@@ -85,7 +86,7 @@ const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
               }
 
               setIsCustomText(false);
-              setValue(selectedOptions[0].text);
+              setValue(selectedOptions[0].value);
             }}
           >
             {selectOptions.map(({ text, value: sValue }) => (
