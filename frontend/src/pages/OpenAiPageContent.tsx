@@ -57,6 +57,7 @@ const OpenAiPageContent: FC<{ embedded: boolean }> = ({ embedded = true }) => {
         />
       )}
 
+      {/* TODO translation required */}
       {embedded && (
         <h1 className="text-xl gap-2">KI Texte aus der magischen Feder</h1>
       )}

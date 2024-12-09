@@ -63,6 +63,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({
       forbidUnknownValues: true,
+      transform: true,
       transformOptions: { exposeUnsetFields: false },
     }),
   );
