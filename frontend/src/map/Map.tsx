@@ -98,6 +98,7 @@ export class IdMarker extends L.Marker {
   searchAddress: string;
   config?: ApiSearchResultSnapshotConfig;
   hideEntity?: (entity: ResultEntity) => void;
+  defaultHtml?: string = '';
 
   constructor({
     entity,
@@ -122,6 +123,14 @@ export class IdMarker extends L.Marker {
     this.hideEntity = hideEntity;
   }
 
+  getDefaultHtml(): string {
+    return this.defaultHtml || '';
+  }
+
+  setDefaultHtml(html: string): void {
+    this.defaultHtml = html;
+  }
+
   getEntity(): ResultEntity {
     return this.entity;
   }
@@ -133,7 +142,7 @@ export class IdMarker extends L.Marker {
   createPopupContent(): void {
     const osmName = i18.t(
       (IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>)[
-        this.entity.osmName
+      this.entity.osmName
       ]
     );
     const entityTitle = this.entity.name || osmName;
@@ -149,10 +158,10 @@ export class IdMarker extends L.Marker {
     const searchString = [
       groupName
         ? i18.t(
-            (
-              IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
-            )[groupName]
-          )
+          (
+            IntlKeys.snapshotEditor.pointsOfInterest as Record<string, string>
+          )[groupName]
+        )
         : "",
       entityTitle,
       this.entity?.address?.street !== "undefined"
@@ -166,10 +175,10 @@ export class IdMarker extends L.Marker {
     const title =
       this.entity.osmName !== OsmName.property
         ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
-            searchString
-          )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />${i18.t(
-            IntlKeys.snapshotEditor.moreInfo
-          )}</a></h4>`
+          searchString
+        )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />${i18.t(
+          IntlKeys.snapshotEditor.moreInfo
+        )}</a></h4>`
         : `${entityTitle}`;
 
     const isRealEstateListing = this.entity.osmName === OsmName.property;
@@ -179,54 +188,49 @@ export class IdMarker extends L.Marker {
 
     const byFoot = this.entity.byFoot
       ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(
-          convertMetersToMinutes(
-            this.entity.distanceInMeters,
-            MeansOfTransportation.WALK
-          )
-        )}</span></span>`
+        convertMetersToMinutes(
+          this.entity.distanceInMeters,
+          MeansOfTransportation.WALK
+        )
+      )}</span></span>`
       : "";
 
     const byBike = this.entity.byBike
       ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(
-          convertMetersToMinutes(
-            this.entity.distanceInMeters,
-            MeansOfTransportation.BICYCLE
-          )
-        )}</span></span>`
+        convertMetersToMinutes(
+          this.entity.distanceInMeters,
+          MeansOfTransportation.BICYCLE
+        )
+      )}</span></span>`
       : "";
 
     const byCar = this.entity.byCar
       ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(
-          convertMetersToMinutes(
-            this.entity.distanceInMeters,
-            MeansOfTransportation.CAR
-          )
-        )}</span></span>`
+        convertMetersToMinutes(
+          this.entity.distanceInMeters,
+          MeansOfTransportation.CAR
+        )
+      )}</span></span>`
       : "";
 
     const street =
       this.entity?.address?.street &&
-      this.entity?.address?.street !== "undefined"
+        this.entity?.address?.street !== "undefined"
         ? this.entity.address.street
         : null;
 
     if (this.entity.osmName !== OsmName.property) {
-      let content = `<span class="font-semibold">${entityTitle}</span><br />${
-        this.entity.name ? "<span>" + osmName + "</span><br />" : ""
-      }<br />
-        <span class="font-semibold mt-2">${title}</span><br />${
-        street ? "<div>" + street + "</div><br />" : ""
-      }<div class="flex gap-6">${
-        !isRealEstateListingOrPreferredAddress ? byFoot : ""
-      }${!isRealEstateListingOrPreferredAddress ? byBike : ""}${
-        !isRealEstateListingOrPreferredAddress ? byCar : ""
-      }</div>`;
+      let content = `<span class="font-semibold">${entityTitle}</span><br />${this.entity.name ? "<span>" + osmName + "</span><br />" : ""
+        }<br />
+        <span class="font-semibold mt-2">${title}</span><br />${street ? "<div>" + street + "</div><br />" : ""
+        }<div class="flex gap-6">${!isRealEstateListingOrPreferredAddress ? byFoot : ""
+        }${!isRealEstateListingOrPreferredAddress ? byBike : ""}${!isRealEstateListingOrPreferredAddress ? byCar : ""
+        }</div>`;
 
       if (this.hideEntity) {
         content =
           content +
-          `<br /><button id="hide-btn-${
-            this.entity.id
+          `<br /><button id="hide-btn-${this.entity.id
           }" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">${i18.t(
             IntlKeys.snapshotEditor.hide
           )}</button>`;
@@ -267,8 +271,7 @@ export class IdMarker extends L.Marker {
       realEstateInfoParts.push(
         `<span class="font-semibold mt-2">${i18.t(
           IntlKeys.snapshotEditor.size
-        )}: </span> ${startingAt} ${
-          realEstateData?.characteristics?.realEstateSizeInSquareMeters
+        )}: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters
         } &#13217;`
       );
     }
@@ -286,8 +289,7 @@ export class IdMarker extends L.Marker {
 
     if (this.entity.externalUrl?.length) {
       realEstateInfoParts.push(
-        `<a target="_blank" href="${
-          this.entity.externalUrl
+        `<a target="_blank" href="${this.entity.externalUrl
         }" class="real-estate-cta">${i18.t(
           IntlKeys.snapshotEditor.directlyToTheObject
         )} ></a>`
@@ -296,8 +298,7 @@ export class IdMarker extends L.Marker {
 
     if (this.hideEntity) {
       realEstateInfoParts.push(
-        `<br /><button id="hide-btn-${
-          this.entity.id
+        `<br /><button id="hide-btn-${this.entity.id
         }" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">${i18.t(
           IntlKeys.snapshotEditor.hide
         )}</button>`
@@ -580,9 +581,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         attribution;
 
       const url = isEmbedMode
-        ? `${
-            process.env.REACT_APP_BASE_URL || ""
-          }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}`
+        ? `${process.env.REACT_APP_BASE_URL || ""
+        }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}`
         : "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}";
 
       if (currentMap !== undefined) {
@@ -645,10 +645,10 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             container?.classList.remove("small-markers");
           }
 
-          if (localMap.getZoom() < 17) {            
+          if (localMap.getZoom() < 17) {
             const els = document.getElementsByClassName("locality-marker");
-            [].forEach.call(els, function (elem: HTMLElement) { 	
-              elem.style.cssText = "width:5px;height:5px;padding:0px;border:none;background-color: " + elem.style.cssText.replace("border-color: ", "");
+            [].forEach.call(els, function (elem: HTMLElement) {
+              elem.style.cssText = "width:4px;height:4px;padding:0px;border:none;background-color: " + elem.style.cssText.replace("border-color: ", "");
               elem.firstChild && elem.firstChild.remove();
             });
           } else {
@@ -1001,14 +1001,12 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                   }),
                 })
                   .bindPopup(
-                    `<h4 class="font-semibold">Route zu ${
-                      entityRoute.title
+                    `<h4 class="font-semibold">Route zu ${entityRoute.title
                     }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
                       r.meansOfTransportation
-                    )} alt="icon" /><span>${
-                      Number.isNaN(durationInMinutes)
-                        ? durationInMinutes
-                        : timeToHumanReadable(durationInMinutes)
+                    )} alt="icon" /><span>${Number.isNaN(durationInMinutes)
+                      ? durationInMinutes
+                      : timeToHumanReadable(durationInMinutes)
                     }</span></span></div>`
                   )
                   .addTo(routesGroup);
@@ -1029,10 +1027,9 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 (s) =>
                   `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
                     s.transportMode
-                  )} alt="icon"/><span>${
-                    Number.isNaN(s.duration)
-                      ? s.duration
-                      : timeToHumanReadable(s.duration)
+                  )} alt="icon"/><span>${Number.isNaN(s.duration)
+                    ? s.duration
+                    : timeToHumanReadable(s.duration)
                   }</span></span>`
               )
               .join("➟");
@@ -1049,12 +1046,10 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 }),
               })
                 .bindPopup(
-                  `<h4 class="font-semibold">ÖPNV Route zu ${
-                    entityRoute.title
-                  } (${
-                    Number.isNaN(fullDuration)
-                      ? fullDuration
-                      : timeToHumanReadable(fullDuration)
+                  `<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title
+                  } (${Number.isNaN(fullDuration)
+                    ? fullDuration
+                    : timeToHumanReadable(fullDuration)
                   })</h4><br/><div class="flex flex-wrap items-center gap-2">${popupContent}</div>`
                 )
                 .addTo(routesGroup);
@@ -1171,11 +1166,11 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         if (isRealEstateListing) {
           markerIcon = config?.mapIcon
             ? {
-                icon: config?.mapIcon,
-                color:
-                  config.primaryColor ?? getRealEstateListingsIcon().color,
-                isCustom: true,
-              }
+              icon: config?.mapIcon,
+              color:
+                config.primaryColor ?? getRealEstateListingsIcon().color,
+              isCustom: true,
+            }
             : getRealEstateListingsIcon(mapPoiIcons);
         }
 
@@ -1200,34 +1195,28 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         const resultingIconStyleSize =
           ((config?.mapIcon || config?.primaryColor) &&
             isRealEstateListing) ||
-          markerIcon.isCustom
+            markerIcon.isCustom
             ? resultingIconSize
             : Math.floor(resultingIconSize / 2);
         const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;
         const backColorClass = entity.isFiltered
           ? "bg-gray-200"
           : markerIcon.isCustom
-          ? "bg-transparent"
-          : "bg-white";
+            ? "bg-transparent"
+            : "bg-white";
 
-        let html = `<div class="locality-marker ${backColorClass}" style="border-color: ${
-          markerIcon.color
-        };${
-          entity.isFiltered ? "filter: brightness(75%) grayscale(100%);" : ""
-        }"><img src="${markerIcon.icon}" alt="marker-icon" class="${
-          entity.osmName
-        } locality-icon" style="${iconStyle}" /></div>`;
+        let html = `<div class="locality-marker ${backColorClass}" style="border-color: ${markerIcon.color
+          };${entity.isFiltered ? "filter: brightness(75%) grayscale(100%);" : ""
+          }"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.osmName
+          } locality-icon" style="${iconStyle}" /></div>`;
 
         if ((config?.mapIcon && isRealEstateListing) || markerIcon.isCustom) {
-          html = `<img src="${
-            markerIcon.icon
-          }" alt="marker-icon-custom" class="${
-            entity.osmName
-          } locality-icon-custom ${backColorClass}" style="${iconStyle}${
-            entity.isFiltered
+          html = `<img src="${markerIcon.icon
+            }" alt="marker-icon-custom" class="${entity.osmName
+            } locality-icon-custom ${backColorClass}" style="${iconStyle}${entity.isFiltered
               ? "filter: brightness(75%) grayscale(100%);"
               : ""
-          }" />`;
+            }" />`;
         } else if (config?.primaryColor && isRealEstateListing) {
           html = renderToStaticMarkup(
             <DefaultMarker
@@ -1249,11 +1238,10 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
           iconSize: leafletIconSize,
-          className: `locality-marker-wrapper ${
-            (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
+          className: `locality-marker-wrapper ${(isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
               ? "locality-marker-wrapper-custom"
               : ""
-          } icon-${entity.osmName}`,
+            } icon-${entity.osmName}`,
           html,
         });
 
@@ -1269,8 +1257,23 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         }).on("click", (e) => {
           const marker = e.target;
           marker.createOpenPopup();
+        }).on("mouseover", (e) => {
+          const marker = e.target;
+          if (currentMap && currentMap?.getZoom() < 17) {
+            const icon: L.DivIcon = marker.getIcon();
+            icon.options.html = marker.getDefaultHtml();
+            marker.setIcon(icon);
+          }
+        }).on("mouseout", (e) => {
+          const marker = e.target;
+          if (currentMap && currentMap?.getZoom() < 17) {
+            const elem = marker.getElement().querySelector('.locality-marker') as HTMLElement;
+            elem.style.cssText = "width:4px;height:4px;padding:0px;border:none;background-color: " + elem.style.cssText.replace("border-color: ", "");
+            elem.firstChild && elem.firstChild.remove();
+          }
         });
 
+        marker.setDefaultHtml(html);
         amenityMarkerGroup.addLayer(marker);
 
         return true;
@@ -1314,8 +1317,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
       mapIcon.options.html = mapIconHtml.replace(
         /^(.*style=")[^<]*(".*)$/,
-        `$1width: ${
-          resultingMapIconSize * mapIconRatio
+        `$1width: ${resultingMapIconSize * mapIconRatio
         }px; height: ${resultingMapIconSize}px;$2`
       );
 
