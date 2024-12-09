@@ -40,7 +40,6 @@ export interface ICompanyConfig {
   exportFonts?: IApiUserExportFont[];
   exportMatching?: TCompanyExportMatch;
   extraMapboxStyles?: IApiMapboxStyle[];
-  isSpecialLink?: boolean;
   logo?: string;
   mapboxAccessToken?: string;
   mapIcon?: string;
@@ -68,7 +67,11 @@ export interface IApiCompanyPreset {
 
 export type TCompanyExportMatch = Partial<
   Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
->;
+> & {
+  isPrivate?: boolean;
+  isEmbedable?: boolean;
+  onLandingPage?: boolean;
+};
 
 export interface ICompanySchema {
   config?: ICompanyConfig;

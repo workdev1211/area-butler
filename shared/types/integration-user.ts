@@ -131,6 +131,7 @@ export type TApiIntegrationUserProductsUsed = Partial<
 export interface IIntUserExpMatchParams {
   fieldId: string;
   maxTextLength?: number;
+  isSpecialLink?: boolean;
 }
 
 export interface IApiIntUserLoginRes {
