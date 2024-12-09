@@ -1,7 +1,7 @@
 import { FunctionComponent, useRef } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import ReactToPrint from "react-to-print";
 
@@ -26,7 +26,9 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
   const { t } = useTranslation();
   const componentRef = useRef(null);
 
-  let documentTitle = `${t(IntlKeys.snapshotEditor.dataTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(
+    IntlKeys.snapshotEditor.dataTab.myLocation
+  )}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -55,7 +57,7 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
               >
                 <div
                   className="tooltip tooltip-left tooltip-accent text-justify font-bold text-white"
-                  data-tip="Bitte benutzen Sie den Google Chrome Browser. Andere Browser werden das pdf nicht korrekt generieren."
+                  data-tip={t(IntlKeys.snapshotEditor.dataTab.useChrome)}
                 >
                   i
                 </div>

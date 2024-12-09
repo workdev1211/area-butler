@@ -1,6 +1,9 @@
 import { useContext } from "react";
 import { AxiosResponse } from "axios";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import { useHttp } from "../../hooks/http";
 import {
   IApiIntSetPropPubLinksReq,
@@ -16,6 +19,7 @@ import { AreaButlerExportTypesEnum } from "../../../../shared/types/types";
 import { SearchContext } from "../../context/SearchContext";
 
 export const usePropstackSync = () => {
+  const { t } = useTranslation();
   const { post, get, patch, put } = useHttp();
   const { searchContextState } = useContext(SearchContext);
 
@@ -110,7 +114,7 @@ export const usePropstackSync = () => {
       }
     }
 
-    const errorMessage = "Falscher Exporttyp wurde angegeben!";
+    const errorMessage = t(IntlKeys.integration.wrongExportTypeGiven);
     toastError(errorMessage);
     console.error(errorMessage);
     throw new Error(errorMessage);

@@ -82,7 +82,7 @@ export const useUserState = () => {
         }
 
         if (!realEstateListing) {
-          const errorMessage = "Der Fehler ist aufgetreten!";
+          const errorMessage = t(IntlKeys.common.errorOccurred);
           toastError(errorMessage);
           throw new Error(errorMessage);
         }

@@ -315,7 +315,38 @@
       },
       "saveAsPreset": "Reprendre la présélection",
       "saveAsPresetSuccess": "Préréglage enregistré avec succès",
-      "saveAsPresetError": "Le préréglage n'a pas pu être repris"
+      "saveAsPresetError": "Le préréglage n'a pas pu être repris",
+      "useChrome": "Veuillez utiliser le navigateur Google Chrome. Les autres navigateurs ne généreront pas le pdf correctement.",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formelle et sérieuse",
+        "EASYGOING_YOUTHFUL": "décontractée et jeune"
+      },
+      "customTexts": {
+        "POPULATION": "Le texte doit inclure le chiffre de la population de la ville.",
+        "SEO": "Le texte doit contenir des termes typiques du référencement immobilier et être optimisé pour le référencement.",
+        "REGION": "Le texte doit contenir une brève description de la région.",
+        "POIS": "Le texte doit mettre en évidence certains points d'intérêt dans les environs.",
+        "OFFICE": "Le texte doit être optimisé pour un immeuble de bureaux.",
+        "COMMERCIAL": "Le texte doit être optimisé pour un bien immobilier commercial.",
+        "RESIDENTIAL": "Le texte doit être optimisé pour un bien immobilier résidentiel.",
+        "TEASER": "Générer du texte d'accroche pour les portails et du texte de développement.",
+        "CUSTOM": "Saisir son propre texte.",
+        "NONE": "Aucun"
+      },
+      "realEstateTypes": {
+        "ROOM": "Chambre",
+        "HOUSE": "Maison",
+        "APARTMENT": "Appartement",
+        "PROPERTY": "Terrain",
+        "OFFICE_PRACTICES": "Bureaux/cabinets médicaux",
+        "STORE_RETAIL": "Magasin/détail",
+        "HOSPITALITY": "Hôtellerie et restauration",
+        "HALLS_WAREHOUSE_PRODUCTION": "Halls/entrepôts/production",
+        "AGRICULTURE_FORESTRY": "Agriculture/Sylviculture",
+        "LEISURE_COMMERCIAL": "Immobilier de loisir (commercial)",
+        "OTHER": "Autres",
+        "CUSTOM": "Faire sa propre déclaration"
+      }
     },
     "addNewLocationModalTitle": "Ajouter un nouveau lieu",
     "addNewLocationModalBtn": "Ajouter",
@@ -561,7 +592,8 @@
     "noteField": "Champ de notes",
     "directLink": "Lien direct",
     "htmlSnippet": "Snippet HTML",
-    "companyTemplate": "Modèle d'organisation"
+    "companyTemplate": "Modèle d'organisation",
+    "locationNotFound": "Copié avec succès dans le presse-papiers !"
   },
   "imageUpload": {
     "supportedFormats": "Formats supportés : png, jpg, svg, taille maximale : 5MB",
@@ -773,7 +805,14 @@
       "minimumTermForYear": "Durée minimale : 1 an, ensuite résiliable chaque année. A la fin de la période d'abonnement\n          période d'abonnement en cours, la durée du contrat se prolonge\n          automatiquement pour une année supplémentaire si l'utilisateur ne résilie pas le contrat\n          avec un préavis de 30 jours avant la fin de la période d'abonnement en cours,\n          par déclaration sous forme de texte à KuDiBa.",
       "cardStyles": "Styles de carte : sont configurés une seule fois pour votre compte d'utilisateur,\n          sont utilisables pour autant de cartes que vous le souhaitez et sont\n          disponibles pendant toute la durée d'utilisation.\nStyles de carte : configurés une seule fois pour votre compte d'utilisateur,\n          sont utilisables pour autant de cartes que vous le souhaitez et pour toute la durée de vie de la carte.\n          disponibles pendant toute la durée d'utilisation.",
       "annualSubscription": "Abonnement annuel"
-    }
+    },
+    "toastSubscriptionSuccess": "Abonnement terminé avec succès",
+    "toastSubscriptionError": "Erreur lors de la création de l'abonnement",
+    "buyProduct": "Veuillez acheter un produit correspondant !",
+    "integrationIdNotSpecified": "L'ID d'intégration n'est pas indiquée !",
+    "dataSent": "Les données ont été envoyées à {{integrationType}} !",
+    "productNotActivated": "Le produit n'a pas été débloqué !",
+    "addressActivated": "L'adresse a été activée avec succès !"
   },
   "companyProfile": {
     "title": "Profil de l'entreprise"

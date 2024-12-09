@@ -306,6 +306,7 @@
         "EQUIPMENT_DESCRIPTION": "Ausstattungsbeschreibung"
       },
       "publicLinks": "Links mit und ohne Adresse",
+      "useChrome": "Bitte benutzen Sie den Google Chrome Browser. Andere Browser werden das pdf nicht korrekt generieren.",
       "maxCharactersLength": "Zielzeichenlänge",
       "textLength": {
         "SHORT": "Der Text soll kurz und prägnant sein.",
@@ -315,7 +316,37 @@
       },
       "saveAsPreset": "Voreinstellung übernehmen",
       "saveAsPresetSuccess": "Voreinstellung erfolgreich gespeichert",
-      "saveAsPresetError": "Voreinstellung konnte nicht übernommen werden"
+      "saveAsPresetError": "Voreinstellung konnte nicht übernommen werden",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formale und seriöse",
+        "EASYGOING_YOUTHFUL": "lockere und jugendliche"
+      },
+      "customTexts": {
+        "POPULATION": "Der Text soll die Bevölkerungszahl der Stadt beinhalten.",
+        "SEO": "Der Text soll typische Immobilien SEO Begriffe beinhalten und SEO optimiert sein.",
+        "REGION": "Der Text soll eine kurze Beschreibung der Region beinhalten.",
+        "POIS": "Der Text soll einige Sehenswürdigkeiten in der Umgebung hervorheben.",
+        "OFFICE": "Der Text soll für eine Büroimmobilien optimiert sein.",
+        "COMMERCIAL": "Der Text soll für eine Gewerbeimmobilie optimiert sein.",
+        "RESIDENTIAL": "Der Text soll für eine Wohnimmobilie optimiert sein.",
+        "TEASER": "Teaser Text für Portale und aufbauenden Text generieren.",
+        "CUSTOM": "Eigenen Text eingeben.",
+        "NONE": "Keiner"
+      },
+      "realEstateTypes": {
+        "ROOM": "Zimmer",
+        "HOUSE": "Haus",
+        "APARTMENT": "Wohnung",
+        "PROPERTY": "Grundstück",
+        "OFFICE_PRACTICES": "Büro/Praxen",
+        "STORE_RETAIL": "Laden/Einzelhandel",
+        "HOSPITALITY": "Gastgewerbe",
+        "HALLS_WAREHOUSE_PRODUCTION": "Hallen/Lager/Produktion",
+        "AGRICULTURE_FORESTRY": "Land/Forstwirtschaft",
+        "LEISURE_COMMERCIAL": "Freizeitimmobilie (gewerblich)",
+        "OTHER": "Sonstige",
+        "CUSTOM": "Eigene Angabe machen"
+      }
     },
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",
     "addNewLocationModalBtn": "Hinzufügen",
@@ -539,6 +570,7 @@
   },
   "mapSnapshots": {
     "copiedToClipboard": "Erfolgreich in Zwischenablage kopiert!",
+    "locationNotFound": "Erfolgreich in Zwischenablage kopiert!",
     "duplicateConfirmation": "Wollen Sie wirklich das Kartensnippet duplizieren?",
     "duplicateFailed": "Fehler beim Duplizieren eines Kartensnippet!",
     "deleteConfirmation": "Wollen Sie wirklich das Kartensnippet löschen?",
@@ -737,6 +769,13 @@
     "quantity": "Menge",
     "data": "Datum",
     "errorWhenIncreaseLimit": "Fehler bei der Erhöhung des Limits",
+    "toastSubscriptionSuccess": "Abonnement erfolgreich abgeschlossen",
+    "toastSubscriptionError": "Fehler beim Anlegen des Abonnements",
+    "buyProduct": "Bitte kaufen Sie ein entsprechendes Produkt!",
+    "integrationIdNotSpecified": "Die Integrations-ID wird nicht angegeben!",
+    "dataSent": "Die Daten wurden an {{integrationType}} gesendet!",
+    "productNotActivated": "Das Produkt wurde nicht freigeschaltet!",
+    "addressActivated": "Die Adresse wurde erfolgreich freigeschaltet!",
     "planTypes": {
       "PAY_PER_USE": "Nach Verbrauch",
       "BUSINESS_PLUS": "Im Abo"

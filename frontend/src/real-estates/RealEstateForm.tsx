@@ -109,8 +109,8 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
 
   const initialValues: TRealEstateFormData = {
     showInSnippet: resultRealEstate.showInSnippet ?? true,
-    status: resultRealEstate.status ?? ApiRealEstateStatusEnum.IN_PREPARATION,
-    status2: resultRealEstate.status2 ?? ApiRealEstateStatus2Enum.ACTIVE,
+    status: resultRealEstate.status ?? "IN_PREPARATION",
+    status2: resultRealEstate.status2 ?? "ACTIVE",
     name: resultRealEstate.name,
     externalUrl: resultRealEstate?.externalUrl,
     priceStartingAt: Number.isFinite(
@@ -172,6 +172,18 @@ export const RealEstateForm: FC<IRealEstateFormProps> = ({
 
         onSubmit({
           ...values,
+          status:
+            values.status &&
+            (Object.entries(ApiRealEstateStatusEnum)?.find(
+              ([key]) => key === values.status
+            )?.[1] ||
+              values.status),
+          status2:
+            values.status2 &&
+            (Object.entries(ApiRealEstateStatus2Enum)?.find(
+              ([key]) => key === values.status2
+            )?.[1] ||
+              values.status2),
           address: resultRealEstate.address,
           coordinates: resultRealEstate.coordinates,
         });

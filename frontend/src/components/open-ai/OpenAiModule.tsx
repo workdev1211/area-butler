@@ -10,7 +10,11 @@ import {
   IOpenAiLocDescFormValues,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
-import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
+import {
+  openAiCustomTextOptions,
+  openAiQueryTypes,
+  openAiRealEstTypeOptions,
+} from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocDescForm from "./OpenAiLocDescForm";
@@ -121,6 +125,19 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
       generalFormRef.current?.handleSubmit();
       let query: TOpenAiQuery;
 
+      const realEstateValues = realEstDescFormRef.current?.values;
+      if (realEstateValues) {
+        realEstateValues.realEstateType =
+          openAiRealEstTypeOptions.find(
+            ({ value }) => value === realEstateValues.realEstateType
+          )?.text || realEstateValues.realEstateType;
+      }
+
+      const generalValues = generalFormRef.current!.values;
+      generalValues.customText = openAiCustomTextOptions.find(
+        ({ value }) => value === generalValues.customText
+      )?.text;
+
       switch (queryType) {
         case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
         case OpenAiQueryTypeEnum.MACRO_LOC_DESC:
@@ -131,7 +148,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           query = {
             language: responseConfig?.language,
             snapshotId: searchResultSnapshotId!,
-            ...generalFormRef.current!.values,
+            ...generalValues,
             ...locDescFormRef.current!.values,
           };
 
@@ -147,9 +164,9 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           query = {
             language: responseConfig?.language,
             snapshotId: searchResultSnapshotId!,
-            ...generalFormRef.current!.values,
+            ...generalValues,
             ...locDescFormRef.current!.values,
-            ...realEstDescFormRef.current!.values,
+            ...realEstateValues,
           };
 
           break;
@@ -160,8 +177,8 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
 
           query = {
             language: responseConfig?.language,
-            ...generalFormRef.current!.values,
-            ...realEstDescFormRef.current!.values,
+            ...generalValues,
+            ...realEstateValues!,
           };
 
           break;

@@ -315,7 +315,38 @@
       },
       "saveAsPreset": "Standaardinstelling toepassen",
       "saveAsPresetSuccess": "Standaardinstelling succesvol opgeslagen",
-      "saveAsPresetError": "Standaardinstelling kon niet worden toegepast"
+      "saveAsPresetError": "Standaardinstelling kon niet worden toegepast",
+      "useChrome": "Gebruik de browser Google Chrome. Andere browsers zullen de pdf niet correct genereren.",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formeel en serieus",
+        "EASYGOING_YOUTHFUL": "ontspannen en jeugdig"
+      },
+      "customTexts": {
+        "POPULATION": "De tekst moet de bevolking van de stad bevatten.",
+        "SEO": "De tekst moet typische SEO-termen voor onroerend goed bevatten en SEO-geoptimaliseerd zijn.",
+        "REGION": "De tekst moet een korte beschrijving van de regio bevatten.",
+        "POIS": "De tekst is bedoeld om een aantal bezienswaardigheden in het gebied te benadrukken.",
+        "OFFICE": "De tekst moet geoptimaliseerd zijn voor een kantoorpand.",
+        "COMMERCIAL": "De tekst moet geoptimaliseerd zijn voor een commercieel pand.",
+        "RESIDENTIAL": "De tekst moet geoptimaliseerd zijn voor een woonhuis.",
+        "TEASER": "Genereer teaserteksten voor portals en opbouwteksten.",
+        "CUSTOM": "Voer je eigen tekst in.",
+        "NONE": "Geen"
+      },
+      "realEstateTypes": {
+        "ROOM": "Kamer",
+        "HOUSE": "Huis",
+        "APARTMENT": "Plat",
+        "PROPERTY": "Eigendom",
+        "OFFICE_PRACTICES": "Kantoor/Praktijken",
+        "STORE_RETAIL": "Winkel/Detailhandel",
+        "HOSPITALITY": "Horeca",
+        "HALLS_WAREHOUSE_PRODUCTION": "Hallen/magazijn/productie",
+        "AGRICULTURE_FORESTRY": "Landbouw/Bosbouw",
+        "LEISURE_COMMERCIAL": "Vrije tijd (commercieel)",
+        "OTHER": "Andere",
+        "CUSTOM": "Maak je eigen specificatie"
+      }
     },
     "addNewLocationModalTitle": "Nieuwe locatie toevoegen",
     "addNewLocationModalBtn": "Voeg  toe",
@@ -561,7 +592,8 @@
     "noteField": "Opmerking veld",
     "directLink": "Directe link",
     "htmlSnippet": "HTML-fragment",
-    "companyTemplate": "Organisatiesjabloon"
+    "companyTemplate": "Organisatiesjabloon",
+    "locationNotFound": "Succesvol gekopieerd naar klembord!"
   },
   "imageUpload": {
     "supportedFormats": "Ondersteunde formaten: png, jpg, svg, maximale grootte: 5MB",
@@ -773,7 +805,14 @@
       "minimumTermForYear": "Minimale looptijd: 1 jaar, daarna jaarlijks opzegbaar. Na afloop van de\n          huidige abonnementsperiode wordt de looptijd van het contract automatisch\n          automatisch verlengd met nog een jaar als de gebruiker het contract niet opzegt\n          met een opzegtermijn van 30 dagen tot het einde van de huidige abonnementsperiode,\n          door een verklaring in tekstvorm aan KuDiBa.",
       "cardStyles": "Kaartstijlen: worden eenmalig ingesteld voor je gebruikersaccount,\n          kunnen worden gebruikt voor een willekeurig aantal kaarten en zijn beschikbaar voor de gehele\n          beschikbaar voor de gehele gebruiksperiode.\nKaartstijlen: worden eenmalig ingesteld voor je gebruikersaccount,\n          kunnen worden gebruikt voor een willekeurig aantal kaarten en zijn beschikbaar voor de gehele\n          beschikbaar voor de gehele gebruiksperiode.",
       "annualSubscription": "Jaarabonnement"
-    }
+    },
+    "toastSubscriptionSuccess": "Abonnement succesvol voltooid",
+    "toastSubscriptionError": "Fout bij het maken van het abonnement",
+    "buyProduct": "Koop een geschikt product!",
+    "integrationIdNotSpecified": "De integratie-ID is niet opgegeven!",
+    "dataSent": "De gegevens zijn verzonden naar {{integrationType}}!",
+    "productNotActivated": "Het product is niet geactiveerd!",
+    "addressActivated": "Het adres is succesvol geactiveerd!"
   },
   "companyProfile": {
     "title": "Bedrijfsprofiel"

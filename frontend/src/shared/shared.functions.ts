@@ -9,6 +9,9 @@ import { toast } from "react-toastify";
 import copy from "copy-to-clipboard";
 import { LatLng } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 import {
   ApiCoordinates,
   ApiSearchResponse,
@@ -52,7 +55,6 @@ import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import {
-  defaultErrorMessage,
   notAllowedCountryMsg,
 } from "../../../shared/constants/error";
 import {
@@ -159,7 +161,7 @@ const checkIsCountryAllowed = ({
   user?: ApiUser | IApiIntegrationUser;
 }): void => {
   if (!place) {
-    const errorMessage = "Ort nicht gefunden!";
+    const errorMessage = i18.t(IntlKeys.mapSnapshots.locationNotFound);
     toastError(errorMessage);
     console.error(errorMessage);
     throw new Error(errorMessage);
@@ -261,7 +263,7 @@ export const toastError = (
 };
 
 export const toastDefaultError = (): void => {
-  toastError(defaultErrorMessage);
+  toastError(i18.t(IntlKeys.snapshotEditor.dataTab.errorOccurred));
 };
 
 // TODO think about uniting "getRealEstateListingsIcon", "getPreferredLocationsIcon" and "deriveIconForOsmName" into a single method
@@ -544,7 +546,7 @@ export const copyTextToClipboard = (text?: string): void => {
   const isCopied = copy(text);
   // REDO this for translations
   if (isCopied) {
-    toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+    toastSuccess(i18.t(IntlKeys.mapSnapshots.copiedToClipboard));
   }
 };
 

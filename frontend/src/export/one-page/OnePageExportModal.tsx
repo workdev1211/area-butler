@@ -41,6 +41,7 @@ import OpenAiGeneralForm from "../../components/open-ai/OpenAiGeneralForm";
 import { getQrCodeBase64 } from "../QrCode";
 import { useTools } from "../../hooks/tools";
 import { useUserState } from "../../hooks/userstate";
+import { openAiCustomTextOptions } from "../../../../shared/constants/open-ai";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;
@@ -228,12 +229,17 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
     generalFormRef.current?.handleSubmit();
     locDescFormRef.current?.handleSubmit();
 
+    const generalValues = { ...generalFormRef.current!.values };
+    generalValues.customText = openAiCustomTextOptions.find(
+      ({ value }) => value === generalValues.customText
+    )?.text;
+
     const openAiLocDesc = await fetchOpenAiResponse(
       OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
       {
         language: searchContextState.responseConfig?.language,
         snapshotId,
-        ...generalFormRef.current!.values,
+        ...generalValues,
         ...locDescFormRef.current!.values,
         isForOnePage: true,
         maxCharactersLength: 500,
@@ -335,12 +341,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
                   <div className="flex flex-col gap-2 w-[97%]">
                     <OpenAiGeneralForm
                       formId="open-ai-general-form"
-                      initialValues={
-                        cachedOpenAi.general && {
-                          ...cachedOpenAi.general,
-                          maxCharactersLength: 600,
-                        }
-                      }
+                      initialValues={cachedOpenAi.general}
                       onValuesChange={(values) => {
                         cachingDispatch({
                           type: CachingActionTypesEnum.SET_OPEN_AI,

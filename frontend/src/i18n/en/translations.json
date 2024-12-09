@@ -315,7 +315,38 @@
       },
       "saveAsPreset": "Save as preset",
       "saveAsPresetSuccess": "Preset successfully saved",
-      "saveAsPresetError": "Preset could not be applied"
+      "saveAsPresetError": "Preset could not be applied",
+      "useChrome": "Please use the Google Chrome browser. Other browsers will not generate the pdf correctly.",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formal and serious",
+        "EASYGOING_YOUTHFUL": "relaxed and youthful"
+      },
+      "customTexts": {
+        "POPULATION": "The text should contain the population of the city.",
+        "SEO": "The text should contain typical real estate SEO terms and be SEO optimized.",
+        "REGION": "The text should contain a brief description of the region.",
+        "POIS": "The text is intended to highlight some of the sights in the area.",
+        "OFFICE": "The text should be optimized for an office property.",
+        "COMMERCIAL": "The text should be optimized for a commercial property.",
+        "RESIDENTIAL": "The text should be optimized for a residential property.",
+        "TEASER": "Generate teaser text for portals and build-up text.",
+        "CUSTOM": "Enter your own text.",
+        "NONE": "None"
+      },
+      "realEstateTypes": {
+        "ROOM": "Room",
+        "HOUSE": "House",
+        "APARTMENT": "Apartment",
+        "PROPERTY": "Property",
+        "OFFICE_PRACTICES": "Office/Practices",
+        "STORE_RETAIL": "Shop/Retail",
+        "HOSPITALITY": "Hospitality industry",
+        "HALLS_WAREHOUSE_PRODUCTION": "Halls/warehouse/production",
+        "AGRICULTURE_FORESTRY": "Agriculture/Forestry",
+        "LEISURE_COMMERCIAL": "Leisure property (commercial)",
+        "OTHER": "Other",
+        "CUSTOM": "Make your own specification"
+      }
     },
     "addNewLocationModalTitle": "Add new location",
     "addNewLocationModalBtn": "Add",
@@ -561,7 +592,8 @@
     "noteField": "Note field",
     "directLink": "Direct link",
     "htmlSnippet": "HTML Snippet",
-    "companyTemplate": "Organization template"
+    "companyTemplate": "Organization template",
+    "locationNotFound": "Successfully copied to clipboard!"
   },
   "imageUpload": {
     "supportedFormats": "Supported formats: png, jpg, svg, maximum size: 5MB",
@@ -774,7 +806,14 @@
       "minimumTermForYear": "Minimum term: 1 year, can be terminated annually thereafter. After the end of the\n          current subscription period, the term of the contract is automatically\n          automatically extended by a further year if the user does not terminate the contract\n          with a notice period of 30 days to the end of the current subscription period,\n          by declaration in text form to KuDiBa.",
       "cardStyles": "Card styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.\nCard styles: Are set up once for your user account,\n          can be used for any number of cards and are available for the entire\n          available for the entire period of use.",
       "annualSubscription": "Annual subscription"
-    }
+    },
+    "toastSubscriptionSuccess": "Subscription successfully completed",
+    "toastSubscriptionError": "Error when creating the subscription",
+    "buyProduct": "Please buy an appropriate product!",
+    "integrationIdNotSpecified": "The integration ID is not specified!",
+    "dataSent": "The data has been sent to {{integrationType}}!",
+    "productNotActivated": "The product has not been activated!",
+    "addressActivated": "The address has been successfully activated!"
   },
   "companyProfile": {
     "title": "Company profile"
