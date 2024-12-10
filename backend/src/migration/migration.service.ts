@@ -124,6 +124,13 @@ export class MigrationService {
       pipelineStages,
     });
 
+    if (!count) {
+      this.logger.log(
+        `Unable to start batch processing for ${model.modelName}. No documents found.`,
+      );
+      return;
+    }
+
     this.logger.log(`Batch processing of ${count} documents has started.`);
     const limit = BATCH_LIMIT;
 
@@ -137,7 +144,7 @@ export class MigrationService {
 
       for (const doc of docs) {
         this.logger.log(
-          `Batch processing ${doc.id} document ('${doc.collection.name}' collection).`,
+          `Batch processing ${doc?.id} document ('${model.collection.collectionName}' collection).`,
         );
 
         await processDocumentAsync(doc);
@@ -161,6 +168,13 @@ export class MigrationService {
       pipelineStages,
     });
 
+    if (!count) {
+      this.logger.log(
+        `Unable to start bulk processing for ${model.modelName}. No documents found.`,
+      );
+      return;
+    }
+
     this.logger.log(`Bulk processing of ${count} documents has started.`);
     const limit = BATCH_LIMIT;
 
@@ -175,7 +189,7 @@ export class MigrationService {
 
       for (const doc of docs) {
         this.logger.log(
-          `Bulk processing ${doc.id} document ('${doc.collection.name}' collection).`,
+          `Bulk processing ${doc?.id} document ('${model.collection.collectionName}' collection).`,
         );
 
         const processedDocument = processDocument
@@ -209,7 +223,8 @@ export class MigrationService {
 
     if (isAggregation) {
       query = model.aggregate(pipelineStages);
-      count = (await query.count('count'))[0].count;
+      count =
+        (await model.aggregate(pipelineStages).count('count'))[0]?.count || 0;
     } else {
       query = findQuery;
       count = await model.countDocuments(query.getFilter());

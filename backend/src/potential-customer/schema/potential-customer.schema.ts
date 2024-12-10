@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes } from 'mongoose';
+import { HydratedDocument, SchemaTypes } from 'mongoose';
 
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 import {
@@ -11,7 +11,7 @@ import { IntegrationParamsSchema } from '../../shared/integration-params.schema'
 import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { foreignIdGetSet } from '../../shared/constants/schema';
 
-export type PotentialCustomerDocument = PotentialCustomer & Document;
+export type PotentialCustomerDocument = HydratedDocument<PotentialCustomer>;
 
 @Schema({
   toJSON: { getters: true },
