@@ -69,6 +69,7 @@ export const up = async ({
   await MigrationService.bulkProcess<UserDocument>({
     bulkWriteOptions: { strict: false },
     findQuery: userModel.find(undefined, userProjectQuery),
+    model: userModel,
     processDocument: processUser,
   });
 
@@ -94,6 +95,7 @@ export const up = async ({
       { 'config.showTour': { $exists: true } },
       { id: 1 },
     ),
+    model: intUserModel,
     processDocument: processIntUser,
   });
 };
@@ -143,6 +145,7 @@ export const down = async ({
   await MigrationService.bulkProcess<UserDocument>({
     bulkWriteOptions: { strict: false },
     findQuery: userModel.find(undefined, userProjectQuery),
+    model: userModel,
     processDocument: processUser,
   });
 
@@ -168,6 +171,7 @@ export const down = async ({
       { 'config.studyTours': { $exists: true } },
       { id: 1 },
     ),
+    model: intUserModel,
     processDocument: processIntUser,
   });
 };

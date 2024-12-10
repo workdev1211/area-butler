@@ -41,6 +41,7 @@ export const up = async ({
 
   await MigrationService.batchProcess<UserDocument>({
     findQuery: userModel.find(parentUserFilter, { id: 1 }),
+    model: userModel,
     processDocumentAsync: processParentUser,
   });
 
@@ -65,6 +66,7 @@ export const up = async ({
     findQuery: userModel
       .find(childUserFilter, { parentId: 1 })
       .populate(PARENT_USER_PATH, { companyId: 1 }),
+    model: userModel,
     processDocumentAsync: processChildUser,
   });
 
@@ -126,6 +128,7 @@ export const up = async ({
       integrationType: 1,
       parameters: 1,
     }),
+    model: intUserModel,
     processDocumentAsync: processParentIntUser,
   });
 
@@ -152,6 +155,9 @@ export const up = async ({
     findQuery: intUserModel
       .find(childIntUserFilter, { parentId: 1 })
       .populate(PARENT_USER_PATH, { companyId: 1 }),
+    model: intUserModel,
     processDocumentAsync: processChildIntUser,
   });
 };
+
+export const down = (): void => undefined;

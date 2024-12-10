@@ -50,6 +50,7 @@ export const up = async ({
     findQuery: userModel
       .find(userFilterQuery, userProjectQuery)
       .populate(COMPANY_PATH),
+    model: userModel,
     processDocumentAsync: processUser,
   });
 
@@ -57,6 +58,7 @@ export const up = async ({
     findQuery: intUserModel
       .find(userFilterQuery, userProjectQuery)
       .populate(COMPANY_PATH),
+    model: intUserModel,
     processDocumentAsync: processUser,
   });
 };
@@ -103,6 +105,7 @@ export const down = async ({
       { 'config.templateSnapshotId': { $exists: true } },
       companyProjQuery,
     ),
+    model: companyModel,
     processDocumentAsync: processCompany,
   });
 };

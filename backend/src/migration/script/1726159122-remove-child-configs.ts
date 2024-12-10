@@ -32,6 +32,7 @@ export const up = async ({
 
   await MigrationService.batchProcess<UserDocument>({
     findQuery: userModel.find({ parentId: { $exists: true } }, { id: 1 }),
+    model: userModel,
     processDocumentAsync: processUser,
   });
 
@@ -60,8 +61,9 @@ export const up = async ({
 
   await MigrationService.batchProcess<TIntegrationUserDocument>({
     findQuery: intUserModel.find({ parentId: { $exists: true } }, { id: 1 }),
+    model: intUserModel,
     processDocumentAsync: processIntUser,
   });
 };
 
-export const down = (): Promise<void> => undefined;
+export const down = (): void => undefined;

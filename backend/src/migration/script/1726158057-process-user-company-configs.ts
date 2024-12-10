@@ -86,6 +86,7 @@ export const up = async ({
         },
       )
       .populate(COMPANY_PATH),
+    model: userModel,
     processDocumentAsync: processUser,
   });
 
@@ -150,6 +151,7 @@ export const up = async ({
         },
       )
       .populate(COMPANY_PATH),
+    model: intUserModel,
     processDocumentAsync: processIntUser,
   });
 };
@@ -198,6 +200,7 @@ export const down = async ({
     findQuery: userModel
       .find({ parentId: { $exists: false } }, { id: 1, companyId: 1 })
       .populate(COMPANY_PATH),
+    model: userModel,
     processDocumentAsync: processUser,
   });
 
@@ -248,6 +251,7 @@ export const down = async ({
     findQuery: intUserModel
       .find({ parentId: { $exists: false } }, { id: 1, companyId: 1 })
       .populate(COMPANY_PATH),
+    model: intUserModel,
     processDocumentAsync: processIntUser,
   });
 };

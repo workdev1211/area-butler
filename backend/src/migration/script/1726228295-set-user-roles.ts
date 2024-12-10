@@ -35,6 +35,7 @@ export const up = async ({
 
   await MigrationService.bulkProcess<UserDocument>({
     findQuery: userModel.find(undefined, userProjectQuery),
+    model: userModel,
     processDocument: processUser,
   });
 
@@ -44,6 +45,7 @@ export const up = async ({
 
   await MigrationService.bulkProcess<TIntegrationUserDocument>({
     findQuery: intUserModel.find(undefined, userProjectQuery),
+    model: intUserModel,
     processDocument: processUser,
   });
 };
