@@ -32,6 +32,7 @@ import {
 } from "../../shared/shared.constants";
 import PoiFilter from "./components/PoiFilter";
 import IconSizes from "./components/IconSizes";
+import ZoomSlider from "./components/ZoomSlider";
 import { useLocationData } from "../../hooks/locationdata";
 import { truncateText } from "../../../../shared/functions/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../../shared/types/location";
@@ -546,6 +547,14 @@ const EditorTab: FC<IEditorTabProps> = ({
                 iconSizes={config.iconSizes}
                 onChange={(resultingIconSizes) => {
                   changeConfigParam("iconSizes", { ...resultingIconSizes });
+                }}
+              />
+            </li>
+            <li>
+              <ZoomSlider
+                zoomLevel={config.zoomLevel}
+                onChange={(resultingZoomLevel) => {
+                  changeConfigParam("zoomLevel", resultingZoomLevel);
                 }}
               />
             </li>
