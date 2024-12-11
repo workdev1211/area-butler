@@ -98,7 +98,6 @@ export class IdMarker extends L.Marker {
   searchAddress: string;
   config?: ApiSearchResultSnapshotConfig;
   hideEntity?: (entity: ResultEntity) => void;
-  defaultHtml?: string = '';
 
   constructor({
     entity,
@@ -121,14 +120,6 @@ export class IdMarker extends L.Marker {
     this.searchAddress = searchAddress;
     this.config = config;
     this.hideEntity = hideEntity;
-  }
-
-  getDefaultHtml(): string {
-    return this.defaultHtml || '';
-  }
-
-  setDefaultHtml(html: string): void {
-    this.defaultHtml = html;
   }
 
   getEntity(): ResultEntity {
@@ -601,7 +592,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         renderer: new L.Canvas(),
         dragging: !L.Browser.mobile,
         touchZoom: true,
-        maxZoom: 18,
+        maxZoom: 30,
+        minZoom: 2,
         // Adds zoom in / zoom out buttons
         zoomControl: false,
         // LEFT JUST IN CASE - the old touch screen solution
@@ -629,7 +621,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         if (!config) {
           return;
         }
-
+        
         if (!config.groupItems) {
           const container = document.querySelector(".leaflet-container");
 
@@ -645,15 +637,15 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             container?.classList.remove("small-markers");
           }
 
-          if (localMap.getZoom() < 17) {
-            const els = document.getElementsByClassName("locality-marker");
-            [].forEach.call(els, function (elem: HTMLElement) {
-              elem.style.cssText = "width:4px;height:4px;padding:0px;border:none;background-color: " + elem.style.cssText.replace("border-color: ", "");
-              elem.firstChild && elem.firstChild.remove();
-            });
-          } else {
-            void drawAmenityMarkers();
-          }
+          const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
+
+          poiMarkers.forEach((marker) => {
+            if (localMap.getZoom() < 17) {
+              marker.getElement()?.classList.add('dot-marker-shown');            
+            } else {
+              marker.getElement()?.classList.remove("dot-marker-shown");
+            }
+          });
         }
       });
 
@@ -681,7 +673,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         zoomOffset: -1,
         accessToken: mapboxAccessToken,
         tileSize: 512,
-        maxZoom: 18,
+        maxZoom: 30,
+        minZoom: 2,
       }).addTo(localMap);
 
       currentMap = localMap;
@@ -1233,6 +1226,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           );
         }
 
+        html += `<div class="dot-marker hidden" style="background-color: ${markerIcon.color};"></div>`;
+
         const icon = L.divIcon({
           iconUrl: markerIcon.icon,
           shadowUrl: leafletShadow,
@@ -1260,20 +1255,15 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         }).on("mouseover", (e) => {
           const marker = e.target;
           if (currentMap && currentMap?.getZoom() < 17) {
-            const icon: L.DivIcon = marker.getIcon();
-            icon.options.html = marker.getDefaultHtml();
-            marker.setIcon(icon);
+            marker.getElement()?.classList.remove("dot-marker-show");
           }
         }).on("mouseout", (e) => {
           const marker = e.target;
           if (currentMap && currentMap?.getZoom() < 17) {
-            const elem = marker.getElement().querySelector('.locality-marker') as HTMLElement;
-            elem.style.cssText = "width:4px;height:4px;padding:0px;border:none;background-color: " + elem.style.cssText.replace("border-color: ", "");
-            elem.firstChild && elem.firstChild.remove();
+            marker.getElement()?.classList.add("dot-marker-show");
           }
         });
 
-        marker.setDefaultHtml(html);
         amenityMarkerGroup.addLayer(marker);
 
         return true;
