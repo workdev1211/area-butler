@@ -86,6 +86,27 @@
   @apply justify-center items-center h-full w-full;
 }
 
+.dot-marker {
+  width: 4px;
+  height: 4px;
+  padding: 0px;
+  border: none;
+  border-radius: 100%;
+  display: none;
+}
+
+.dot-marker-shown img {
+  display: none;
+}
+
+.dot-marker-shown div:first-child {
+  display: none;
+}
+
+.dot-marker-shown div:last-child {
+  display: block;
+}
+
 .dark-primary-color {
   .real-estate-cta {
     color: var(--primary) !important;
