@@ -28,9 +28,9 @@ const CompanyProfilePage: FC = () => {
     ? user.requestsExecuted >= deriveTotalRequestContingent(user)
     : undefined;
   const isCustomExportAvail =
-    !isIntegrationUser &&
-    isHasSubscription &&
-    user.subscription!.config.appFeatures.canCustomizeExport;
+    isIntegrationUser ||
+    (isHasSubscription &&
+      user.subscription!.config.appFeatures.canCustomizeExport);
 
   useEffect(() => {
     void fetchCurrentUser();
