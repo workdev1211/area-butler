@@ -47,9 +47,8 @@ export class OnOfficeEstateService {
   ): Promise<void> {
     const textFieldsParams: TUpdEstTextFieldParams[] = [];
 
-    const queryBuilder = this.onOfficeQueryBuilderService.setUserParams(
-      integrationUser.parameters,
-    );
+    const queryBuilder =
+      this.onOfficeQueryBuilderService.setUser(integrationUser);
 
     for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
       if (isLinkEntity) {

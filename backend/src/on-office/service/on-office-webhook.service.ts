@@ -153,7 +153,7 @@ export class OnOfficeWebhookService {
 
     if (textFieldParams.length) {
       await this.onOfficeQueryBuilderService
-        .setUserParams(integrationUser.parameters)
+        .setUser(integrationUser)
         .updateTextFields(
           resRealEstate.integrationId,
           textFieldParams,

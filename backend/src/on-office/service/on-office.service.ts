@@ -6,7 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { LeanDocument, Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { configService } from '../../config/config.service';
@@ -531,11 +531,10 @@ export class OnOfficeService {
       );
     }
 
-    const userParams: IApiIntUserOnOfficeParams = {
-      ...(integrationUser || teamUser).parameters,
-      extendedClaim,
-      userId,
-    };
+    const queryUser: LeanDocument<TIntegrationUserDocument> = structuredClone(
+      (integrationUser || teamUser).toObject(),
+    );
+    Object.assign(queryUser.parameters, { extendedClaim, userId });
 
     const {
       getMultiselectValues,
@@ -543,7 +542,7 @@ export class OnOfficeService {
       getEstateData: estateData,
       getUserData: { email, userName },
     } = await this.onOfficeQueryBuilderService
-      .setUserParams(userParams)
+      .setUser(queryUser)
       .getColorAndLogo()
       .getUserData()
       .getEstateData(estateId)
@@ -802,9 +801,8 @@ export class OnOfficeService {
       return;
     }
 
-    const queryBuilder = this.onOfficeQueryBuilderService.setUserParams(
-      integrationUser.parameters,
-    );
+    const queryBuilder =
+      this.onOfficeQueryBuilderService.setUser(integrationUser);
 
     if (valuesToDelete.length) {
       queryBuilder.deleteMultiselectValues(valuesToDelete);

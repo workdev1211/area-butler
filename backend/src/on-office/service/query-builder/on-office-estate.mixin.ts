@@ -33,10 +33,10 @@ export class OnOfficeEstateMixin {
       integrationId: estateId,
     }: Omit<IApiIntCreateEstateLinkReq, 'exportType'>,
   ): ThisType<OnOfficeQueryBuilder> {
-    this.checkUserParams();
+    this.checkIsUserSet();
 
     const actionType = OnOfficeActionTypeEnum.CREATE_LINK;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -67,10 +67,10 @@ export class OnOfficeEstateMixin {
   }
 
   getAvailStatuses(this: OnOfficeQueryBuilder): ThisType<OnOfficeQueryBuilder> {
-    this.checkUserParams();
+    this.checkIsUserSet();
 
     const actionType = OnOfficeActionTypeEnum.GET_AVAIL_STATUSES;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -103,10 +103,10 @@ export class OnOfficeEstateMixin {
     this: OnOfficeQueryBuilder,
     estateId: string,
   ): ThisType<OnOfficeQueryBuilder> {
-    this.checkUserParams();
+    this.checkIsUserSet();
 
     const actionType = OnOfficeActionTypeEnum.GET_ESTATE_DATA;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -114,6 +114,13 @@ export class OnOfficeEstateMixin {
       apiKey,
       'base64',
     );
+
+    const data = [...estateFields, ...Object.values(OnOfficeOpenAiFieldEnum)];
+    const exportMatching = this.user.company.config?.exportMatching;
+
+    if (exportMatching) {
+      data.push(...Object.values(exportMatching).map(({ fieldId }) => fieldId));
+    }
 
     this.actions.set(actionType, {
       timestamp: this.timestamp,
@@ -124,7 +131,7 @@ export class OnOfficeEstateMixin {
       identifier: '',
       resourcetype: resourceType,
       parameters: {
-        data: [...estateFields, ...Object.values(OnOfficeOpenAiFieldEnum)],
+        data,
         extendedclaim: extendedClaim,
         formatoutput: true,
       },
@@ -139,10 +146,10 @@ export class OnOfficeEstateMixin {
     textFieldsParams: TUpdEstTextFieldParams[],
     exportMatching: TCompanyExportMatch,
   ): ThisType<OnOfficeQueryBuilder> {
-    this.checkUserParams();
+    this.checkIsUserSet();
 
     const actionType = OnOfficeActionTypeEnum.UPDATE_TEXT_FIELDS;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(

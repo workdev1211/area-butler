@@ -116,7 +116,7 @@ export class OnOfficeController {
     @Body() { exportType, integrationId, text }: ApiIntUpdEstTextFieldReqDto,
   ): Promise<void> {
     await this.onOfficeQueryBuilderService
-      .setUserParams(integrationUser.parameters)
+      .setUser(integrationUser)
       .updateTextFields(
         integrationId,
         [{ exportType, text }],
@@ -159,7 +159,7 @@ export class OnOfficeController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiRealEstAvailIntStatuses> {
     const { getAvailStatuses } = await this.onOfficeQueryBuilderService
-      .setUserParams(integrationUser.parameters)
+      .setUser(integrationUser)
       .getAvailStatuses()
       .exec();
 
