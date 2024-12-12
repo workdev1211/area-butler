@@ -11,9 +11,10 @@ import {
   AreaButlerExportTypesEnum,
   MeansOfTransportation,
 } from '@area-butler-types/types';
-import { onOfficeOpenAiFieldMapper } from '../../../../shared/constants/on-office/on-office-constants';
-import { OnOfficeOpenAiFieldEnum } from '@area-butler-types/on-office';
-import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
+import {
+  OpenAiQueryTypeEnum,
+  TOpenAiLocDescType,
+} from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../../shared/constants/open-ai';
 import { OpenAiExtService } from '../../open-ai/open-ai-ext.service';
 import { OnOfficeWebhookUrlEnum } from '../shared/on-office.types';
@@ -187,12 +188,7 @@ export class OnOfficeWebhookService {
   private async generateLocDescs({
     potentialCustomer,
     snapshotRes,
-    loginData: {
-      integrationUser,
-      place,
-      realEstate,
-      onOfficeEstate: { lage, objektbeschreibung, ausstatt_beschr },
-    },
+    loginData: { integrationUser, place, realEstate, onOfficeEstate },
   }: IGenerateLocDescs): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
     const resultSnapshotRes =
       snapshotRes ||
@@ -200,6 +196,7 @@ export class OnOfficeWebhookService {
         place,
         potentialCustomer,
       }));
+
     const defaultData = {
       realEstate,
       meanOfTransportation: MeansOfTransportation.WALK,
@@ -207,19 +204,23 @@ export class OnOfficeWebhookService {
       snapshotRes: resultSnapshotRes,
       targetGroupName: potentialCustomer.name,
     };
-    const requiredLocDescTypes = Object.entries({
-      lage,
-      objektbeschreibung,
-      ausstatt_beschr,
-    }).reduce<Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>>(
-      (result, [key, value]) => {
-        const locDescType = onOfficeOpenAiFieldMapper.get(
-          key as OnOfficeOpenAiFieldEnum,
-        );
 
-        const preset = integrationUser.company?.config?.presets?.[locDescType];
+    const requiredLocDescTypes = [
+      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+      OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+      OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+    ].reduce<Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>>(
+      (result, locDescType) => {
+        const isValueSet =
+          onOfficeEstate[
+            integrationUser.company.config.exportMatching?.[locDescType]
+              ?.fieldId || locDescType
+          ];
 
-        if (locDescType && !value) {
+        const preset: Partial<Record<string, any>> =
+          integrationUser.company?.config?.presets?.[locDescType];
+
+        if (locDescType && !isValueSet) {
           result[locDescType] = {
             ...defaultData,
             ...preset?.general,
