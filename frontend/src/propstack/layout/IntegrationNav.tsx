@@ -7,10 +7,13 @@ import { IntlKeys } from "i18n/keys";
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
+import { ReactComponent as SettingsIcon } from "assets/icons/map-menu/04-konfiguration.svg";
+import Kevin_Heldt from "assets/icons/nav/Kevin_Heldt.svg";
+
 import { propstackRootEntries } from "../PropstackContainer";
 import { SearchContext } from "../../context/SearchContext";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "../../context/UserContext"; // TODO translation required
 
 // TODO translation required
 
@@ -24,7 +27,6 @@ const IntegrationNav: FC = () => {
 
   const { checkIsSubActive } = useIntegrationTools();
   const { t } = useTranslation();
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const mobileMenuClass = !isMobileMenuOpen
@@ -106,7 +108,7 @@ const IntegrationNav: FC = () => {
             />
           </NavLink>
 
-          <div className="hidden lg:flex lg:items-center">
+          <div className="hidden lg:flex lg:items-center w-full">
             <div className="nav-links">
               <NavLink
                 to="/search"
@@ -156,17 +158,26 @@ const IntegrationNav: FC = () => {
                   {t(IntlKeys.nav.products)}
                 </NavLink>
               )}
-
-              {integrationUser?.isAdmin && (
-                <NavLink
-                  to="/company-profile"
-                  className="nav-link"
-                  aria-current="page"
-                >
-                  {t(IntlKeys.nav.companyProfile)}
-                </NavLink>
-              )}
             </div>
+            {integrationUser?.isAdmin && (
+              <div className="nav-usermenu my-auto px-5">
+                <div className="nav-usermenu-button">
+                  <NavLink
+                    to={"/company-profile"}
+                    id="user-menu-button"
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    title={t(IntlKeys.nav.companyProfile)}
+                  >
+                    {integrationUser.config.color === "#133337" ? (
+                      <SettingsIcon />
+                    ) : (
+                      <img src={Kevin_Heldt} alt="Kevin Heldt" />
+                    )}
+                  </NavLink>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -655,6 +655,7 @@ export const IntlKeys = {
     inlineFrame: "yourProfile.inlineFrame",
     linkWithAddress: "yourProfile.linkWithAddress",
     linkWoAddress: "yourProfile.linkWoAddress",
+    syncWithCrm: "yourProfile.syncWithCrm",
   },
   tour: {
     tourEndingError: "tour.tourEndingError",

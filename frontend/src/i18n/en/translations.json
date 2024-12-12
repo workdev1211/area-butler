@@ -236,8 +236,8 @@
       "sendTo": "Send to {{integrationType}}",
       "surroundingsHeader": "Surroundings",
       "distance": "Distance",
-      "scanAndNew": "Scan and new",
-      "discoverResidentialArea": "Discover residential area",
+      "scanAndNew": "Scan and",
+      "discoverResidentialArea": "discover surroundings",
       "mobilityCriteria": "Your mobility criteria",
       "yourNewProperty": "Your new property",
       "nextPlace": "Next place",
@@ -604,7 +604,8 @@
     "inlineFrame": "Inline frame",
     "linkWithAddress": "Link with address",
     "linkWoAddress": "Link without address",
-    "equipmentDescription": "Equipment description"
+    "equipmentDescription": "Equipment description",
+    "syncWithCrm": "This information is in sync with {{crm}}"
   },
   "tour": {
     "tourEndingError": "Error when ending the tour",

@@ -8,6 +8,8 @@ import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
 import SettingsIcon from "assets/icons/map-menu/04-konfiguration.svg";
+import Stefan_Mantl from "assets/icons/nav/Stefan_Mantl.svg";
+
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { UserContext } from "../../context/UserContext";
@@ -159,12 +161,11 @@ const IntegrationNav: FC = () => {
                     aria-haspopup="true"
                     title={t(IntlKeys.nav.companyProfile)}
                   >
-                    <img
-                      src={integrationUser?.config.logo || SettingsIcon}
-                      referrerPolicy="no-referrer"
-                      alt="company"
-                      className="max-w-14 max-h-14"
-                    />
+                    {integrationUser.config.color === "#133337" ? (
+                      <SettingsIcon />
+                    ) : (
+                      <img src={Stefan_Mantl} alt="Stefan Mantl" />
+                    )}
                   </NavLink>
                 </div>
               </div>

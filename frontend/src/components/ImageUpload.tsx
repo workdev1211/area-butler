@@ -1,4 +1,4 @@
-import { FC, ChangeEvent } from "react";
+import { ChangeEvent, FC } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -78,7 +78,7 @@ const ImageUpload: FC<IImageUploadProps> = ({
             {image ? (
               <img src={image} alt="logo" />
             ) : (
-              <span>
+              <span className="text-center">
                 {uploadLabel || t(IntlKeys.imageUpload.defaultUploadLabel)}
               </span>
             )}
@@ -111,7 +111,7 @@ const ImageUpload: FC<IImageUploadProps> = ({
         )}
       </div>
 
-      <small>{t(IntlKeys.imageUpload.supportedFormats)}</small>
+      {!isDisabled && <small>{t(IntlKeys.imageUpload.supportedFormats)}</small>}
     </div>
   );
 };
