@@ -189,6 +189,70 @@ const checkIsCountryAllowed = ({
   }
 };
 
+const getCustomIconColor = (groupName?: TPoiGroupName): string => {
+  switch (groupName) {
+    case OsmName.fuel:
+      return "#8E71EB";
+    case OsmName.chemist:
+    case OsmName.supermarket:
+      return "#267F9D";
+    case PoiGroupEnum.kiosk_post_office:
+      return "#8F72EB";
+    case OsmName.station:
+      return "#267F9D";
+    case OsmName.bus_stop:
+      return "#C71362";
+    case PoiGroupEnum.bar_pub:
+      return "#E3BB3F";
+    case OsmName.restaurant:
+      return "#48136D";
+    case OsmName.theatre:
+      return "#C91444";
+    case OsmName.playground:
+      return "#D96666";
+    case OsmName.kindergarten:
+      return "#734242";
+    case OsmName.school:
+      return "#96476A";
+    case OsmName.university:
+      return "#201C1E";
+    case OsmName.doctors:
+    case OsmName.dentist:
+      return "#10A877";
+    case OsmName.clinic:
+    case OsmName.hospital:
+      return "#42AEA7";
+    case OsmName.motorway_link:
+      return "#579BE4";
+    // case OsmName.swimming_pool:
+    case OsmName.sports_centre:
+    case OsmName.sports_hall:
+    case OsmName.fitness_centre:
+      return "#9F532E";
+    case OsmName.hotel:
+      return "#E4BC40";
+    case PoiGroupEnum.power_pole:
+      return "#165B4E";
+    case PoiGroupEnum.parking_garage:
+      return "#6563FF";
+    case OsmName.surface:
+      return "#6563FF";
+    case OsmName.attraction:
+      return "#640D24";
+    case OsmName.charging_station:
+      return "#579BE4";
+    case OsmName.museum:
+      return "#C91444";
+    case OsmName.pharmacy:
+      return "#9F532E";
+    case OsmName.wind_turbine:
+      return "#1A5A6B";
+    case OsmName.park:
+    default:
+      return "#165B4E";
+  }
+};
+
 export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
   return harversine(
     {
@@ -276,7 +340,7 @@ export const getPreferredLocationsIcon = (
   )?.file;
 
   return customIcon
-    ? { icon: customIcon, color: "transparent", isCustom: true }
+    ? { icon: customIcon, color: getCustomIconColor(OsmName.favorite), isCustom: true }
     : { icon: preferredLocationIcon, color: "#c91444" };
 };
 
@@ -288,7 +352,7 @@ export const getRealEstateListingsIcon = (
   )?.file;
 
   return customIcon
-    ? { icon: customIcon, color: "transparent", isCustom: true }
+    ? { icon: customIcon, color: getCustomIconColor(OsmName.property), isCustom: true }
     : { icon: realEstateListingIcon, color: "#c91444" };
 };
 
@@ -313,7 +377,7 @@ export const deriveIconForPoiGroup = (
   const customIcon = poiIcons?.find(({ name }) => name === groupName)?.file;
 
   if (customIcon) {
-    return { icon: customIcon, color: "transparent", isCustom: true };
+    return { icon: customIcon, color: getCustomIconColor(groupName), isCustom: true };
   }
 
   switch (groupName) {
