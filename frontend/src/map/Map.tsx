@@ -640,7 +640,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
 
           poiMarkers.forEach((marker) => {
-            if (localMap.getZoom() < 17) {
+            if (localMap.getZoom() < defaultMapZoom) {
               marker.getElement()?.classList.add('dot-marker-shown');            
             } else {
               marker.getElement()?.classList.remove("dot-marker-shown");
@@ -1226,7 +1226,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           );
         }
 
-        html += `<div class="dot-marker hidden" style="background-color: ${markerIcon.color};"></div>`;
+        html += `<div class="dot-marker" style="background-color: ${markerIcon.color};"></div>`;
 
         const icon = L.divIcon({
           iconUrl: markerIcon.icon,
@@ -1254,13 +1254,13 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           marker.createOpenPopup();
         }).on("mouseover", (e) => {
           const marker = e.target;
-          if (currentMap && currentMap?.getZoom() < 17) {
-            marker.getElement()?.classList.remove("dot-marker-show");
+          if (currentMap && currentMap?.getZoom() < defaultMapZoom) {
+            marker.getElement()?.classList.remove("dot-marker-shown");
           }
         }).on("mouseout", (e) => {
           const marker = e.target;
-          if (currentMap && currentMap?.getZoom() < 17) {
-            marker.getElement()?.classList.add("dot-marker-show");
+          if (currentMap && currentMap?.getZoom() < defaultMapZoom) {
+            marker.getElement()?.classList.add("dot-marker-shown");
           }
         });
 
@@ -1391,6 +1391,14 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gotoMapCenter]);
+
+    useEffect(() => {
+      if (!currentMap || !config?.zoomLevel) {
+        return;
+      }
+
+      currentMap.setZoom(config?.zoomLevel);
+    }, [config?.zoomLevel]);
 
     const takeScreenshot = async (): Promise<void> => {
       if (isShownPreferredLocationsModal) {

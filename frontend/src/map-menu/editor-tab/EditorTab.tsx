@@ -29,6 +29,7 @@ import {
   defaultMapboxStyles,
   MapboxStyleLabelsEnum,
   TMapboxStyleLabels,
+  defaultMapZoom,
 } from "../../shared/shared.constants";
 import PoiFilter from "./components/PoiFilter";
 import IconSizes from "./components/IconSizes";
@@ -552,7 +553,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             </li>
             <li>
               <ZoomSlider
-                zoomLevel={config.zoomLevel}
+                zoomLevel={config.zoomLevel || defaultMapZoom}
                 onChange={(resultingZoomLevel) => {
                   changeConfigParam("zoomLevel", resultingZoomLevel);
                 }}
