@@ -189,69 +189,69 @@ const checkIsCountryAllowed = ({
   }
 };
 
-const getCustomIconColor = (groupName?: TPoiGroupName): string => {
+export const getMarkerIconOrColor = (groupName?: TPoiGroupName, mode?: boolean): string => {
   switch (groupName) {
     case OsmName.fuel:
-      return "#8E71EB";
+      return mode ? fuelIcon : "#8E71EB";
     case OsmName.chemist:
     case OsmName.supermarket:
-      return "#267F9D";
+      return mode ? chemistIcon : "#267F9D";        
     case PoiGroupEnum.kiosk_post_office:
-      return "#8F72EB";
+      return mode ? kioskIcon : "#8F72EB";
     case OsmName.station:
-      return "#267F9D";
+      return mode ? stationIcon : "#267F9D";
     case OsmName.bus_stop:
-      return "#C71362";
+      return mode ? busStopIcon : "#C71362";
     case PoiGroupEnum.bar_pub:
-      return "#E3BB3F";
+      return mode ? barIcon : "#E3BB3F";
     case OsmName.restaurant:
-      return "#48136D";
+      return mode ? restaurantIcon : "#48136D";
     case OsmName.theatre:
-      return "#C91444";
+      return mode ? theatreIcon : "#C91444";
     case OsmName.playground:
-      return "#D96666";
+      return mode ? playgroundIcon : "#D96666";
     case OsmName.kindergarten:
-      return "#734242";
+      return mode ? kindergartenIcon : "#734242";
     case OsmName.school:
-      return "#96476A";
+      return mode ? schoolIcon : "#96476A";
     case OsmName.university:
-      return "#201C1E";
+      return mode ? universityIcon : "#201C1E";
     case OsmName.doctors:
     case OsmName.dentist:
-      return "#10A877";
+      return mode ? doctorsIcon : "#10A877";
     case OsmName.clinic:
     case OsmName.hospital:
-      return "#42AEA7";
+      return mode ? clinicIcon : "#42AEA7";
     case OsmName.motorway_link:
-      return "#579BE4";
+      return mode ? motorwayLinkIcon : "#579BE4";
     // case OsmName.swimming_pool:
     case OsmName.sports_centre:
     case OsmName.sports_hall:
     case OsmName.fitness_centre:
-      return "#9F532E";
+      return mode ? sportIcon : "#9F532E";
     case OsmName.hotel:
-      return "#E4BC40";
+      return mode ? hotelIcon : "#E4BC40";
     case PoiGroupEnum.power_pole:
-      return "#165B4E";
+      return mode ? towerIcon : "#165B4E";
     case PoiGroupEnum.parking_garage:
-      return "#6563FF";
+      return mode ? parkingGarageIcon : "#6563FF";
     case OsmName.surface:
-      return "#6563FF";
+      return mode ? parkingIcon : "#6563FF";
     case OsmName.attraction:
-      return "#640D24";
+      return mode ? attractionIcon : "#640D24";
     case OsmName.charging_station:
-      return "#579BE4";
+      return mode ? chargingStationIcon : "#579BE4";
     case OsmName.museum:
-      return "#C91444";
+      return mode ? museumIcon : "#C91444";
     case OsmName.pharmacy:
-      return "#9F532E";
+      return mode ? pharmacyIcon : "#9F532E";
     case OsmName.wind_turbine:
-      return "#1A5A6B";
+      return mode ? windTurbineIcon : "#1A5A6B";
     case OsmName.park:
     default:
-      return "#165B4E";
+      return mode ? parkIcon : "#165B4E";
   }
-};
+}
 
 export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
   return harversine(
@@ -340,7 +340,7 @@ export const getPreferredLocationsIcon = (
   )?.file;
 
   return customIcon
-    ? { icon: customIcon, color: getCustomIconColor(OsmName.favorite), isCustom: true }
+    ? { icon: customIcon, color: getMarkerIconOrColor(OsmName.favorite, false), isCustom: true }
     : { icon: preferredLocationIcon, color: "#c91444" };
 };
 
@@ -352,7 +352,7 @@ export const getRealEstateListingsIcon = (
   )?.file;
 
   return customIcon
-    ? { icon: customIcon, color: getCustomIconColor(OsmName.property), isCustom: true }
+    ? { icon: customIcon, color: getMarkerIconOrColor(OsmName.property, false), isCustom: true }
     : { icon: realEstateListingIcon, color: "#c91444" };
 };
 
@@ -377,148 +377,13 @@ export const deriveIconForPoiGroup = (
   const customIcon = poiIcons?.find(({ name }) => name === groupName)?.file;
 
   if (customIcon) {
-    return { icon: customIcon, color: getCustomIconColor(groupName), isCustom: true };
+    return { icon: customIcon, color: getMarkerIconOrColor(groupName, false), isCustom: true };
   }
 
-  switch (groupName) {
-    case OsmName.fuel:
-      return {
-        icon: fuelIcon,
-        color: "#8E71EB",
-      };
-    case OsmName.chemist:
-    case OsmName.supermarket:
-      return {
-        icon: chemistIcon,
-        color: "#267F9D",
-      };
-    case PoiGroupEnum.kiosk_post_office:
-      return {
-        icon: kioskIcon,
-        color: "#8F72EB",
-      };
-    case OsmName.station:
-      return {
-        icon: stationIcon,
-        color: "#267F9D",
-      };
-    case OsmName.bus_stop:
-      return {
-        icon: busStopIcon,
-        color: "#C71362",
-      };
-    case PoiGroupEnum.bar_pub:
-      return {
-        icon: barIcon,
-        color: "#E3BB3F",
-      };
-    case OsmName.restaurant:
-      return {
-        icon: restaurantIcon,
-        color: "#48136D",
-      };
-    case OsmName.theatre:
-      return {
-        icon: theatreIcon,
-        color: "#C91444",
-      };
-    case OsmName.playground:
-      return {
-        icon: playgroundIcon,
-        color: "#D96666",
-      };
-    case OsmName.kindergarten:
-      return {
-        icon: kindergartenIcon,
-        color: "#734242",
-      };
-    case OsmName.school:
-      return {
-        icon: schoolIcon,
-        color: "#96476A",
-      };
-    case OsmName.university:
-      return {
-        icon: universityIcon,
-        color: "#201C1E",
-      };
-    case OsmName.doctors:
-    case OsmName.dentist:
-      return {
-        icon: doctorsIcon,
-        color: "#10A877",
-      };
-    case OsmName.clinic:
-    case OsmName.hospital:
-      return {
-        icon: clinicIcon,
-        color: "#42AEA7",
-      };
-    case OsmName.motorway_link:
-      return {
-        icon: motorwayLinkIcon,
-        color: "#579BE4",
-      };
-    // case OsmName.swimming_pool:
-    case OsmName.sports_centre:
-    case OsmName.sports_hall:
-    case OsmName.fitness_centre:
-      return {
-        icon: sportIcon,
-        color: "#9F532E",
-      };
-    case OsmName.hotel:
-      return {
-        icon: hotelIcon,
-        color: "#E4BC40",
-      };
-    case PoiGroupEnum.power_pole:
-      return {
-        icon: towerIcon,
-        color: "#165B4E",
-      };
-    case PoiGroupEnum.parking_garage:
-      return {
-        icon: parkingGarageIcon,
-        color: "#6563FF",
-      };
-    case OsmName.surface:
-      return {
-        icon: parkingIcon,
-        color: "#6563FF",
-      };
-    case OsmName.attraction:
-      return {
-        icon: attractionIcon,
-        color: "#640D24",
-      };
-    case OsmName.charging_station:
-      return {
-        icon: chargingStationIcon,
-        color: "#579BE4",
-      };
-    case OsmName.museum:
-      return {
-        icon: museumIcon,
-        color: "#C91444",
-      };
-    case OsmName.pharmacy:
-      return {
-        icon: pharmacyIcon,
-        color: "#9F532E",
-      };
-    case OsmName.wind_turbine:
-      return {
-        icon: windTurbineIcon,
-        color: "#1A5A6B",
-      };
-    case OsmName.park:
-    default:
-      return {
-        icon: parkIcon,
-        color: "#165B4E",
-      };
-  }
+  return {
+    icon: getMarkerIconOrColor(groupName, true),
+    color: getMarkerIconOrColor(groupName, false),
+  };
 };
 
 export const deriveTotalRequestContingent = (user: ApiUser) =>
