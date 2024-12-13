@@ -130,8 +130,12 @@ export type TApiIntegrationUserProductsUsed = Partial<
 
 export interface IIntUserExpMatchParams {
   fieldId: string;
-  maxTextLength?: number;
+
+  isEmbedable?: boolean;
+  isPrivate?: boolean;
   isSpecialLink?: boolean;
+  maxTextLength?: number;
+  onLandingPage?: boolean;
 }
 
 export interface IApiIntUserLoginRes {

@@ -6,7 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { LeanDocument, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import { configService } from '../../config/config.service';
@@ -71,6 +71,7 @@ import {
 import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
 import { IOnOfficeMulSelValue } from './query-builder/on-office-multiselect.mixin';
 import structuredClone from '@ungap/structured-clone';
+import { TIntUserObj } from '../../shared/types/user';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -531,7 +532,7 @@ export class OnOfficeService {
       );
     }
 
-    const queryUser: LeanDocument<TIntegrationUserDocument> = structuredClone(
+    const queryUser: TIntUserObj<IApiIntUserOnOfficeParams> = structuredClone(
       (integrationUser || teamUser).toObject(),
     );
     Object.assign(queryUser.parameters, { extendedClaim, userId });

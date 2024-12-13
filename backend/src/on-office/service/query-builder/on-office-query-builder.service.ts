@@ -4,7 +4,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import * as dayjs from 'dayjs';
-import { LeanDocument } from 'mongoose';
 
 import { OnOfficeApiService } from '../../../client/on-office/on-office-api.service';
 import { IApiOnOfficeRequest } from '@area-butler-types/on-office';
@@ -15,7 +14,7 @@ import {
   OnOfficeActionTypeEnum,
 } from '../../shared/on-office.types';
 import { OnOfficeQueryBuilder } from './on-office-query-builder.abstract';
-import { TIntegrationUserDocument } from '../../../user/schema/integration-user.schema';
+import { TIntUserObj } from '../../../shared/types/user';
 
 @Injectable()
 export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
@@ -23,12 +22,10 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
     super();
   }
 
-  setUser(user: LeanDocument<TIntegrationUserDocument>): this {
+  setUser(user: TIntUserObj<IApiIntUserOnOfficeParams>): this {
     this.actions.clear();
     this.timestamp = dayjs().unix();
-    this.user = user as LeanDocument<TIntegrationUserDocument> & {
-      parameters: IApiIntUserOnOfficeParams;
-    };
+    this.user = user;
     this.checkIsUserSet();
 
     return this;

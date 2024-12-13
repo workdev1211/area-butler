@@ -1,5 +1,4 @@
 import { Logger, UnprocessableEntityException } from '@nestjs/common';
-import { LeanDocument } from 'mongoose';
 
 import { IApiOnOfficeRequestAction } from '@area-butler-types/on-office';
 import { IApiIntUserOnOfficeParams } from '@area-butler-types/integration-user';
@@ -20,7 +19,7 @@ import {
   TUpdEstTextFieldParams,
 } from '@area-butler-types/integration';
 import { TCompanyExportMatch } from '@area-butler-types/company';
-import { TIntegrationUserDocument } from '../../../user/schema/integration-user.schema';
+import { TIntUserObj } from '../../../shared/types/user';
 
 export abstract class OnOfficeQueryBuilder {
   protected readonly actions: Map<
@@ -30,9 +29,7 @@ export abstract class OnOfficeQueryBuilder {
 
   protected readonly logger = new Logger(OnOfficeQueryBuilder.name);
   protected timestamp: number;
-  protected user: LeanDocument<TIntegrationUserDocument> & {
-    parameters: IApiIntUserOnOfficeParams;
-  };
+  protected user: TIntUserObj<IApiIntUserOnOfficeParams>;
 
   protected constructor() {
     applyClassMixins(OnOfficeQueryBuilder, [
@@ -48,7 +45,7 @@ export abstract class OnOfficeQueryBuilder {
     }
   }
 
-  abstract setUser(user: LeanDocument<TIntegrationUserDocument>): this;
+  abstract setUser(user: TIntUserObj<IApiIntUserOnOfficeParams>): this;
   abstract exec(): Promise<IOnOfficeActionResults>;
 
   // company / user

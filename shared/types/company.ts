@@ -67,11 +67,7 @@ export interface IApiCompanyPreset {
 
 export type TCompanyExportMatch = Partial<
   Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
-> & {
-  isPrivate?: boolean;
-  isEmbedable?: boolean;
-  onLandingPage?: boolean;
-};
+>;
 
 export interface ICompanySchema {
   config?: ICompanyConfig;
