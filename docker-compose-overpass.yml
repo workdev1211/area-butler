@@ -545,6 +545,39 @@ services:
       - "traefik.port=8115"
     logging: *default-logging
 
+  overpass-gr:
+    image: wiktorn/overpass-api
+    container_name: overpass-gr
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8116:80
+    volumes:
+      - overpass-gr-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/greece-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/europe/greece-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-gr-prefix.stripprefix.prefixes=/gr"
+      - "traefik.http.routers.overpass-gr-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/gr`)"
+      - "traefik.http.routers.overpass-gr-http.entrypoints=web"
+      - "traefik.http.routers.overpass-gr-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-gr.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/gr`)"
+      - "traefik.http.routers.overpass-gr.entrypoints=websecure"
+      - "traefik.http.routers.overpass-gr.tls=true"
+      - "traefik.http.routers.overpass-gr.tls.certresolver=le"
+      - "traefik.http.routers.overpass-gr.middlewares=remove-gr-prefix"
+      - "traefik.port=8116"
+    logging: *default-logging
+
 volumes:
   overpass-de-db:
     external: true
@@ -577,6 +610,8 @@ volumes:
   overpass-sk-db:
     external: true
   overpass-pt-db:
+    external: true
+  overpass-gr-db:
     external: true
 
 networks:

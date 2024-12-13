@@ -274,6 +274,7 @@ export type TAvailableCountries = Extract<
   | Iso3166_1Alpha2CountriesEnum.SI // Slovenia
   | Iso3166_1Alpha2CountriesEnum.SK // Slovakia
   | Iso3166_1Alpha2CountriesEnum.PT // Portugal
+  | Iso3166_1Alpha2CountriesEnum.GR // Greece
 >;
 
 export enum Iso3166_1Alpha3CountriesEnum {

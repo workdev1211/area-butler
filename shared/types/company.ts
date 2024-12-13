@@ -35,7 +35,7 @@ export type TCompProdContingents = Partial<
 >;
 
 export interface ICompanyConfig {
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH","GR"]
   color?: string;
   exportFonts?: IApiUserExportFont[];
   exportMatching?: TCompanyExportMatch;
