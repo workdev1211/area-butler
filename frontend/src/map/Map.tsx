@@ -122,10 +122,6 @@ export class IdMarker extends L.Marker {
     this.hideEntity = hideEntity;
   }
 
-  getConfig(): ApiSearchResultSnapshotConfig {
-    return this.config || {};
-  }
-
   getEntity(): ResultEntity {
     return this.entity;
   }
@@ -521,6 +517,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     const [poiIconSize, setPoiIconSize] = useState(
       config?.iconSizes?.poiIconSize
     );
+    const [currentMapZoom, setCurrentMapZoom] = useState(defaultMapZoom);
 
     const addPoiModalOpenConfig: ModalConfig = {
       modalTitle: t(IntlKeys.snapshotEditor.addNewLocationModalTitle),
@@ -596,8 +593,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         renderer: new L.Canvas(),
         dragging: !L.Browser.mobile,
         touchZoom: true,
-        maxZoom: 20,
-        minZoom: 2,
+        maxZoom: 30,
         // Adds zoom in / zoom out buttons
         zoomControl: false,
         // LEFT JUST IN CASE - the old touch screen solution
@@ -641,15 +637,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             container?.classList.remove("small-markers");
           }
 
-          const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
-
-          poiMarkers.forEach((marker) => {
-            if (localMap.getZoom() < defaultMapZoom) {
-              marker.getElement()?.classList.add('dot-marker-shown');            
-            } else {
-              marker.getElement()?.classList.remove("dot-marker-shown");
-            }
-          });
+          setCurrentMapZoom(localMap.getZoom());
         }
       });
 
@@ -677,8 +665,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         zoomOffset: -1,
         accessToken: mapboxAccessToken,
         tileSize: 512,
-        maxZoom: 20,
-        minZoom: 2,
+        maxZoom: 30,
       }).addTo(localMap);
 
       currentMap = localMap;
@@ -698,6 +685,19 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       config?.showLocation,
     ]);
 
+    useEffect(() => {
+      const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
+      const userZoomLevel = config?.zoomLevel || 17;
+
+      poiMarkers.forEach((marker) => {
+        if (currentMapZoom< userZoomLevel) {
+          marker.getElement()?.classList.add('dot-marker-shown');
+        } else {
+          marker.getElement()?.classList.remove("dot-marker-shown");
+        }
+      });
+    }, [config?.zoomLevel, currentMapZoom]);
+    
     // draw trial logos
     useEffect(() => {
       if (!currentMap || !isTrial) {
@@ -1256,16 +1256,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         }).on("click", (e) => {
           const marker = e.target;
           marker.createOpenPopup();
-        }).on("mouseover", (e) => {
-          if (currentMap && !marker.getConfig()?.groupItems && currentMap?.getZoom() < defaultMapZoom) {
-            const marker = e.target;
-            marker.getElement()?.classList.remove("dot-marker-shown");
-          }
-        }).on("mouseout", (e) => {          
-          if (currentMap && !marker.getConfig()?.groupItems && currentMap?.getZoom() < defaultMapZoom) {
-            const marker = e.target;
-            marker.getElement()?.classList.add("dot-marker-shown");
-          }
         });
 
         amenityMarkerGroup.addLayer(marker);
@@ -1395,14 +1385,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gotoMapCenter]);
-
-    useEffect(() => {
-      if (!currentMap || !config?.zoomLevel) {
-        return;
-      }
-
-      currentMap.setZoom(config?.zoomLevel);
-    }, [config?.zoomLevel]);
 
     const takeScreenshot = async (): Promise<void> => {
       if (isShownPreferredLocationsModal) {
