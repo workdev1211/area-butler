@@ -323,7 +323,8 @@
     "addNewLocationModalFailed": "Errore durante il salvataggio dell'oggetto",
     "outputLanguage": "Lingua di uscita",
     "invertBaseColor": "Invertire il colore di base",
-    "errorSendingAiRequest": "Errore nell'invio della richiesta AI!"
+    "errorSendingAiRequest": "Errore nell'invio della richiesta AI!",
+    "zoomLevel": "Livello di zoom"
   },
   "common": {
     "showMore": "Mostra di più",

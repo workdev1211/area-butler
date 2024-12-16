@@ -323,7 +323,8 @@
     "addNewLocationModalFailed": "Fehler beim Speichern des Objektes",
     "outputLanguage": "Ausgabesprache",
     "invertBaseColor": "Basisfarbe invertieren",
-    "errorSendingAiRequest": "Fehler beim Senden der KI-Anfrage!"
+    "errorSendingAiRequest": "Fehler beim Senden der KI-Anfrage!",
+    "zoomLevel": "Zoomstufe"
   },
   "common": {
     "showMore": "Mehr anzeigen",

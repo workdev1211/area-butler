@@ -28,8 +28,7 @@ import poiVisibilityIcon from "../../assets/icons/map-menu/06-poi-sichtbarkeit.s
 import {
   defaultMapboxStyles,
   MapboxStyleLabelsEnum,
-  TMapboxStyleLabels,
-  defaultMapZoom,
+  TMapboxStyleLabels
 } from "../../shared/shared.constants";
 import PoiFilter from "./components/PoiFilter";
 import IconSizes from "./components/IconSizes";
@@ -552,12 +551,14 @@ const EditorTab: FC<IEditorTabProps> = ({
               />
             </li>
             <li>
-              <ZoomSlider
-                zoomLevel={config.zoomLevel || defaultMapZoom}
-                onChange={(resultingZoomLevel) => {
-                  changeConfigParam("zoomLevel", resultingZoomLevel);
-                }}
-              />
+              {!config.groupItems && (
+                <ZoomSlider
+                  zoomLevel={config.zoomLevel || 17}
+                  onChange={(resultingZoomLevel) => {
+                    changeConfigParam("zoomLevel", resultingZoomLevel);
+                  }}
+                />
+              )}
             </li>
             <li>
               <div className="flex flex-col">
