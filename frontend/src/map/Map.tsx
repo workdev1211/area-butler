@@ -122,6 +122,10 @@ export class IdMarker extends L.Marker {
     this.hideEntity = hideEntity;
   }
 
+  getConfig(): ApiSearchResultSnapshotConfig {
+    return this.config || {};
+  }
+
   getEntity(): ResultEntity {
     return this.entity;
   }
@@ -592,7 +596,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         renderer: new L.Canvas(),
         dragging: !L.Browser.mobile,
         touchZoom: true,
-        maxZoom: 30,
+        maxZoom: 20,
         minZoom: 2,
         // Adds zoom in / zoom out buttons
         zoomControl: false,
@@ -673,7 +677,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         zoomOffset: -1,
         accessToken: mapboxAccessToken,
         tileSize: 512,
-        maxZoom: 30,
+        maxZoom: 20,
         minZoom: 2,
       }).addTo(localMap);
 
@@ -1253,13 +1257,13 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           const marker = e.target;
           marker.createOpenPopup();
         }).on("mouseover", (e) => {
-          const marker = e.target;
-          if (currentMap && currentMap?.getZoom() < defaultMapZoom) {
+          if (currentMap && !marker.getConfig()?.groupItems && currentMap?.getZoom() < defaultMapZoom) {
+            const marker = e.target;
             marker.getElement()?.classList.remove("dot-marker-shown");
           }
-        }).on("mouseout", (e) => {
-          const marker = e.target;
-          if (currentMap && currentMap?.getZoom() < defaultMapZoom) {
+        }).on("mouseout", (e) => {          
+          if (currentMap && !marker.getConfig()?.groupItems && currentMap?.getZoom() < defaultMapZoom) {
+            const marker = e.target;
             marker.getElement()?.classList.add("dot-marker-shown");
           }
         });

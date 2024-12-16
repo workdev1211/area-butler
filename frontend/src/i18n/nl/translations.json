@@ -354,7 +354,8 @@
     "addNewLocationModalFailed": "Fout bij het opslaan van het object",
     "outputLanguage": "Uitvoertaal",
     "invertBaseColor": "Basiskleur omkeren",
-    "errorSendingAiRequest": "Fout bij het verzenden van het AI-verzoek!"
+    "errorSendingAiRequest": "Fout bij het verzenden van het AI-verzoek!",
+    "zoomLevel": "Zoomniveau"
   },
   "common": {
     "showMore": "Meer tonen",

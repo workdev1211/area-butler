@@ -1,4 +1,6 @@
 import { FunctionComponent } from "react";
+import { useTranslation } from 'react-i18next';
+import { IntlKeys } from 'i18n/keys';
 
 interface IZoomSliderProps {
   zoomLevel?: number;
@@ -9,9 +11,11 @@ const ZoomSlider: FunctionComponent<IZoomSliderProps> = ({
   zoomLevel,
   onChange,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-2 w-full">
-      <h4 className="font-bold">Zoom Level</h4>
+      <h4 className="font-bold">{t(IntlKeys.snapshotEditor.zoomLevel)}:</h4>
       <div
         className="grid auto-rows-fr gap-2"
         style={{ gridTemplateColumns: "2fr 0.5fr 1.5fr" }}
@@ -20,13 +24,12 @@ const ZoomSlider: FunctionComponent<IZoomSliderProps> = ({
           className="range"
           type="range"
           min="2"
-          max="30"
+          max="20"
           value={zoomLevel}
           onChange={({ target: { value } }) => {
             onChange(parseInt(value));
           }}
         />
-        <div className="label-text">{zoomLevel}</div>
       </div>
     </div>
   );

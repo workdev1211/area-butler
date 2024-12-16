@@ -512,6 +512,7 @@ export const IntlKeys = {
     outputLanguage: "snapshotEditor.outputLanguage",
     invertBaseColor: "snapshotEditor.invertBaseColor",
     errorSendingAiRequest: "snapshotEditor.errorSendingAiRequest",
+    zoomLevel: "snapshotEditor.zoomLevel",
   },
 
   realEstate: {

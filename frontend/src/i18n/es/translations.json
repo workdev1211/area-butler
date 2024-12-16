@@ -354,7 +354,8 @@
     "addNewLocationModalFailed": "Error al guardar el objeto",
     "outputLanguage": "Idioma de salida",
     "invertBaseColor": "Invertir el color base",
-    "errorSendingAiRequest": "Error al enviar la solicitud de IA."
+    "errorSendingAiRequest": "Error al enviar la solicitud de IA.",
+    "zoomLevel": "Nivel de zoom"
   },
   "common": {
     "showMore": "Ver más",

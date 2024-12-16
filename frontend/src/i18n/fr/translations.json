@@ -354,7 +354,8 @@
     "addNewLocationModalFailed": "Erreur lors de l'enregistrement de l'objet",
     "outputLanguage": "Édition Langue",
     "invertBaseColor": "Inverser la couleur de base",
-    "errorSendingAiRequest": "Erreur lors de l'envoi de la demande d'IA !"
+    "errorSendingAiRequest": "Erreur lors de l'envoi de la demande d'IA !",
+    "zoomLevel": "Niveau de zoom"
   },
   "common": {
     "showMore": "Voir plus",
