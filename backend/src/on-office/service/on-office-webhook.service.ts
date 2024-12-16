@@ -83,10 +83,9 @@ export class OnOfficeWebhookService {
       );
     }
 
-    const potentialCustomer = fetchPotentCustomer || defaultPotentialCustomer;
     this.logger.verbose(
       `Potential customer is ${
-        potentialCustomer?.id || potentialCustomer.name
+        fetchPotentCustomer?.id || fetchPotentCustomer?.name
       }.`,
     );
 
@@ -103,7 +102,7 @@ export class OnOfficeWebhookService {
       snapshotRes = await this.createSnapshot({
         integrationUser,
         place,
-        potentialCustomer,
+        potentialCustomer: fetchPotentCustomer,
         realEstate: resRealEstate,
       });
     }
@@ -122,7 +121,7 @@ export class OnOfficeWebhookService {
           place,
           realEstate: resRealEstate,
         },
-        potentialCustomer,
+        potentialCustomer: fetchPotentCustomer,
         snapshotRes,
       });
     }
@@ -167,14 +166,15 @@ export class OnOfficeWebhookService {
     integrationUser,
     place,
     realEstate,
-    potentialCustomer: {
-      preferredLocations,
-      preferredAmenities: poiTypes,
-      routingProfiles: transportParams,
-    },
+    potentialCustomer = defaultPotentialCustomer,
   }: Omit<IPerformLoginData, 'onOfficeEstate'> & {
     potentialCustomer: Partial<PotentialCustomerDocument>;
   }): Promise<ApiSearchResultSnapshotResponse> {
+    const {
+      preferredLocations,
+      preferredAmenities: poiTypes,
+      routingProfiles: transportParams,
+    } = potentialCustomer;
     return this.snapshotExtService.createSnapshotByPlace({
       place,
       poiTypes,
@@ -194,7 +194,7 @@ export class OnOfficeWebhookService {
       snapshotRes ||
       (await this.openAiExtService.generateSnapshotRes({
         place,
-        potentialCustomer,
+        potentialCustomer: potentialCustomer || defaultPotentialCustomer,
       }));
 
     const defaultData = {
@@ -202,7 +202,7 @@ export class OnOfficeWebhookService {
       meanOfTransportation: MeansOfTransportation.WALK,
       realEstateType: realEstate.type || defaultRealEstType,
       snapshotRes: resultSnapshotRes,
-      targetGroupName: potentialCustomer.name,
+      targetGroupName: potentialCustomer?.name,
     };
 
     const requiredLocDescTypes = [
@@ -229,7 +229,7 @@ export class OnOfficeWebhookService {
             realEstate: defaultData.realEstate,
             snapshot: defaultData.snapshotRes,
             targetGroupName:
-              defaultData.targetGroupName || preset?.general?.targetGroupName,
+              defaultData.targetGroupName || preset?.general?.targetGroupName || defaultPotentialCustomer.name,
           };
         }
 
