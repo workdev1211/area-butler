@@ -146,26 +146,32 @@ export class PropstackWebhookService {
       snapshotId: snapshotResponse.id,
     };
 
-    const openAiDescs = await this.openAiService.batchFetchLocDescs(
-      user,
-      defaultParams,
+    const requiredLocDescTypes = (
       [
         OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
         OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
         OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
         OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
-      ].reduce((res, type) => {
-        const preset = user.company?.config?.presets?.[type];
-        res[type] = {
-          ...defaultParams,
-          ...(preset?.general as Record<string, unknown>),
-          ...(preset?.locationDescription as Record<string, unknown>),
-          ...(preset?.realEstateType as Record<string, unknown>),
-          realEstateId: defaultParams.realEstateId,
-          snapshotId: defaultParams.snapshotId,
-        };
-        return res;
-      }, {} as Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>),
+      ] as TOpenAiLocDescType[]
+    ).reduce((res, type) => {
+      const preset = user.company?.config?.presets?.[type];
+
+      res.set(type, {
+        ...defaultParams,
+        ...(preset?.general as Record<string, unknown>),
+        ...(preset?.locationDescription as Record<string, unknown>),
+        ...(preset?.realEstateType as Record<string, unknown>),
+        realEstateId: defaultParams.realEstateId,
+        snapshotId: defaultParams.snapshotId,
+      });
+
+      return res;
+    }, new Map<TOpenAiLocDescType, TFetchLocRealEstDescParams>());
+
+    const openAiDescs = await this.openAiService.batchFetchLocDescs(
+      user,
+      defaultParams,
+      requiredLocDescTypes,
     );
 
     const propstackOpenAiDescs = Object.entries(openAiDescs).reduce(

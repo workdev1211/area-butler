@@ -1,4 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import * as dayjs from 'dayjs';
+import * as duration from 'dayjs/plugin/duration';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 import { SnapshotExtService } from '../../location/snapshot-ext.service';
 import { IPerformLoginData, OnOfficeService } from './on-office.service';
@@ -34,6 +37,10 @@ import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-li
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { checkIsSearchNotUnlocked } from '../../../../shared/functions/integration.functions';
+import { onOfficeOpenAiFieldMapper } from '../../../../shared/constants/on-office/on-office-constants';
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 interface IGenerateLocDescs {
   loginData: IPerformLoginData;
@@ -59,6 +66,13 @@ export class OnOfficeWebhookService {
     endpoint: OnOfficeWebhookUrlEnum,
     onOfficeQueryParams: ApiOnOfficeLoginQueryParamsDto,
   ): Promise<void> {
+    const nowDate = new Date();
+    const eventId = `${endpoint}-${onOfficeQueryParams.customerWebId}-${
+      onOfficeQueryParams.userId
+    }-${onOfficeQueryParams.estateId}-${nowDate.getTime()}`;
+
+    this.logger.verbose(`Webhook ${eventId} was triggered.`);
+
     const { integrationUser, onOfficeEstate, place, realEstate } =
       await this.onOfficeService.performLogin(onOfficeQueryParams);
 
@@ -68,10 +82,10 @@ export class OnOfficeWebhookService {
       realEstate,
     );
 
-    let fetchPotentCustomer: PotentialCustomerDocument;
+    let fetchedPotCustomer: PotentialCustomerDocument;
 
     if (onOfficeEstate.TargetAudience?.length) {
-      fetchPotentCustomer = await this.potentialCustomerService.findOne(
+      fetchedPotCustomer = await this.potentialCustomerService.findOne(
         integrationUser,
         { name: onOfficeEstate.TargetAudience[0] },
         {
@@ -84,9 +98,11 @@ export class OnOfficeWebhookService {
     }
 
     this.logger.verbose(
-      `Potential customer is ${
-        fetchPotentCustomer?.id || fetchPotentCustomer?.name
-      }.`,
+      `Webhook ${eventId}. ${
+        fetchedPotCustomer
+          ? `Potential customer is ${fetchedPotCustomer.name} (id: ${fetchedPotCustomer.id}).`
+          : 'Potential customer not found.'
+      }`,
     );
 
     let snapshotRes: ApiSearchResultSnapshotResponse;
@@ -102,7 +118,7 @@ export class OnOfficeWebhookService {
       snapshotRes = await this.createSnapshot({
         integrationUser,
         place,
-        potentialCustomer: fetchPotentCustomer,
+        potentialCustomer: fetchedPotCustomer,
         realEstate: resRealEstate,
       });
     }
@@ -121,7 +137,7 @@ export class OnOfficeWebhookService {
           place,
           realEstate: resRealEstate,
         },
-        potentialCustomer: fetchPotentCustomer,
+        potentialCustomer: fetchedPotCustomer,
         snapshotRes,
       });
     }
@@ -160,13 +176,19 @@ export class OnOfficeWebhookService {
         )
         .exec();
     }
+
+    this.logger.verbose(
+      `Webhook ${eventId} processing is complete and took ${dayjs
+        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+        .humanize()}.`,
+    );
   }
 
   private async createSnapshot({
     integrationUser,
     place,
     realEstate,
-    potentialCustomer = defaultPotentialCustomer,
+    potentialCustomer,
   }: Omit<IPerformLoginData, 'onOfficeEstate'> & {
     potentialCustomer: Partial<PotentialCustomerDocument>;
   }): Promise<ApiSearchResultSnapshotResponse> {
@@ -174,7 +196,8 @@ export class OnOfficeWebhookService {
       preferredLocations,
       preferredAmenities: poiTypes,
       routingProfiles: transportParams,
-    } = potentialCustomer;
+    } = potentialCustomer || defaultPotentialCustomer;
+
     return this.snapshotExtService.createSnapshotByPlace({
       place,
       poiTypes,
@@ -205,38 +228,39 @@ export class OnOfficeWebhookService {
       targetGroupName: potentialCustomer?.name,
     };
 
-    const requiredLocDescTypes = [
-      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-      OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-      OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
-    ].reduce<Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>>(
-      (result, locDescType) => {
-        const isValueSet =
-          onOfficeEstate[
-            integrationUser.company.config.exportMatching?.[locDescType]
-              ?.fieldId || locDescType
-          ];
+    const requiredLocDescTypes = (
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+      ] as TOpenAiLocDescType[]
+    ).reduce((result, locDescType) => {
+      const isValueSet =
+        !!onOfficeEstate[
+          integrationUser.company.config.exportMatching?.[locDescType]
+            ?.fieldId || onOfficeOpenAiFieldMapper.get(locDescType)
+        ];
 
-        const preset: Partial<Record<string, any>> =
-          integrationUser.company?.config?.presets?.[locDescType];
+      const preset: Partial<Record<string, any>> =
+        integrationUser.company?.config?.presets?.[locDescType];
 
-        if (locDescType && !isValueSet) {
-          result[locDescType] = {
-            ...defaultData,
-            ...preset?.general,
-            ...preset?.locationDescription,
-            ...preset?.realEstateDescription,
-            realEstate: defaultData.realEstate,
-            snapshot: defaultData.snapshotRes,
-            targetGroupName:
-              defaultData.targetGroupName || preset?.general?.targetGroupName || defaultPotentialCustomer.name,
-          };
-        }
+      if (locDescType && !isValueSet) {
+        result.set(locDescType, {
+          ...defaultData,
+          ...preset?.general,
+          ...preset?.locationDescription,
+          ...preset?.realEstateDescription,
+          realEstate: defaultData.realEstate,
+          snapshot: defaultData.snapshotRes,
+          targetGroupName:
+            defaultData.targetGroupName ||
+            preset?.general?.targetGroupName ||
+            defaultPotentialCustomer.name,
+        });
+      }
 
-        return result;
-      },
-      {} as Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>,
-    );
+      return result;
+    }, new Map<TOpenAiLocDescType, TFetchLocRealEstDescParams>());
 
     return this.openAiService.batchFetchLocDescs(
       integrationUser,
