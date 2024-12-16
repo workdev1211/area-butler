@@ -198,8 +198,9 @@ interface IPropstackFurnishing {
 }
 
 export type TImage = {
-  url: string;
   id: number;
+  url: string;
+  big_url: string;
   title: string;
   is_not_for_expose: boolean;
   is_private: boolean;
@@ -259,7 +260,7 @@ export interface IPropstackProperty {
   rs_type?: string; // enum
   rs_category?: string; // enum
   district?: string;
-  
+
   heating_type?: IPropstackLabelValue;
   flooring?: IPropstackLabelValue;
   windows?: IPropstackLabelValue;

@@ -439,9 +439,13 @@ export class OpenAiService {
             Number(estateId),
           );
 
-        return realEstateExtData.images.filter(
-          (image) => !image.is_not_for_expose,
-        );
+        return realEstateExtData.images.reduce((res, image) => {
+          if (!image.is_not_for_expose) {
+            res.push({ id: image.id, url: image.big_url, title: image.title });
+          }
+          return res;
+        }, []);
+
       case IntegrationTypesEnum.ON_OFFICE:
         const images = await this.openAiOnOfficeService.fetchEstateImages(
           user,
