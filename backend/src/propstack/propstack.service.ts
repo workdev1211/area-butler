@@ -8,7 +8,6 @@ import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 import { firstValueFrom } from 'rxjs';
 import { FilterQuery, UpdateQuery } from 'mongoose';
-import structuredClone from '@ungap/structured-clone';
 
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import {

@@ -24,7 +24,6 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { TUnitedUser } from '../shared/types/user';
-import structuredClone from '@ungap/structured-clone';
 
 @Injectable()
 export class CompanyUserService {

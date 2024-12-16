@@ -20,7 +20,6 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { ApiCoordinates } from '@area-butler-types/types';
 import { PlaceService } from '../../place/place.service';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
-import structuredClone from '@ungap/structured-clone';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
 import { processOnOfficeEstateId } from '../shared/on-office.functions';
 

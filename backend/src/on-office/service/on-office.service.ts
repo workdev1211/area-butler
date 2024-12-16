@@ -70,7 +70,6 @@ import {
 } from '../../../../shared/functions/shared.functions';
 import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
 import { IOnOfficeMulSelValue } from './query-builder/on-office-multiselect.mixin';
-import structuredClone from '@ungap/structured-clone';
 import { TIntUserObj } from '../../shared/types/user';
 
 interface IProcessEstateData {
@@ -532,9 +531,9 @@ export class OnOfficeService {
       );
     }
 
-    const queryUser: TIntUserObj<IApiIntUserOnOfficeParams> = structuredClone(
-      (integrationUser || teamUser).toObject(),
-    );
+    const queryUser: TIntUserObj<IApiIntUserOnOfficeParams> = (
+      integrationUser || teamUser
+    ).toObject();
     Object.assign(queryUser.parameters, { extendedClaim, userId });
 
     const {

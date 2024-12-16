@@ -7,7 +7,6 @@ import {
 } from '../../potential-customer/schema/potential-customer.schema';
 import { defaultPotentialCustomers } from '../../shared/constants/potential-customers';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
-import structuredClone from '@ungap/structured-clone';
 
 const potCustomerMapper = new Map([
   ['Aktive Senioren', 'Senioren'],
