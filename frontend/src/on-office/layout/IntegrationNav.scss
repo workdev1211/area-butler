@@ -30,7 +30,7 @@
   }
 
   .nav-usermenu-button {
-    @apply w-12 h-12 p-2 shadow rounded-full align-middle justify-center;
+    @apply w-12 h-12 shadow rounded-full align-middle justify-center overflow-hidden;
   }
 
   .nav-mobile-menu .nav-mobile-menu-link {

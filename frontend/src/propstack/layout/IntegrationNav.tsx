@@ -170,9 +170,9 @@ const IntegrationNav: FC = () => {
                     title={t(IntlKeys.nav.companyProfile)}
                   >
                     {integrationUser.config.color === "#133337" ? (
-                      <SettingsIcon />
-                    ) : (
                       <img src={Kevin_Heldt} alt="Kevin Heldt" />
+                    ) : (
+                      <SettingsIcon />
                     )}
                   </NavLink>
                 </div>
