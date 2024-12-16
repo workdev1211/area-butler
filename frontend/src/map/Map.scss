@@ -107,6 +107,18 @@
   display: block;
 }
 
+.dot-marker-shown:hover img {
+  display: block;
+}
+
+.dot-marker-shown:hover div:first-child {
+  display: block;
+}
+
+.dot-marker-shown:hover div:last-child {
+  display: none;
+}
+
 .dark-primary-color {
   .real-estate-cta {
     color: var(--primary) !important;
