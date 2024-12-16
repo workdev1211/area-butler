@@ -1,3 +1,5 @@
+// TODO translation required
+
 export const notAllowedCountryMsg =
   "Bitte kontaktieren Sie unser Team, um ein Land freizuschalten.";
 

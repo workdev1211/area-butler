@@ -50,7 +50,7 @@ RUN mkdir -p dist/static && \
 
 
 
-FROM node:20-alpine
+FROM node:22-alpine
 
 ENV APP_DIR=/home/node/app
 
