@@ -475,14 +475,17 @@ export class OnOfficeService {
     throw new UnauthorizedException('Request verification failed!');
   }
 
-  async performLogin({
-    customerName,
-    customerWebId,
-    userId,
-    estateId,
-    parameterCacheId,
-    apiClaim: extendedClaim,
-  }: IApiOnOfficeLoginQueryParams): Promise<IPerformLoginData> {
+  async performLogin(
+    {
+      customerName,
+      customerWebId,
+      userId,
+      estateId,
+      parameterCacheId,
+      apiClaim: extendedClaim,
+    }: IApiOnOfficeLoginQueryParams,
+    isFetchCustomFields?: boolean,
+  ): Promise<IPerformLoginData> {
     const integrationUserId = `${customerWebId}-${userId}`;
 
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
@@ -545,7 +548,7 @@ export class OnOfficeService {
       .setUser(queryUser)
       .getColorAndLogo()
       .getUserData()
-      .getEstateData(estateId)
+      .getEstateData(estateId, isFetchCustomFields)
       .getMultiselectValues()
       .exec();
 

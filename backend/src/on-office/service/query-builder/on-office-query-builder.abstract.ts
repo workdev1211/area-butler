@@ -57,7 +57,7 @@ export abstract class OnOfficeQueryBuilder {
     createLinkReq: Omit<IApiIntCreateEstateLinkReq, 'exportType'>,
   ) => this;
   getAvailStatuses: () => this;
-  getEstateData: (estateId: string) => this;
+  getEstateData: (estateId: string, isFetchCustomFields?: boolean) => this;
   updateTextFields: (
     estateId: string,
     textFieldsParams: TUpdEstTextFieldParams[],

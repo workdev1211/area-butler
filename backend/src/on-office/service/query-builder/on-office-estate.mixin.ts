@@ -102,6 +102,7 @@ export class OnOfficeEstateMixin {
   getEstateData(
     this: OnOfficeQueryBuilder,
     estateId: string,
+    isFetchCustomFields?: boolean,
   ): ThisType<OnOfficeQueryBuilder> {
     this.checkIsUserSet();
 
@@ -118,7 +119,7 @@ export class OnOfficeEstateMixin {
     const data = [...estateFields, ...Object.values(OnOfficeOpenAiFieldEnum)];
     const exportMatching = this.user.company.config?.exportMatching;
 
-    if (exportMatching) {
+    if (isFetchCustomFields && exportMatching) {
       data.push(...Object.values(exportMatching).map(({ fieldId }) => fieldId));
     }
 

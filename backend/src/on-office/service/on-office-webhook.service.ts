@@ -74,7 +74,7 @@ export class OnOfficeWebhookService {
     this.logger.verbose(`Webhook ${eventId} was triggered.`);
 
     const { integrationUser, onOfficeEstate, place, realEstate } =
-      await this.onOfficeService.performLogin(onOfficeQueryParams);
+      await this.onOfficeService.performLogin(onOfficeQueryParams, true);
 
     const resRealEstate = await this.getUnlockRealEst(
       integrationUser,
