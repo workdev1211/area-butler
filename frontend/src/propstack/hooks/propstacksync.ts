@@ -82,14 +82,14 @@ export const usePropstackSync = () => {
 
   const sendToPropstack = async (
     sendToPropstackData: TSendToIntegrationData
-  ): Promise<AxiosResponse<void>> => {
+  ): Promise<AxiosResponse<void> | void> => {
     switch (sendToPropstackData.exportType) {
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
       case OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION: {
         if (searchContextState.openAiQueryType && window.self !== window.top) {
-          sendPropertyTextFieldToPropstack(
+          return sendPropertyTextFieldToPropstack(
             sendToPropstackData as IApiIntUpdEstTextFieldReq
           );
         }
