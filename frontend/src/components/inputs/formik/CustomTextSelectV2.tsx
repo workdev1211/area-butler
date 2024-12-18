@@ -17,6 +17,8 @@ interface ICustomTextSelectProps {
   textLengthLimit?: number;
 }
 
+// selectOptions shouldn't be updated
+
 const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
   customTextValue,
   emptyTextValue,
@@ -60,7 +62,9 @@ const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
     <div className="form-control">
       {label && (
         <label className="label">
-          <span className="label-text" style={{ zIndex: 0 }}>{label}</span>
+          <span className="label-text" style={{ zIndex: 0 }}>
+            {label}
+          </span>
         </label>
       )}
 
@@ -89,8 +93,8 @@ const CustomTextSelectV2: FC<ICustomTextSelectProps> = ({
               setValue(selectedOptions[0].value);
             }}
           >
-            {selectOptions.map(({ text, value: sValue }) => (
-              <option key={sValue} value={sValue}>
+            {selectOptions.map(({ text, value: sValue }, i) => (
+              <option key={`${i}-${sValue}`} value={sValue}>
                 {text}
               </option>
             ))}

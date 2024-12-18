@@ -26,6 +26,7 @@ import CustomNumberSelect from "../inputs/formik/CustomNumberSelect";
 import { ISelectTextValue } from "../../../../shared/types/types";
 import { useUserState } from "../../hooks/userstate";
 import CustomTextSelectV2 from "../inputs/formik/CustomTextSelectV2";
+import { Loading } from "../Loading";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;
@@ -80,9 +81,8 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
     value: t(IntlKeys.snapshotEditor.dataTab.defaultTargetGroupName),
   };
 
-  const [targetGroupOptions, setTargetGroupOptions] = useState<
-    ISelectTextValue[]
-  >([defTargetGroupOption, custTargetGroupOption]);
+  const [targetGroupOptions, setTargetGroupOptions] =
+    useState<ISelectTextValue[]>();
 
   const resultInitValues = initialValues
     ? structuredClone(initialValues)
@@ -130,6 +130,10 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
     void fetchTargetGroupNames();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!targetGroupOptions?.length) {
+    return <Loading />;
+  }
 
   return (
     <Formik
