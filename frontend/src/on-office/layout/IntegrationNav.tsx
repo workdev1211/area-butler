@@ -7,7 +7,7 @@ import { IntlKeys } from "i18n/keys";
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
-import SettingsIcon from "assets/icons/map-menu/04-konfiguration.svg";
+import ConfigIcon from "assets/icons/map-menu/04-konfiguration.svg";
 import Stefan_Mantl from "assets/icons/nav/Stefan_Mantl.svg";
 
 import { onOfficeRootEntries } from "../OnOfficeContainer";
@@ -164,7 +164,7 @@ const IntegrationNav: FC = () => {
                     {integrationUser.config.color === "#133337" ? (
                       <img src={Stefan_Mantl} alt="Stefan Mantl" />
                     ) : (
-                      <SettingsIcon />
+                      <img src={ConfigIcon} alt="configuration" />
                     )}
                   </NavLink>
                 </div>

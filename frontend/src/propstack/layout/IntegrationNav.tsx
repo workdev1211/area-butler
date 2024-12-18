@@ -7,7 +7,7 @@ import { IntlKeys } from "i18n/keys";
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
-import { ReactComponent as SettingsIcon } from "assets/icons/map-menu/04-konfiguration.svg";
+import ConfigIcon from "assets/icons/map-menu/04-konfiguration.svg";
 import Kevin_Heldt from "assets/icons/nav/Kevin_Heldt.svg";
 
 import { propstackRootEntries } from "../PropstackContainer";
@@ -172,7 +172,7 @@ const IntegrationNav: FC = () => {
                     {integrationUser.config.color === "#133337" ? (
                       <img src={Kevin_Heldt} alt="Kevin Heldt" />
                     ) : (
-                      <SettingsIcon />
+                      <img src={ConfigIcon} alt="configuration" />
                     )}
                   </NavLink>
                 </div>
