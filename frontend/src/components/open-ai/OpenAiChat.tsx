@@ -14,7 +14,7 @@ import {
 } from "../../../../shared/types/open-ai";
 import copy from "copy-to-clipboard";
 import personIcon from "../../assets/icons/person.svg";
-import areaButlerLogo from "../../assets/icons/areabutler.svg";
+import areaButlerLogo from "../../assets/icons/AreaButler2.svg";
 import copyIcon from "../../assets/icons/copy.svg";
 import editIcon from "../../assets/icons/edit.svg";
 import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
@@ -251,8 +251,8 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
   return (
     <>
       <div className="grid grid-cols-12 gap-2 pb-3">
-        <div className="place-self-end">
-          <img className="w-8" src={areaButlerLogo} alt="AreaButler" />
+        <div className="place-self-end w-5/6">
+          <img className="w-full" src={areaButlerLogo} alt="AreaButler" />
         </div>
         <div className="col-span-9">
           <div className="border border-primary bg-primary bg-opacity-5 w-fit rounded p-3">
@@ -279,8 +279,12 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
                 </div>
               )}
               <div className="grid grid-cols-12 gap-3 pb-3">
-                <div className="place-self-end">
-                  <img className="w-8" src={areaButlerLogo} alt="AreaButler" />
+                <div className="place-self-end w-5/6">
+                  <img
+                    className="w-full"
+                    src={areaButlerLogo}
+                    alt="AreaButler"
+                  />
                 </div>
                 <div className="col-span-9">
                   <div className="border border-primary bg-primary bg-opacity-5 rounded p-3 pb-7 whitespace-pre-wrap relative">
@@ -468,21 +472,24 @@ const OpenAiChat: FC<IOpenAiChatProps> = ({
             )}
             <div className="flex justify justify-end mt-2 gap-2">
               {queryResponses && queryResponses.length > 0 && (
-                <button
-                  className="btn btn-base-silver"
-                  onClick={() =>
-                    setIsImproveDialogEnabled(!isImproveDialogEnabled)
-                  }
-                  disabled={isGenerateButtonDisabled || isFetchResponse}
-                >
-                  {isImproveDialogEnabled ? (
-                    <>{t(IntlKeys.snapshotEditor.dataTab.enterNewWishes)}</>
-                  ) : (
-                    <>{t(IntlKeys.snapshotEditor.dataTab.improveLastText)}</>
-                  )}
-                </button>
+                <>
+                  <button
+                    className="btn btn-base-silver"
+                    onClick={() =>
+                      setIsImproveDialogEnabled(!isImproveDialogEnabled)
+                    }
+                    disabled={isGenerateButtonDisabled || isFetchResponse}
+                  >
+                    {isImproveDialogEnabled ? (
+                      <>{t(IntlKeys.snapshotEditor.dataTab.enterNewWishes)}</>
+                    ) : (
+                      <>{t(IntlKeys.snapshotEditor.dataTab.improveLastText)}</>
+                    )}
+                  </button>
+
+                  <div className="flex-grow">&nbsp;</div>
+                </>
               )}
-              &nbsp;
               <button
                 className={`btn bg-primary-gradient max-w-fit self-end ${
                   isFetchResponse ? "loading" : ""

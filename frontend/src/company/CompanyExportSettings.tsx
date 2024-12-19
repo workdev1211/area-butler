@@ -130,9 +130,13 @@ const CompanyExportSettings: FC = () => {
         image={logo}
         isDisabled={isIntegrationUser}
         onChange={updateLogo}
-        uploadLabel={t(IntlKeys.yourProfile.syncWithCrm, {
-          crm: integrationNames[integrationType!!],
-        })}
+        uploadLabel={
+          (isIntegrationUser &&
+            t(IntlKeys.yourProfile.syncWithCrm, {
+              crm: integrationNames[integrationType!!],
+            })) ||
+          undefined
+        }
       />
 
       <ImageUpload

@@ -172,7 +172,11 @@ const IntegrationNav: FC = () => {
                     {integrationUser.config.color === "#133337" ? (
                       <img src={Kevin_Heldt} alt="Kevin Heldt" />
                     ) : (
-                      <img src={ConfigIcon} alt="configuration" />
+                      <img
+                        src={ConfigIcon}
+                        alt="configuration"
+                        className="m-2"
+                      />
                     )}
                   </NavLink>
                 </div>

@@ -12,7 +12,7 @@ import Stefan_Mantl from "assets/icons/nav/Stefan_Mantl.svg";
 
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "../../context/UserContext"; // TODO translation required
 
 // TODO translation required
 
@@ -164,7 +164,11 @@ const IntegrationNav: FC = () => {
                     {integrationUser.config.color === "#133337" ? (
                       <img src={Stefan_Mantl} alt="Stefan Mantl" />
                     ) : (
-                      <img src={ConfigIcon} alt="configuration" />
+                      <img
+                        src={ConfigIcon}
+                        alt="configuration"
+                        className="m-2"
+                      />
                     )}
                   </NavLink>
                 </div>
