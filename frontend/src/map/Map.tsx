@@ -517,7 +517,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     const [poiIconSize, setPoiIconSize] = useState(
       config?.iconSizes?.poiIconSize
     );
-    const [currentMapZoom, setCurrentMapZoom] = useState(defaultMapZoom);
 
     const addPoiModalOpenConfig: ModalConfig = {
       modalTitle: t(IntlKeys.snapshotEditor.addNewLocationModalTitle),
@@ -636,8 +635,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           } else {
             container?.classList.remove("small-markers");
           }
-
-          setCurrentMapZoom(localMap.getZoom());
         }
       });
 
@@ -686,17 +683,21 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     ]);
 
     useEffect(() => {
+      if (!currentMap) {
+        return;
+      }
+      
       const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
       const userZoomLevel = config?.zoomLevel || 17;
 
       poiMarkers.forEach((marker) => {
-        if (currentMapZoom< userZoomLevel) {
+        if (currentMap!.getZoom() < userZoomLevel) {
           marker.getElement()?.classList.add('dot-marker-shown');
         } else {
           marker.getElement()?.classList.remove("dot-marker-shown");
         }
       });
-    }, [config?.zoomLevel, currentMapZoom]);
+    }, [config?.zoomLevel]);
     
     // draw trial logos
     useEffect(() => {
@@ -1208,14 +1209,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           } locality-icon" style="${iconStyle}" /></div>`;
 
         if ((config?.mapIcon && isRealEstateListing) || markerIcon.isCustom) {
-          html = `<img src="${markerIcon.icon
+          html = `<div class="locality-marker-custom" style="border-color: ${markerIcon.color
+            }"><img src="${markerIcon.icon
             }" alt="marker-icon-custom" class="${entity.osmName
             } locality-icon-custom ${backColorClass}" style="${iconStyle}${entity.isFiltered
               ? "filter: brightness(75%) grayscale(100%);"
               : ""
-            }" />`;
+            }" /></div>`;
         } else if (config?.primaryColor && isRealEstateListing) {
-          html = renderToStaticMarkup(
+          html = `<div class="locality-marker-custom" style="border-color: ${markerIcon.color
+            }">` + renderToStaticMarkup(
             <DefaultMarker
               fill={config.primaryColor}
               className="locality-icon-custom"
@@ -1225,13 +1228,12 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 filter: entity.isFiltered
                   ? "brightness(75%) grayscale(100%)"
                   : "",
+                borderColor: markerIcon.color,
               }}
             />
-          );
+          ) + '</div>';
         }
-
-        html += `<div class="dot-marker" style="background-color: ${markerIcon.color};"></div>`;
-
+                   
         const icon = L.divIcon({
           iconUrl: markerIcon.icon,
           shadowUrl: leafletShadow,
@@ -1255,7 +1257,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           },
         }).on("click", (e) => {
           const marker = e.target;
-          marker.createOpenPopup();
+          marker.createOpenPopup();          
         });
 
         amenityMarkerGroup.addLayer(marker);

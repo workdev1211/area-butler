@@ -83,40 +83,62 @@
   padding: 4px;
   border-radius: 100%;
   border: 0.1rem solid rgba(0, 0, 0, 0.2);
+  transition: width 1s, height 1s, border-width 1s;
   @apply justify-center items-center h-full w-full;
+  
+  img {
+    transition: opacity 1s;
+    transition-delay: 0.5s;
+  }
 }
 
-.dot-marker {
-  width: 4px;
-  height: 4px;
-  padding: 0px;
-  border: none;
+.locality-marker-custom {
+  display: flex;
+  padding: 4px;
+  border-width: 0;
   border-radius: 100%;
-  display: none;
+  background-color: transparent;
+  @apply justify-center items-center h-full w-full;
+  
+  .locality-icon-custom {
+    border-radius: 100%;  
+    transition: opacity 1s;
+  }
 }
 
-.dot-marker-shown img {
-  display: none;
+.dot-marker-shown .locality-marker > img,
+.dot-marker-shown .locality-marker-custom .locality-icon-custom {
+  opacity: 0;
 }
 
-.dot-marker-shown div:first-child {
-  display: none;
+.dot-marker-shown:hover .locality-marker > img,
+.dot-marker-shown:hover .locality-marker-custom .locality-icon-custom {
+  opacity: 1;
 }
 
-.dot-marker-shown div:last-child {
-  display: block;
+.dot-marker-shown .locality-marker,
+.dot-marker-shown .locality-marker-custom {
+    width: 4px;
+    height: 4px;
+    padding: 0px;
+    width: 0px;
+    height: 0px;
+    border-width:4px;
 }
 
-.dot-marker-shown:hover img {
-  display: block;
+.dot-marker-shown:hover .locality-marker {
+  padding: 4px;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  border: 0.1rem solid rgba(0, 0, 0, 0.2);
 }
 
-.dot-marker-shown:hover div:first-child {
-  display: block;
-}
-
-.dot-marker-shown:hover div:last-child {
-  display: none;
+.dot-marker-shown:hover .locality-marker-custom {
+  padding: 4px;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .dark-primary-color {
