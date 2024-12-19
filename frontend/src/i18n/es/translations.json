@@ -636,7 +636,8 @@
     "inlineFrame": "Marco en línea",
     "linkWithAddress": "Enlace con la dirección",
     "linkWoAddress": "Enlace sin dirección",
-    "equipmentDescription": "Descripción del equipo"
+    "equipmentDescription": "Descripción del equipo",
+    "syncWithCrm": "Esta información está sincronizada con {{crm}}"
   },
   "tour": {
     "tourEndingError": "Error al finalizar la visita",
