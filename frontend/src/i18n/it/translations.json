@@ -126,7 +126,7 @@
     "standard": "Standard",
     "minimal": "Minimo",
     "preselectedProfile": "Profili preselezionati",
-    "showIcon": "Mostra icona",
+    "showIcon": "Mostra icona su mappa anonima",
     "showAddress": "Mostra indirizzo",
     "showStreetViewLink": "Mostra il link a Street View",
     "groupPOIOnZoom": "Raggruppamento dei PDI quando si esegue lo zoom out",
@@ -636,7 +636,8 @@
     "inlineFrame": "Telaio in linea",
     "linkWithAddress": "Collegamento con l'indirizzo",
     "linkWoAddress": "Link senza indirizzo",
-    "equipmentDescription": "Descrizione dell'apparecchiatura"
+    "equipmentDescription": "Descrizione dell'apparecchiatura",
+    "syncWithCrm": "Questa informazione è sincronizzata con {{crm}}"
   },
   "tour": {
     "tourEndingError": "Errore al termine del tour",
