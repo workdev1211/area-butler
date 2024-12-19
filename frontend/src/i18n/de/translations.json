@@ -126,7 +126,7 @@
     "standard": "Standard",
     "minimal": "Minimal",
     "preselectedProfile": "Vorausgewählte Profile",
-    "showIcon": "Icon anzeigen",
+    "showIcon": "Icon auf anonymisierter Karte anzeigen",
     "showAddress": "Adresse anzeigen",
     "showStreetViewLink": "Street View Link anzeigen",
     "groupPOIOnZoom": "POIs gruppieren beim Rauszoomen",
@@ -306,7 +306,6 @@
         "EQUIPMENT_DESCRIPTION": "Ausstattungsbeschreibung"
       },
       "publicLinks": "Links mit und ohne Adresse",
-      "useChrome": "Bitte benutzen Sie den Google Chrome Browser. Andere Browser werden das pdf nicht korrekt generieren.",
       "maxCharactersLength": "Zielzeichenlänge",
       "textLength": {
         "SHORT": "Der Text soll kurz und prägnant sein.",
@@ -317,6 +316,7 @@
       "saveAsPreset": "Voreinstellung übernehmen",
       "saveAsPresetSuccess": "Voreinstellung erfolgreich gespeichert",
       "saveAsPresetError": "Voreinstellung konnte nicht übernommen werden",
+      "useChrome": "Bitte benutzen Sie den Google Chrome Browser. Andere Browser werden das pdf nicht korrekt generieren.",
       "tonalities": {
         "FORMAL_SERIOUS": "formale und seriöse",
         "EASYGOING_YOUTHFUL": "lockere und jugendliche"
@@ -570,7 +570,6 @@
   },
   "mapSnapshots": {
     "copiedToClipboard": "Erfolgreich in Zwischenablage kopiert!",
-    "locationNotFound": "Erfolgreich in Zwischenablage kopiert!",
     "duplicateConfirmation": "Wollen Sie wirklich das Kartensnippet duplizieren?",
     "duplicateFailed": "Fehler beim Duplizieren eines Kartensnippet!",
     "deleteConfirmation": "Wollen Sie wirklich das Kartensnippet löschen?",
@@ -593,7 +592,8 @@
     "noteField": "Notizfeld",
     "directLink": "Direkt Link",
     "htmlSnippet": "HTML Snippet",
-    "companyTemplate": "Organisationsvorlage"
+    "companyTemplate": "Organisationsvorlage",
+    "locationNotFound": "Erfolgreich in Zwischenablage kopiert!"
   },
   "imageUpload": {
     "supportedFormats": "Unterstützte Formate: png, jpg, svg, maximale Größe: 5MB",
@@ -636,7 +636,8 @@
     "inlineFrame": "iframe-Code",
     "linkWithAddress": "Link mit Adresse",
     "linkWoAddress": "Link ohne Adresse",
-    "equipmentDescription": "Ausstattungsbeschreibung"
+    "equipmentDescription": "Ausstattungsbeschreibung",
+    "syncWithCrm": "Diese Informationen wird von {{crm}} synchronisiert."
   },
   "tour": {
     "tourEndingError": "Fehler beim Beenden der Tour",
@@ -769,13 +770,6 @@
     "quantity": "Menge",
     "data": "Datum",
     "errorWhenIncreaseLimit": "Fehler bei der Erhöhung des Limits",
-    "toastSubscriptionSuccess": "Abonnement erfolgreich abgeschlossen",
-    "toastSubscriptionError": "Fehler beim Anlegen des Abonnements",
-    "buyProduct": "Bitte kaufen Sie ein entsprechendes Produkt!",
-    "integrationIdNotSpecified": "Die Integrations-ID wird nicht angegeben!",
-    "dataSent": "Die Daten wurden an {{integrationType}} gesendet!",
-    "productNotActivated": "Das Produkt wurde nicht freigeschaltet!",
-    "addressActivated": "Die Adresse wurde erfolgreich freigeschaltet!",
     "planTypes": {
       "PAY_PER_USE": "Nach Verbrauch",
       "BUSINESS_PLUS": "Im Abo"
@@ -812,7 +806,14 @@
       "minimumTermForYear": "Mindestlaufzeit: 1 Jahr, danach jährlich kündbar. Nach Ende des\n          aktuellen Abo-Zeitraums verlängert sich die Laufzeit des Vertrags\n          automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht\n          mit einer Frist von 30 Tagen zum Ende des aktuellen Abo-Zeitraums,\n          durch Erklärung in Textform gegenüber KuDiBa, kündigt.",
       "cardStyles": "Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.\nKartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.",
       "annualSubscription": "Jahres-Abo"
-    }
+    },
+    "toastSubscriptionSuccess": "Abonnement erfolgreich abgeschlossen",
+    "toastSubscriptionError": "Fehler beim Anlegen des Abonnements",
+    "buyProduct": "Bitte kaufen Sie ein entsprechendes Produkt!",
+    "integrationIdNotSpecified": "Die Integrations-ID wird nicht angegeben!",
+    "dataSent": "Die Daten wurden an {{integrationType}} gesendet!",
+    "productNotActivated": "Das Produkt wurde nicht freigeschaltet!",
+    "addressActivated": "Die Adresse wurde erfolgreich freigeschaltet!"
   },
   "companyProfile": {
     "title": "Unternehmensprofil"
