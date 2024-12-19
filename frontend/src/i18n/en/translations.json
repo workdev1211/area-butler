@@ -126,7 +126,7 @@
     "standard": "Standard",
     "minimal": "Minimal",
     "preselectedProfile": "Preselected profiles",
-    "showIcon": "Show icon",
+    "showIcon": "Show icon on anonymized map",
     "showAddress": "Show address",
     "showStreetViewLink": "Show Street View link",
     "groupPOIOnZoom": "Group POIs when zooming out",
