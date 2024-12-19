@@ -126,7 +126,7 @@
     "standard": "Standard",
     "minimal": "Minimal",
     "preselectedProfile": "Profils présélectionnés",
-    "showIcon": "Afficher l'icône",
+    "showIcon": "Afficher l'icône sur la carte anonyme",
     "showAddress": "Afficher l'adresse",
     "showStreetViewLink": "Afficher le lien Street View",
     "groupPOIOnZoom": "Regroupement des POI lors d'un zoom arrière",
@@ -636,7 +636,8 @@
     "inlineFrame": "Cadre en ligne",
     "linkWithAddress": "Lien avec l'adresse",
     "linkWoAddress": "Lien sans adresse",
-    "equipmentDescription": "Description de l'équipement"
+    "equipmentDescription": "Description de l'équipement",
+    "syncWithCrm": "Ces informations sont synchronisées avec {{crm}}"
   },
   "tour": {
     "tourEndingError": "Erreur lors de la fin de la tournée",
