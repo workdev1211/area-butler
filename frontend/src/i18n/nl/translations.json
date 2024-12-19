@@ -126,7 +126,7 @@
     "standard": "Standaard",
     "minimal": "Minimaal",
     "preselectedProfile": "Vooraf geselecteerde profielen",
-    "showIcon": "Pictogram weergeven",
+    "showIcon": "Toon icoon op geanonimiseerde kaart",
     "showAddress": "Adres tonen",
     "showStreetViewLink": "Link naar Street View weergeven",
     "groupPOIOnZoom": "POI's groeperen bij uitzoomen",
@@ -636,7 +636,8 @@
     "inlineFrame": "Inline frame",
     "linkWithAddress": "Link met adres",
     "linkWoAddress": "Link zonder adres",
-    "equipmentDescription": "Beschrijving apparatuur"
+    "equipmentDescription": "Beschrijving apparatuur",
+    "syncWithCrm": "Deze informatie is gesynchroniseerd met {{crm}}"
   },
   "tour": {
     "tourEndingError": "Fout bij het beëindigen van de tour",
