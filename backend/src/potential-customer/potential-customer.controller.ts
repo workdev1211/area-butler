@@ -38,8 +38,9 @@ export class PotentialCustomerController extends AuthenticatedController {
   async fetchPotentialCustomers(
     @InjectUser() user: UserDocument,
   ): Promise<ApiPotentialCustomer[]> {
-    return (await this.potentialCustomerService.findMany(user)).map((p) =>
-      mapPotentialCustomerToApiPotentialCustomer(p, user.id),
+    return (await this.potentialCustomerService.findMany(user)).map(
+      (potentialCustomer) =>
+        mapPotentialCustomerToApiPotentialCustomer(potentialCustomer),
     );
   }
 
@@ -57,7 +58,6 @@ export class PotentialCustomerController extends AuthenticatedController {
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.create(user, potentialCustomer),
-      user.id,
     );
   }
 
@@ -84,7 +84,6 @@ export class PotentialCustomerController extends AuthenticatedController {
   ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.update(user, id, potentialCustomer),
-      user.id,
     );
   }
 

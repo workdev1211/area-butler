@@ -48,11 +48,7 @@ export class PotentialCustomerIntController {
   ): Promise<ApiPotentialCustomer[]> {
     return (await this.potentialCustomerService.findMany(integrationUser)).map(
       (potentialCustomer) =>
-        mapPotentialCustomerToApiPotentialCustomer(
-          potentialCustomer,
-          integrationUser.integrationUserId,
-          true,
-        ),
+        mapPotentialCustomerToApiPotentialCustomer(potentialCustomer),
     );
   }
 

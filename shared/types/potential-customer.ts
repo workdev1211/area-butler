@@ -13,7 +13,6 @@ export interface ApiUpsertPotentialCustomer {
 
 export interface ApiPotentialCustomer {
   id: string;
-  isFromParent: boolean;
   name: string;
   email?: string;
   routingProfiles?: TransportationParam[];

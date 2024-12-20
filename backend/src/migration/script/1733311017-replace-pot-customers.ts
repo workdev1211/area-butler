@@ -144,7 +144,12 @@ const processAllPotCustomers = ({
   potCustomers.push(
     ...defaultPotentialCustomers.reduce((result, defaultPotCustomer) => {
       if (newPotCustomers.includes(defaultPotCustomer.name)) {
-        const document = structuredClone(defaultPotCustomer);
+        const document = structuredClone(
+          defaultPotCustomer,
+        ) as Partial<PotentialCustomerDocument> & {
+          integrationParams: IApiIntegrationParams;
+          userId: string;
+        };
 
         if (typeof groupingId === 'string') {
           document.userId = groupingId;

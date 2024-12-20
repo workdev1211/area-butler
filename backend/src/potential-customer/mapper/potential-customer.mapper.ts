@@ -8,8 +8,6 @@ import {
 // TODO change to 'plainToInstance' with 'ApiPotentialCustomerDto'
 export const mapPotentialCustomerToApiPotentialCustomer = (
   potentialCustomer: PotentialCustomerDocument,
-  userId?: string,
-  isIntegrationUser = false,
 ): ApiPotentialCustomer => ({
   id: potentialCustomer.id,
   name: potentialCustomer.name,
@@ -19,9 +17,6 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
   preferredLocations: potentialCustomer.preferredLocations,
   realEstateCharacteristics: potentialCustomer.realEstateCharacteristics,
   realEstateCostStructure: potentialCustomer.realEstateCostStructure,
-  isFromParent: isIntegrationUser
-    ? potentialCustomer.integrationParams.integrationUserId !== userId
-    : potentialCustomer.userId !== userId,
 });
 
 // TODO change to 'plainToInstance' with 'ApiQuestionnaireRequestDto'
