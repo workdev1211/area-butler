@@ -602,7 +602,7 @@ export class OnOfficeService {
       integrationUser.parentUser = parentUser;
     }
 
-    await this.companyService.updateConfig(integrationUser.company._id, {
+    await this.companyService.updateConfig(integrationUser.company, {
       color: color ? `#${color}` : undefined,
       logo: logo ? convertBase64ContentToUri(logo) : undefined,
     });

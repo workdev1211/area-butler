@@ -110,7 +110,7 @@ export class CompanyUserService {
       }
     }
 
-    await this.companyService.updateConfig(user.company._id, companyConfigDto);
+    await this.companyService.updateConfig(user.company, companyConfigDto);
 
     const isIntegrationUser = 'integrationUserId' in user;
     const filterQuery: FilterQuery<TIntegrationUserDocument | UserDocument> = {
@@ -145,7 +145,7 @@ export class CompanyUserService {
       : {};
     companyPresets[preset.type] = preset.values;
 
-    await this.companyService.updateConfig(user.company._id, {
+    await this.companyService.updateConfig(user.company, {
       presets: companyPresets,
     });
 

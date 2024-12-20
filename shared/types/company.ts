@@ -3,7 +3,7 @@ import {
   ApiIntUserPropstackProdContTypesEnum,
   IApiIntUserOnOfficeParams,
   IApiIntUserPropstackParams,
-  IIntUserExpMatchParams,
+  TIntUserExpMatchParams,
 } from "./integration-user";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import {
@@ -66,7 +66,7 @@ export interface IApiCompanyPreset {
 }
 
 export type TCompanyExportMatch = Partial<
-  Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
+  Record<TAreaButlerExportTypes, TIntUserExpMatchParams>
 >;
 
 export interface ICompanySchema {

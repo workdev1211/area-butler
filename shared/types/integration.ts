@@ -163,6 +163,10 @@ export interface IApiIntCreateEstateLinkReq {
   integrationId: string;
   title: string;
   url: string;
+  is_embedable?: boolean;
+  on_landing_page?: boolean;
+  
+  is_private?: boolean;
 }
 
 export interface IApiIntPublicLinkParams {
@@ -170,7 +174,6 @@ export interface IApiIntPublicLinkParams {
     | AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
     | AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
   url: string;
-  isLinkEntity?: boolean;
   title?: string;
 }
 

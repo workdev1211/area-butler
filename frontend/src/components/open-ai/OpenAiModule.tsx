@@ -30,7 +30,7 @@ import OpenAiGeneralForm from "./OpenAiGeneralForm";
 import { SearchContext } from "../../context/SearchContext";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
-import { IIntUserExpMatchParams } from "../../../../shared/types/integration-user";
+import { TIntUserExpMatchParams } from "../../../../shared/types/integration-user";
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useUserState } from "../../hooks/userstate";
 import { IOpenAiPresetValues } from "./OpenAiChat";
@@ -95,7 +95,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const defaultTextLength =
     queryType &&
     config?.exportMatching &&
-    (config?.exportMatching as Record<string, IIntUserExpMatchParams>)[
+    (config?.exportMatching as Record<string, TIntUserExpMatchParams>)[
       queryType
     ]?.maxTextLength;
 

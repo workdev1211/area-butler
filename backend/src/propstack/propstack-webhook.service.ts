@@ -18,11 +18,16 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import { IApiIntUserPropstackParams } from '@area-butler-types/integration-user';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { IPropstackWebhookProperty } from '../shared/types/propstack';
+import {
+  IPropstackLink,
+  IPropstackProperty,
+  IPropstackWebhookProperty,
+} from '../shared/types/propstack';
 import ApiPropstackWebhookToAreaButlerDto from '../real-estate-listing/dto/api-propstack-webhook-to-area-butler.dto';
 import ApiPropstackWebhookToAreaButlerUpdDto from './dto/api-propstack-webhook-to-area-butler-upd.dto';
 import { PlaceService } from '../place/place.service';
 import {
+  AreaButlerExportTypesEnum,
   MeansOfTransportation,
   ResultStatusEnum,
 } from '@area-butler-types/types';
@@ -37,6 +42,8 @@ import {
   TOpenAiLocDescType,
 } from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../shared/constants/open-ai';
+import { PropstackService } from './propstack.service';
+import { TUpdEstTextFieldParams } from '@area-butler-types/integration';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -49,6 +56,7 @@ export class PropstackWebhookService {
     private readonly openAiService: OpenAiService,
     private readonly placeService: PlaceService,
     private readonly propstackApiService: PropstackApiService,
+    private readonly propstackService: PropstackService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly snapshotExtService: SnapshotExtService,
@@ -174,50 +182,69 @@ export class PropstackWebhookService {
       requiredLocDescTypes,
     );
 
-    const propstackOpenAiDescs = Object.entries(openAiDescs).reduce(
-      (result, [openAiLocDescType, locDesc]) => {
-        result[
-          propstackOpenAiFieldMapper.get(
-            openAiLocDescType as TOpenAiLocDescType,
-          )
-        ] = locDesc;
+    const propstackTextFields: TUpdEstTextFieldParams[] = Object.entries(
+      openAiDescs,
+    ).map(([openAiLocDescType, locDesc]) => ({
+      exportType: openAiLocDescType as TOpenAiLocDescType,
+      text: locDesc,
+    }));
 
-        return result;
-      },
-      {} as Record<PropstackTextFieldTypeEnum, string>,
-    );
+    const promises: Promise<void | IPropstackLink>[] = [];
 
-    (
-      await Promise.allSettled([
-        this.propstackApiService.updatePropertyById(
-          propstackApiKey,
-          resultProperty.id,
-          {
-            ...propstackOpenAiDescs,
-            // the old iframe link way - left just in case
-            // custom_fields: {
-            //   objekt_webseiten_url: createDirectLink(token),
-            // },
-          },
-        ),
+    const linkWithAddressExportMatching =
+      user.company.config?.exportMatching?.[
+        AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+      ];
+    const linkWithoutAddressExportMatching =
+      user.company.config?.exportMatching?.[
+        AreaButlerExportTypesEnum.LINK_WO_ADDRESS
+      ];
+
+    if (linkWithAddressExportMatching?.fieldId) {
+      propstackTextFields.push({
+        exportType: AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
+        text: createDirectLink(snapshotResponse, true),
+      });
+    } else {
+      promises.push(
         this.propstackApiService.createPropertyLink(propstackApiKey, {
           property_id: resultProperty.id,
           title: 'Interaktive Karte',
           url: createDirectLink(snapshotResponse, true),
-          on_landing_page: false,
-          is_embedable: false,
-          is_private: true,
+          on_landing_page: !!linkWithAddressExportMatching?.onLandingPage,
+          is_embedable: !!linkWithAddressExportMatching?.isEmbedable,
+          is_private: linkWithAddressExportMatching?.isPrivate ?? true,
         }),
+      );
+    }
+
+    if (linkWithoutAddressExportMatching?.fieldId) {
+      propstackTextFields.push({
+        exportType: AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+        text: createDirectLink(snapshotResponse, false),
+      });
+    } else {
+      promises.push(
         this.propstackApiService.createPropertyLink(propstackApiKey, {
           property_id: resultProperty.id,
-          title: 'Interaktive Karte',
+          title: 'Interaktive Karte - anonym',
           url: createDirectLink(snapshotResponse, false),
-          on_landing_page: true,
-          is_embedable: true,
-          is_private: false,
+          on_landing_page: linkWithAddressExportMatching?.onLandingPage ?? true,
+          is_embedable: linkWithAddressExportMatching?.isEmbedable ?? true,
+          is_private: !!linkWithAddressExportMatching?.isPrivate,
         }),
-      ])
-    ).forEach((response) => {
+      );
+    }
+
+    promises.push(
+      this.propstackService.updatePropTextFields(
+        user as TIntegrationUserDocument,
+        String(resultProperty.id),
+        propstackTextFields,
+      ),
+    );
+
+    (await Promise.allSettled(promises)).forEach((response) => {
       if (response.status === 'rejected') {
         this.logger.error(
           `Event ${eventId}. The following error has occurred on Propstack property update: ${response.reason}.`,

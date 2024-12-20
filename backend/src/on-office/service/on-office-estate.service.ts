@@ -49,21 +49,22 @@ export class OnOfficeEstateService {
     const queryBuilder =
       this.onOfficeQueryBuilderService.setUser(integrationUser);
 
-    for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
-      if (isLinkEntity) {
+    for (const { exportType, title, url } of publicLinkParams) {
+      if (
+        !!integrationUser.company.config?.exportMatching?.[exportType]
+          ?.isSpecialLink
+      ) {
         queryBuilder.createLink({
           integrationId,
           title,
           url,
         });
-
-        continue;
+      } else {
+        textFieldsParams.push({
+          exportType,
+          text: url,
+        });
       }
-
-      textFieldsParams.push({
-        exportType,
-        text: url,
-      });
     }
 
     if (textFieldsParams.length) {

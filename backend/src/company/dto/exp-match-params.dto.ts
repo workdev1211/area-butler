@@ -5,13 +5,14 @@ import {
   IsPositive,
   IsString,
   IsBoolean,
+  Equals,
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IIntUserExpMatchParams } from '@area-butler-types/integration-user';
+import { IIntUserExpMatchTextParams } from '@area-butler-types/integration-user';
 
 @Exclude()
-class ExpMatchParams implements IIntUserExpMatchParams {
+class ExpMatchParamsDto implements IIntUserExpMatchTextParams {
   @Expose()
   @IsNotEmpty()
   @IsString()
@@ -26,7 +27,8 @@ class ExpMatchParams implements IIntUserExpMatchParams {
   @Expose()
   @IsOptional()
   @IsBoolean()
-  isSpecialLink?: boolean;
+  @Equals(false)
+  isSpecialLink?: false;
 }
 
-export default ExpMatchParams;
+export default ExpMatchParamsDto;

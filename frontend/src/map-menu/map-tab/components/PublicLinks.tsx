@@ -42,11 +42,6 @@ const PublicLinks: FC = () => {
     unaddressLinkTitle = "Interaktive anonyme Karte";
   }
 
-  const getLinkEntity = (showAddress: boolean): boolean => {
-    const exportType = showAddress ? AreaButlerExportTypesEnum.LINK_WITH_ADDRESS : AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
-    return !!(isIntegrationUser && user.config?.exportMatching?.[exportType]?.isSpecialLink);
-  }
-
   const directLink = createDirectLink({ language: responseConfig?.language });
 
   const isSentBothAvail = !!(
@@ -80,7 +75,6 @@ const PublicLinks: FC = () => {
                   exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS,
                   publicLinkParams: [
                     {
-                      isLinkEntity: getLinkEntity(!!responseConfig?.showAddress),
                       exportType: !!responseConfig?.showAddress
                         ? AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
                         : AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
@@ -114,13 +108,11 @@ const PublicLinks: FC = () => {
                 exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS,
                 publicLinkParams: [
                   {
-                    isLinkEntity: getLinkEntity(true),
                     exportType: AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
                     title: addressLinkTitle,
                     url: createDirectLink({ isAddressShown: true }),
                   },
                   {
-                    isLinkEntity: getLinkEntity(false),
                     exportType: AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
                     title: unaddressLinkTitle,
                     url: createDirectLink({ isAddressShown: false }),
