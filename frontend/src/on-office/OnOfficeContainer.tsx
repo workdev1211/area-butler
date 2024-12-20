@@ -25,6 +25,7 @@ import BrowserWarningModal from "../components/BrowserWarningModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IOnOfficeLoginStatus } from "../shared/shared.types";
 import SupportLink from "../components/SupportLink";
+import IsAdmin from "../auth/IsAdmin";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -151,11 +152,15 @@ const OnOfficeContainer: FunctionComponent = () => {
         {!["products", "map"].includes(currentPath) && <SupportLink />}
         <Switch>
           <Route path="/potential-customers/:customerId">
-            <PotentialCustomerPage />
+            <IsAdmin>
+              <PotentialCustomerPage />
+            </IsAdmin>
           </Route>
 
           <Route path="/potential-customers">
-            <PotentialCustomersPage />
+            <IsAdmin>
+              <PotentialCustomersPage />
+            </IsAdmin>
           </Route>
 
           <Route path="/real-estates/:realEstateId">
@@ -184,11 +189,11 @@ const OnOfficeContainer: FunctionComponent = () => {
             </Route>
           )}
 
-          {integrationUser.isAdmin && (
-            <Route path="/company-profile">
+          <Route path="/company-profile">
+            <IsAdmin>
               <CompanyProfilePage />
-            </Route>
-          )}
+            </IsAdmin>
+          </Route>
 
           <Route path={onOfficeRootEntries}>
             <SearchParamsPage />

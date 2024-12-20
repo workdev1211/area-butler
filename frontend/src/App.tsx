@@ -36,6 +36,7 @@ import { LoadingMessage } from "./components/Loading";
 import BrowserWarningModal from "./components/BrowserWarningModal";
 import SupportLink from "./components/SupportLink";
 import { useUserState } from "./hooks/userstate";
+import IsAdmin from "./auth/IsAdmin";
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
@@ -90,10 +91,7 @@ const CompanyProfilePage = lazy(() => import("./pages/CompanyProfilePage"));
 
 function App() {
   const { paypalClientId } = useContext(ConfigContext);
-  const {
-    userDispatch,
-    userState: { user },
-  } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
   const { get, post } = useHttp();
@@ -276,13 +274,13 @@ function App() {
                       </Route>
 
                       {/* Subscription Selection */}
-                      {user?.isAdmin && (
-                        <Route path={companyProfilePath}>
-                          <Authenticated>
+                      <Route path={companyProfilePath}>
+                        <Authenticated>
+                          <IsAdmin>
                             <CompanyProfilePage />
-                          </Authenticated>
-                        </Route>
-                      )}
+                          </IsAdmin>
+                        </Authenticated>
+                      </Route>
 
                       <Route path="/callback">
                         <Authenticated>
@@ -310,13 +308,17 @@ function App() {
 
                       <Route path="/potential-customers/:customerId">
                         <Authenticated>
-                          <PotentialCustomerPage />
+                          <IsAdmin>
+                            <PotentialCustomerPage />
+                          </IsAdmin>
                         </Authenticated>
                       </Route>
 
                       <Route path="/potential-customers">
                         <Authenticated>
-                          <PotentialCustomersPage />
+                          <IsAdmin>
+                            <PotentialCustomersPage />
+                          </IsAdmin>
                         </Authenticated>
                       </Route>
 

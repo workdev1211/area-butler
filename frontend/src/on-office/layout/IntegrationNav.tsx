@@ -125,13 +125,15 @@ const IntegrationNav: FC = () => {
                 {t(IntlKeys.nav.realEstates)}
               </NavLink>
 
-              <NavLink
-                to="/potential-customers"
-                className="nav-link"
-                aria-current="page"
-              >
-                {t(IntlKeys.nav.potentialCustomers)}
-              </NavLink>
+              {integrationUser?.isAdmin && (
+                <NavLink
+                  to="/potential-customers"
+                  className="nav-link"
+                  aria-current="page"
+                >
+                  {t(IntlKeys.nav.potentialCustomers)}
+                </NavLink>
+              )}
 
               <NavLink
                 to="/map-snapshots"
@@ -208,13 +210,15 @@ const IntegrationNav: FC = () => {
             {t(IntlKeys.nav.realEstates)}
           </NavLink>
 
-          <NavLink
-            to="/potential-customers"
-            className="nav-mobile-menu-link"
-            aria-current="page"
-          >
-            {t(IntlKeys.nav.potentialCustomers)}
-          </NavLink>
+          {integrationUser?.isAdmin && (
+            <NavLink
+              to="/potential-customers"
+              className="nav-mobile-menu-link"
+              aria-current="page"
+            >
+              {t(IntlKeys.nav.potentialCustomers)}
+            </NavLink>
+          )}
 
           <NavLink
             to="/map-snapshots"
