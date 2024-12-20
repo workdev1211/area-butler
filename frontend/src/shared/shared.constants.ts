@@ -81,3 +81,4 @@ export const invertFilter: CSSProperties = { filter: "invert(100%)" };
 export const poiNameMaxLength = 35;
 
 export const userProfilePath = "/user-profile";
+export const companyProfilePath = "/company-profile";

@@ -3,7 +3,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { UserContext } from "context/UserContext";
-import { userProfilePath } from "../shared/shared.constants";
+import {
+  companyProfilePath,
+  userProfilePath,
+} from "../shared/shared.constants";
 
 const pathWithoutAuth = ["/terms", "/privacy", "/impress"];
 
@@ -38,9 +41,12 @@ const Authenticated = withRouter<
         userState?.user?.consentGiven &&
         idToken?.email_verified &&
         !userState?.user?.subscription &&
-        location.pathname !== userProfilePath
+        ![userProfilePath, companyProfilePath].includes(location.pathname)
       ) {
-        history.push(userProfilePath);
+        history.push(
+          userState?.user?.isAdmin ? companyProfilePath : userProfilePath
+        );
+
         return;
       }
     };

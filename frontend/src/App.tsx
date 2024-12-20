@@ -25,6 +25,7 @@ import Nav from "./layout/Nav";
 import { ConfigContext } from "./context/ConfigContext";
 import {
   commonPaypalOptions,
+  companyProfilePath,
   snapshotEditorPath,
   userProfilePath,
 } from "./shared/shared.constants";
@@ -276,7 +277,7 @@ function App() {
 
                       {/* Subscription Selection */}
                       {user?.isAdmin && (
-                        <Route path="/company-profile">
+                        <Route path={companyProfilePath}>
                           <Authenticated>
                             <CompanyProfilePage />
                           </Authenticated>
