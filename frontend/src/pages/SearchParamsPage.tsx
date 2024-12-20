@@ -64,7 +64,10 @@ import { useLocationData } from "../hooks/locationdata";
 import { ISearchParamsHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import { useRealEstateData } from "../hooks/realestatedata";
-import { snapshotEditorPath } from "../shared/shared.constants";
+import {
+  snapshotEditorPath,
+  userProfilePath,
+} from "../shared/shared.constants";
 import { defaultTransportParams } from "../../../shared/constants/location";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
@@ -189,7 +192,7 @@ const SearchParamsPage: FC = () => {
 
     if (!existingRequest && requestLimitExceeded && !isIntegrationUser) {
       if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
-        history.push("/profile");
+        history.push(userProfilePath);
         return;
       }
 

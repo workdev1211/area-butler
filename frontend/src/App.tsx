@@ -26,6 +26,7 @@ import { ConfigContext } from "./context/ConfigContext";
 import {
   commonPaypalOptions,
   snapshotEditorPath,
+  userProfilePath,
 } from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -267,7 +268,7 @@ function App() {
                         </Authenticated>
                       </Route>
 
-                      <Route path="/user-profile">
+                      <Route path={userProfilePath}>
                         <Authenticated>
                           <UserProfilePage />
                         </Authenticated>

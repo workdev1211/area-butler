@@ -9,6 +9,7 @@ import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { ApiUser } from "../../../shared/types/types";
+import { userProfilePath } from "../shared/shared.constants";
 
 // TODO translation required
 
@@ -41,7 +42,7 @@ const CallbackPage: FC = () => {
   }, [get, history, subscriptionId]);
 
   useEffect(() => {
-    checkoutId && history.push("/profile");
+    checkoutId && history.push(userProfilePath);
   }, [checkoutId, history]);
 
   return (
