@@ -635,6 +635,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           } else {
             container?.classList.remove("small-markers");
           }
+          
+          checkUserZoomLevel();
         }
       });
 
@@ -682,7 +684,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       config?.showLocation,
     ]);
 
-    useEffect(() => {
+    const checkUserZoomLevel = () => {
       if (!currentMap) {
         return;
       }
@@ -697,6 +699,10 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           marker.getElement()?.classList.remove("dot-marker-shown");
         }
       });
+    }
+    
+    useEffect(() => {
+      checkUserZoomLevel();
     }, [config?.zoomLevel]);
     
     // draw trial logos

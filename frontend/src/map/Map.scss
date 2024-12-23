@@ -83,12 +83,11 @@
   padding: 4px;
   border-radius: 100%;
   border: 0.1rem solid rgba(0, 0, 0, 0.2);
-  transition: width 1s, height 1s, border-width 1s;
+  transition: width 0.5s, height 0.5s, border-width 0.5s;
   @apply justify-center items-center h-full w-full;
   
   img {
-    transition: opacity 1s;
-    transition-delay: 0.5s;
+    transition: opacity 0.5s;
   }
 }
 
@@ -102,7 +101,7 @@
   
   .locality-icon-custom {
     border-radius: 100%;  
-    transition: opacity 1s;
+    transition: opacity 0.5s;
   }
 }
 
