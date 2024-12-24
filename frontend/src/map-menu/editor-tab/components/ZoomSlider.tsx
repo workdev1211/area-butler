@@ -12,7 +12,7 @@ const ZoomSlider: FunctionComponent<IZoomSliderProps> = ({
   onChange,
 }) => {
   const { t } = useTranslation();
-
+    
   return (
     <div className="flex flex-col gap-2 w-full">
       <h4 className="font-bold">{t(IntlKeys.snapshotEditor.zoomLevel)}:</h4>
@@ -23,8 +23,8 @@ const ZoomSlider: FunctionComponent<IZoomSliderProps> = ({
         <input
           className="range"
           type="range"
-          min="2"
-          max="20"
+          min="0"
+          max="18"
           value={zoomLevel}
           onChange={({ target: { value } }) => {
             onChange(parseInt(value));

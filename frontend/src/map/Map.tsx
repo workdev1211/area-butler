@@ -592,7 +592,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         renderer: new L.Canvas(),
         dragging: !L.Browser.mobile,
         touchZoom: true,
-        maxZoom: 30,
+        maxZoom: 20,
         // Adds zoom in / zoom out buttons
         zoomControl: false,
         // LEFT JUST IN CASE - the old touch screen solution
@@ -664,7 +664,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         zoomOffset: -1,
         accessToken: mapboxAccessToken,
         tileSize: 512,
-        maxZoom: 30,
+        maxZoom: 20,
       }).addTo(localMap);
 
       currentMap = localMap;
@@ -684,26 +684,26 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       config?.showLocation,
     ]);
 
-    const checkUserZoomLevel = () => {
+    const checkUserZoomLevel = useCallback(() => {
       if (!currentMap) {
         return;
       }
       
       const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
-      const userZoomLevel = config?.zoomLevel || 17;
+      const userZoomLevel = config?.zoomLevel ?? 16;
 
       poiMarkers.forEach((marker) => {
-        if (currentMap!.getZoom() < userZoomLevel) {
+        if (currentMap!.getZoom() <= userZoomLevel) {
           marker.getElement()?.classList.add('dot-marker-shown');
         } else {
           marker.getElement()?.classList.remove("dot-marker-shown");
         }
       });
-    }
+    }, [config?.zoomLevel]);
     
     useEffect(() => {
       checkUserZoomLevel();
-    }, [config?.zoomLevel]);
+    }, [checkUserZoomLevel]);
     
     // draw trial logos
     useEffect(() => {
