@@ -553,7 +553,7 @@ const EditorTab: FC<IEditorTabProps> = ({
             <li>
               {!config.groupItems && (
                 <ZoomSlider
-                  zoomLevel={config.zoomLevel || 17}
+                  zoomLevel={config.zoomLevel ?? 16}
                   onChange={(resultingZoomLevel) => {
                     changeConfigParam("zoomLevel", resultingZoomLevel);
                   }}
