@@ -277,6 +277,13 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
   const logo = userLogo || areaButlerLogo;
   const exportFonts = user.config.exportFonts;
 
+  const isLocDescLimitExceeded =
+    locationDescription.length > onePageCharacterLimit;
+  const isExportBtnDisabled =
+    !Object.keys(exportFlow).every(
+      (key) => exportFlow[key as keyof IExportFlowState]
+    ) || isLocDescLimitExceeded;
+
   return (
     <div id="one-page-expose-modal" className="modal modal-open z-2000">
       <div className="modal-box flex flex-col justify-between">
@@ -390,17 +397,12 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
                 className="textarea textarea-bordered w-full"
                 value={locationDescription}
                 onChange={({ target: { value } }) => {
-                  if (
-                    value.length < onePageCharacterLimit + 1 ||
-                    value.length < locationDescription.length
-                  ) {
-                    setLocationDescription(value);
+                  setLocationDescription(value);
 
-                    cachingDispatch({
-                      type: CachingActionTypesEnum.SET_ONE_PAGE,
-                      payload: { locationDescription: value },
-                    });
-                  }
+                  cachingDispatch({
+                    type: CachingActionTypesEnum.SET_ONE_PAGE,
+                    payload: { locationDescription: value },
+                  });
                 }}
                 rows={7}
               />
@@ -478,7 +480,17 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
           />
         </div>
 
-        <div className="modal-action">
+        {isLocDescLimitExceeded && (
+          <div className="mt-6 mb-3 px-6 text-justify text-primary">
+            {t(
+              IntlKeys.snapshotEditor.dataTab.locationExpose.locDescExceedError
+            )}
+          </div>
+        )}
+
+        <div
+          className={`modal-action mt-${isLocDescLimitExceeded ? "0" : "6"}`}
+        >
           <button type="button" onClick={onClose} className="btn btn-sm">
             {t(IntlKeys.common.close)}
           </button>
@@ -498,11 +510,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
               qrCodeImage={qrCodeImage}
               snapshotConfig={snapshotConfig}
               isTrial={isTrial}
-              downloadButtonDisabled={
-                !Object.keys(exportFlow).every(
-                  (key) => exportFlow[key as keyof IExportFlowState]
-                ) || locationDescription.length > onePageCharacterLimit
-              }
+              isExportBtnDisabled={isExportBtnDisabled}
               onAfterPrint={onClose}
             />
           )}
@@ -521,11 +529,7 @@ const OnePageExportModal: FC<IOnePageExportModalProps> = ({
               qrCodeImage={qrCodeImage}
               snapshotConfig={snapshotConfig}
               isTrial={isTrial}
-              downloadButtonDisabled={
-                !Object.keys(exportFlow).every(
-                  (key) => exportFlow[key as keyof IExportFlowState]
-                ) || locationDescription.length > onePageCharacterLimit
-              }
+              isExportBtnDisabled={isExportBtnDisabled}
               isTransparentBackground={isTransparentBackground}
               exportFonts={exportFonts}
             />

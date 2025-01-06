@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef } from "react";
+import { FC, useRef } from "react";
 
 import { useTranslation } from "react-i18next";
 import { IntlKeys } from "i18n/keys";
@@ -8,7 +8,7 @@ import ReactToPrint from "react-to-print";
 import OnePage from "./OnePage";
 import { IOnePagePdfDownProps } from "../../shared/one-page.types";
 
-export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
+export const OnePageDownload: FC<IOnePagePdfDownProps> = ({
   addressDescription,
   entityGroups,
   listingAddress,
@@ -20,7 +20,7 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
   mapClippings,
   snapshotConfig,
   isTrial,
-  downloadButtonDisabled,
+  isExportBtnDisabled,
   qrCodeImage,
 }) => {
   const { t } = useTranslation();
@@ -48,9 +48,9 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
         trigger={() => (
           <button
             className="btn btn-primary btn-sm indicator"
-            disabled={downloadButtonDisabled}
+            disabled={isExportBtnDisabled}
           >
-            {!downloadButtonDisabled && (
+            {!isExportBtnDisabled && (
               <div
                 className="indicator-item badge w-5 h-5 text-white"
                 style={{ backgroundColor: "#7155d3" }}

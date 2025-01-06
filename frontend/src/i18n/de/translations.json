@@ -346,6 +346,9 @@
         "LEISURE_COMMERCIAL": "Freizeitimmobilie (gewerblich)",
         "OTHER": "Sonstige",
         "CUSTOM": "Eigene Angabe machen"
+      },
+      "locationExpose": {
+        "locDescExceedError": "Ihre Lagebeschreibung überschreitet das Limit"
       }
     },
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",

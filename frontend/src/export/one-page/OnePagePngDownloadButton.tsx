@@ -27,7 +27,7 @@ export const OnePagePngDownload: FC<IOnePagePngDownProps> = ({
   isTransparentBackground,
   snapshotConfig,
   isTrial,
-  downloadButtonDisabled,
+  isExportBtnDisabled,
   qrCodeImage,
   exportFonts,
 }) => {
@@ -160,7 +160,7 @@ export const OnePagePngDownload: FC<IOnePagePngDownProps> = ({
         ].includes(integrationType) && (
           <button
             className="btn btn-primary btn-sm"
-            disabled={downloadButtonDisabled}
+            disabled={isExportBtnDisabled}
             onClick={async () => {
               void sendToIntegration({
                 base64Image: await getRenderedPngImage(),
@@ -178,7 +178,7 @@ export const OnePagePngDownload: FC<IOnePagePngDownProps> = ({
 
       <button
         className="btn btn-primary btn-sm"
-        disabled={downloadButtonDisabled}
+        disabled={isExportBtnDisabled}
         onClick={async () => {
           saveAs(await getRenderedPngImage(), `${documentTitle}.png`);
         }}

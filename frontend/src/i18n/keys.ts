@@ -371,7 +371,8 @@ export const IntlKeys = {
       maxCharactersLength: "snapshotEditor.dataTab.maxCharactersLength",
       tonalities: {
         FORMAL_SERIOUS: "snapshotEditor.dataTab.tonalities.FORMAL_SERIOUS",
-        EASYGOING_YOUTHFUL: "snapshotEditor.dataTab.tonalities.EASYGOING_YOUTHFUL",
+        EASYGOING_YOUTHFUL:
+          "snapshotEditor.dataTab.tonalities.EASYGOING_YOUTHFUL",
       },
       customTexts: {
         POPULATION: "snapshotEditor.dataTab.customTexts.POPULATION",
@@ -390,14 +391,22 @@ export const IntlKeys = {
         HOUSE: "snapshotEditor.dataTab.realEstateTypes.HOUSE",
         APARTMENT: "snapshotEditor.dataTab.realEstateTypes.APARTMENT",
         PROPERTY: "snapshotEditor.dataTab.realEstateTypes.PROPERTY",
-        OFFICE_PRACTICES: "snapshotEditor.dataTab.realEstateTypes.OFFICE_PRACTICES",
+        OFFICE_PRACTICES:
+          "snapshotEditor.dataTab.realEstateTypes.OFFICE_PRACTICES",
         STORE_RETAIL: "snapshotEditor.dataTab.realEstateTypes.STORE_RETAIL",
         HOSPITALITY: "snapshotEditor.dataTab.realEstateTypes.HOSPITALITY",
-        HALLS_WAREHOUSE_PRODUCTION: "snapshotEditor.dataTab.realEstateTypes.HALLS_WAREHOUSE_PRODUCTION",
-        AGRICULTURE_FORESTRY: "snapshotEditor.dataTab.realEstateTypes.AGRICULTURE_FORESTRY",
-        LEISURE_COMMERCIAL: "snapshotEditor.dataTab.realEstateTypes.LEISURE_COMMERCIAL",
+        HALLS_WAREHOUSE_PRODUCTION:
+          "snapshotEditor.dataTab.realEstateTypes.HALLS_WAREHOUSE_PRODUCTION",
+        AGRICULTURE_FORESTRY:
+          "snapshotEditor.dataTab.realEstateTypes.AGRICULTURE_FORESTRY",
+        LEISURE_COMMERCIAL:
+          "snapshotEditor.dataTab.realEstateTypes.LEISURE_COMMERCIAL",
         OTHER: "snapshotEditor.dataTab.realEstateTypes.OTHER",
         CUSTOM: "snapshotEditor.dataTab.realEstateTypes.CUSTOM",
+      },
+      locationExpose: {
+        locDescExceedError:
+          "snapshotEditor.dataTab.locationExpose.locDescExceedError",
       },
     },
     pointsOfInterest: {

@@ -19,7 +19,7 @@ export interface IOnePageDownProps {
   snapshotConfig: ApiSearchResultSnapshotConfig;
   isTrial: boolean;
   qrCodeImage?: string;
-  downloadButtonDisabled?: boolean;
+  isExportBtnDisabled?: boolean;
 }
 
 export interface IOnePagePdfDownProps extends IOnePageDownProps {
