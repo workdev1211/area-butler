@@ -215,17 +215,8 @@ export class PotentialCustomerService {
   async fetchNamesForSync(
     integrationUser: TIntegrationUserDocument,
   ): Promise<string[]> {
-    const filterQuery: TFilterQuery = {};
-
-    filterQuery['integrationParams.integrationUserId'] =
-      integrationUser.parentUser
-        ? integrationUser.parentUser.integrationUserId
-        : integrationUser.integrationUserId;
-    filterQuery['integrationParams.integrationType'] =
-      integrationUser.integrationType;
-
     const potentialCustomers = await this.potentialCustomerModel.find(
-      filterQuery,
+      { companyId: integrationUser.companyId },
       {
         name: 1,
       },
