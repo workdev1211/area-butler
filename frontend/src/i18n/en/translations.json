@@ -821,7 +821,8 @@
   "errors": {
     "userNotFound": "User not found!",
     "wrongIntegration": "Wrong integration type!",
-    "createSnapshot": "Map creation is needed to perform this action"
+    "createSnapshot": "Map creation is needed to perform this action",
+    "checkExpMatchLinkCfg": "Please, check export matching config for links!"
   },
   "company": {
     "profile": {

@@ -75,7 +75,8 @@ export const useIntegrationTools = () => {
   };
 
   const sendToIntegration = async (
-    sendToIntegrationData: TSendToIntegrationData
+    sendToIntegrationData: TSendToIntegrationData,
+    isDefaultError = true
   ): Promise<void> => {
     if (integrationType !== IntegrationTypesEnum.MY_VIVENDA) {
       if (!realEstateListing?.integrationId) {
@@ -120,8 +121,13 @@ export const useIntegrationTools = () => {
         })
       );
     } catch (e) {
-      toastError(t(IntlKeys.common.errorOccurred));
-      console.error(e);
+      if (isDefaultError) {
+        toastError(t(IntlKeys.common.errorOccurred));
+        console.error(e);
+        return;
+      }
+
+      throw e;
     }
   };
 

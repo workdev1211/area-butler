@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   Logger,
   UnprocessableEntityException,
@@ -138,9 +139,11 @@ export class PropstackService {
           is_embedable:
             exportMatchingType?.isEmbedable ??
             exportType === AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
-          is_private: exportMatchingType?.isPrivate ??
+          is_private:
+            exportMatchingType?.isPrivate ??
             exportType !== AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
-          on_landing_page: exportMatchingType?.onLandingPage ??
+          on_landing_page:
+            exportMatchingType?.onLandingPage ??
             exportType === AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
         });
       }
@@ -349,11 +352,24 @@ export class PropstackService {
       return;
     }
 
-    await this.propstackApiService.updatePropertyById(
-      (parameters as IApiIntUserPropstackParams).apiKey,
-      parseInt(integrationId, 10),
-      data,
-    );
+    try {
+      await this.propstackApiService.updatePropertyById(
+        (parameters as IApiIntUserPropstackParams).apiKey,
+        parseInt(integrationId, 10),
+        data,
+      );
+    } catch (e) {
+      PropstackService.logger.error(
+        this.updatePropTextFields.name,
+        e.response?.data?.errors?.join('\n'),
+      );
+
+      if (e.response?.status === 400) {
+        throw new BadRequestException();
+      }
+
+      throw e;
+    }
   }
 
   uploadPropertyImage(
