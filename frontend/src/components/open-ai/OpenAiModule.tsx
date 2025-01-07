@@ -133,10 +133,13 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           )?.text || realEstateValues.realEstateType;
       }
 
-      const generalValues = generalFormRef.current!.values;
-      generalValues.customText = openAiCustomTextOptions.find(
-        ({ value }) => value === generalValues.customText
-      )?.text;
+      const generalValues = generalFormRef.current?.values;
+      if (generalValues) {
+        generalValues.customText =
+          openAiCustomTextOptions.find(
+            ({ value }) => value === generalValues.customText
+          )?.text || generalValues.customText;
+      }
 
       switch (queryType) {
         case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
