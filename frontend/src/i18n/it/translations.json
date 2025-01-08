@@ -126,7 +126,7 @@
     "standard": "Standard",
     "minimal": "Minimo",
     "preselectedProfile": "Profili preselezionati",
-    "showIcon": "Mostra icona",
+    "showIcon": "Mostra icona su mappa anonima",
     "showAddress": "Mostra indirizzo",
     "showStreetViewLink": "Mostra il link a Street View",
     "groupPOIOnZoom": "Raggruppamento dei PDI quando si esegue lo zoom out",
@@ -236,8 +236,8 @@
       "sendTo": "Inviare a {{integrationType}}",
       "surroundingsHeader": "Dintorni",
       "distance": "Distanza",
-      "scanAndNew": "Scansione e nuovo",
-      "discoverResidentialArea": "Scoprire la zona residenziale",
+      "scanAndNew": "Scansione e",
+      "discoverResidentialArea": "scoperta dell'ambiente",
       "mobilityCriteria": "I vostri criteri di mobilità",
       "yourNewProperty": "La vostra nuova proprietà",
       "nextPlace": "Il prossimo posto",
@@ -315,7 +315,38 @@
       },
       "saveAsPreset": "Applicare l'impostazione predefinita",
       "saveAsPresetSuccess": "Impostazione predefinita salvata con successo",
-      "saveAsPresetError": "Impossibile applicare l'impostazione predefinita"
+      "saveAsPresetError": "Impossibile applicare l'impostazione predefinita",
+      "useChrome": "Utilizzare il browser Google Chrome. Altri browser non genereranno correttamente il pdf.",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formale e serio",
+        "EASYGOING_YOUTHFUL": "rilassato e giovane"
+      },
+      "customTexts": {
+        "POPULATION": "Il testo deve contenere la popolazione della città.",
+        "SEO": "Il testo deve contenere termini tipici della SEO immobiliare ed essere ottimizzato per la SEO.",
+        "REGION": "Il testo deve contenere una breve descrizione della regione.",
+        "POIS": "Il testo ha lo scopo di evidenziare alcune delle attrazioni della zona.",
+        "OFFICE": "Il testo deve essere ottimizzato per un immobile ad uso ufficio.",
+        "COMMERCIAL": "Il testo deve essere ottimizzato per un immobile commerciale.",
+        "RESIDENTIAL": "Il testo deve essere ottimizzato per una proprietà residenziale.",
+        "TEASER": "Generare testi teaser per i portali e testi di build-up.",
+        "CUSTOM": "Inserire il proprio testo.",
+        "NONE": "Nessuno"
+      },
+      "realEstateTypes": {
+        "ROOM": "La camera",
+        "HOUSE": "Casa",
+        "APARTMENT": "Piatto",
+        "PROPERTY": "Proprietà",
+        "OFFICE_PRACTICES": "Ufficio/Pratiche",
+        "STORE_RETAIL": "Negozio/vendita al dettaglio",
+        "HOSPITALITY": "Industria alberghiera",
+        "HALLS_WAREHOUSE_PRODUCTION": "Capannoni/magazzino/produzione",
+        "AGRICULTURE_FORESTRY": "Agricoltura/Forestale",
+        "LEISURE_COMMERCIAL": "Proprietà per il tempo libero (commerciale)",
+        "OTHER": "Altro",
+        "CUSTOM": "Creare le proprie specifiche"
+      }
     },
     "addNewLocationModalTitle": "Aggiungi una nuova posizione",
     "addNewLocationModalBtn": "Aggiungi",
@@ -562,7 +593,8 @@
     "noteField": "Campo note",
     "directLink": "Collegamento diretto",
     "htmlSnippet": "Snippet HTML",
-    "companyTemplate": "Modello di organizzazione"
+    "companyTemplate": "Modello di organizzazione",
+    "locationNotFound": "Copiato con successo negli appunti!"
   },
   "imageUpload": {
     "supportedFormats": "Formati supportati: png, jpg, svg, dimensione massima: 5MB",
@@ -605,7 +637,8 @@
     "inlineFrame": "Telaio in linea",
     "linkWithAddress": "Collegamento con l'indirizzo",
     "linkWoAddress": "Link senza indirizzo",
-    "equipmentDescription": "Descrizione dell'apparecchiatura"
+    "equipmentDescription": "Descrizione dell'apparecchiatura",
+    "syncWithCrm": "Questa informazione è sincronizzata con {{crm}}"
   },
   "tour": {
     "tourEndingError": "Errore al termine del tour",
@@ -774,7 +807,14 @@
       "minimumTermForYear": "Durata minima: 1 anno, successivamente annullabile annualmente. Al termine del periodo di\n          periodo di abbonamento in corso, la durata del contratto è automaticamente\n          automaticamente di un ulteriore anno se l'utente non disdice il contratto\n          con un preavviso di 30 giorni dalla fine del periodo di abbonamento in corso,\n          mediante dichiarazione in forma testuale a KuDiBa.",
       "cardStyles": "Stili di mappa: vengono impostati una volta per il proprio account utente,\n          possono essere utilizzati per un numero qualsiasi di carte e sono disponibili per tutto il periodo di utilizzo.\n          disponibili per l'intero periodo di utilizzo.\nStili di carta: sono impostati una volta per l'account utente,\n          possono essere utilizzati per un numero qualsiasi di carte e sono disponibili per tutto il periodo di utilizzo.\n          disponibili per l'intero periodo di utilizzo.",
       "annualSubscription": "Abbonamento annuale"
-    }
+    },
+    "toastSubscriptionSuccess": "Abbonamento completato con successo",
+    "toastSubscriptionError": "Errore durante la creazione dell'abbonamento",
+    "buyProduct": "Acquistate un prodotto appropriato!",
+    "integrationIdNotSpecified": "L'ID dell'integrazione non è stato specificato!",
+    "dataSent": "I dati sono stati inviati a {{integrationType}}!",
+    "productNotActivated": "Il prodotto non è stato attivato!",
+    "addressActivated": "L'indirizzo è stato attivato con successo!"
   },
   "companyProfile": {
     "title": "Profilo aziendale"

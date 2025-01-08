@@ -3,6 +3,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { UserContext } from "context/UserContext";
+import {
+  companyProfilePath,
+  userProfilePath,
+} from "../shared/shared.constants";
 
 const pathWithoutAuth = ["/terms", "/privacy", "/impress"];
 
@@ -22,7 +26,6 @@ const Authenticated = withRouter<
     const verifyUserRequirements = async () => {
       const idToken = await getIdTokenClaims();
       const verifyEmailLocation = "/verify";
-      const profileLocation = "/profile";
 
       if (
         idToken &&
@@ -38,9 +41,12 @@ const Authenticated = withRouter<
         userState?.user?.consentGiven &&
         idToken?.email_verified &&
         !userState?.user?.subscription &&
-        location.pathname !== profileLocation
+        ![userProfilePath, companyProfilePath].includes(location.pathname)
       ) {
-        history.push(profileLocation);
+        history.push(
+          userState?.user?.isAdmin ? companyProfilePath : userProfilePath
+        );
+
         return;
       }
     };

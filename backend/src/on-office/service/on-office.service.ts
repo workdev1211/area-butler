@@ -70,7 +70,7 @@ import {
 } from '../../../../shared/functions/shared.functions';
 import { PotentialCustomerService } from '../../potential-customer/potential-customer.service';
 import { IOnOfficeMulSelValue } from './query-builder/on-office-multiselect.mixin';
-import structuredClone from '@ungap/structured-clone';
+import { TIntUserObj } from '../../shared/types/user';
 
 interface IProcessEstateData {
   onOfficeEstate: IApiOnOfficeRealEstate;
@@ -475,14 +475,17 @@ export class OnOfficeService {
     throw new UnauthorizedException('Request verification failed!');
   }
 
-  async performLogin({
-    customerName,
-    customerWebId,
-    userId,
-    estateId,
-    parameterCacheId,
-    apiClaim: extendedClaim,
-  }: IApiOnOfficeLoginQueryParams): Promise<IPerformLoginData> {
+  async performLogin(
+    {
+      customerName,
+      customerWebId,
+      userId,
+      estateId,
+      parameterCacheId,
+      apiClaim: extendedClaim,
+    }: IApiOnOfficeLoginQueryParams,
+    isFetchCustomFields?: boolean,
+  ): Promise<IPerformLoginData> {
     const integrationUserId = `${customerWebId}-${userId}`;
 
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
@@ -531,11 +534,10 @@ export class OnOfficeService {
       );
     }
 
-    const userParams: IApiIntUserOnOfficeParams = {
-      ...(integrationUser || teamUser).parameters,
-      extendedClaim,
-      userId,
-    };
+    const queryUser: TIntUserObj<IApiIntUserOnOfficeParams> = (
+      integrationUser || teamUser
+    ).toObject();
+    Object.assign(queryUser.parameters, { extendedClaim, userId });
 
     const {
       getMultiselectValues,
@@ -543,10 +545,10 @@ export class OnOfficeService {
       getEstateData: estateData,
       getUserData: { email, userName },
     } = await this.onOfficeQueryBuilderService
-      .setUserParams(userParams)
+      .setUser(queryUser)
       .getColorAndLogo()
       .getUserData()
-      .getEstateData(estateId)
+      .getEstateData(estateId, isFetchCustomFields)
       .getMultiselectValues()
       .exec();
 
@@ -600,7 +602,7 @@ export class OnOfficeService {
       integrationUser.parentUser = parentUser;
     }
 
-    await this.companyService.updateConfig(integrationUser.company._id, {
+    await this.companyService.updateConfig(integrationUser.company, {
       color: color ? `#${color}` : undefined,
       logo: logo ? convertBase64ContentToUri(logo) : undefined,
     });
@@ -802,9 +804,8 @@ export class OnOfficeService {
       return;
     }
 
-    const queryBuilder = this.onOfficeQueryBuilderService.setUserParams(
-      integrationUser.parameters,
-    );
+    const queryBuilder =
+      this.onOfficeQueryBuilderService.setUser(integrationUser);
 
     if (valuesToDelete.length) {
       queryBuilder.deleteMultiselectValues(valuesToDelete);

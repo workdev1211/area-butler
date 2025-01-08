@@ -14,6 +14,7 @@ import {
   OnOfficeActionTypeEnum,
 } from '../../shared/on-office.types';
 import { OnOfficeQueryBuilder } from './on-office-query-builder.abstract';
+import { TIntUserObj } from '../../../shared/types/user';
 
 @Injectable()
 export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
@@ -21,11 +22,11 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
     super();
   }
 
-  setUserParams(userParams: IApiIntUserOnOfficeParams): this {
+  setUser(user: TIntUserObj<IApiIntUserOnOfficeParams>): this {
     this.actions.clear();
     this.timestamp = dayjs().unix();
-    this.userParams = userParams;
-    this.checkUserParams();
+    this.user = user;
+    this.checkIsUserSet();
 
     return this;
   }
@@ -38,7 +39,7 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
     }
 
     const request: IApiOnOfficeRequest = {
-      token: this.userParams.token,
+      token: this.user.parameters.token,
       request: { actions: [...this.actions.values()] },
     };
 
@@ -55,13 +56,13 @@ export class OnOfficeQueryBuilderService extends OnOfficeQueryBuilder {
       this.logger.debug(
         this.exec.name,
         [...this.actions.keys()].join(', '),
-        this.userParams,
+        this.user,
       );
 
       throw new BadRequestException(e);
     }
 
-    this.userParams = undefined;
+    this.user = undefined;
     this.timestamp = undefined;
     this.actions.clear();
 

@@ -9,6 +9,9 @@ import { toast } from "react-toastify";
 import copy from "copy-to-clipboard";
 import { LatLng } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 
+import i18 from "i18n";
+import { IntlKeys } from "i18n/keys";
+
 import {
   ApiCoordinates,
   ApiSearchResponse,
@@ -52,7 +55,6 @@ import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import {
-  defaultErrorMessage,
   notAllowedCountryMsg,
 } from "../../../shared/constants/error";
 import {
@@ -84,6 +86,7 @@ export const checkIsDarkColor = (color: string, invert = false) => {
   const b = (rgb >> 0) & 0xff; // extract blue
 
   const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  // prettier-ignore
   return (luma < 100) !== invert;
 };
 
@@ -158,7 +161,7 @@ const checkIsCountryAllowed = ({
   user?: ApiUser | IApiIntegrationUser;
 }): void => {
   if (!place) {
-    const errorMessage = "Ort nicht gefunden!";
+    const errorMessage = i18.t(IntlKeys.mapSnapshots.locationNotFound);
     toastError(errorMessage);
     console.error(errorMessage);
     throw new Error(errorMessage);
@@ -185,7 +188,6 @@ const checkIsCountryAllowed = ({
     throw new Error(notAllowedCountryMsg);
   }
 };
-
 const iconColorMap: Record<string, [string, string]> = {
   [OsmName.favorite]: [preferredLocationIcon, "#c91444"],
   [OsmName.property]: [realEstateListingIcon, "#8E71EB"],
@@ -300,7 +302,7 @@ export const toastError = (
 };
 
 export const toastDefaultError = (): void => {
-  toastError(defaultErrorMessage);
+  toastError(i18.t(IntlKeys.snapshotEditor.dataTab.errorOccurred));
 };
 
 // TODO think about uniting "getRealEstateListingsIcon", "getPreferredLocationsIcon" and "deriveIconForOsmName" into a single method
@@ -313,8 +315,8 @@ export const getPreferredLocationsIcon = (
   )?.file;
 
   return customIcon
-    ? { icon: customIcon, color: getMarkerIconColor(OsmName.favorite)[1], isCustom: true }
-    : { icon: getMarkerIconColor(OsmName.favorite)[0], color: getMarkerIconColor(OsmName.favorite)[1] };
+  ? { icon: customIcon, color: getMarkerIconColor(OsmName.favorite)[1], isCustom: true }
+  : { icon: getMarkerIconColor(OsmName.favorite)[0], color: getMarkerIconColor(OsmName.favorite)[1] };
 };
 
 export const getRealEstateListingsIcon = (
@@ -325,8 +327,8 @@ export const getRealEstateListingsIcon = (
   )?.file;
 
   return customIcon
-    ? { icon: customIcon, color: getMarkerIconColor(OsmName.property)[1], isCustom: true }
-    : { icon: getMarkerIconColor(OsmName.property)[0], color: getMarkerIconColor(OsmName.property)[1] };
+  ? { icon: customIcon, color: getMarkerIconColor(OsmName.property)[1], isCustom: true }
+  : { icon: getMarkerIconColor(OsmName.property)[0], color: getMarkerIconColor(OsmName.property)[1] };
 };
 
 export const deriveColorPalette = (hexColor: string): IColorPalette => {
@@ -448,7 +450,7 @@ export const copyTextToClipboard = (text?: string): void => {
   const isCopied = copy(text);
   // REDO this for translations
   if (isCopied) {
-    toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+    toastSuccess(i18.t(IntlKeys.mapSnapshots.copiedToClipboard));
   }
 };
 

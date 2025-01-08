@@ -19,6 +19,7 @@ import {
   TUpdEstTextFieldParams,
 } from '@area-butler-types/integration';
 import { TCompanyExportMatch } from '@area-butler-types/company';
+import { TIntUserObj } from '../../../shared/types/user';
 
 export abstract class OnOfficeQueryBuilder {
   protected readonly actions: Map<
@@ -28,7 +29,7 @@ export abstract class OnOfficeQueryBuilder {
 
   protected readonly logger = new Logger(OnOfficeQueryBuilder.name);
   protected timestamp: number;
-  protected userParams: IApiIntUserOnOfficeParams;
+  protected user: TIntUserObj<IApiIntUserOnOfficeParams>;
 
   protected constructor() {
     applyClassMixins(OnOfficeQueryBuilder, [
@@ -38,13 +39,13 @@ export abstract class OnOfficeQueryBuilder {
     ]);
   }
 
-  protected checkUserParams(): void {
-    if (!this.userParams) {
+  protected checkIsUserSet(): void {
+    if (!this.user) {
       throw new UnprocessableEntityException();
     }
   }
 
-  abstract setUserParams(userParams: IApiIntUserOnOfficeParams): this;
+  abstract setUser(user: TIntUserObj<IApiIntUserOnOfficeParams>): this;
   abstract exec(): Promise<IOnOfficeActionResults>;
 
   // company / user
@@ -56,7 +57,7 @@ export abstract class OnOfficeQueryBuilder {
     createLinkReq: Omit<IApiIntCreateEstateLinkReq, 'exportType'>,
   ) => this;
   getAvailStatuses: () => this;
-  getEstateData: (estateId: string) => this;
+  getEstateData: (estateId: string, isFetchCustomFields?: boolean) => this;
   updateTextFields: (
     estateId: string,
     textFieldsParams: TUpdEstTextFieldParams[],

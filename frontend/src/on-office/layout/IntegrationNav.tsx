@@ -7,10 +7,12 @@ import { IntlKeys } from "i18n/keys";
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
-import SettingsIcon from "assets/icons/map-menu/04-konfiguration.svg";
+import ConfigIcon from "assets/icons/map-menu/04-konfiguration.svg";
+import Stefan_Mantl from "assets/icons/nav/Stefan_Mantl.svg";
+
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
-import { UserContext } from "../../context/UserContext";
+import { UserContext } from "../../context/UserContext"; // TODO translation required
 
 // TODO translation required
 
@@ -123,13 +125,15 @@ const IntegrationNav: FC = () => {
                 {t(IntlKeys.nav.realEstates)}
               </NavLink>
 
-              <NavLink
-                to="/potential-customers"
-                className="nav-link"
-                aria-current="page"
-              >
-                {t(IntlKeys.nav.potentialCustomers)}
-              </NavLink>
+              {integrationUser?.isAdmin && (
+                <NavLink
+                  to="/potential-customers"
+                  className="nav-link"
+                  aria-current="page"
+                >
+                  {t(IntlKeys.nav.potentialCustomers)}
+                </NavLink>
+              )}
 
               <NavLink
                 to="/map-snapshots"
@@ -159,12 +163,15 @@ const IntegrationNav: FC = () => {
                     aria-haspopup="true"
                     title={t(IntlKeys.nav.companyProfile)}
                   >
-                    <img
-                      src={integrationUser?.config.logo || SettingsIcon}
-                      referrerPolicy="no-referrer"
-                      alt="company"
-                      className="max-w-14 max-h-14"
-                    />
+                    {integrationUser.config.color === "#133337" ? (
+                      <img src={Stefan_Mantl} alt="Stefan Mantl" />
+                    ) : (
+                      <img
+                        src={ConfigIcon}
+                        alt="configuration"
+                        className="m-2"
+                      />
+                    )}
                   </NavLink>
                 </div>
               </div>
@@ -203,13 +210,15 @@ const IntegrationNav: FC = () => {
             {t(IntlKeys.nav.realEstates)}
           </NavLink>
 
-          <NavLink
-            to="/potential-customers"
-            className="nav-mobile-menu-link"
-            aria-current="page"
-          >
-            {t(IntlKeys.nav.potentialCustomers)}
-          </NavLink>
+          {integrationUser?.isAdmin && (
+            <NavLink
+              to="/potential-customers"
+              className="nav-mobile-menu-link"
+              aria-current="page"
+            >
+              {t(IntlKeys.nav.potentialCustomers)}
+            </NavLink>
+          )}
 
           <NavLink
             to="/map-snapshots"

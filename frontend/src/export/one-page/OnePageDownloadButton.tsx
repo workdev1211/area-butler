@@ -1,14 +1,14 @@
-import { FunctionComponent, useRef } from "react";
+import { FC, useRef } from "react";
 
-import { useTranslation } from 'react-i18next';
-import { IntlKeys } from 'i18n/keys';
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
 
 import ReactToPrint from "react-to-print";
 
 import OnePage from "./OnePage";
 import { IOnePagePdfDownProps } from "../../shared/one-page.types";
 
-export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
+export const OnePageDownload: FC<IOnePagePdfDownProps> = ({
   addressDescription,
   entityGroups,
   listingAddress,
@@ -20,13 +20,15 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
   mapClippings,
   snapshotConfig,
   isTrial,
-  downloadButtonDisabled,
+  isExportBtnDisabled,
   qrCodeImage,
 }) => {
   const { t } = useTranslation();
   const componentRef = useRef(null);
 
-  let documentTitle = `${t(IntlKeys.snapshotEditor.dataTab.myLocation)}_AreaButler`;
+  let documentTitle = `${t(
+    IntlKeys.snapshotEditor.dataTab.myLocation
+  )}_AreaButler`;
 
   if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
@@ -46,16 +48,16 @@ export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
         trigger={() => (
           <button
             className="btn btn-primary btn-sm indicator"
-            disabled={downloadButtonDisabled}
+            disabled={isExportBtnDisabled}
           >
-            {!downloadButtonDisabled && (
+            {!isExportBtnDisabled && (
               <div
                 className="indicator-item badge w-5 h-5 text-white"
                 style={{ backgroundColor: "#7155d3" }}
               >
                 <div
                   className="tooltip tooltip-left tooltip-accent text-justify font-bold text-white"
-                  data-tip="Bitte benutzen Sie den Google Chrome Browser. Andere Browser werden das pdf nicht korrekt generieren."
+                  data-tip={t(IntlKeys.snapshotEditor.dataTab.useChrome)}
                 >
                   i
                 </div>

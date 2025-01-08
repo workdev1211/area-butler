@@ -4,7 +4,10 @@ import { useTranslation } from "react-i18next";
 import sendToOnOfficeIcon from "../../../assets/icons/entrance-alt1.svg";
 import copyIcon from "../../../assets/icons/copy.svg";
 import urlIcon from "../../../assets/icons/link.svg";
-import { copyTextToClipboard } from "../../../shared/shared.functions";
+import {
+  copyTextToClipboard,
+  toastError,
+} from "../../../shared/shared.functions";
 import { useIntegrationTools } from "../../../hooks/integration/integrationtools";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { integrationNames } from "../../../../../shared/constants/integration";
@@ -42,11 +45,6 @@ const PublicLinks: FC = () => {
     unaddressLinkTitle = "Interaktive anonyme Karte";
   }
 
-  const getLinkEntity = (showAddress: boolean): boolean => {
-    const exportType = showAddress ? AreaButlerExportTypesEnum.LINK_WITH_ADDRESS : AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
-    return !!(isIntegrationUser && user.config?.exportMatching?.[exportType]?.isSpecialLink);
-  }
-
   const directLink = createDirectLink({ language: responseConfig?.language });
 
   const isSentBothAvail = !!(
@@ -75,15 +73,16 @@ const PublicLinks: FC = () => {
         {integrationType && (
           <div
             onClick={() => {
+              const exportType = !!responseConfig?.showAddress
+                ? AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+                : AreaButlerExportTypesEnum.LINK_WO_ADDRESS;
+
               const linkData: Omit<IApiIntSetPropPubLinksReq, "integrationId"> =
                 {
                   exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS,
                   publicLinkParams: [
                     {
-                      isLinkEntity: getLinkEntity(!!responseConfig?.showAddress),
-                      exportType: !!responseConfig?.showAddress
-                        ? AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
-                        : AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+                      exportType,
                       title: responseConfig?.showAddress
                         ? unaddressLinkTitle
                         : addressLinkTitle,
@@ -92,7 +91,16 @@ const PublicLinks: FC = () => {
                   ],
                 };
 
-              void sendToIntegration(linkData);
+              void sendToIntegration(linkData, false).catch((e) => {
+                const message =
+                  user.config.exportMatching?.[exportType] &&
+                  e.response?.status === 400
+                    ? t(IntlKeys.errors.checkExpMatchLinkCfg)
+                    : t(IntlKeys.common.errorOccurred);
+
+                toastError(message);
+                console.error(e);
+              });
             }}
           >
             <img src={sendToOnOfficeIcon} alt="send-to-integration" />
@@ -110,22 +118,37 @@ const PublicLinks: FC = () => {
 
           <div
             onClick={() => {
-              void sendToIntegration({
-                exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS,
-                publicLinkParams: [
-                  {
-                    isLinkEntity: getLinkEntity(true),
-                    exportType: AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
-                    title: addressLinkTitle,
-                    url: createDirectLink({ isAddressShown: true }),
-                  },
-                  {
-                    isLinkEntity: getLinkEntity(false),
-                    exportType: AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
-                    title: unaddressLinkTitle,
-                    url: createDirectLink({ isAddressShown: false }),
-                  },
-                ],
+              void sendToIntegration(
+                {
+                  exportType: AreaButlerExportTypesEnum.EMBEDDED_LINKS,
+                  publicLinkParams: [
+                    {
+                      exportType: AreaButlerExportTypesEnum.LINK_WITH_ADDRESS,
+                      title: addressLinkTitle,
+                      url: createDirectLink({ isAddressShown: true }),
+                    },
+                    {
+                      exportType: AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+                      title: unaddressLinkTitle,
+                      url: createDirectLink({ isAddressShown: false }),
+                    },
+                  ],
+                },
+                false
+              ).catch((e) => {
+                const message =
+                  e.response?.status === 400 &&
+                  (user.config.exportMatching?.[
+                    AreaButlerExportTypesEnum.LINK_WITH_ADDRESS
+                  ] ||
+                    user.config.exportMatching?.[
+                      AreaButlerExportTypesEnum.LINK_WO_ADDRESS
+                    ])
+                    ? t(IntlKeys.errors.checkExpMatchLinkCfg)
+                    : t(IntlKeys.common.errorOccurred);
+
+                toastError(message);
+                console.error(e);
               });
             }}
           >

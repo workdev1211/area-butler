@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
@@ -33,7 +33,6 @@ import { SubscriptionService } from '../user/service/subscription.service';
 import { TUnitedUser } from '../shared/types/user';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import { PotentCustomerEventEnum } from '../event/event.types';
-import { injectUserFilter, injectUserParams } from '../shared/functions/user';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 type TFilterQuery = FilterQuery<PotentialCustomerDocument>;
@@ -57,6 +56,10 @@ export class PotentialCustomerService {
     { ...upsertData }: ApiUpsertPotentialCustomer,
     subscriptionCheck = true,
   ): Promise<PotentialCustomerDocument> {
+    if (!user.isAdmin) {
+      throw new ForbiddenException();
+    }
+
     const isIntegrationUser = 'integrationUserId' in user;
 
     if (!isIntegrationUser) {
@@ -68,8 +71,7 @@ export class PotentialCustomerService {
         );
     }
 
-    const potentialCustomerDoc = { ...upsertData };
-    injectUserParams(user, potentialCustomerDoc);
+    const potentialCustomerDoc = { ...upsertData, companyId: user.companyId };
 
     const newPotentialCustomer = await this.potentialCustomerModel.create(
       potentialCustomerDoc,
@@ -89,7 +91,7 @@ export class PotentialCustomerService {
     void this.potentialCustomerModel.insertMany(
       defaultPotentialCustomers.map((potentialCustomer) => ({
         ...potentialCustomer,
-        ...injectUserParams(user),
+        companyId: user.companyId,
       })),
     );
   }
@@ -186,7 +188,7 @@ export class PotentialCustomerService {
     projectQuery?: TProjectQuery,
   ): Promise<PotentialCustomerDocument> {
     return this.potentialCustomerModel.findOne(
-      injectUserFilter(user, filterQuery),
+      { ...filterQuery, companyId: user.companyId },
       projectQuery,
     );
   }
@@ -197,7 +199,7 @@ export class PotentialCustomerService {
     projectQuery?: TProjectQuery,
   ): Promise<PotentialCustomerDocument[]> {
     return this.potentialCustomerModel.find(
-      injectUserFilter(user, filterQuery),
+      { ...filterQuery, companyId: user.companyId },
       projectQuery,
     );
   }
@@ -213,17 +215,8 @@ export class PotentialCustomerService {
   async fetchNamesForSync(
     integrationUser: TIntegrationUserDocument,
   ): Promise<string[]> {
-    const filterQuery: TFilterQuery = {};
-
-    filterQuery['integrationParams.integrationUserId'] =
-      integrationUser.parentUser
-        ? integrationUser.parentUser.integrationUserId
-        : integrationUser.integrationUserId;
-    filterQuery['integrationParams.integrationType'] =
-      integrationUser.integrationType;
-
     const potentialCustomers = await this.potentialCustomerModel.find(
-      filterQuery,
+      { companyId: integrationUser.companyId },
       {
         name: 1,
       },
@@ -237,9 +230,14 @@ export class PotentialCustomerService {
     potentialCustomerId: string,
     { ...upsertData }: Partial<ApiUpsertPotentialCustomer>,
   ): Promise<PotentialCustomerDocument> {
-    const filterQuery: TFilterQuery = injectUserFilter(user, {
+    if (!user.isAdmin) {
+      throw new ForbiddenException();
+    }
+
+    const filterQuery: TFilterQuery = {
       _id: new Types.ObjectId(potentialCustomerId),
-    });
+      companyId: user.companyId,
+    };
 
     const potentialCustomer = await this.potentialCustomerModel.findOne(
       filterQuery,
@@ -270,9 +268,14 @@ export class PotentialCustomerService {
   }
 
   async delete(user: TUnitedUser, potentialCustomerId: string): Promise<void> {
-    const potentialCustomer = await this.potentialCustomerModel.findOne(
-      injectUserParams(user, { _id: new Types.ObjectId(potentialCustomerId) }),
-    );
+    if (!user.isAdmin) {
+      throw new ForbiddenException();
+    }
+
+    const potentialCustomer = await this.potentialCustomerModel.findOne({
+      _id: new Types.ObjectId(potentialCustomerId),
+      companyId: user.companyId,
+    });
 
     if (!potentialCustomer) {
       throw new HttpException('Potential customer not found!', 400);

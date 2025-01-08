@@ -304,17 +304,14 @@ export class OpenAiService {
   async batchFetchLocDescs(
     user: UserDocument | TIntegrationUserDocument,
     locRealEstDescParams: TFetchLocRealEstDescParams,
-    requiredLocDescTypes?: Record<
-      TOpenAiLocDescType,
-      TFetchLocRealEstDescParams
-    >,
+    requiredLocDescTypes: Map<TOpenAiLocDescType, TFetchLocRealEstDescParams>,
   ): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
     const locDescMethods = {
       [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
         description: await this.fetchLocDesc(
           user,
-          requiredLocDescTypes?.[OpenAiQueryTypeEnum.LOCATION_DESCRIPTION] ||
+          requiredLocDescTypes.get(OpenAiQueryTypeEnum.LOCATION_DESCRIPTION) ||
             locRealEstDescParams,
         ),
       }),
@@ -322,32 +319,34 @@ export class OpenAiService {
         locDescType: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
         description: await this.fetchLocRealEstDesc(
           user,
-          requiredLocDescTypes?.[
-            OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
-          ] || locRealEstDescParams,
+          requiredLocDescTypes.get(
+            OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+          ) || locRealEstDescParams,
         ),
       }),
       [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
         description: await this.fetchRealEstDesc(
           user,
-          requiredLocDescTypes?.[OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION] ||
-            locRealEstDescParams,
+          requiredLocDescTypes.get(
+            OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+          ) || locRealEstDescParams,
         ),
       }),
       [OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION]: async () => ({
         locDescType: OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
         description: await this.fetchEquipmentDesc(
           user as TIntegrationUserDocument,
-          requiredLocDescTypes?.[OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION] ||
-            locRealEstDescParams,
+          requiredLocDescTypes.get(
+            OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+          ) || locRealEstDescParams,
         ),
       }),
     };
 
-    const resLocDescMethods = Object.values(locDescMethods).map(
-      (locDescMethod) => ({
-        locDescMethod,
+    const resLocDescMethods = [...requiredLocDescTypes.keys()].map(
+      (locDescType) => ({
+        locDescMethod: locDescMethods[locDescType],
       }),
     );
 
@@ -439,9 +438,13 @@ export class OpenAiService {
             Number(estateId),
           );
 
-        return realEstateExtData.images.filter(
-          (image) => !image.is_not_for_expose,
-        );
+        return realEstateExtData.images.reduce((res, image) => {
+          if (!image.is_not_for_expose) {
+            res.push({ id: image.id, url: image.big_url, title: image.title });
+          }
+          return res;
+        }, []);
+
       case IntegrationTypesEnum.ON_OFFICE:
         const images = await this.openAiOnOfficeService.fetchEstateImages(
           user,

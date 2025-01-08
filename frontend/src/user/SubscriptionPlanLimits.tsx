@@ -85,7 +85,7 @@ const SubscriptionPlanLimits: FC<ISubscriptionPlanLimitsProps> = ({ user }) => {
         />
       )}
 
-      <div className="mt-20 flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
         <div>
           <h1 className="font-bold text-xl">
             {t(IntlKeys.yourProfile.yourCurrentPlan)}

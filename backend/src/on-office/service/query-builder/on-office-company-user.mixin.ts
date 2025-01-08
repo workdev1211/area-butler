@@ -5,10 +5,10 @@ import { OnOfficeQueryBuilder } from './on-office-query-builder.abstract';
 
 export class OnOfficeCompanyUserMixin {
   getColorAndLogo(this: OnOfficeQueryBuilder): ThisType<OnOfficeQueryBuilder> {
-    this.checkUserParams();
+    this.checkIsUserSet();
 
     const actionType = OnOfficeActionTypeEnum.GET_COLOR_AND_LOGO;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -43,10 +43,10 @@ export class OnOfficeCompanyUserMixin {
   }
 
   getUserData(this: OnOfficeQueryBuilder): ThisType<OnOfficeQueryBuilder> {
-    this.checkUserParams();
+    this.checkIsUserSet();
 
     const actionType = OnOfficeActionTypeEnum.GET_USER_DATA;
-    const { apiKey, extendedClaim, token, userId } = this.userParams;
+    const { apiKey, extendedClaim, token, userId } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(

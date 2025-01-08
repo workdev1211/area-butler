@@ -11,7 +11,6 @@ import Select from "../inputs/formik/Select";
 import {
   openAiCustomTextOptions,
   openAiTextLengthOptions,
-  openAiTonalities,
 } from "../../../../shared/constants/open-ai";
 import {
   IOpenAiGeneralFormValues,
@@ -27,6 +26,7 @@ import CustomNumberSelect from "../inputs/formik/CustomNumberSelect";
 import { ISelectTextValue } from "../../../../shared/types/types";
 import { useUserState } from "../../hooks/userstate";
 import CustomTextSelectV2 from "../inputs/formik/CustomTextSelectV2";
+import { Loading } from "../Loading";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;
@@ -81,9 +81,8 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
     value: t(IntlKeys.snapshotEditor.dataTab.defaultTargetGroupName),
   };
 
-  const [targetGroupOptions, setTargetGroupOptions] = useState<
-    ISelectTextValue[]
-  >([defTargetGroupOption, custTargetGroupOption]);
+  const [targetGroupOptions, setTargetGroupOptions] =
+    useState<ISelectTextValue[]>();
 
   const resultInitValues = initialValues
     ? structuredClone(initialValues)
@@ -132,6 +131,10 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (!targetGroupOptions?.length) {
+    return <Loading />;
+  }
+
   return (
     <Formik
       initialValues={resultInitValues}
@@ -171,7 +174,7 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
               >
                 {Object.values(OpenAiTonalityEnum).map((tonality) => (
                   <option value={tonality} key={tonality}>
-                    {openAiTonalities[tonality]}
+                    {t(IntlKeys.snapshotEditor.dataTab.tonalities[tonality])}
                   </option>
                 ))}
               </Select>
@@ -242,7 +245,10 @@ const OpenAiGeneralForm: FC<IOpenAiGeneralFormProps> = ({
                   inputLabel={t(IntlKeys.snapshotEditor.dataTab.resultsText, {
                     count: values.customText?.length,
                   })}
-                  selectOptions={openAiCustomTextOptions}
+                  selectOptions={openAiCustomTextOptions.map(({ value }) => ({
+                    value,
+                    text: t(IntlKeys.snapshotEditor.dataTab.customTexts[value]),
+                  }))}
                   customTextValue={OpenAiCustomTextEnum.CUSTOM}
                   emptyTextValue={OpenAiCustomTextEnum.NONE}
                   placeholder={t(

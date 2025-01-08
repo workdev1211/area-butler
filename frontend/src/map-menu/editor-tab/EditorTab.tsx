@@ -23,8 +23,8 @@ import ImageUpload from "components/ImageUpload";
 import { setBackgroundColor } from "../../shared/shared.functions";
 import { IApiRealEstStatusByUser } from "../../../../shared/types/real-estate";
 import { realEstAllTextStatus } from "../../../../shared/constants/real-estate";
-import configOptionsIcon from "../../assets/icons/map-menu/04-konfiguration.svg";
-import poiVisibilityIcon from "../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
+import ConfigIcon from "../../assets/icons/map-menu/04-konfiguration.svg";
+import PoiVisibilityIcon from "../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
 import {
   defaultMapboxStyles,
   MapboxStyleLabelsEnum,
@@ -270,7 +270,7 @@ const EditorTab: FC<IEditorTabProps> = ({
   const backgroundColor = config.primaryColor || "var(--primary-gradient)";
 
   return (
-    <div className="editor-tab z-9000" data-tour="editor-map-menu">
+    <div className="editor-tab" data-tour="editor-map-menu">
       <div
         q-id="poi-filter"
         className={
@@ -288,7 +288,7 @@ const EditorTab: FC<IEditorTabProps> = ({
           }}
         >
           <div className="collapse-title-container">
-            <img src={poiVisibilityIcon} alt="poi-visibility-icon" />
+            <img src={PoiVisibilityIcon} alt="poi-visibility-icon" />
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">
                 {t(IntlKeys.snapshotEditor.POIDetailFilter)}
@@ -382,7 +382,7 @@ const EditorTab: FC<IEditorTabProps> = ({
           }}
         >
           <div className="collapse-title-container">
-            <img src={configOptionsIcon} alt="config-options-icon" />
+            <img src={ConfigIcon} alt="configuration" />
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">
                 {t(IntlKeys.snapshotEditor.configuration)}

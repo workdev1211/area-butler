@@ -29,7 +29,9 @@ import { IPotentialCustomersHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import PotentialCustomerFormDeleteHandler from "../potential-customer/PotentialCustomerFormDeleteHandler";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
+import { useUserState } from "../hooks/userstate";
 
+// TODO translation required
 const subscriptionUpgradeSendCustomerRequestMessage = (
   <div>
     <p className="my-5">
@@ -49,19 +51,19 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
 );
 
 const PotentialCustomersPage: FC = () => {
-  const { t } = useTranslation();
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
   );
   const { searchContextDispatch } = useContext(SearchContext);
-  const { userState, userDispatch } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
-  const user = userState.user!;
-  const integrationUser = userState.integrationUser!;
-  const isIntegrationUser = !!integrationUser;
-
+  const { t } = useTranslation();
   const history = useHistory<IPotentialCustomersHistoryState>();
   const { fetchPotentialCustomers } = usePotentialCustomerData();
+  const { getCurrentUser } = useUserState();
+
+  const user = getCurrentUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
 
@@ -81,9 +83,9 @@ const PotentialCustomersPage: FC = () => {
 
   const queryParams = new URLSearchParams(useLocation().search);
   const customerHighlightId = queryParams.get("id");
-  const subscriptionPlan = user?.subscription?.config;
   const canSendCustomerRequest =
-    subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
+    !isIntegrationUser &&
+    user?.subscription?.config?.appFeatures.sendCustomerQuestionnaireRequest;
 
   const startSearchFromCustomer = ({
     preferredAmenities,
@@ -121,6 +123,7 @@ const PotentialCustomersPage: FC = () => {
             {t(IntlKeys.potentialCustomers.createTargetGroup)}
           </Link>
         </li>
+
         {!isIntegrationUser && (
           <li>
             <button
@@ -161,11 +164,13 @@ const PotentialCustomersPage: FC = () => {
       actionsTop={<ActionsTop />}
     >
       <TourStarter tour={ApiTourNamesEnum.CUSTOMERS} />
+
       <FormModal modalConfig={questionnaireModalConfig}>
         <QuestionnaireRequestFormHandler
           postSubmit={() => setQuestionnaireModalOpen(false)}
         />
       </FormModal>
+
       <div className="overflow-x-auto" data-tour="customers-table">
         <table className="table w-full">
           <thead>
@@ -176,6 +181,7 @@ const PotentialCustomersPage: FC = () => {
               <th />
             </tr>
           </thead>
+
           <tbody>
             {potentialCustomerState.customers.map(
               (customer: ApiPotentialCustomer, index: number) => (
@@ -186,6 +192,7 @@ const PotentialCustomersPage: FC = () => {
                   }
                 >
                   <th>{customer.name}</th>
+
                   <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
                     {Array.isArray(customer.preferredLocations) &&
                     customer.preferredLocations.length
@@ -194,6 +201,7 @@ const PotentialCustomersPage: FC = () => {
                           .join(", ")
                       : "-"}
                   </td>
+
                   <td>
                     {customer?.realEstateCostStructure
                       ? `${getRealEstateCost(
@@ -216,6 +224,7 @@ const PotentialCustomersPage: FC = () => {
                         .map((f) => f.label)
                         .join(", ")}
                   </td>
+
                   <td>
                     <div className="flex gap-4">
                       <img
@@ -227,41 +236,37 @@ const PotentialCustomersPage: FC = () => {
                         }}
                         data-tour={`customers-table-item-search-button-${index}`}
                       />
-                      {!customer.isFromParent && (
-                        <>
-                          <img
-                            src={editIcon}
-                            alt="icon-edit"
-                            className="cursor-pointer"
-                            onClick={() => {
-                              history.push(
-                                `/potential-customers/${customer.id}`
-                              );
-                            }}
-                            data-tour={`customers-table-item-edit-button-${index}`}
-                          />
-                          <FormModal
-                            modalConfig={{
-                              modalTitle: t(
-                                IntlKeys.potentialCustomers.customerDeleteTitle
-                              ),
-                              submitButtonTitle: t(IntlKeys.common.delete),
-                              modalButton: (
-                                <img
-                                  src={deleteIcon}
-                                  alt="icon-delete"
-                                  className="cursor-pointer"
-                                  data-tour={`customers-table-item-delete-button-${index}`}
-                                />
-                              ),
-                            }}
-                          >
-                            <PotentialCustomerFormDeleteHandler
-                              potentialCustomer={customer}
+
+                      <img
+                        src={editIcon}
+                        alt="icon-edit"
+                        className="cursor-pointer"
+                        onClick={() => {
+                          history.push(`/potential-customers/${customer.id}`);
+                        }}
+                        data-tour={`customers-table-item-edit-button-${index}`}
+                      />
+
+                      <FormModal
+                        modalConfig={{
+                          modalTitle: t(
+                            IntlKeys.potentialCustomers.customerDeleteTitle
+                          ),
+                          submitButtonTitle: t(IntlKeys.common.delete),
+                          modalButton: (
+                            <img
+                              src={deleteIcon}
+                              alt="icon-delete"
+                              className="cursor-pointer"
+                              data-tour={`customers-table-item-delete-button-${index}`}
                             />
-                          </FormModal>
-                        </>
-                      )}
+                          ),
+                        }}
+                      >
+                        <PotentialCustomerFormDeleteHandler
+                          potentialCustomer={customer}
+                        />
+                      </FormModal>
                     </div>
                   </td>
                 </tr>

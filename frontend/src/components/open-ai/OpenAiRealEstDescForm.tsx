@@ -20,10 +20,7 @@ import {
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { SearchContext } from "../../context/SearchContext";
-import {
-  defaultRealEstType,
-  openAiRealEstTypeOptions,
-} from "../../../../shared/constants/open-ai";
+import { openAiRealEstTypeOptions } from "../../../../shared/constants/open-ai";
 import { ConfigContext } from "../../context/ConfigContext";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import CustomTextSelectV2 from "../inputs/formik/CustomTextSelectV2";
@@ -115,7 +112,7 @@ const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
     ? structuredClone(initialValues)
     : {
         realEstateId: "",
-        realEstateType: defaultRealEstType,
+        realEstateType: OpenAiRealEstTypesEnum.HOUSE,
       };
 
   resultInitValues.realEstateId = getInitRealEstateId(
@@ -175,7 +172,17 @@ const OpenAiRealEstDescForm: FC<IOpenAiRealEstDescFormProps> = ({
             name="realEstateType"
             label={t(IntlKeys.snapshotEditor.dataTab.objectType)}
             inputLabel={t(IntlKeys.common.description)}
-            selectOptions={openAiRealEstTypeOptions}
+            selectOptions={openAiRealEstTypeOptions.map(({ value }) => ({
+              value,
+              text: t(
+                (
+                  IntlKeys.snapshotEditor.dataTab.realEstateTypes as Record<
+                    string,
+                    string
+                  >
+                )[value]
+              ),
+            }))}
             customTextValue={OpenAiRealEstTypesEnum.CUSTOM}
             placeholder={t(IntlKeys.snapshotEditor.dataTab.objectType)}
           />

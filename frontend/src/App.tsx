@@ -25,7 +25,9 @@ import Nav from "./layout/Nav";
 import { ConfigContext } from "./context/ConfigContext";
 import {
   commonPaypalOptions,
+  companyProfilePath,
   snapshotEditorPath,
+  userProfilePath,
 } from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -34,6 +36,7 @@ import { LoadingMessage } from "./components/Loading";
 import BrowserWarningModal from "./components/BrowserWarningModal";
 import SupportLink from "./components/SupportLink";
 import { useUserState } from "./hooks/userstate";
+import IsAdmin from "./auth/IsAdmin";
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
@@ -88,10 +91,7 @@ const CompanyProfilePage = lazy(() => import("./pages/CompanyProfilePage"));
 
 function App() {
   const { paypalClientId } = useContext(ConfigContext);
-  const {
-    userDispatch,
-    userState: { user },
-  } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
   const { get, post } = useHttp();
@@ -267,20 +267,20 @@ function App() {
                         </Authenticated>
                       </Route>
 
-                      <Route path="/user-profile">
+                      <Route path={userProfilePath}>
                         <Authenticated>
                           <UserProfilePage />
                         </Authenticated>
                       </Route>
 
                       {/* Subscription Selection */}
-                      {user?.isAdmin && (
-                        <Route path="/company-profile">
-                          <Authenticated>
+                      <Route path={companyProfilePath}>
+                        <Authenticated>
+                          <IsAdmin>
                             <CompanyProfilePage />
-                          </Authenticated>
-                        </Route>
-                      )}
+                          </IsAdmin>
+                        </Authenticated>
+                      </Route>
 
                       <Route path="/callback">
                         <Authenticated>
@@ -308,13 +308,17 @@ function App() {
 
                       <Route path="/potential-customers/:customerId">
                         <Authenticated>
-                          <PotentialCustomerPage />
+                          <IsAdmin>
+                            <PotentialCustomerPage />
+                          </IsAdmin>
                         </Authenticated>
                       </Route>
 
                       <Route path="/potential-customers">
                         <Authenticated>
-                          <PotentialCustomersPage />
+                          <IsAdmin>
+                            <PotentialCustomersPage />
+                          </IsAdmin>
                         </Authenticated>
                       </Route>
 

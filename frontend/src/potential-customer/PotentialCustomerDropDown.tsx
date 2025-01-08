@@ -10,6 +10,7 @@ import useOnClickOutside from "hooks/onclickoutside";
 import { osmEntityTypes } from "../../../shared/constants/osm-entity-types";
 import { useHistory } from "react-router-dom";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
+import { useUserState } from "../hooks/userstate";
 
 interface IPotentialCustomerDropDownProps {
   buttonStyles?: string;
@@ -22,6 +23,9 @@ export const PotentialCustomerDropDown: FC<IPotentialCustomerDropDownProps> = ({
   const { potentialCustomerState } = useContext(PotentialCustomerContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { push: historyPush } = useHistory();
+  const { getCurrentUser } = useUserState();
+
+  const { isAdmin } = getCurrentUser();
 
   const fillDataFromCustomer = ({
     preferredAmenities,
@@ -71,6 +75,7 @@ export const PotentialCustomerDropDown: FC<IPotentialCustomerDropDownProps> = ({
       >
         {t(IntlKeys.environmentalAnalysis.targetGroups)}
       </div>
+
       {menuOpen && (
         <ul tabIndex={0} className={dropDownListStyle}>
           {potentialCustomerState.customers.map(
@@ -95,22 +100,25 @@ export const PotentialCustomerDropDown: FC<IPotentialCustomerDropDownProps> = ({
               </li>
             )
           )}
-          <li key="customer-drop-down-new">
-            <button
-              type="button"
-              onClick={() => {
-                historyPush("/potential-customers/new");
-              }}
-              className="btn btn-link whitespace-nowrap"
-            >
-              <div className="flex flex-col items-start">
-                <span className="font-bold">
-                  <img src={plusIcon} alt="pdf-icon" />{" "}
-                  {t(IntlKeys.potentialCustomers.newTargetGroup)}
-                </span>
-              </div>
-            </button>
-          </li>
+
+          {isAdmin && (
+            <li key="customer-drop-down-new">
+              <button
+                type="button"
+                onClick={() => {
+                  historyPush("/potential-customers/new");
+                }}
+                className="btn btn-link whitespace-nowrap"
+              >
+                <div className="flex flex-col items-start">
+                  <span className="font-bold">
+                    <img src={plusIcon} alt="pdf-icon" />{" "}
+                    {t(IntlKeys.potentialCustomers.newTargetGroup)}
+                  </span>
+                </div>
+              </button>
+            </li>
+          )}
         </ul>
       )}
     </div>

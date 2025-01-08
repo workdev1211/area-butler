@@ -126,7 +126,7 @@
     "standard": "Standard",
     "minimal": "Minimal",
     "preselectedProfile": "Vorausgewählte Profile",
-    "showIcon": "Icon anzeigen",
+    "showIcon": "Icon auf anonymisierter Karte anzeigen",
     "showAddress": "Adresse anzeigen",
     "showStreetViewLink": "Street View Link anzeigen",
     "groupPOIOnZoom": "POIs gruppieren beim Rauszoomen",
@@ -236,8 +236,8 @@
       "sendTo": "An {{integrationType}} senden",
       "surroundingsHeader": "Umgebung",
       "distance": "Entfernung",
-      "scanAndNew": "Scannen und neue",
-      "discoverResidentialArea": "Wohnlage entdecken",
+      "scanAndNew": "Scannen und",
+      "discoverResidentialArea": "Umgebung entdecken",
       "mobilityCriteria": "Ihre Mobilitätskriterien",
       "yourNewProperty": "Ihre neue Immobilie",
       "nextPlace": "Nächster Ort",
@@ -315,7 +315,41 @@
       },
       "saveAsPreset": "Voreinstellung übernehmen",
       "saveAsPresetSuccess": "Voreinstellung erfolgreich gespeichert",
-      "saveAsPresetError": "Voreinstellung konnte nicht übernommen werden"
+      "saveAsPresetError": "Voreinstellung konnte nicht übernommen werden",
+      "useChrome": "Bitte benutzen Sie den Google Chrome Browser. Andere Browser werden das pdf nicht korrekt generieren.",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formale und seriöse",
+        "EASYGOING_YOUTHFUL": "lockere und jugendliche"
+      },
+      "customTexts": {
+        "POPULATION": "Der Text soll die Bevölkerungszahl der Stadt beinhalten.",
+        "SEO": "Der Text soll typische Immobilien SEO Begriffe beinhalten und SEO optimiert sein.",
+        "REGION": "Der Text soll eine kurze Beschreibung der Region beinhalten.",
+        "POIS": "Der Text soll einige Sehenswürdigkeiten in der Umgebung hervorheben.",
+        "OFFICE": "Der Text soll für eine Büroimmobilien optimiert sein.",
+        "COMMERCIAL": "Der Text soll für eine Gewerbeimmobilie optimiert sein.",
+        "RESIDENTIAL": "Der Text soll für eine Wohnimmobilie optimiert sein.",
+        "TEASER": "Teaser Text für Portale und aufbauenden Text generieren.",
+        "CUSTOM": "Eigenen Text eingeben.",
+        "NONE": "Keiner"
+      },
+      "realEstateTypes": {
+        "ROOM": "Zimmer",
+        "HOUSE": "Haus",
+        "APARTMENT": "Wohnung",
+        "PROPERTY": "Grundstück",
+        "OFFICE_PRACTICES": "Büro/Praxen",
+        "STORE_RETAIL": "Laden/Einzelhandel",
+        "HOSPITALITY": "Gastgewerbe",
+        "HALLS_WAREHOUSE_PRODUCTION": "Hallen/Lager/Produktion",
+        "AGRICULTURE_FORESTRY": "Land/Forstwirtschaft",
+        "LEISURE_COMMERCIAL": "Freizeitimmobilie (gewerblich)",
+        "OTHER": "Sonstige",
+        "CUSTOM": "Eigene Angabe machen"
+      },
+      "locationExpose": {
+        "locDescExceedError": "Ihre Lagebeschreibung überschreitet das Limit"
+      }
     },
     "addNewLocationModalTitle": "Neuen Ort hinzufügen",
     "addNewLocationModalBtn": "Hinzufügen",
@@ -562,7 +596,8 @@
     "noteField": "Notizfeld",
     "directLink": "Direkt Link",
     "htmlSnippet": "HTML Snippet",
-    "companyTemplate": "Organisationsvorlage"
+    "companyTemplate": "Organisationsvorlage",
+    "locationNotFound": "Erfolgreich in Zwischenablage kopiert!"
   },
   "imageUpload": {
     "supportedFormats": "Unterstützte Formate: png, jpg, svg, maximale Größe: 5MB",
@@ -605,7 +640,8 @@
     "inlineFrame": "iframe-Code",
     "linkWithAddress": "Link mit Adresse",
     "linkWoAddress": "Link ohne Adresse",
-    "equipmentDescription": "Ausstattungsbeschreibung"
+    "equipmentDescription": "Ausstattungsbeschreibung",
+    "syncWithCrm": "Diese Informationen wird von {{crm}} synchronisiert."
   },
   "tour": {
     "tourEndingError": "Fehler beim Beenden der Tour",
@@ -774,7 +810,14 @@
       "minimumTermForYear": "Mindestlaufzeit: 1 Jahr, danach jährlich kündbar. Nach Ende des\n          aktuellen Abo-Zeitraums verlängert sich die Laufzeit des Vertrags\n          automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht\n          mit einer Frist von 30 Tagen zum Ende des aktuellen Abo-Zeitraums,\n          durch Erklärung in Textform gegenüber KuDiBa, kündigt.",
       "cardStyles": "Kartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.\nKartenstile: Werden einmalig für Ihren Nutzer-Account eingerichtet,\n          sind für beliebig viele Karten nutzbar und für die gesamte\n          Nutzungsdauer verfügbar.",
       "annualSubscription": "Jahres-Abo"
-    }
+    },
+    "toastSubscriptionSuccess": "Abonnement erfolgreich abgeschlossen",
+    "toastSubscriptionError": "Fehler beim Anlegen des Abonnements",
+    "buyProduct": "Bitte kaufen Sie ein entsprechendes Produkt!",
+    "integrationIdNotSpecified": "Die Integrations-ID wird nicht angegeben!",
+    "dataSent": "Die Daten wurden an {{integrationType}} gesendet!",
+    "productNotActivated": "Das Produkt wurde nicht freigeschaltet!",
+    "addressActivated": "Die Adresse wurde erfolgreich freigeschaltet!"
   },
   "companyProfile": {
     "title": "Unternehmensprofil"

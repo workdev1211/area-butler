@@ -33,7 +33,7 @@ export class OnOfficeListener {
     potentCustomerName: string,
   ): void {
     void this.onOfficeQueryBuilderService
-      .setUserParams(integrationUser.parameters)
+      .setUser(integrationUser)
       .deleteMultiselectValues([potentCustomerName])
       .exec();
   }
@@ -42,7 +42,7 @@ export class OnOfficeListener {
     integrationUser: TIntegrationUserDocument,
   ): Promise<void> {
     const { getMultiselectValues } = await this.onOfficeQueryBuilderService
-      .setUserParams(integrationUser.parameters)
+      .setUser(integrationUser)
       .getMultiselectValues()
       .exec();
 

@@ -9,9 +9,12 @@ import ColorPicker from "../components/ColorPicker";
 import { useUserState } from "../hooks/userstate";
 import { TNullable } from "../../../shared/types/types";
 import { IApiCompanyConfig } from "../../../shared/types/company";
+import { ConfigContext } from "../context/ConfigContext";
+import { integrationNames } from "../../../shared/constants/integration";
 
 const CompanyExportSettings: FC = () => {
   const { userDispatch } = useContext(UserContext);
+  const { integrationType } = useContext(ConfigContext);
 
   const { t } = useTranslation();
   const { getCurrentUser } = useUserState();
@@ -127,7 +130,13 @@ const CompanyExportSettings: FC = () => {
         image={logo}
         isDisabled={isIntegrationUser}
         onChange={updateLogo}
-        tooltip={t(IntlKeys.yourProfile.settingAppliedTooltip)}
+        uploadLabel={
+          (isIntegrationUser &&
+            t(IntlKeys.yourProfile.syncWithCrm, {
+              crm: integrationNames[integrationType!!],
+            })) ||
+          undefined
+        }
       />
 
       <ImageUpload
@@ -136,6 +145,7 @@ const CompanyExportSettings: FC = () => {
         inputId="upload-map-icon-button"
         label={t(IntlKeys.snapshotEditor.cardsIcon)}
         uploadLabel={t(IntlKeys.snapshotEditor.uploadIcon)}
+        tooltip={t(IntlKeys.yourProfile.settingAppliedTooltip)}
       />
 
       <ColorPicker

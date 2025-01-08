@@ -24,7 +24,6 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { TUnitedUser } from '../shared/types/user';
-import structuredClone from '@ungap/structured-clone';
 
 @Injectable()
 export class CompanyUserService {
@@ -111,7 +110,7 @@ export class CompanyUserService {
       }
     }
 
-    await this.companyService.updateConfig(user.company._id, companyConfigDto);
+    await this.companyService.updateConfig(user.company, companyConfigDto);
 
     const isIntegrationUser = 'integrationUserId' in user;
     const filterQuery: FilterQuery<TIntegrationUserDocument | UserDocument> = {
@@ -146,7 +145,7 @@ export class CompanyUserService {
       : {};
     companyPresets[preset.type] = preset.values;
 
-    await this.companyService.updateConfig(user.company._id, {
+    await this.companyService.updateConfig(user.company, {
       presets: companyPresets,
     });
 

@@ -2,6 +2,9 @@ import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
 
+import { useTranslation } from "react-i18next";
+import { IntlKeys } from "i18n/keys";
+
 import { ConfigContext } from "../../context/ConfigContext";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
@@ -33,6 +36,7 @@ import { usePropstackSync } from "../../propstack/hooks/propstacksync";
 import { useMyVivendaSync } from "../../my-vivenda/hooks/myvivendasync";
 
 export const useIntegrationTools = () => {
+  const { t } = useTranslation();
   const { integrationType } = useContext(ConfigContext);
   const {
     userState: { integrationUser },
@@ -65,17 +69,20 @@ export const useIntegrationTools = () => {
       return availProdContType;
     }
 
-    toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
+    toastError(t(IntlKeys.subscriptions.buyProduct), () => {
       history.push("/products");
     });
   };
 
   const sendToIntegration = async (
-    sendToIntegrationData: TSendToIntegrationData
+    sendToIntegrationData: TSendToIntegrationData,
+    isDefaultError = true
   ): Promise<void> => {
     if (integrationType !== IntegrationTypesEnum.MY_VIVENDA) {
       if (!realEstateListing?.integrationId) {
-        const errorMessage = "Die Integrations-ID wird nicht angegeben!"; // Integration id is not provided!
+        const errorMessage = t(
+          IntlKeys.subscriptions.integrationIdNotSpecified
+        ); // Integration id is not provided!
         toastError(errorMessage);
         console.error(errorMessage);
         return;
@@ -109,11 +116,18 @@ export const useIntegrationTools = () => {
       }
 
       toastSuccess(
-        `Die Daten wurden an ${integrationNames[integrationType!]} gesendet!`
+        t(IntlKeys.subscriptions.dataSent, {
+          integrationType: integrationNames[integrationType!],
+        })
       );
     } catch (e) {
-      toastError("Der Fehler ist aufgetreten!");
-      console.error(e);
+      if (isDefaultError) {
+        toastError(t(IntlKeys.common.errorOccurred));
+        console.error(e);
+        return;
+      }
+
+      throw e;
     }
   };
 
@@ -130,7 +144,7 @@ export const useIntegrationTools = () => {
       return;
     }
 
-    const errorMessage = "Das Produkt wurde nicht freigeschaltet!";
+    const errorMessage = t(IntlKeys.subscriptions.productNotActivated);
 
     try {
       await post<void, IApiUnlockIntProductReq>(
@@ -199,7 +213,7 @@ export const useIntegrationTools = () => {
         payload: availProdContType,
       });
 
-      toastSuccess("Die Adresse wurde erfolgreich freigeschaltet!");
+      toastSuccess(t(IntlKeys.subscriptions.addressActivated));
     } catch (e) {
       toastError(errorMessage);
       console.error(e);

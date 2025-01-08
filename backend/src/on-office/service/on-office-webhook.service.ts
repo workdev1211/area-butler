@@ -1,4 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
+import * as dayjs from 'dayjs';
+import * as duration from 'dayjs/plugin/duration';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 import { SnapshotExtService } from '../../location/snapshot-ext.service';
 import { IPerformLoginData, OnOfficeService } from './on-office.service';
@@ -11,9 +14,10 @@ import {
   AreaButlerExportTypesEnum,
   MeansOfTransportation,
 } from '@area-butler-types/types';
-import { onOfficeOpenAiFieldMapper } from '../../../../shared/constants/on-office/on-office-constants';
-import { OnOfficeOpenAiFieldEnum } from '@area-butler-types/on-office';
-import { TOpenAiLocDescType } from '@area-butler-types/open-ai';
+import {
+  OpenAiQueryTypeEnum,
+  TOpenAiLocDescType,
+} from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../../shared/constants/open-ai';
 import { OpenAiExtService } from '../../open-ai/open-ai-ext.service';
 import { OnOfficeWebhookUrlEnum } from '../shared/on-office.types';
@@ -32,6 +36,11 @@ import { RealEstateListingIntService } from '../../real-estate-listing/real-esta
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { checkIsSearchNotUnlocked } from '../../../../shared/functions/integration.functions';
+import { onOfficeOpenAiFieldMapper } from '../../../../shared/constants/on-office/on-office-constants';
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 interface IGenerateLocDescs {
   loginData: IPerformLoginData;
@@ -57,8 +66,15 @@ export class OnOfficeWebhookService {
     endpoint: OnOfficeWebhookUrlEnum,
     onOfficeQueryParams: ApiOnOfficeLoginQueryParamsDto,
   ): Promise<void> {
+    const nowDate = new Date();
+    const eventId = `${endpoint}-${onOfficeQueryParams.customerWebId}-${
+      onOfficeQueryParams.userId
+    }-${onOfficeQueryParams.estateId}-${nowDate.getTime()}`;
+
+    this.logger.verbose(`Webhook ${eventId} was triggered.`);
+
     const { integrationUser, onOfficeEstate, place, realEstate } =
-      await this.onOfficeService.performLogin(onOfficeQueryParams);
+      await this.onOfficeService.performLogin(onOfficeQueryParams, true);
 
     const resRealEstate = await this.getUnlockRealEst(
       integrationUser,
@@ -66,10 +82,10 @@ export class OnOfficeWebhookService {
       realEstate,
     );
 
-    let fetchPotentCustomer: PotentialCustomerDocument;
+    let fetchedPotCustomer: PotentialCustomerDocument;
 
     if (onOfficeEstate.TargetAudience?.length) {
-      fetchPotentCustomer = await this.potentialCustomerService.findOne(
+      fetchedPotCustomer = await this.potentialCustomerService.findOne(
         integrationUser,
         { name: onOfficeEstate.TargetAudience[0] },
         {
@@ -81,11 +97,12 @@ export class OnOfficeWebhookService {
       );
     }
 
-    const potentialCustomer = fetchPotentCustomer || defaultPotentialCustomer;
     this.logger.verbose(
-      `Potential customer is ${
-        potentialCustomer?.id || potentialCustomer.name
-      }.`,
+      `Webhook ${eventId}. ${
+        fetchedPotCustomer
+          ? `Potential customer is ${fetchedPotCustomer.name} (id: ${fetchedPotCustomer.id}).`
+          : 'Potential customer not found.'
+      }`,
     );
 
     let snapshotRes: ApiSearchResultSnapshotResponse;
@@ -101,7 +118,7 @@ export class OnOfficeWebhookService {
       snapshotRes = await this.createSnapshot({
         integrationUser,
         place,
-        potentialCustomer,
+        potentialCustomer: fetchedPotCustomer,
         realEstate: resRealEstate,
       });
     }
@@ -120,7 +137,7 @@ export class OnOfficeWebhookService {
           place,
           realEstate: resRealEstate,
         },
-        potentialCustomer,
+        potentialCustomer: fetchedPotCustomer,
         snapshotRes,
       });
     }
@@ -151,7 +168,7 @@ export class OnOfficeWebhookService {
 
     if (textFieldParams.length) {
       await this.onOfficeQueryBuilderService
-        .setUserParams(integrationUser.parameters)
+        .setUser(integrationUser)
         .updateTextFields(
           resRealEstate.integrationId,
           textFieldParams,
@@ -159,20 +176,28 @@ export class OnOfficeWebhookService {
         )
         .exec();
     }
+
+    this.logger.verbose(
+      `Webhook ${eventId} processing is complete and took ${dayjs
+        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+        .humanize()}.`,
+    );
   }
 
   private async createSnapshot({
     integrationUser,
     place,
     realEstate,
-    potentialCustomer: {
-      preferredLocations,
-      preferredAmenities: poiTypes,
-      routingProfiles: transportParams,
-    },
+    potentialCustomer,
   }: Omit<IPerformLoginData, 'onOfficeEstate'> & {
     potentialCustomer: Partial<PotentialCustomerDocument>;
   }): Promise<ApiSearchResultSnapshotResponse> {
+    const {
+      preferredLocations,
+      preferredAmenities: poiTypes,
+      routingProfiles: transportParams,
+    } = potentialCustomer || defaultPotentialCustomer;
+
     return this.snapshotExtService.createSnapshotByPlace({
       place,
       poiTypes,
@@ -186,55 +211,56 @@ export class OnOfficeWebhookService {
   private async generateLocDescs({
     potentialCustomer,
     snapshotRes,
-    loginData: {
-      integrationUser,
-      place,
-      realEstate,
-      onOfficeEstate: { lage, objektbeschreibung, ausstatt_beschr },
-    },
+    loginData: { integrationUser, place, realEstate, onOfficeEstate },
   }: IGenerateLocDescs): Promise<Partial<Record<TOpenAiLocDescType, string>>> {
     const resultSnapshotRes =
       snapshotRes ||
       (await this.openAiExtService.generateSnapshotRes({
         place,
-        potentialCustomer,
+        potentialCustomer: potentialCustomer || defaultPotentialCustomer,
       }));
+
     const defaultData = {
       realEstate,
       meanOfTransportation: MeansOfTransportation.WALK,
       realEstateType: realEstate.type || defaultRealEstType,
       snapshotRes: resultSnapshotRes,
-      targetGroupName: potentialCustomer.name,
+      targetGroupName: potentialCustomer?.name,
     };
-    const requiredLocDescTypes = Object.entries({
-      lage,
-      objektbeschreibung,
-      ausstatt_beschr,
-    }).reduce<Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>>(
-      (result, [key, value]) => {
-        const locDescType = onOfficeOpenAiFieldMapper.get(
-          key as OnOfficeOpenAiFieldEnum,
-        );
 
-        const preset = integrationUser.company?.config?.presets?.[locDescType];
+    const requiredLocDescTypes = (
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.EQUIPMENT_DESCRIPTION,
+      ] as TOpenAiLocDescType[]
+    ).reduce((result, locDescType) => {
+      const isValueSet =
+        !!onOfficeEstate[
+          integrationUser.company.config.exportMatching?.[locDescType]
+            ?.fieldId || onOfficeOpenAiFieldMapper.get(locDescType)
+        ];
 
-        if (locDescType && !value) {
-          result[locDescType] = {
-            ...defaultData,
-            ...preset?.general,
-            ...preset?.locationDescription,
-            ...preset?.realEstateDescription,
-            realEstate: defaultData.realEstate,
-            snapshot: defaultData.snapshotRes,
-            targetGroupName:
-              defaultData.targetGroupName || preset?.general?.targetGroupName,
-          };
-        }
+      const preset: Partial<Record<string, any>> =
+        integrationUser.company?.config?.presets?.[locDescType];
 
-        return result;
-      },
-      {} as Record<TOpenAiLocDescType, TFetchLocRealEstDescParams>,
-    );
+      if (locDescType && !isValueSet) {
+        result.set(locDescType, {
+          ...defaultData,
+          ...preset?.general,
+          ...preset?.locationDescription,
+          ...preset?.realEstateDescription,
+          realEstate: defaultData.realEstate,
+          snapshot: defaultData.snapshotRes,
+          targetGroupName:
+            defaultData.targetGroupName ||
+            preset?.general?.targetGroupName ||
+            defaultPotentialCustomer.name,
+        });
+      }
+
+      return result;
+    }, new Map<TOpenAiLocDescType, TFetchLocRealEstDescParams>());
 
     return this.openAiService.batchFetchLocDescs(
       integrationUser,
@@ -248,10 +274,6 @@ export class OnOfficeWebhookService {
     endpoint: OnOfficeWebhookUrlEnum,
     realEstate: ApiRealEstateListing,
   ): Promise<ApiRealEstateListing> {
-    if (integrationUser.subscription) {
-      return realEstate;
-    }
-
     const actionType = [
       OnOfficeWebhookUrlEnum.CREATE_LOC_DESCS,
       OnOfficeWebhookUrlEnum.CREATE_LOC_DESCS_MAP,
@@ -259,6 +281,17 @@ export class OnOfficeWebhookService {
     ].includes(endpoint)
       ? IntegrationActionTypeEnum.UNLOCK_OPEN_AI
       : IntegrationActionTypeEnum.UNLOCK_SEARCH;
+
+    const isUnlockNotNeeded =
+      integrationUser.subscription ||
+      (actionType === IntegrationActionTypeEnum.UNLOCK_OPEN_AI &&
+        realEstate.openAiRequestQuantity) ||
+      (actionType === IntegrationActionTypeEnum.UNLOCK_SEARCH &&
+        checkIsSearchNotUnlocked(realEstate));
+
+    if (isUnlockNotNeeded) {
+      return realEstate;
+    }
 
     const integrationId = realEstate.integrationId;
 

@@ -38,13 +38,13 @@ const CompanyProfilePage: FC = () => {
   }, []);
 
   const SubscriptionLimitsOrSelection: FC = () => {
-    if (isIntegrationUser || user.isChild) {
+    if (isIntegrationUser) {
       return null;
     }
 
     return (
       <>
-        {!isHasSubscription || isRequestLimitReached ? (
+        {(!isHasSubscription || isRequestLimitReached) && !user.isChild ? (
           <SubscriptionPlanSelection />
         ) : (
           <SubscriptionPlanLimits user={user} />
@@ -86,7 +86,7 @@ const CompanyProfilePage: FC = () => {
         <SubmitButton key="customer-submit" />,
       ]}
     >
-      <div className="flex flex-col gap-3 my-3">
+      <div className="flex flex-col gap-3 mt-6 mb-3">
         {isCustomExportAvail && (
           <>
             <CompanyExportSettings />

@@ -20,7 +20,6 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { ApiCoordinates } from '@area-butler-types/types';
 import { PlaceService } from '../../place/place.service';
 import { GeocodeResult } from '@googlemaps/google-maps-services-js';
-import structuredClone from '@ungap/structured-clone';
 import { OnOfficeQueryBuilderService } from './query-builder/on-office-query-builder.service';
 import { processOnOfficeEstateId } from '../shared/on-office.functions';
 
@@ -47,25 +46,25 @@ export class OnOfficeEstateService {
   ): Promise<void> {
     const textFieldsParams: TUpdEstTextFieldParams[] = [];
 
-    const queryBuilder = this.onOfficeQueryBuilderService.setUserParams(
-      integrationUser.parameters,
-    );
+    const queryBuilder =
+      this.onOfficeQueryBuilderService.setUser(integrationUser);
 
-    for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
-      if (isLinkEntity) {
+    for (const { exportType, title, url } of publicLinkParams) {
+      if (
+        !!integrationUser.company.config?.exportMatching?.[exportType]
+          ?.isSpecialLink
+      ) {
         queryBuilder.createLink({
           integrationId,
           title,
           url,
         });
-
-        continue;
+      } else {
+        textFieldsParams.push({
+          exportType,
+          text: url,
+        });
       }
-
-      textFieldsParams.push({
-        exportType,
-        text: url,
-      });
     }
 
     if (textFieldsParams.length) {

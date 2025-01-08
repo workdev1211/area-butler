@@ -236,8 +236,8 @@
       "sendTo": "Enviar a {{integrationType}}",
       "surroundingsHeader": "Alrededores",
       "distance": "Distancia",
-      "scanAndNew": "Escaneado y nuevos",
-      "discoverResidentialArea": "Descubrir la zona residencial",
+      "scanAndNew": "Escanea y",
+      "discoverResidentialArea": "descubre entorno",
       "mobilityCriteria": "Sus criterios de movilidad",
       "yourNewProperty": "Su nueva propiedad",
       "nextPlace": "Próximo lugar",
@@ -315,7 +315,38 @@
       },
       "saveAsPreset": "Aplicar configuración por defecto",
       "saveAsPresetSuccess": "La configuración predeterminada se ha guardado correctamente",
-      "saveAsPresetError": "No se ha podido aplicar la configuración por defecto"
+      "saveAsPresetError": "No se ha podido aplicar la configuración por defecto",
+      "useChrome": "Utilice el navegador Google Chrome. Otros navegadores no generarán el pdf correctamente.",
+      "tonalities": {
+        "FORMAL_SERIOUS": "formal y serio",
+        "EASYGOING_YOUTHFUL": "relajado y juvenil"
+      },
+      "customTexts": {
+        "POPULATION": "El texto debe contener la población de la ciudad.",
+        "SEO": "El texto debe contener términos SEO típicos del sector inmobiliario y estar optimizado para SEO.",
+        "REGION": "El texto debe contener una breve descripción de la región.",
+        "POIS": "El texto pretende destacar algunos de los lugares de interés de la zona.",
+        "OFFICE": "El texto debe estar optimizado para un inmueble de oficinas.",
+        "COMMERCIAL": "El texto debe estar optimizado para un local comercial.",
+        "RESIDENTIAL": "El texto debe estar optimizado para un inmueble residencial.",
+        "TEASER": "Generación de textos teaser para portales y textos build-up.",
+        "CUSTOM": "Introduzca su propio texto.",
+        "NONE": "Ninguno"
+      },
+      "realEstateTypes": {
+        "ROOM": "Habitación",
+        "HOUSE": "Casa",
+        "APARTMENT": "Plano",
+        "PROPERTY": "Propiedad",
+        "OFFICE_PRACTICES": "Oficina/Prácticas",
+        "STORE_RETAIL": "Tienda/Minorista",
+        "HOSPITALITY": "Hostelería",
+        "HALLS_WAREHOUSE_PRODUCTION": "Salas/almacén/producción",
+        "AGRICULTURE_FORESTRY": "Agricultura/silvicultura",
+        "LEISURE_COMMERCIAL": "Propiedad de ocio (comercial)",
+        "OTHER": "Otros",
+        "CUSTOM": "Haga su propio pliego de condiciones"
+      }
     },
     "addNewLocationModalTitle": "Añadir nueva ubicación",
     "addNewLocationModalBtn": "Añadir",
@@ -562,7 +593,8 @@
     "noteField": "Campo de notas",
     "directLink": "Enlace directo",
     "htmlSnippet": "Fragmento HTML",
-    "companyTemplate": "Modelo de organización"
+    "companyTemplate": "Modelo de organización",
+    "locationNotFound": "Copiado con éxito en el portapapeles."
   },
   "imageUpload": {
     "supportedFormats": "Formatos admitidos: png, jpg, svg, tamaño máximo: 5 MB",
@@ -605,7 +637,8 @@
     "inlineFrame": "Marco en línea",
     "linkWithAddress": "Enlace con la dirección",
     "linkWoAddress": "Enlace sin dirección",
-    "equipmentDescription": "Descripción del equipo"
+    "equipmentDescription": "Descripción del equipo",
+    "syncWithCrm": "Esta información está sincronizada con {{crm}}"
   },
   "tour": {
     "tourEndingError": "Error al finalizar la visita",
@@ -774,7 +807,14 @@
       "minimumTermForYear": "Plazo mínimo: 1 año, a partir de entonces puede cancelarse anualmente. Una vez finalizado el\n          periodo de suscripción en curso, la duración del contrato se\n          automáticamente por un año más si el usuario no rescinde el contrato\n          con un plazo de preaviso de 30 días a la finalización del periodo de suscripción en curso,\n          mediante declaración en forma de texto a KuDiBa.",
       "cardStyles": "Estilos de mapa: Se configuran una vez para su cuenta de usuario,\n          pueden utilizarse para cualquier número de tarjetas y están disponibles para todo el\n          disponibles durante todo el periodo de uso.\nEstilos de tarjeta: Se configuran una vez para su cuenta de usuario,\n          pueden utilizarse para cualquier número de tarjetas y están disponibles para todo el\n          disponibles durante todo el periodo de uso.",
       "annualSubscription": "Suscripción anual"
-    }
+    },
+    "toastSubscriptionSuccess": "Suscripción completada con éxito",
+    "toastSubscriptionError": "Error al crear la suscripción",
+    "buyProduct": "Por favor, compre un producto adecuado.",
+    "integrationIdNotSpecified": "No se ha especificado el ID de integración.",
+    "dataSent": "¡Los datos se han enviado a {{integrationType}}!",
+    "productNotActivated": "El producto no se ha activado.",
+    "addressActivated": "La dirección se ha activado correctamente."
   },
   "companyProfile": {
     "title": "Perfil de la empresa"

@@ -3,7 +3,7 @@ import {
   ApiIntUserPropstackProdContTypesEnum,
   IApiIntUserOnOfficeParams,
   IApiIntUserPropstackParams,
-  IIntUserExpMatchParams,
+  TIntUserExpMatchParams,
 } from "./integration-user";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
 import {
@@ -35,7 +35,7 @@ export type TCompProdContingents = Partial<
 >;
 
 export interface ICompanyConfig {
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH","GR"]
   color?: string;
   exportFonts?: IApiUserExportFont[];
   exportMatching?: TCompanyExportMatch;
@@ -66,12 +66,8 @@ export interface IApiCompanyPreset {
 }
 
 export type TCompanyExportMatch = Partial<
-  Record<TAreaButlerExportTypes, IIntUserExpMatchParams>
-> & {
-  isPrivate?: boolean;
-  isEmbedable?: boolean;
-  onLandingPage?: boolean;
-};
+  Record<TAreaButlerExportTypes, TIntUserExpMatchParams>
+>;
 
 export interface ICompanySchema {
   config?: ICompanyConfig;

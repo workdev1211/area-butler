@@ -7,7 +7,6 @@ import {
 } from '../../potential-customer/schema/potential-customer.schema';
 import { defaultPotentialCustomers } from '../../shared/constants/potential-customers';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
-import structuredClone from '@ungap/structured-clone';
 
 const potCustomerMapper = new Map([
   ['Aktive Senioren', 'Senioren'],
@@ -145,7 +144,12 @@ const processAllPotCustomers = ({
   potCustomers.push(
     ...defaultPotentialCustomers.reduce((result, defaultPotCustomer) => {
       if (newPotCustomers.includes(defaultPotCustomer.name)) {
-        const document = structuredClone(defaultPotCustomer);
+        const document = structuredClone(
+          defaultPotCustomer,
+        ) as Partial<PotentialCustomerDocument> & {
+          integrationParams: IApiIntegrationParams;
+          userId: string;
+        };
 
         if (typeof groupingId === 'string') {
           document.userId = groupingId;

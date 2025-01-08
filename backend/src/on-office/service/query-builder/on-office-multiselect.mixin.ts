@@ -31,8 +31,10 @@ export class OnOfficeMultiselectMixin {
     this: OnOfficeQueryBuilder,
     fieldValues: IOnOfficeMulSelValue[],
   ): ThisType<OnOfficeQueryBuilder> {
+    this.checkIsUserSet();
+
     const actionType = OnOfficeActionTypeEnum.CREATE_MULTISELECT_VALUES;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -62,8 +64,10 @@ export class OnOfficeMultiselectMixin {
   getMultiselectValues(
     this: OnOfficeQueryBuilder,
   ): ThisType<OnOfficeQueryBuilder> {
+    this.checkIsUserSet();
+
     const actionType = OnOfficeActionTypeEnum.GET_MULTISELECT_VALUES;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -94,8 +98,10 @@ export class OnOfficeMultiselectMixin {
     this: OnOfficeQueryBuilder,
     fieldValues: IOnOfficeMulSelValue[],
   ): ThisType<OnOfficeQueryBuilder> {
+    this.checkIsUserSet();
+
     const actionType = OnOfficeActionTypeEnum.UPDATE_MULTISELECT_VALUES;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(
@@ -126,8 +132,10 @@ export class OnOfficeMultiselectMixin {
     this: OnOfficeQueryBuilder,
     fieldKeys: string[],
   ): ThisType<OnOfficeQueryBuilder> {
+    this.checkIsUserSet();
+
     const actionType = OnOfficeActionTypeEnum.DELETE_MULTISELECT_VALUES;
-    const { apiKey, extendedClaim, token } = this.userParams;
+    const { apiKey, extendedClaim, token } = this.user.parameters;
     const { actionId, resourceType } = onOfficeActionMapper.get(actionType);
 
     const signature = OnOfficeApiService.generateSignature(

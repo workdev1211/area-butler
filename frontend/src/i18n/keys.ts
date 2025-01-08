@@ -361,6 +361,7 @@ export const IntlKeys = {
           "snapshotEditor.dataTab.openAITypesOptionLabel.DISTRICT_DESC",
       },
       publicLinks: "snapshotEditor.dataTab.publicLinks",
+      useChrome: "snapshotEditor.dataTab.useChrome",
       textLength: {
         SHORT: "snapshotEditor.dataTab.textLength.SHORT",
         MEDIUM: "snapshotEditor.dataTab.textLength.MEDIUM",
@@ -368,6 +369,45 @@ export const IntlKeys = {
         SPECIFIC: "snapshotEditor.dataTab.textLength.SPECIFIC",
       },
       maxCharactersLength: "snapshotEditor.dataTab.maxCharactersLength",
+      tonalities: {
+        FORMAL_SERIOUS: "snapshotEditor.dataTab.tonalities.FORMAL_SERIOUS",
+        EASYGOING_YOUTHFUL:
+          "snapshotEditor.dataTab.tonalities.EASYGOING_YOUTHFUL",
+      },
+      customTexts: {
+        POPULATION: "snapshotEditor.dataTab.customTexts.POPULATION",
+        SEO: "snapshotEditor.dataTab.customTexts.SEO",
+        REGION: "snapshotEditor.dataTab.customTexts.REGION",
+        POIS: "snapshotEditor.dataTab.customTexts.POIS",
+        OFFICE: "snapshotEditor.dataTab.customTexts.OFFICE",
+        COMMERCIAL: "snapshotEditor.dataTab.customTexts.COMMERCIAL",
+        RESIDENTIAL: "snapshotEditor.dataTab.customTexts.RESIDENTIAL",
+        TEASER: "snapshotEditor.dataTab.customTexts.TEASER",
+        CUSTOM: "snapshotEditor.dataTab.customTexts.CUSTOM",
+        NONE: "snapshotEditor.dataTab.customTexts.NONE",
+      },
+      realEstateTypes: {
+        ROOM: "snapshotEditor.dataTab.realEstateTypes.ROOM",
+        HOUSE: "snapshotEditor.dataTab.realEstateTypes.HOUSE",
+        APARTMENT: "snapshotEditor.dataTab.realEstateTypes.APARTMENT",
+        PROPERTY: "snapshotEditor.dataTab.realEstateTypes.PROPERTY",
+        OFFICE_PRACTICES:
+          "snapshotEditor.dataTab.realEstateTypes.OFFICE_PRACTICES",
+        STORE_RETAIL: "snapshotEditor.dataTab.realEstateTypes.STORE_RETAIL",
+        HOSPITALITY: "snapshotEditor.dataTab.realEstateTypes.HOSPITALITY",
+        HALLS_WAREHOUSE_PRODUCTION:
+          "snapshotEditor.dataTab.realEstateTypes.HALLS_WAREHOUSE_PRODUCTION",
+        AGRICULTURE_FORESTRY:
+          "snapshotEditor.dataTab.realEstateTypes.AGRICULTURE_FORESTRY",
+        LEISURE_COMMERCIAL:
+          "snapshotEditor.dataTab.realEstateTypes.LEISURE_COMMERCIAL",
+        OTHER: "snapshotEditor.dataTab.realEstateTypes.OTHER",
+        CUSTOM: "snapshotEditor.dataTab.realEstateTypes.CUSTOM",
+      },
+      locationExpose: {
+        locDescExceedError:
+          "snapshotEditor.dataTab.locationExpose.locDescExceedError",
+      },
     },
     pointsOfInterest: {
       label: "snapshotEditor.pointsOfInterest.label",
@@ -593,6 +633,7 @@ export const IntlKeys = {
   },
   mapSnapshots: {
     copiedToClipboard: "mapSnapshots.copiedToClipboard",
+    locationNotFound: "mapSnapshots.locationNotFound",
     duplicateConfirmation: "mapSnapshots.duplicateConfirmation",
     duplicateFailed: "mapSnapshots.duplicateFailed",
     deleteConfirmation: "mapSnapshots.deleteConfirmation",
@@ -656,6 +697,7 @@ export const IntlKeys = {
     inlineFrame: "yourProfile.inlineFrame",
     linkWithAddress: "yourProfile.linkWithAddress",
     linkWoAddress: "yourProfile.linkWoAddress",
+    syncWithCrm: "yourProfile.syncWithCrm",
   },
   tour: {
     tourEndingError: "tour.tourEndingError",
@@ -796,6 +838,13 @@ export const IntlKeys = {
     quantity: "subscriptions.quantity",
     data: "subscriptions.data",
     errorWhenIncreaseLimit: "subscriptions.errorWhenIncreaseLimit",
+    toastSubscriptionSuccess: "subscriptions.toastSubscriptionSuccess",
+    toastSubscriptionError: "subscriptions.toastSubscriptionError",
+    buyProduct: "subscriptions.buyProduct",
+    integrationIdNotSpecified: "subscriptions.integrationIdNotSpecified",
+    dataSent: "subscriptions.dataSent",
+    productNotActivated: "subscriptions.productNotActivated",
+    addressActivated: "subscriptions.addressActivated",
     planTypes: {
       PAY_PER_USE: "subscriptions.planTypes.PAY_PER_USE",
       BUSINESS_PLUS: "subscriptions.planTypes.BUSINESS_PLUS",
@@ -846,6 +895,7 @@ export const IntlKeys = {
     userNotFound: "errors.userNotFound",
     wrongIntegration: "errors.wrongIntegration",
     createSnapshot: "errors.createSnapshot",
+    checkExpMatchLinkCfg: "errors.checkExpMatchLinkCfg",
   },
 
   company: {

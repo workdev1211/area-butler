@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   Logger,
   UnprocessableEntityException,
@@ -8,7 +9,6 @@ import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 import { firstValueFrom } from 'rxjs';
 import { FilterQuery, UpdateQuery } from 'mongoose';
-import structuredClone from '@ungap/structured-clone';
 
 import { IntegrationUserService } from '../user/service/integration-user.service';
 import {
@@ -127,18 +127,28 @@ export class PropstackService {
     const exportMatching = integrationUser.company.config?.exportMatching;
     const textFieldsParams: TUpdEstTextFieldParams[] = [];
 
-    for (const { exportType, isLinkEntity, title, url } of publicLinkParams) {
-      const isExpMatchAvail = !!(exportMatching && exportMatching[exportType]);
+    for (const { exportType, title, url } of publicLinkParams) {
+      const exportMatchingType = exportMatching?.[exportType];
+      const isExpMatchAvail = !!exportMatchingType;
 
-      if (!isExpMatchAvail) {
+      if (!isExpMatchAvail || exportMatchingType?.isSpecialLink) {
         await this.createPropertyLink(integrationUser, {
           integrationId,
           title,
           url,
+          is_embedable:
+            exportMatchingType?.isEmbedable ??
+            exportType === AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+          is_private:
+            exportMatchingType?.isPrivate ??
+            exportType !== AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
+          on_landing_page:
+            exportMatchingType?.onLandingPage ??
+            exportType === AreaButlerExportTypesEnum.LINK_WO_ADDRESS,
         });
       }
 
-      if (isExpMatchAvail || !isLinkEntity) {
+      if (isExpMatchAvail && !!exportMatchingType?.fieldId) {
         textFieldsParams.push({ exportType, text: url });
       }
     }
@@ -342,11 +352,24 @@ export class PropstackService {
       return;
     }
 
-    await this.propstackApiService.updatePropertyById(
-      (parameters as IApiIntUserPropstackParams).apiKey,
-      parseInt(integrationId, 10),
-      data,
-    );
+    try {
+      await this.propstackApiService.updatePropertyById(
+        (parameters as IApiIntUserPropstackParams).apiKey,
+        parseInt(integrationId, 10),
+        data,
+      );
+    } catch (e) {
+      PropstackService.logger.error(
+        this.updatePropTextFields.name,
+        e.response?.data?.errors?.join('\n'),
+      );
+
+      if (e.response?.status === 400) {
+        throw new BadRequestException();
+      }
+
+      throw e;
+    }
   }
 
   uploadPropertyImage(
@@ -371,6 +394,9 @@ export class PropstackService {
       integrationId,
       title,
       url,
+      is_embedable = true,
+      on_landing_page = true,
+      is_private = false,
     }: Omit<IApiIntCreateEstateLinkReq, 'exportType'>,
   ): Promise<IPropstackLink> {
     return this.propstackApiService.createPropertyLink(
@@ -378,10 +404,10 @@ export class PropstackService {
       {
         title,
         url,
-        is_embedable: true,
-        on_landing_page: true,
+        is_embedable,
+        on_landing_page,
         property_id: parseInt(integrationId, 10),
-        is_private: false,
+        is_private,
       },
     );
   }

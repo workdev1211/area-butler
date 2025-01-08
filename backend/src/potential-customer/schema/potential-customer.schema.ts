@@ -7,8 +7,6 @@ import {
   ApiRealEstateCost,
 } from '@area-butler-types/real-estate';
 import { OsmName, TransportationParam } from '@area-butler-types/types';
-import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { foreignIdGetSet } from '../../shared/constants/schema';
 
 export type PotentialCustomerDocument = HydratedDocument<PotentialCustomer>;
@@ -20,18 +18,16 @@ export type PotentialCustomerDocument = HydratedDocument<PotentialCustomer>;
 export class PotentialCustomer {
   @Prop({
     type: SchemaTypes.ObjectId,
+    required: true,
     ...foreignIdGetSet,
   })
-  userId: string;
+  companyId: string;
 
   @Prop({ type: String, required: true })
   name: string;
 
   @Prop({ type: String })
   email: string;
-
-  @Prop({ type: Array })
-  routingProfiles: TransportationParam[];
 
   @Prop({ type: Array })
   preferredAmenities: OsmName[];
@@ -42,11 +38,11 @@ export class PotentialCustomer {
   @Prop({ type: Object })
   realEstateCostStructure: ApiRealEstateCost;
 
+  @Prop({ type: Array })
+  routingProfiles: TransportationParam[];
+
   @Prop({ type: Array, default: [] })
   preferredLocations: ApiPreferredLocation[];
-
-  @Prop({ type: IntegrationParamsSchema })
-  integrationParams: IApiIntegrationParams;
 }
 
 export const PotentialCustomerSchema =

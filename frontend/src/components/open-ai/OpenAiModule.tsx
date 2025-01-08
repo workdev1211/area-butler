@@ -10,7 +10,11 @@ import {
   IOpenAiLocDescFormValues,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
-import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
+import {
+  openAiCustomTextOptions,
+  openAiQueryTypes,
+  openAiRealEstTypeOptions,
+} from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocDescForm from "./OpenAiLocDescForm";
@@ -26,7 +30,7 @@ import OpenAiGeneralForm from "./OpenAiGeneralForm";
 import { SearchContext } from "../../context/SearchContext";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
-import { IIntUserExpMatchParams } from "../../../../shared/types/integration-user";
+import { TIntUserExpMatchParams } from "../../../../shared/types/integration-user";
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useUserState } from "../../hooks/userstate";
 import { IOpenAiPresetValues } from "./OpenAiChat";
@@ -91,7 +95,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
   const defaultTextLength =
     queryType &&
     config?.exportMatching &&
-    (config?.exportMatching as Record<string, IIntUserExpMatchParams>)[
+    (config?.exportMatching as Record<string, TIntUserExpMatchParams>)[
       queryType
     ]?.maxTextLength;
 
@@ -121,6 +125,22 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
       generalFormRef.current?.handleSubmit();
       let query: TOpenAiQuery;
 
+      const realEstateValues = realEstDescFormRef.current?.values;
+      if (realEstateValues) {
+        realEstateValues.realEstateType =
+          openAiRealEstTypeOptions.find(
+            ({ value }) => value === realEstateValues.realEstateType
+          )?.text || realEstateValues.realEstateType;
+      }
+
+      const generalValues = generalFormRef.current?.values;
+      if (generalValues) {
+        generalValues.customText =
+          openAiCustomTextOptions.find(
+            ({ value }) => value === generalValues.customText
+          )?.text || generalValues.customText;
+      }
+
       switch (queryType) {
         case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
         case OpenAiQueryTypeEnum.MACRO_LOC_DESC:
@@ -131,7 +151,7 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           query = {
             language: responseConfig?.language,
             snapshotId: searchResultSnapshotId!,
-            ...generalFormRef.current!.values,
+            ...generalValues,
             ...locDescFormRef.current!.values,
           };
 
@@ -147,9 +167,9 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
           query = {
             language: responseConfig?.language,
             snapshotId: searchResultSnapshotId!,
-            ...generalFormRef.current!.values,
+            ...generalValues,
             ...locDescFormRef.current!.values,
-            ...realEstDescFormRef.current!.values,
+            ...realEstateValues,
           };
 
           break;
@@ -160,8 +180,8 @@ const OpenAiModule: FC<IOpenAiModuleProps> = ({
 
           query = {
             language: responseConfig?.language,
-            ...generalFormRef.current!.values,
-            ...realEstDescFormRef.current!.values,
+            ...generalValues,
+            ...realEstateValues!,
           };
 
           break;

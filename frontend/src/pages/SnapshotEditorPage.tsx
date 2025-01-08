@@ -36,7 +36,7 @@ import {
 import { useCensusData } from "../hooks/censusdata";
 import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
-import { defaultMapZoom } from "../shared/shared.constants";
+import { defaultMapZoom, userProfilePath } from "../shared/shared.constants";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
@@ -110,7 +110,7 @@ const SnapshotEditorPage: FC = () => {
     if (!isAvailHtmlSnippet) {
       toastError(t(IntlKeys.snapshotEditor.notAllowedToUse));
 
-      history.push("/profile");
+      history.push(userProfilePath);
     }
 
     const fetchSnapshotData = async (): Promise<void> => {
