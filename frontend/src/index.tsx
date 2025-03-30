@@ -29,6 +29,8 @@ import 'i18n';
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
+console.log('* base_url : ', baseUrl);
+
 fetch(`${baseUrl}/api/config`).then(async (result) => {
   const {
     auth,
@@ -40,6 +42,15 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
     paypalClientId,
     sentry,
   } = (await result.json()) as ApiConfig;
+
+  console.log('* auth : ', auth);
+  console.log('* googleApiKey : ', googleApiKey);
+  console.log('* mapBoxAccessToken : ', mapBoxAccessToken);
+  console.log('* systemEnv : ', systemEnv);
+  console.log('* stripeEnv : ', stripeEnv);
+  console.log('* rollbarConfig : ', rollbarConfig);
+  console.log('* paypalClientId : ', paypalClientId);
+  console.log('* sentry : ', sentry);
 
   Sentry.init({
     dsn: sentry.dsn,

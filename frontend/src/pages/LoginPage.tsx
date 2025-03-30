@@ -4,8 +4,10 @@ import { useHistory } from "react-router-dom";
 import DefaultLayout from "../layout/defaultLayout";
 
 export const LoginPage: FunctionComponent = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, loginWithPopup } = useAuth0();
   const history = useHistory();
+
+  console.log('* isAuthenticated : ', isAuthenticated);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -14,24 +16,21 @@ export const LoginPage: FunctionComponent = () => {
   }, [history, isAuthenticated]);
 
   return (
-    <DefaultLayout title="Anmeldung/Registrierung" withHorizontalPadding={true}>
+    <DefaultLayout title="Login/Register" withHorizontalPadding={true}>
       <div className="pt-20 md:w-1/3 mx-auto">
-        <h2>Willkommen bei Ihrem AreaButler</h2>
+        <h2>Welcome to your AreaButler</h2>
         <p className="pt-5">
-          Bitte melden Sie sich an um den AreaButler nutzen zu können.
+          Please log in to use AreaButler.
         </p>
         <p className="text-justify">
-          Ein Klick auf den Button „Anmelden / Registrieren“ startet den Prozess
-          zur Anmeldung / Registrierung beim AreaButler. Dieser Prozess wird von
-          unserem Partner Auth0 unterstützt. Dem Marktführer für Sichere
-          Anmelde- & Registrierungsprozesse.
+          Clicking the "Login / Register" button starts the AreaButler login / registration process. This process is supported by our partner Auth0, the market leader for secure login and registration processes.
         </p>
         <button
           type="button"
           className="btn btn-primary mt-5"
           onClick={loginWithRedirect}
         >
-          Anmelden / Registrieren
+          Login / Register
         </button>
       </div>
     </DefaultLayout>

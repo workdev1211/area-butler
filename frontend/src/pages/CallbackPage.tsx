@@ -22,6 +22,8 @@ const CallbackPage: FC = () => {
   const subscriptionId = queryParams.get("subscriptionId");
   const checkoutId = queryParams.get("checkoutId");
 
+  console.log('* callback_page');
+
   useEffect(() => {
     const refetchMe = async (): Promise<void> => {
       try {
@@ -46,7 +48,7 @@ const CallbackPage: FC = () => {
   }, [checkoutId, history]);
 
   return (
-    <DefaultLayout title="Einen Moment bitte..." withHorizontalPadding={true}>
+    <DefaultLayout title="One moment please..." withHorizontalPadding={true}>
       <div className="p-6 space-y-2 artboard phone">
         <progress className="progress progress-primary" value="20" max="100" />
       </div>

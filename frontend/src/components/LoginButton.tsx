@@ -8,7 +8,7 @@ const LoginButton: FunctionComponent = () => {
   } = useAuth0();
 
   if (!isAuthenticated) {
-      return <button onClick={loginWithRedirect}>Anmelden</button>
+      return <button onClick={loginWithRedirect}>Log In</button>
   }
 
   return null;
