@@ -105,7 +105,7 @@ const MapMenu: FC<IMapMenuProps> = ({
   const isDataTab = activeTab === TabsEnum.Data;
   const isShownAddress = !!config?.showAddress || !config;
   const exportLanguage =
-    config?.language || responseConfig?.language || LanguageTypeEnum.de;
+    config?.language || responseConfig?.language || LanguageTypeEnum.en;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const toggleShowAddress = () => {

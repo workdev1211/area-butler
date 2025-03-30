@@ -163,7 +163,7 @@ const MapClipCropModal: FC<IMapClipCropModalProps> = ({
   menuPoiIcons,
   activeMeans,
   transportationParams,
-  outputLanguage = LanguageTypeEnum.de,
+  outputLanguage = LanguageTypeEnum.en,
 }) => {
   const [imgRef, setImgRef] = useState<HTMLImageElement | null>(null);
   const [overlayRef, setOverlayRef] = useState<HTMLDivElement | null>(null);

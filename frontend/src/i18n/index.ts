@@ -8,7 +8,7 @@ import esTranslation from "./es/translations.json";
 import nlTranslation from "./nl/translations.json";
 
 i18next.use(initReactI18next).init({
-  lng: "de", // for language switch
+  lng: "en", // for language switch
   debug: true,
   resources: {
     de: {

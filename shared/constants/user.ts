@@ -3,6 +3,6 @@ import { LanguageTypeEnum } from "../types/types";
 import { userInitStudyTours } from "./constants";
 
 export const defaultUserConfig: IUserConfig = {
-  language: LanguageTypeEnum.de,
+  language: LanguageTypeEnum.en,
   studyTours: { ...userInitStudyTours },
 };

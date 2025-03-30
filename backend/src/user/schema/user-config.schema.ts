@@ -20,7 +20,7 @@ class UserConfig implements IUserConfig {
   @Prop({
     type: String,
     enum: LanguageTypeEnum,
-    default: LanguageTypeEnum.de,
+    default: LanguageTypeEnum.en,
   })
   language: LanguageTypeEnum;
 

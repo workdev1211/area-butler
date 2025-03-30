@@ -57,7 +57,7 @@ export const ExposeDownload: FC<IExposeDownloadProps> = ({
   isTrial,
   legend,
   qrCode,
-  outputLanguage = LanguageTypeEnum.de,
+  outputLanguage = LanguageTypeEnum.en,
 }) => {
   const { t } = useTranslation();
   const componentRef = useRef<HTMLDivElement>(null);

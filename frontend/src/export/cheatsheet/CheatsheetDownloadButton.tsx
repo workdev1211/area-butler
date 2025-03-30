@@ -56,7 +56,7 @@ export const CheatsheetDownload: FC<ICheatsheetDownloadProps> = ({
   isTrial,
   legend,
   qrCode,
-  outputLanguage = LanguageTypeEnum.de,
+  outputLanguage = LanguageTypeEnum.en,
 }) => {
   const { t } = useTranslation();
   const componentRef = useRef();

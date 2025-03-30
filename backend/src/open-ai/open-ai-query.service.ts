@@ -99,7 +99,7 @@ export class OpenAiQueryService {
     queryParams.language =
       language ||
       queryParams.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     return (
       `Du bist ein erfahrener Immobilienmakler. Schreibe eine werbliche Lagebeschreibung für eine Wohnimmobilie` +
@@ -132,7 +132,7 @@ export class OpenAiQueryService {
     locRealEstDescQueryParams.language =
       language ||
       locRealEstDescQueryParams.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler. Schreibe einen werblichen Exposétext für ein Objekt an der Adresse` +
@@ -229,7 +229,7 @@ export class OpenAiQueryService {
     const lang =
       language ||
       locRealEstDescQueryParams.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe einen für Facebook optimierten social media Post für unser Objekt` +
@@ -254,7 +254,7 @@ export class OpenAiQueryService {
     const lang =
       language ||
       locRealEstDescQueryParams.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     const initialText =
       `Du bist ein erfahrener Immobilienmakler und Social Media Experte. Schreibe eine Instagram Caption für unser Objekt an der Adresse` +
@@ -275,7 +275,7 @@ export class OpenAiQueryService {
     const lang =
       locDescQueryParams.language ||
       locDescQueryParams.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     const initialText = `Führe eine umfangreiche Online-Recherche durchführen, um eine detaillierte und präzise Makrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
@@ -353,7 +353,7 @@ Zudem verwende diese vom AreaButler generierten Daten:
     const lang =
       locDescQueryParams.language ||
       locDescQueryParams.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     const initialText = `Führe eine umfangreiche Online-Recherche durch, um eine detaillierte und präzise Mikrolagenbeschreibung für die Immobilie an der Adresse ${address} zu erstellen. Alle verfügbaren Datenquellen sollen genutzt werden, um die folgenden Punkte umfassend zu beantworten.
 
@@ -437,7 +437,7 @@ Zudem verwende diese vom AreaButler generierten Daten:
       language,
       customText,
     } = locDescQueryParams;
-    const lang = language || config.language || LanguageTypeEnum.de;
+    const lang = language || config.language || LanguageTypeEnum.en;
 
     const initialText = `Du bist ein erfahrener Immobilienmakler. Schreibe eine reine, werbliche Stadtteilbeschreibung des Stadtteils in der unser Objekt an der Adresse ${address} liegt. Der Name des Stadtteils, der Stadt und angrenzender Stadtteile soll im Text genannt werden. Der Text soll die Zielgruppe ${targetGroupName} ansprechen, und keine Sonderzeichen oder Emoticons verwenden. Verzichte auf Übertreibungen, Beschönigungen und Überschriften. Strukturierte Abschnitte sind erwünscht. Vermeide Referenzierungen und Quellenangaben. Versuche die Vorzüge des Stadtteils strukturiert und seriös darzustellen.
 
@@ -560,7 +560,7 @@ Stadtteil FAQs`
             ]
           : []),
         `verwende als Ausgabesprache ${
-          language || LanguageTypeEnum.de
+          language || LanguageTypeEnum.en
         } (BCP 47)`,
         customText === 'Teaser Text für Portale und aufbauenden Text generieren'
           ? `generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt`

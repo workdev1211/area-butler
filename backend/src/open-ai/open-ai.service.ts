@@ -61,7 +61,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getLocDescQuery(user, params),
@@ -83,7 +83,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
 
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getLocRealEstDescQuery(user, params),
@@ -104,7 +104,7 @@ export class OpenAiService {
         user,
         await this.realEstateListingService.fetchById(user, realEstateId),
       );
-    const language = realEstDescParams.language || LanguageTypeEnum.de;
+    const language = realEstDescParams.language || LanguageTypeEnum.en;
 
     if (!resultRealEstate) {
       throw new UnprocessableEntityException('Real estate not found!');
@@ -136,7 +136,7 @@ export class OpenAiService {
     if (!resultRealEstate || !resultRealEstate.integrationId) {
       throw new UnprocessableEntityException('Real estate not found!');
     }
-    const language = realEstDescParams.language || LanguageTypeEnum.de;
+    const language = realEstDescParams.language || LanguageTypeEnum.en;
 
     const images = await this.getRealEstatePhotos(
       user,
@@ -172,7 +172,7 @@ export class OpenAiService {
       throw new UnprocessableEntityException('Real estate not found!');
     }
 
-    const language = realEstDescParams.language || LanguageTypeEnum.de;
+    const language = realEstDescParams.language || LanguageTypeEnum.en;
 
     const images = await this.getRealEstatePhotos(
       user,
@@ -216,7 +216,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getFacebookPostQuery(user, params),
       locRealEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
@@ -237,7 +237,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getInstagramCaptionQuery(user, params),
       locRealEstDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
@@ -255,7 +255,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getMacroLocDescQuery(user, params),
       locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
@@ -273,7 +273,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getMicroLocDescQuery(user, params),
       locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {
@@ -291,7 +291,7 @@ export class OpenAiService {
     const language =
       params.language ||
       params.snapshotRes.config.language ||
-      LanguageTypeEnum.de;
+      LanguageTypeEnum.en;
     return this.openAiApiService.fetchResponse(
       await this.openAiQueryService.getDistrictDescQuery(user, params),
       locDescParams.textLength === OpenAiTextLengthEnum.SPECIFIC && {

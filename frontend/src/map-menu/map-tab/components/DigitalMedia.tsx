@@ -69,7 +69,7 @@ const DigitalMedia: FC<IDigitalMediaProps> = ({
 
   const { t } = useTranslation();
   const { t: outputT } = useTranslation("", {
-    lng: responseConfig?.language || LanguageTypeEnum.de,
+    lng: responseConfig?.language || LanguageTypeEnum.en,
   });
   const { sendToIntegration } = useIntegrationTools();
   const { createCodeSnippet, createDirectLink } = useTools();
