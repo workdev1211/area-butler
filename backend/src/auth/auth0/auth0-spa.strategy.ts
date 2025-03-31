@@ -26,7 +26,7 @@ export class Auth0SpaStrategy extends PassportStrategy(Strategy, 'auth0-spa') {
       issuer: `https://${domain}/`,
     });
 
-    this.logger.log(`***** auth0 domain : ${domain}`);
+    this.logger.log(`***** domain : ${domain}`);
   }
 
   validate(payload: any, done: VerifiedCallback) {

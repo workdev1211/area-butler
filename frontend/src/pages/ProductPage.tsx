@@ -84,7 +84,7 @@ export const ProductPage: FC = () => {
                       <div>
                         {
                           availProdContingents[
-                            prodContType as ApiIntUserOnOfficeProdContTypesEnum
+                          prodContType as ApiIntUserOnOfficeProdContTypesEnum
                           ]
                         }
                       </div>
@@ -168,12 +168,11 @@ export const ProductPage: FC = () => {
             <>
               <div className="my-0 border-t-2 border-b-0" />
               <div className="font-bold text-xl text-justify">
-                In unserem onOffice Marketplace Shop können Sie weitere Produkte
-                bestellen. Die Anzahl der Produkte bezieht sich immer auf eine
-                Adresse in Deutschland. Beispiel: bei Anzahl 1 können Sie das
-                jeweilige Produkt für eine Immobilie nutzen. Bei Anzahl 10
-                können Sie es für 10 beliebige Objekte nutzen usw. Viel Spaß mit
-                dem AreaButler und viel Erfolg in der Vermarktung.
+                You can order additional products in our onOffice Marketplace shop. 
+                The number of products always refers to one address in Germany. 
+                Example: with a quantity of 1, you can use the respective product for one property. 
+                With a quantity of 10, you can use it for any 10 properties, etc. Have fun with
+                the AreaButler and good luck with your marketing.
               </div>
               <div className="my-0 border-t-2 border-b-0" />
             </>

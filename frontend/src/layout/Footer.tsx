@@ -21,16 +21,16 @@ const Footer: FunctionComponent = () => {
       <div className="flex flex-wrap h-full items-baseline justify-center gap-5">
         <div className="text-gray-400 text-sm text-center w-full md:w-auto">
           Copyright &copy; {new Date().getFullYear()} {kudibaCompany.name}. Alle
-          Rechte vorbehalten.
+          All rights reserved.
         </div>
         <Link to="/impress" className="link-neutral" aria-current="page">
-          Impressum
+          Imprint
         </Link>
         <Link to="/privacy" className="link-neutral" aria-current="page">
-          Datenschutz
+          Data protection
         </Link>
         <Link to="/terms" className="link-neutral" aria-current="page">
-          Allgemeine Geschäftsbedingungen
+          General terms and conditions of business
         </Link>
       </div>
     </div>

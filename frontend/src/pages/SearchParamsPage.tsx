@@ -105,6 +105,8 @@ const SearchParamsPage: FC = () => {
     id: string | undefined;
   }>();
 
+  console.log('* loading : ', t(IntlKeys.common.loading));
+
   const clearRealEstateParams = (): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,

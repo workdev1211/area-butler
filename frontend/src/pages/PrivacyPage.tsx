@@ -4,7 +4,6 @@ import DefaultLayout from "../layout/defaultLayout";
 
 export const PrivacyPage = () => {
 
-
     return (
         <DefaultLayout title="Datenschutz" withHorizontalPadding={true}>
             <p>Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten

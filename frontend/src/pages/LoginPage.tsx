@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import DefaultLayout from "../layout/defaultLayout";
 
 export const LoginPage: FunctionComponent = () => {
-  const { isAuthenticated, loginWithRedirect, loginWithPopup } = useAuth0();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
   const history = useHistory();
 
   console.log('* isAuthenticated : ', isAuthenticated);

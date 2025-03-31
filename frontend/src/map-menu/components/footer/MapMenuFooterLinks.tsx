@@ -10,7 +10,7 @@ const MapMenuFooterLinks: FunctionComponent = () => {
         <div className="text-center">
           Copyright &copy; {new Date().getFullYear()} {kudibaCompany.name}.
           <br />
-          Alle Rechte vorbehalten.
+          All rights reserved.
         </div>
         <div className="flex justify-center font-bold gap-3">
           <Link
@@ -19,7 +19,7 @@ const MapMenuFooterLinks: FunctionComponent = () => {
             target="_blank"
             aria-current="page"
           >
-            Impressum
+            Imprint
           </Link>
           <Link
             to="/privacy"
@@ -27,7 +27,7 @@ const MapMenuFooterLinks: FunctionComponent = () => {
             target="_blank"
             aria-current="page"
           >
-            Datenschutz
+            Data Protection
           </Link>
           <Link
             to="/terms"
@@ -35,7 +35,7 @@ const MapMenuFooterLinks: FunctionComponent = () => {
             aria-current="page"
             target="_blank"
           >
-            AGB
+            Terms and Conditions
           </Link>
         </div>
       </div>

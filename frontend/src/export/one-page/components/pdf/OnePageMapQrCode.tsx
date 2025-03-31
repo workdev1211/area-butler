@@ -55,7 +55,7 @@ const OnePageMapQrCode: FunctionComponent<IOnePageMapQrCodeProps> = ({
             >
               <div className="flex w-fit items-center">
                 <div className="text-white text-xs px-0.5">
-                  Scannen und neue Wohnlage entdecken
+                  Scan and discover new residential areas
                 </div>
                 <img
                   src={downArrowIcon}

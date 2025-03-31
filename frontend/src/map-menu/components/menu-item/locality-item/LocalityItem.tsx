@@ -113,7 +113,7 @@ export const PreferredLocationItemContent: FC<{
     <>
       <div className="locality-item-content">
         {/* TODO translation required */}
-        <div className="col-span-full font-bold pl-2 pb-2">Routen & Zeiten</div>
+        <div className="col-span-full font-bold pl-2 pb-2">Routes & Times</div>
         <label key="foot-checkbox-selection">
           <input
             type="checkbox"
@@ -165,19 +165,19 @@ export const PreferredLocationItemContent: FC<{
         </label>
       </div>
 
-      {((route?.show.length || []) > 0 || transitRoute?.show) && (
+      {((route?.show || []).length > 0 || transitRoute?.show) && (
         <div className="locality-item-content">
-          {(route?.show.length || []) > 0 && (
+          {(route?.show || []).length > 0 && (
             <>
               <div className="locality-item-cell">
                 {/* TODO translation required */}
-                <span className="locality-item-cell-label">Luftlinie</span>
+                <span className="locality-item-cell-label">Straight Line</span>
                 <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
               </div>
               {route?.show.includes(MeansOfTransportation.WALK) && (
                 <div className="locality-item-cell">
                   {/* TODO translation required */}
-                  <span className="locality-item-cell-label">Fußweg</span>
+                  <span className="locality-item-cell-label">Footpath</span>
                   <span>
                     {Number.isNaN(Number(byFootDuration))
                       ? byFootDuration
@@ -188,7 +188,7 @@ export const PreferredLocationItemContent: FC<{
               {route?.show.includes(MeansOfTransportation.BICYCLE) && (
                 <div className="locality-item-cell">
                   {/* TODO translation required */}
-                  <span className="locality-item-cell-label">Fahrrad</span>
+                  <span className="locality-item-cell-label">Bicycle</span>
                   <span>
                     {Number.isNaN(Number(byBicycleDuration))
                       ? byBicycleDuration
@@ -199,7 +199,7 @@ export const PreferredLocationItemContent: FC<{
               {route?.show.includes(MeansOfTransportation.CAR) && (
                 <div className="locality-item-cell">
                   {/* TODO translation required */}
-                  <span className="locality-item-cell-label">Auto</span>
+                  <span className="locality-item-cell-label">Car</span>
                   <span>
                     {Number.isNaN(Number(byCarDuration))
                       ? byCarDuration
@@ -212,7 +212,7 @@ export const PreferredLocationItemContent: FC<{
           {transitRoute?.show && (
             <div className="locality-item-cell">
               {/* TODO translation required */}
-              <span className="locality-item-cell-label">ÖPNV</span>
+              <span className="locality-item-cell-label">Public Transport</span>
               <span>
                 {Number.isNaN(Number(transitDuration))
                   ? transitDuration

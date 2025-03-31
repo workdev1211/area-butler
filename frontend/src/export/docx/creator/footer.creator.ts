@@ -6,11 +6,11 @@ export const createFooter = () => {
       children: [
         new Paragraph({
           children: [
-            new TextRun({ font: "Arial", children: ["Umgebungsanalyse"] }),
+            new TextRun({ font: "Arial", children: ["Environmental analysis"] }),
             new TextRun("\t\t\t\t\t\t\t\t\t"),
             new TextRun({
               font: "Arial",
-              children: ["Seite ", PageNumber.CURRENT]
+              children: ["Page ", PageNumber.CURRENT]
             })
           ]
         })

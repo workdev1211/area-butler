@@ -35,17 +35,14 @@ import { useUserState } from "../hooks/userstate";
 const subscriptionUpgradeSendCustomerRequestMessage = (
   <div>
     <p className="my-5">
-      Der Versand eines Fragebogens ist in Ihrem aktuellen Abonnement nicht
-      verfügbar.
+      Sending a questionnaire is not available with your current subscription.
     </p>
     <p className="my-5">
-      Keine Zeit und Lust die Kriterien Ihrer Interessenten selbst einzugeben?
+      No time or desire to enter your prospects’ criteria yourself?
     </p>
     <p className="my-5">
-      Mit dem automatisch versendeten Fragebogen erfasst Ihr AreaButler die
-      Mobilitätspräferenz und die persönlichen Kriterien Ihrer Interessenten.
-      Sie müssen diese so nicht mehr manuell eingeben. Ein noch persönlicheres
-      Betreuungserlebnis für ihre Interessenten.
+      With the automatically sent questionnaire, your AreaButler records the mobility preferences and personal criteria of your prospective customers.
+      This eliminates the need to enter them manually. An even more personalized customer service experience for your prospective customers.
     </p>
   </div>
 );
@@ -133,12 +130,12 @@ const PotentialCustomersPage: FC = () => {
                 canSendCustomerRequest
                   ? setQuestionnaireModalOpen(true)
                   : userDispatch({
-                      type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                      payload: {
-                        open: true,
-                        message: subscriptionUpgradeSendCustomerRequestMessage,
-                      },
-                    })
+                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                    payload: {
+                      open: true,
+                      message: subscriptionUpgradeSendCustomerRequestMessage,
+                    },
+                  })
               }
             >
               <img src={plusIcon} alt="pdf-icon" />{" "}
@@ -195,23 +192,22 @@ const PotentialCustomersPage: FC = () => {
 
                   <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
                     {Array.isArray(customer.preferredLocations) &&
-                    customer.preferredLocations.length
+                      customer.preferredLocations.length
                       ? customer.preferredLocations
-                          .map((location) => location.title || "")
-                          .join(", ")
+                        .map((location) => location.title || "")
+                        .join(", ")
                       : "-"}
                   </td>
 
                   <td>
                     {customer?.realEstateCostStructure
                       ? `${getRealEstateCost(
-                          customer.realEstateCostStructure
-                        )} (${
-                          allRealEstateCostTypes.find(
-                            (t) =>
-                              t.type === customer?.realEstateCostStructure?.type
-                          )?.label
-                        })`
+                        customer.realEstateCostStructure
+                      )} (${allRealEstateCostTypes.find(
+                        (t) =>
+                          t.type === customer?.realEstateCostStructure?.type
+                      )?.label
+                      })`
                       : ""}
                     <br />
                     {customer?.realEstateCharacteristics?.furnishing &&

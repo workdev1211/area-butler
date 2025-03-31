@@ -65,15 +65,15 @@ const PersonaRanking: FunctionComponent<IPersonaRankingProps> = ({
     <div>
       <div className="absolute mt-48 ml-80">
         <h1 className="text-2xl font-bold left-1/2 top-1/2">
-          Die Eingruppierung steht Ihnen Anfang 2022 zur Verfügung
+          The classification will be available to you at the beginning of 2022
         </h1>
       </div>
       <div className="opacity-10 flex gap-40">
         <table className="table">
           <thead>
             <tr>
-              <th>Personengruppe</th>
-              <th>Bewertung</th>
+              <th>Group of people</th>
+              <th>Evaluation</th>
             </tr>
           </thead>
           <tbody>
@@ -92,7 +92,7 @@ const PersonaRanking: FunctionComponent<IPersonaRankingProps> = ({
                   <td>
                     {
                       starRankings[
-                        rankings[ranking as ApiPersonaType] as number
+                      rankings[ranking as ApiPersonaType] as number
                       ]
                     }
                   </td>

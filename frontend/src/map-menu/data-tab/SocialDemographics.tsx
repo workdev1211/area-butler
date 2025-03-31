@@ -20,21 +20,20 @@ import { useUserState } from "../../hooks/userstate";
 const censusNotInSubscriptionPlanMessage = (
   <div>
     <p className="my-5">
-      Der Zensus Atlas ist in Ihrem aktuellen Abonnement nicht verfügbar.
+      The Census Atlas is not available in your current subscription.
     </p>
     <p className="my-5">
-      Der Zensus Atlas beinhaltet ökonomische und soziale Daten zB:
+      The Census Atlas contains economic and social data such as:
       <br />
       <ul className="list-disc ml-5 mt-5">
-        <li key="Bevölkerungsdichte">Bevölkerungsdichte</li>
-        <li key="Durchschnittsalter">Durchschnittsalter</li>
-        <li key="Wohnfläche">Durchschnittliche Wohnfläche pro Wohnung</li>
+        <li key="population-density">Population density</li>
+        <li key="average-age">Average age</li>
+        <li key="living-space">Average living space per apartment</li>
         <li key="uvm">u.v.m.</li>
       </ul>
     </p>
     <p className="my-5">
-      So erhalten Sie einen detaillierten Einblick in die direkte
-      Objektumgebung.
+      This gives you a detailed insight into the immediate surroundings of the object.
     </p>
   </div>
 );

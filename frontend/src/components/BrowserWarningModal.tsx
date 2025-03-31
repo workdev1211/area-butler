@@ -12,7 +12,7 @@ const BrowserWarningModal: FC = () => {
 
   const [isBrowserWarningShown, setIsBrowserWarningShown] = useState<boolean>(
     (!["Blink"].includes(engine!) || os === "Android") &&
-      window.localStorage.getItem(browserWarningKey) !== "false"
+    window.localStorage.getItem(browserWarningKey) !== "false"
   );
 
   if (!isBrowserWarningShown) {
@@ -31,9 +31,9 @@ const BrowserWarningModal: FC = () => {
       }}
     >
       <div className="text-justify">
-        Ihr aktueller <span className="font-bold">Browser</span> wird nicht
-        unterstützt. Bitte verwenden Sie für die Erstellung von Karten &
-        Analysen Chrome, zum Beispiel den{" "}
+        Your current <span className="font-bold">Browser</span> is not
+        supported. Please use to create maps &
+        Analyses Chrome, for example the{" "}
         <a
           className="link link-primary font-bold"
           target="_blank"
@@ -42,8 +42,7 @@ const BrowserWarningModal: FC = () => {
         >
           Chrome
         </a>{" "}
-        Browser auf PC oder Mac. Exportierte Karten & Inhalte funktionieren auf
-        allen Geräten & Browsern. Danke für Ihr Verständnis!
+        Browser on PC or Mac. Exported maps and content work on all devices and browsers. Thank you for your understanding!
       </div>
     </InformationModal>
   );

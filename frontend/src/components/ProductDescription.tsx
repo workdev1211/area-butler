@@ -49,20 +49,20 @@ const OpenAiDescription = (name: string) => {
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <div className="text-xl font-bold">Lagepläne</div>
+            <div className="text-xl font-bold">Site plans</div>
             <ul className="list-disc pl-5 text-left">
-              <li>eigene Farben und Logos</li>
-              <li>Mobilität, POIs, Distanzen</li>
-              <li>Karte oder Luftbild</li>
+              <li>Own colors and Logos</li>
+              <li>Mobility, POIs, Distances</li>
+              <li>Map or Aerial photograph</li>
             </ul>
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="text-xl font-bold">KI-Texte mit Qualität</div>
+            <div className="text-xl font-bold">AI texts with quality</div>
             <ul className="list-disc pl-5 text-left">
-              <li>Lagetexte & Objektbeschreibung</li>
-              <li>Exposétexte & Social Media</li>
-              <li>Inkl. aller Standortdaten</li>
+              <li>Location texts & Property description</li>
+              <li>Exposé texts & Social media</li>
+              <li>Including all location data</li>
             </ul>
           </div>
         </div>
@@ -92,28 +92,28 @@ const StatsExportDescription = (name: string) => {
           <div>Alles aus P1 plus:</div>
 
           <div className="flex flex-col gap-2">
-            <div className="text-xl font-bold">Interaktive Karte</div>
+            <div className="text-xl font-bold">Interactive Map</div>
             <ul className="list-disc pl-5 text-left">
-              <li>Für Web-Exposé & Homepage</li>
-              <li>Als Link, QR-Code oder iFrame</li>
+              <li>For Web exposé & Homepage</li>
+              <li>As a link, QR code or iFrame</li>
             </ul>
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="text-xl font-bold">Lage-Exposé</div>
+            <div className="text-xl font-bold">Location exposé</div>
             <ul className="list-disc pl-5 text-left">
-              <li>Alle Lage Infos auf einer Seite</li>
-              <li>Als pdf oder png</li>
+              <li>All location information on one page</li>
+              <li>As pdf or png</li>
             </ul>
           </div>
 
           <div className="flex flex-col gap-2">
             <div className="text-xl font-bold">
-              Akquise & Vertriebsdokumente
+              Acquisition & Sales documents
             </div>
             <ul className="list-disc pl-5 text-left">
-              <li>Alle Nachbarschaftsdaten</li>
-              <li>Perfekt Vorbereitet für alles rund um Lage</li>
+              <li>All neighborhood data</li>
+              <li>Perfectly prepared for everything around location</li>
             </ul>
           </div>
         </div>
@@ -140,16 +140,16 @@ const SubscriptionDescription = (name: string) => {
         {/*</div>*/}
 
         <div className="flex flex-col gap-5">
-          <div>Mit monatlicher oder jährlicher Zahlung.</div>
-          <div>Alles aus P2 mit vielen Vorteilen:</div>
+          <div>With monthly or annual payment.</div>
+          <div>Everything from P2 with many advantages:</div>
 
           <ul className="list-disc pl-5 text-left text-xl font-bold">
-            <li>Karten sind immer Online</li>
-            <li>Kontingent verfällt nicht</li>
-            <li>Schulung & Onboarding</li>
-            <li>Automatisierung mit Webhooks</li>
-            <li>Mengen-, IVD- und bvfi- Rabatt</li>
-            <li>An Ihren Bedarf anpassbar</li>
+            <li>Tickets are always online</li>
+            <li>Quota does not expire</li>
+            <li>Training & Onboarding</li>
+            <li>Automation with Webhooks</li>
+            <li>Quantity, IVD and bvfi discounts</li>
+            <li>Adaptable to your needs</li>
           </ul>
         </div>
       </div>

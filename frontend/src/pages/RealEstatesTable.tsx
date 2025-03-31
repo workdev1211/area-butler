@@ -78,11 +78,11 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
     <table className="table w-full">
       <thead>
         <tr>
-          <th>Typ</th>
+          <th>Type</th>
           <th>Name</th>
-          <th>Addresse</th>
-          <th>Kosten</th>
-          <th>Ausstattung</th>
+          <th>Address</th>
+          <th>Cost</th>
+          <th>Equipment</th>
           <th />
         </tr>
       </thead>

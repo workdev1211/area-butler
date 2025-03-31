@@ -35,7 +35,7 @@ const CustomerLinks: FunctionComponent<ICustomerLinksProps> = ({
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">Eigene Links</div>
             <div className="collapse-title-text-2">
-              Hyperlinks zu externen Quellen oder Diensten
+              Hyperlinks to external sources or services
             </div>
           </div>
         </div>
@@ -48,8 +48,8 @@ const CustomerLinks: FunctionComponent<ICustomerLinksProps> = ({
               "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
           }}
         >
-          Hier könnten Sie Ihre Links speichern und mit KollegInnen teilen.
-          Sprechen Sie uns für diese Funktion gerne an.
+          Here you can save your links and share them with colleagues.
+          Please contact us if you would like to use this feature.
         </div>
       </div>
     </div>

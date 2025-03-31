@@ -63,7 +63,7 @@ const InformationModal: FC<IInformationModalProps> = ({
               setIsDontShowAgain(!isDontShowAgain);
             }}
           />
-          <div>Nicht mehr zeigen</div>
+          <div>Do not show again</div>
         </div>
       </div>
     </div>

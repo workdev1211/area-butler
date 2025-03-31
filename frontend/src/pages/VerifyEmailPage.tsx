@@ -27,12 +27,10 @@ const VerifyEmailPage: FunctionComponent = () => {
     <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
       <div className="flex flex-col w-1/3 mx-auto pt-20 text-justify">
         <p>
-          Bitte verifizieren Sie Ihre E-Mail-Adresse, eine entsprechende E-Mail
-          finden Sie in Ihrem Postfach.
+          Please verify your email address. You will find a corresponding email in your inbox.
         </p>
         <p>
-          Sollten Sie die E-Mail nicht entdecken können, schauen Sie bitte auch
-          in Ihrem Spam-Ordner nach.
+          If you cannot find the email, please also check your spam folder.
         </p>
         <button
           type="button"
@@ -41,7 +39,7 @@ const VerifyEmailPage: FunctionComponent = () => {
             history.go(0);
           }}
         >
-          Erneut überprüfen
+          Check again
         </button>
       </div>
     </DefaultLayout>

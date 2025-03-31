@@ -182,6 +182,8 @@ const checkIsCountryAllowed = ({
     resAllowedCountries = defaultAllowedCountries;
   }
 
+  console.log('* country : ', country);
+
   if (!resAllowedCountries.includes(country)) {
     toastError(notAllowedCountryMsg);
     console.error(notAllowedCountryMsg);
