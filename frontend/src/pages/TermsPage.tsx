@@ -5,449 +5,226 @@ import "./TermsPage.scss";
 export const TermsPage = () => {
   return (
     <DefaultLayout
-      title="Allgemeine Geschäftsbedingungen"
+      title="General Terms and Conditions"
       withHorizontalPadding={true}
     >
       <div className="terms pt-20">
         <p>
-          Allgemeine Geschäftsbedingungen der KuDiBa GmbH, HRB 171915
-          Amtsgericht Hamburg für die Nutzung der über die Website
-          www.areabutler.de angebotenen Services
+          General Terms and Conditions of KuDiBa GmbH, HRB 171915 Hamburg District Court for the use of the services offered through the website www.areabutler.de
         </p>
-        <p>Stand: 08/2022</p>
-        <h2>§1 Geltungsbereich</h2>
+        <p>Date: 08/2022</p>
+        <h2>§1 Scope of Application</h2>
         <ol>
           <li data-start="1">
-            Diese Allgemeinen Geschäftsbedingungen gelten für sämtliche
-            Rechtsverhältnisse, die zwischen der KuDiBa GmbH, vertreten durch
-            den Geschäftsführer Alexander Timper, Nobistor 16, 22767 Hamburg,
-            eingetragen im Handelsregister des Amtsgerichts Hamburg unter HRB
-            171915 (nachfolgend „KuDiBa“) und dem Nutzer der unter
-            www.areabutler.de („Website“) von KuDiBa angebotenen entgeltlichen
-            Web-App AreaButler (nachfolgend „AreaButler“) entstehen.
+            These General Terms and Conditions apply to all legal relationships between KuDiBa GmbH, represented by the managing director Alexander Timper, Nobistor 16, 22767 Hamburg, registered in the commercial register of the Hamburg District Court under HRB 171915 (hereinafter "KuDiBa") and the user of the paid web app AreaButler offered by KuDiBa at www.areabutler.de (hereinafter "AreaButler").
           </li>
           <li data-start="1">
-            AreaButler richtet sich ausschließlich an Unternehmer gemäß § 14
-            BGB.
+            AreaButler is aimed exclusively at entrepreneurs as defined in § 14 BGB (German Civil Code).
           </li>
           <li data-start="1">
-            Maßgeblich ist die zum Zeitpunkt des Vertragsschlusses gültige
-            Fassung dieser AGB. Ergänzend zu diesen AGB gelten die aktuellen
-            Preislisten von AreaButler (abrufbar unter www.areabutler.de) sowie
-            sonstige in schriftlicher Form individuell vereinbarte
-            Vertragsbestimmungen.
+            The version of these terms and conditions that is valid at the time of the contract conclusion is applicable. In addition to these terms and conditions, the current price lists of AreaButler (accessible at www.areabutler.de) and any other contract terms agreed in writing shall apply.
           </li>
           <li data-start="1">
-            Abweichende Bedingungen werden von KuDiBa nicht anerkannt, soweit
-            KuDiBa nicht ausdrücklich schriftlich zugestimmt hat.
+            Deviating conditions are not recognized by KuDiBa unless expressly agreed in writing.
           </li>
         </ol>
-        <h2>§2 Leistungen von AreaButler</h2>
+        <h2>§2 Services of AreaButler</h2>
         <ol>
           <li data-start="2">
-            AreaButler liefert Maklern und selbst makelnden Hausverwaltungen
-            (nachfolgend: „Nutzer“) automatisiert Standort- und
-            Umgebungsanalysen (nachfolgend „Analysen“) zu vom Nutzer
-            vorgegebenen Immobilienobjekten (nachfolgend „Objekte“), ermöglicht
-            die Anpassung dieser Analysen auf die persönlichen Kriterien von am
-            Abschluss eines Kauf- oder Mietvertrags interessierten Kunden des
-            Nutzers (nachfolgend: „Interessenten“) sowie das Matching von
-            Interessenten auf vom Nutzer hinterlegte Objekte.
+            AreaButler provides brokers and self-marketing property management companies (hereinafter: "Users") with automated location and environmental analyses (hereinafter "Analyses") for properties specified by the user (hereinafter "Properties"), allows the adaptation of these analyses to the personal criteria of potential clients interested in concluding a purchase or rental agreement (hereinafter: "Interested Parties"), and matches Interested Parties with properties recorded by the user.
           </li>
           <li data-start="2">
-            Dem Nutzer stehen weitere Funktionen zu Verfügung, u.a. hat er die
-            Möglichkeit, Analysen anschließend als „Objekt-Spickzettel“ / Exposé
-            Add-On zur Weitergabe an seine Interessenten zu exportieren. Daneben
-            können eigene Objekte und eigene Interessenten angelegt und in Ihrem
-            Nutzerprofil gespeichert werden.
+            The user has access to additional functions, including the ability to export analyses as "Property Quick Reference" / Exposé Add-Ons for sharing with interested parties. Furthermore, users can create and save their own properties and interested parties in their user profile.
           </li>
           <li data-start="2">
-            Vertragsgegenstand sind
+            The subject of the contract includes
             <br />
-            a) die entgeltliche Bereitstellung von AreaButler durch KuDiBa zur
-            Nutzung über das Internet für die Dauer des Vertrags, wobei die
-            damit ermöglichten Analysen zahlenmäßig auf die vertraglich
-            vereinbarte Anzahl entsprechend des Aboplans begrenzt sind,
+            {'a) the provision of AreaButler by KuDiBa for a fee for use over the internet for the duration of the contract, whereby the analyses enabled thereby are limited to the contractually agreed number according to the subscription plan,'}
             <br />
-            b) die Einräumung von Speicherplatz auf den Servern von KuDiBa für
-            die Dauer des Vertrags,
+            {"b) the granting of storage space on KuDiBa's servers for the duration of the contract,"}
             <br />
           </li>
           <li data-start="2">
-            KuDiBa ist berechtigt, bei der Bereitstellung von AreaButler sowie
-            der hierfür erforderlichen IT-Infrastrukturen oder bei der
-            Einräumung von Speicherplatz Nachunternehmer einzubeziehen.
-            Hierdurch wird die Pflicht von KuDiBa zur Vertragserfüllung nicht
-            berührt.
+            KuDiBa is entitled to involve subcontractors in providing AreaButler and the necessary IT infrastructures or in granting storage space. This does not affect KuDiBa's obligation to fulfill the contract.
           </li>
         </ol>
-        <h2>§3 Vertragsschluss/Registrierung durch den Nutzer </h2>
+        <h2>§3 Conclusion of Contract/Registration by the User </h2>
         <ol>
           <li data-start="3">
-            Die Verwendung der vorgenannten Leistungen von AreaButler setzt die
-            Registrierung auf der Website sowie den Abschluss eines
-            kostenpflichtigen Vertrags mit KuDiBa voraus (nachfolgend „der
-            Vertrag“), wobei der Nutzer zwischen verschiedenen Aboplänen
-            hinsichtlich der Bereitstellung der einzelnen Services und
-            unterschiedlichen Laufzeitoptionen wählen kann.
+            The use of the aforementioned services of AreaButler requires registration on the website and the conclusion of a paid contract with KuDiBa (hereinafter "the Contract"), whereby the user can choose between different subscription plans regarding the provision of individual services and different term options.
           </li>
           <li data-start="3">
-            KuDiBa kann neben den Aboplänen auch spezielle Aktionen oder Dienste
-            anbieten. Insbesondere können von Zeit zu Zeit kostenpflichtige
-            Abopläne für AreaButler probeweise, für einen bestimmten Zeitraum
-            kostenlos oder zu einem reduzierten Preis angeboten werden. Es sind auch Einzelabfragen, 5er Karten und 10er Karten möglich
+            In addition to the subscription plans, KuDiBa may also offer special promotions or services. In particular, from time to time, paid subscription plans for AreaButler may be offered free of charge for a certain period or at a reduced price. Single queries, 5-packs, and 10-packs may also be possible.
           </li>
           <li data-start="3">
-            Mit der Übermittlung der Registrierungsdaten und Auswahl eines
-            Aboplans sowie einer Laufzeitoption gibt der Nutzer gegenüber KuDiBa
-            ein Angebot zum Abschluss eines Vertrages über die zeitlich und
-            zahlenmäßig begrenzte Bereitstellung bestimmter Services von Area
-            Butler ab. KuDiBa entscheidet nach Zugang des Angebots über dessen
-            Annahme. Die Annahme des Angebots erfolgt durch Übersendung einer
-            gesonderten Bestätigungsnachricht per E-Mail.
+            By submitting the registration data and selecting a subscription plan and a term option, the user makes an offer to KuDiBa to conclude a contract for the limited provision of certain services of AreaButler in time and quantitatively. KuDiBa will decide on the acceptance of this offer after its receipt. The acceptance of the offer occurs by sending a separate confirmation message by email.
           </li>
           <li data-start="3">
-            Die zur Registrierung verwendete E-Mail-Adresse und das vom Nutzer
-            gewählte Passwort sind die Zugangsdaten für die Nutzung von Area
-            Butler. Der Nutzer ist verpflichtet, das Passwort geheim zu halten
-            und es nicht an Dritte weiterzugeben. Sollten Dritte von dem
-            Passwort des Nutzers Kenntnis erlangen, so muss der Nutzer
-            unverzüglich KuDiBa informieren und das Passwort ändern.
+            The email address used for registration and the password selected by the user are the access credentials for using AreaButler. The user is obliged to keep the password confidential and not to disclose it to third parties. If third parties gain knowledge of the user's password, the user must immediately inform KuDiBa and change the password.
           </li>
           <li data-start="3">
-            Auf Aufforderung hat der Nutzer KuDiBa seine Unternehmereigenschaft
-            nachzuweisen. Dies gilt nicht für Einzelabfragen, die theoretisch auch durch eine Privatperson bezogen worden sein können.
+            Upon request, the user must prove KuDiBa their entrepreneurial status. This does not apply to single queries that could theoretically also be obtained by a private individual.
           </li>
           <li data-start="3">
-            § 312i Abs. 1 S. 1 Nr. 1 bis 3 und S. 2 BGB finden keine Anwendung.
+            § 312i Abs. 1 S. 1 No. 1 to 3 and S. 2 BGB do not apply.
           </li>
         </ol>
-        <h2>§4 Rechte an AreaButler</h2>
+        <h2>§4 Rights to AreaButler</h2>
         <ol>
           <li data-start="4">
-            AreaButler ist als Sprachwerk (Computerprogramm) urheberrechtlich
-            geschützt. Die über AreaButler bereitgestellten Daten stellen in
-            deren Zusammenschau eine Datenbank bzw. ein Datenbankwerk dar und
-            genießen als solche(s) ebenfalls urheberrechtlichen Schutz.
+            AreaButler is protected by copyright as a linguistic work (computer program). The data provided by AreaButler create a database or database work in their entirety and are also protected by copyright as such.
           </li>
           <li data-start="4">
-            Sämtliche Urheber- und sonstigen Schutzrechte an AreaButler und den
-            hierüber verfügbaren Inhalten, Daten und sonstigen Elementen stehen
-            KuDiBa zu. Dasselbe gilt für die über AreaButler erstellten
-            Analysen und Objekt-Spickzettel. Etwaige Rechte des Nutzers oder
-            Dritter an den vom Nutzer hinzugefügten Inhalten, Markenzeichen und
-            Daten bleiben hiervon unberührt.
+            All copyright and other rights to AreaButler and the available contents, data, and other elements stand with KuDiBa. The same applies to the analyses and property quick reference sheets created through AreaButler. Any rights of the user or third parties in the content, trademarks, and data added by the user remain unaffected.
           </li>
           <li data-start="4">
-            AreaButler räumt dem Nutzer das nicht ausschließliche und nicht
-            übertragbare Recht ein, AreaButler während der Dauer des Vertrages
-            als Software as a Service-Dienst (SaaS) bestimmungsgemäß für eigene
-            Geschäftszwecke zu nutzen.
+            AreaButler grants the user a non-exclusive and non-transferable right to use AreaButler as intended for their own business purposes during the term of the contract as a Software as a Service (SaaS) service.
           </li>
           <li data-start="4">
-            Der Nutzer darf AreaButler nur vervielfältigen, soweit dies zur
-            bestimmungsgemäßen Benutzung der Software erforderlich ist. Zur
-            erforderlichen Vervielfältigung zählt das Laden von AreaButler in
-            den Arbeitsspeicher auf dem Server von KuDiBa, nicht jedoch die auch
-            nur vorübergehende Installation oder das Speichern von AreaButler
-            auf Datenträgern (wie etwa Festplatten) der vom Nutzer eingesetzten
-            Hardware.
+            The user is only permitted to reproduce AreaButler to the extent necessary for the intended use of the software. Required reproduction includes loading AreaButler into memory on KuDiBa's server, but not its installation or storage on data carriers (such as hard drives) of the hardware used by the user.
           </li>
           <li data-start="4">
-            Der Nutzer ist nicht berechtigt, AreaButler Dritten entgeltlich
-            oder unentgeltlich zur Nutzung zur Verfügung zu stellen.
+            The user is not allowed to make AreaButler available to third parties for use, whether for a fee or free of charge.
           </li>
           <li data-start="4">
-            Alle nicht in den vorstehenden Absätzen ausdrücklich genannten
-            Nutzungshandlungen bedürfen der Genehmigung durch den KuDiBa, soweit
-            keine gesetzlich zulässigen Ausnahmen von zustimmungspflichtigen
-            Handlungen vorliegen.
+            All acts of use not expressly mentioned in the preceding paragraphs require approval by KuDiBa unless there are legally permissible exceptions to actions requiring consent.
           </li>
         </ol>
         <h2>
-          §5 Einräumung von Speicherplatz/Umgang mit den gespeicherten Daten
+          §5 Provision of Storage Space/Handling of Stored Data
         </h2>
         <ol>
           <li data-start="5">
-            KuDiBa überlässt dem Nutzer einen Speicherplatz auf einem Server zur
-            Speicherung seiner Recherchen und zu deren Anreicherung mit eigenen
-            Daten.
+            KuDiBa provides the user with storage space on a server for storing their research and enriching it with their own data.
           </li>
           <li data-start="5">
-            KuDiBa trägt dafür Sorge, dass die gespeicherten Daten über das
-            Internet abrufbar sind.
+            KuDiBa ensures that the stored data is accessible via the internet.
           </li>
           <li data-start="5">
-            Der Nutzer ist nicht berechtigt, diesen Speicherplatz einem Dritten
-            teilweise oder vollständig, entgeltlich oder unentgeltlich zur
-            Nutzung zu überlassen.
+            The user is not permitted to partially or fully transfer this storage space to a third party for use, whether for a fee or free of charge.
           </li>
           <li data-start="5">
-            Der Nutzer ist allein für die von ihm übermittelten Inhalte sowie
-            seine Nutzung von KuDiBa verantwortlich. Der Nutzer verpflichtet
-            sich, keine Inhalte auf dem Speicherplatz zu speichern, deren
-            Bereitstellung, Veröffentlichung oder Nutzung gegen geltendes Recht
-            oder Vereinbarungen mit Dritten verstößt. Dies beinhaltet auch die
-            rechtswidrige Verwendung von Daten unter Verstoß gegen das
-            Datenschutzrecht, Urheberrechte, gewerbliche Schutzrechte,
-            Leistungsschutzrechte, Persönlichkeitsrechte und/oder sonstige
-            Rechte Dritte.
+            The user is solely responsible for the content they transmit as well as their use of KuDiBa. The user agrees not to store any content on the storage space that violates applicable law or agreements with third parties regarding its provision, publication, or use. This also includes unlawful use of data in violation of data protection law, copyright, industrial property rights, ancillary copyright rights, personal rights, and/or other third-party rights.
           </li>
           <li data-start="5">
-            Der Nutzer stellt KuDiBa von sämtlichen Ansprüchen, einschließlich
-            Schadensersatzansprüchen, frei, die Dritte gegen KuDiBa wegen einer
-            Verletzung ihrer Rechte durch die vom Nutzer auf AreaButler
-            hochgeladenen oder generierten Inhalte oder wegen einer sonstigen
-            Nutzung von AreaButler durch den Nutzer geltend machen. Der Nutzer
-            übernimmt alle KuDiBa aufgrund einer Verletzung von Rechten Dritter
-            entstehenden angemessenen Kosten, einschließlich solcher der
-            Rechtsverteidigung, diese jedoch der Höhe nach begrenzt auf die nach Gerichtskostengesetz (GKG) und Rechtsanwaltsvergütungsgesetz (RVG) abrechenbaren Gebühren. . Alle weitergehenden Rechte sowie
-            Schadensersatzansprüche von KuDiBa bleiben unberührt. Der Nutzer ist
-            verpflichtet, soweit Dritte aufgrund seiner Rechtsverletzung
-            Ansprüche gegenüber KuDiBa geltend machen, KuDiBa umfassend und
-            umgehend zu informieren, soweit dies zur Prüfung und Verteidigung
-            erforderlich ist.
+            The user indemnifies KuDiBa from all claims, including claims for damages, that third parties assert against KuDiBa due to a violation of their rights by content uploaded or generated by the user on AreaButler or due to other use of AreaButler by the user. The user bears all appropriate costs incurred by KuDiBa due to violations of third-party rights, including those of legal defense, but limited to fees that can be charged according to the Court Costs Act (GKG) and the Lawyers' Fees Act (RVG). All further rights and claims for damages remain unaffected. The user is obliged to inform KuDiBa comprehensively and promptly to the extent necessary for verifying and defending against claims made by third parties due to their violation of rights.
           </li>
           <li data-start="5">
-            KuDiBa ist verpflichtet, geeignete Vorkehrungen gegen Datenverlust
-            und zur Verhinderung unbefugten Zugriffs Dritter auf die Daten des
-            Nutzers zu treffen. Zu diesem Zweck wird KuDiBa tägliche Backups vornehmen sowie eine Firewall nach dem jeweils aktuellen Stand der Technik installieren.
+            KuDiBa is obliged to take appropriate precautions against data loss and to prevent unauthorized access to the user's data by third parties. For this purpose, KuDiBa will perform daily backups and install a firewall in accordance with the current state of technology.
           </li>
           <li data-start="5">
-            Der Nutzer bleibt in jedem Fall Alleinberechtigter an den von ihm
-            selbst eingegebenen Daten und kann daher jederzeit deren teilweise
-            Herausgabe verlangen.
+            In all cases, the user remains the sole beneficiary of the data they input themselves and can therefore demand its partial release at any time.
           </li>
           <li data-start="5">
-            Im Übrigen gilt unsere{" "}
+            Furthermore, our{" "}
             <a className="link-primary" href="/privacy">
-              Datenschutzerklärung
+              Privacy Policy
             </a>
-            .
+            applies.
           </li>
         </ol>
-        <h2>§6 Vertragslaufzeit und -beendigung</h2>
+        <h2>§6 Contract Duration and Termination</h2>
         <ol>
           <li data-start="6">
-            Die Vertragslaufzeit richtet sich nach der für den jeweiligen
-            Aboplan gewählten Laufzeitoption. Dies gilt entsprechend für etwaige
-            Mindestvertragslaufzeiten und Kündigungsfristen. Das Recht zur
-            außerordentlichen Kündigung in den gesetzlich vorgesehenen Fällen
-            bleibt in jedem Fall für beide Parteien unberührt.
+            The contract duration is determined by the selected duration option for the respective subscription plan. This also applies to any minimum contract durations and notice periods. The right to extraordinary termination in the cases provided for by law remains unaffected for both parties.
           </li>
           <li data-start="6">
-            Sofern dem Nutzer nach dem Vertrag die Möglichkeit gegeben wird,
-            AreaButler zunächst für eine bestimmte Dauer kostenfrei zu nutzen,
-            kann der Nutzer den Vertrag während dieses Zeitraums jederzeit ohne
-            Angabe von Gründen mittels einer eindeutigen Erklärung gegenüber
-            KuDiBa kündigen. Die Mindestvertragslaufzeit
-            und die entsprechenden Kündigungsfristen richten sich ab diesem
-            Zeitpunkt nach der gewählten Laufzeitoption. Die initiale Mindestvertragslaufzeit im Business+ Abo beträgt 3 Monate. Die Pay-Per-Use Optionen haben keine Mindestvertragslaufzeit.
+            If the user is given the opportunity under the contract to initially use AreaButler free of charge for a specific duration, the user can terminate the contract during this period at any time without giving reasons by means of a clear declaration to KuDiBa. The minimum contract duration and corresponding notice periods will apply from this point according to the chosen duration option. The initial minimum contract duration for the Business+ subscription is 3 months. The Pay-Per-Use options have no minimum contract duration.
           </li>
           <li data-start="6">
-            Die Vertragslaufzeit verlängert sich automatisch wiederkehrend um
-            den für die jeweilige Laufzeitoption vorgesehenen Abozeitraum,
-            sofern der Nutzer seinen Vertrag vor dessen Ablauf nicht innerhalb
-            der jeweils geltenden Kündigungsfrist kündigt. Die Pay-Per-Use Optionen haben keine Mindestvertragslaufzeit.
+            The contract duration will automatically extend for the subscription period specified for the respective duration option unless the user terminates their contract within the applicable notice period before its expiration. The Pay-Per-Use options have no minimum contract duration.
           </li>
           <li data-start="6">
-            In der Laufzeitoption "Monatlich" beträgt der Abonnement-Zeitraum
-            einen Monat. Nach Ende des aktuellen Abonnement-Zeitraums verlängert
-            sich die Laufzeit des Vertrags automatisch um einen weiteren Monat,
-            wenn der Nutzer den Vertrag nicht mit einer Frist von zwei Wochen
-            zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung
-            gegenüber KuDiBa kündigt.
+            In the "Monthly" duration option, the subscription period is one month. After the end of the current subscription period, the contract duration will automatically extend by another month unless the user terminates the contract with a two-week notice period prior to the end of the current subscription period by declaring it to KuDiBa.
           </li>
           <li data-start="6">
-            In der Laufzeitoption "Jährlich" beträgt der Abonnement-Zeitraum ein
-            Jahr. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich
-            die Laufzeit des Vertrags automatisch um ein weiteres Jahr, wenn der
-            Nutzer den Vertrag nicht mit einer Frist von einem Monat zum Ende
-            des aktuellen Abonnement-Zeitraums durch Erklärung gegenüber KuDiBa
-            kündigt.
+            In the "Annual" duration option, the subscription period is one year. After the end of the current subscription period, the contract duration will automatically extend for another year unless the user terminates the contract with a notice period of one month prior to the end of the current subscription period by declaring it to KuDiBa.
           </li>
           <li data-start="6">
-            Soweit KuDiBa auf AreaButler im Bereich für registrierte Nutzer ein
-            auszufüllendes Online-Formular für die Vertragsbeendigung zur
-            Verfügung stellt, ist dem Nutzer eine Vertragsbeendigung auch
-            mittels dieses Formulars gestattet. Im Übrigen ist die
-            Vertragsbeendigung schriftlich zu erklären, wobei die Textform
-            (E-Mail) genügt.
+            If KuDiBa provides a fillable online form for contract termination in the user area of AreaButler, the user is also permitted to terminate the contract using this form. Otherwise, the contract termination must be declared in writing, with text form (email) being sufficient.
           </li>
         </ol>
-        <h2>§7 Preise und Zahlungsmodalitäten</h2>
+        <h2>§7 Prices and Payment Terms</h2>
         <ol>
           <li data-start="7">
-            Die Preise und Inhalte der Abopläne richten sich nach der im
-            Zeitpunkt des Vertragsschlusses gültigen Preisangaben und
-            Produktbeschreibungen auf der Website. Sämtliche Preise sind
-            inklusive der gesetzlichen Umsatzsteuer zu verstehen.
+            The prices and contents of the subscription plans are based on the valid price information and product descriptions on the website at the time of the contract conclusion. All prices include the statutory value-added tax.
           </li>
           <li data-start="7">
-            KuDiBa kann die Preise für laufende Abopläne in angemessenem Umfang,
-            jedoch höchstens bis zu zehn Prozent einmal kalenderjährlich, mit
-            Wirkung für die Zukunft entsprechend der Entwicklung der im
-            Zusammenhang mit AreaButler anfallenden Kosten, die der
-            Preisberechnung zugrunde liegen (Gesamtkosten), anpassen. Die
-            Gesamtkosten setzen sich insbesondere aus den Kosten für den
-            Betrieb, die Weiterentwicklung und die Wartung von AreaButler und
-            der Website, Kosten für die Kundenbetreuung, Energiekosten,
-            Verwaltungskosten, Marketingausgaben, Mieten, Zinsen sowie Steuern
-            und sonstigen Abgaben zusammen. KuDiBa ist berechtigt, die Preise
-            bei einer Steigerung der Gesamtkosten entsprechend zu erhöhen, wobei
-            Kostensenkungen bei der Berechnung der Gesamtkosten berücksichtigt
-            werden. KuDiBa wird den Nutzer über eine solche Preiserhöhung
-            rechtzeitig mindestens in Textform informieren. Bei einer
-            Preissteigerung von mehr als sieben Prozent für den von ihm
-            gebuchten Aboplan und Abozeitraum kann der Nutzer den Vertrag
-            innerhalb einer Frist von sieben Tagen nach Zugang der Information
-            über die Preissteigerung mit Wirkung zum Ende des aktuellen
-            Abozeitraums außerordentlich kündigen, wobei die Textform (E-Mail) genügt.
+            KuDiBa may, to a reasonable extent, but no more than ten percent annually, adjust the prices for ongoing subscription plans for future effectiveness in accordance with the development of the total costs associated with AreaButler that underlie price calculation (total costs). The total costs consist primarily of the costs for operating, further developing, and maintaining AreaButler and the website, customer support costs, energy costs, administrative costs, marketing expenses, rents, interest, and taxes as well as other levies. KuDiBa is entitled to increase prices accordingly in the event of rising total costs, with cost reductions being taken into account in calculating the total costs. KuDiBa will inform the user of such a price increase in a timely manner at least in text form. In the event of a price increase of more than seven percent for the subscription plan and subscription period booked by them, the user may terminate the contract extraordinarily within a period of seven days after receiving the information about the price increase, effective at the end of the current subscription period; text form (email) is sufficient.
           </li>
           <li data-start="7">
-            Der Preis für den vereinbarten Aboplan ist im Voraus für den
-            ausgewählten Abozeitraum zu entrichten.
+            The price for the agreed subscription plan is to be paid in advance for the selected subscription period.
           </li>
           <li data-start="7">
-            Für die Zahlung der Abopläne stehen die zum Zeitpunkt des
-            Vertragsschlusses auf AreaButler angebotenen Zahlungsmöglichkeiten
-            zur Verfügung. KuDiBa behält sich das Recht vor, das
-            Zahlungsmittelangebot (auch für einzelne Abopläne oder Services)
-            jederzeit zu erweitern oder einzuschränken.
+            Payment options available for the subscription plans are those offered at the time of the contract conclusion on AreaButler. KuDiBa reserves the right to expand or restrict the payment methods offered (including for individual subscription plans or services) at any time.
           </li>
           <li data-start="7">
-            Im Falle des Zahlungsverzugs behält sich KuDiBa vor, den Nutzer bis
-            zur Zahlung des ausstehenden Betrags von der Nutzung von AreaButler
-            auszuschließen. Die Verpflichtung des Nutzers zur Zahlung der
-            Vergütung während der Zurückbehaltung bleibt unberührt.
+            In the event of delayed payment, KuDiBa reserves the right to exclude the user from using AreaButler until the outstanding amount is paid. The obligation of the user to pay the fee during the withholding remains unaffected.
           </li>
         </ol>
-        <h2>§8 Pflichten des Nutzers</h2>
+        <h2>§8 User Obligations</h2>
         <ol>
           <li data-start="8">
-            Der Nutzer ist nicht berechtigt, die mit AreaButler generierten
-            Analysen und damit zusammenhängende Dokumente Dritten entgeltlich
-            oder unentgeltlich zur Nutzung zur Verfügung zu stellen. Als Dritte
-            gelten nicht Interessenten des Nutzers.
+            The user is not permitted to make the analyses generated with AreaButler and related documents available to third parties for use, whether for a fee or free of charge. Interested parties of the user are not considered third parties.
           </li>
           <li data-start="8">
-            Der Nutzer bleibt zur Zahlung der Vergütung für die vereinbarte
-            Laufzeit verpflichtet, auch wenn nach Vertragsschluss die
-            erforderliche Berechtigung zur Ausübung seines Gewerbes - gleich aus
-            welchem Grund - wegfällt oder sich herausstellt, dass bereits im
-            Zeitpunkt des Vertragsschlusses keine entsprechende Gewerbeerlaubnis
-            vorgelegen hat.
+            The user remains obligated to pay the fee for the agreed duration, even if the required authorization to engage in their business ceases for whatever reason after the conclusion of the contract or it is established that the corresponding business license was not present at the time of the contract conclusion.
           </li>
         </ol>
-        <h2>§9 Wartung und Weiterentwicklung</h2>
+        <h2>§9 Maintenance and Further Development</h2>
         <ol>
           <li data-start="9">
-            KuDiBa ist berechtigt, die Funktionen, Inhalte und das
-            Erscheinungsbild von AreaButler nach dem Stand der Technik und im
-            Rahmen der Marktüblichkeit unter Berücksichtigung der Interessen
-            seiner Nutzer weiterzuentwickeln.
+            KuDiBa is entitled to further develop the functions, contents, and appearance of AreaButler according to the state of technology and within the scope of market standards while considering the interests of its users.
           </li>
           <li data-start="9">
-            Treten technische Störungen auf, die die Nutzung von AreaButler
-            beeinträchtigen, beseitigt KuDiBa diese nach Maßgabe ihrer
-            technischen Möglichkeiten unverzüglich, sobald sie von ihnen
-            Kenntnis erlangt hat.
+            If technical disruptions occur that impair the use of AreaButler, KuDiBa will eliminate these as soon as it becomes aware of them, within the limits of its technical capabilities.
           </li>
           <li data-start="9">
-            Bei technischen Störungen oder wenn erforderliche Sicherheits- oder
-            Wartungsarbeiten vorgenommen werden, kann die Nutzung von Area
-            Butler vorübergehend eingeschränkt oder nicht möglich sein.
-            Wartungsarbeiten werden sofern und soweit möglich zu Randzeiten
-            stattfinden. KuDiBa wird den Nutzer über geplante Wartungsarbeiten
-            im Vorfeld informieren.
+            During technical disruptions or when necessary security or maintenance work is performed, the use of AreaButler may be temporarily restricted or impossible. Maintenance work will take place to the extent possible during off-peak hours. KuDiBa will inform the user of planned maintenance work in advance.
           </li>
         </ol>
-        <h2>§10 Haftung</h2>
+        <h2>§10 Liability</h2>
         <p>
-          KuDiBa haftet für etwaige Schäden, die dem Nutzer im Zusammenhang mit
-          AreaButler entstehen, ausschließlich nach den folgenden Grundsätzen:{" "}
+          KuDiBa is liable for any damages that the user suffers in connection with AreaButler exclusively according to the following principles:{" "}
         </p>
         <p>
-          Bei Vorsatz oder grober Fahrlässigkeit sowie bei Vorliegen einer
-          Garantie ist die Haftung unbeschränkt. Bei leichter Fahrlässigkeit ist
-          die Haftung im Falle der Verletzung von Leben, Körper oder Gesundheit
-          ebenfalls unbeschränkt. Bei einer leicht fahrlässigen Verletzung
-          wesentlicher Vertragspflichten (Pflichten, deren Erfüllung die
-          ordnungsgemäße Vertragsdurchführung erst ermöglicht und auf deren
-          Einhaltung der Vertragspartner vertraut und auch vertrauen darf) ist
-          die Haftung beschränkt auf darauf zurückzuführende Sach- und
-          Vermögensschäden in Höhe des vorhersehbaren, typischerweise
-          eintretenden Schadens. Jede weitergehende Haftung auf Schadensersatz
-          ist außer für Ansprüche nach dem Produkthaftungsgesetz ausgeschlossen.
+          In cases of intent or gross negligence, as well as in the presence of a guarantee, liability is unlimited. In cases of slight negligence, liability is also unlimited in case of infringement of life, body, or health. In the case of a slight negligent violation of essential contractual obligations (obligations which enable the proper execution of the contract and on whose compliance the contractual partner relies and may rely), liability is limited to material and asset damages that are foreseeable and typically occurring. Any further liability for damages, except for claims under product liability law, is excluded.
         </p>
-        <h2>§11 Datenschutz</h2>
+        <h2>§11 Data Protection</h2>
         <p>
-          Für die bei der Registrierung, Durchführung und Nutzung der Plattform
-          und -Services zur Verfügung gestellten oder im Zuge der Bereitstellung
-          generierten personenbezogenen Daten des Nutzers sowie dessen Zugang
-          hierzu gelten unsere Hinweise zum{" "}
+          The processing of personal data of the user provided during registration, execution, and use of the platform and services, as well as the generated personal data, is governed by our statements regarding{" "}
           <a className="link-primary" href="/privacy">
-            Datenschutz
+            Data Protection
           </a>
         </p>
-        <h2>§12 Anwendbares Recht und Gerichtsstand</h2>
+        <h2>§12 Applicable Law and Jurisdiction</h2>
         <ol>
           <li data-start="12">
-            Die Rechtsverhältnisse zwischen KuDiBa und dem Nutzer im
-            Zusammenhang mit der Nutzung von AreaButler unterliegen deutschem
-            Recht unter Ausschluss des UN-Kaufrechts.
+            The legal relationships between KuDiBa and the user in connection with the use of AreaButler are subject to German law to the exclusion of the UN Sales Convention.
           </li>
           <li data-start="12">
-            Ausschließlicher Erfüllungsort und Gerichtsstand für Streitigkeiten
-            zwischen KuDiBa und dem Nutzer im Zusammenhang mit AreaButler ist
-            Hamburg, soweit der Nutzer Kaufmann oder eine juristische Person des
-            öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen ist.
-            Dasselbe gilt, wenn der Nutzer keinen allgemeinen Gerichtsstand in
-            Deutschland oder der EU hat oder Wohnsitz oder gewöhnlicher
-            Aufenthalt im Zeitpunkt der Klageerhebung nicht bekannt sind.
+            The exclusive place of performance and jurisdiction for disputes between KuDiBa and the user in connection with AreaButler is Hamburg, provided the user is a merchant or a legal entity under public law or a public law special fund. The same applies if the user has no general jurisdiction in Germany or the EU or if their residence or habitual residence is not known at the time of the filing of the lawsuit.
           </li>
         </ol>
-        <h2>§13 Änderung dieser AGB</h2>
+        <h2>§13 Amendment of these Terms and Conditions</h2>
         <ol>
           <li data-start="13">
-            AreaButler behält sich vor, diese AGB jederzeit unter
-            Berücksichtigung der berechtigten Interessen des Nutzers und unter
-            Wahrung einer angemessenen Ankündigungsfrist von mindestens fünfzehn
-            Tagen zu ändern. Die Ankündigung erfolgt durch Mitteilung der
-            geänderten AGB per E-Mail unter Angabe des Zeitpunkts der
-            Wirksamkeit der Änderungen und ihres Grundes.
+            AreaButler reserves the right to amend these terms and conditions at any time, taking into account the legitimate interests of the user and maintaining a reasonable notice period of at least fifteen days. The announcement will be made by notification of the amended terms and conditions by email, stating the time of the effectiveness of the changes and their reason.
           </li>
           <li data-start="13">
-            Der Nutzer ist innerhalb der oben genannten Frist berechtigt, den
-            Vertrag in Textform (E-Mail) mit Wirkung zum Ablauf von fünfzehn
-            Tagen nach Eingang der Mitteilung gemäß Ziffer 14.1 zu kündigen,
-            sofern für den Vertrag nicht eine kürzere Frist gilt. Unterlässt er
-            die Kündigung, gelten die abgeänderten AGB als angenommen. In der
-            Ankündigung der Änderung wird gesondert auf das Kündigungsrecht und
-            die Bedeutung der Frist hingewiesen. Bei einer solchen Kündigung hat
-            der Nutzer keinen Anspruch auf (teilweisen) Ersatz des für den
-            aktuellen Abo-Zeitraum entrichteten Preises.
+            The user is entitled to terminate the contract in text form (email) with effect from the expiration of fifteen days after receipt of the notification according to § 14.1 during the above-mentioned period, unless a shorter period applies to the contract. If they fail to terminate, the amended terms and conditions will be deemed accepted. The announcement of the change will specifically mention the right to terminate and the importance of the notice period. Upon such termination, the user has no right to (partial) reimbursement of the price paid for the current subscription period.
           </li>
           <li data-start="13">
-            Der Nutzer kann nach Erhalt der Mitteilung jederzeit auf die Frist
-            gemäß Ziffer 13.1 verzichten. Die Stellung von Analyseanfragen auf
-            AreaButler vor Ablauf der Frist gemäß Ziffer 13.1 gilt als
-            eindeutige bestätigende Handlung zu einem solchen Verzicht.
+            The user can waive the notice period according to § 13.1 at any time after receiving the notification. Making analysis requests on AreaButler before the expiration of the notice period according to § 13.1 counts as a clear confirming action of such a waiver.
           </li>
         </ol>
-        <h2>§14 Schlussbestimmungen</h2>
+        <h2>§14 Final Provisions</h2>
         <ol>
           <li data-start="14">
-            Mündliche Nebenabreden in der Form von Änderungen, Ergänzungen und
-            Zusätzen dieses Vertrages bedürfen zu deren Wirksamkeit der
-            schriftlichen Vereinbarung. Gleiches gilt für einen Verzicht auf das
-            Schriftformerfordernis selbst.
+            Oral side agreements in the form of amendments, additions, and supplements to this contract require written agreement for their effectiveness. The same applies to a waiver of the requirement for written form itself.
           </li>
           <li data-start="14">
-            Für den Fall, dass eine Bestimmung dieser Nutzungsbedingungen
-            unwirksam sein sollte, wird die Wirksamkeit der anderen Bestimmungen
-            dadurch nicht berührt. An die Stelle einer unwirksamen Klausel tritt
-            die gesetzliche Regelung.
+            If any provision of these terms of use should be invalid, the validity of the other provisions shall not be affected thereby. The statutory provisions shall take the place of any invalid clause.
           </li>
         </ol>
       </div>

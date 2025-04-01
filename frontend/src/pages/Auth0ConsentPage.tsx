@@ -1,117 +1,157 @@
-import { FunctionComponent, useContext, useState } from "react";
-import { Form, Formik } from "formik";
-import { useLocation } from "react-router-dom";
-import { v4 as uuid } from "uuid";
-import * as Yup from "yup";
+import { useHttp } from "hooks/http";
+import PotentialCustomerForm from "potential-customer/PotentialCustomerForm";
+import { mapFormToApiUpsertPotentialCustomer } from "potential-customer/PotentialCustomerFormHandler";
+import React, { FunctionComponent, useState } from "react";
+import { useParams } from "react-router-dom";
 
-import { toastError } from "shared/shared.functions";
-import { localStorageConsentGivenKey } from "../../../shared/constants/constants";
-import Checkbox from "../components/inputs/formik/Checkbox";
-import { ConfigContext } from "../context/ConfigContext";
-import DefaultLayout from "../layout/defaultLayout";
-import "./Auth0ConsentPage.scss";
-import { TRIAL_DAYS } from "../../../shared/constants/subscription-plan";
+export interface CustomerQuestionnairePageRouterProps {
+    inputToken: string;
+}
 
-const Auth0ConsentPage: FunctionComponent = () => {
-  const { auth } = useContext(ConfigContext);
+const CustomerQuestionnairePage: FunctionComponent = () => {
+    const { inputToken } = useParams<CustomerQuestionnairePageRouterProps>();
+    const [token, setToken] = useState("");
+    const formId = "customer-questionnaire";
+    const [busy, setBusy] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(false);
+    const [showFaq, setShowFaq] = useState(false);
 
-  const queryParams = new URLSearchParams(useLocation().search);
-  const state = queryParams.get("state");
+    React.useEffect(() => {
+        setToken(inputToken);
+    }, [inputToken, setToken]);
 
-  const [busy, setBusy] = useState(false);
+    const { post } = useHttp();
 
-  const onSubmit = async () => {
-    if (busy) {
-      return;
-    }
-    setBusy(true);
-    try {
-      localStorage.setItem(localStorageConsentGivenKey, "true");
-      window.location.href = `https://${auth!.domain}/continue?state=${state}`;
-    } catch (e) {
-      toastError("Leider ist etwas bei der Zustimmung schiefgelaufen");
-      setBusy(false);
-    }
-  };
+    const onSubmit = async (values: any) => {
+        const customer = await mapFormToApiUpsertPotentialCustomer(values);
 
-  const formId = `form-${uuid()}`;
+        try {
+            setBusy(true);
+            await post("/api/potential-customers/questionnaire", {
+                token,
+                customer,
+            });
+            setSuccess(true);
+        } catch (err) {
+            console.error(err);
+            setError(true);
+        } finally {
+            setBusy(false);
+        }
+    };
 
-  return (
-    <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
-      <div className="max-w-screen-md mx-auto md:pt-20">
-        <h2>Herzlich willkommen !</h2>
-        <div className="mt-5 text-justify">
-          <p>
-            Mit der Zustimmung der AGB und Datenschutzbestimmungen, erhalten Sie
-            für <strong>{TRIAL_DAYS} Tage</strong> eine{" "}
-            <strong>kostenfreie Testphase</strong>, um den vollen Umfang des
-            AreaButlers an <strong>4 Adressen</strong> in Deutschland zu testen.
-          </p>
-          <p>
-            Die Analysen und Export-Materialien sind in der Testphase mit
-            Wasserzeichen versehen.
-          </p>
-          <p>
-            Am Ende der Testphase können Sie sich für einen Plan entscheiden,
-            der Ihren Anforderungen entspricht. Es findet keine automatische
-            Umwandlung oder Verlängerung statt.
-          </p>
-          <p>
-            Hinweis: Aus Datenschutzgründen werden alle Daten aus Ihrem
-            Testaccount gelöscht und nicht in Ihren „echten“ Account übertragen.
-            Über Ihr AreaButler Profil können Sie auch vor Ablauf der 4 Tage mit
-            Ihrem Plan starten.
-          </p>
-          <p>
-            Viel Spaß beim Testen des AreaButlers, wir freuen uns, dass Sie
-            unseren Service nutzen!
-          </p>
-          <p>Ihr Team AreaButler</p>
-        </div>
-        <Formik
-          initialValues={{
-            consentGiven: false,
-          }}
-          validationSchema={Yup.object({
-            consentGiven: Yup.boolean().oneOf(
-              [true],
-              "Ihre Zustimmung wird benötigt."
-            ),
-          })}
-          onSubmit={onSubmit}
-        >
-          <Form id={formId}>
-            <div className="form-control mt-5">
-              <Checkbox name="consentGiven">
-                <div className="checkbox-container font-normal text-base">
-                  Hiermit stimme ich den{" "}
-                  <a target="_blank" className="link-primary" href="/terms">
-                    AGB
-                  </a>{" "}
-                  und den{" "}
-                  <a target="_blank" className="link-primary" href="/privacy">
-                    Datenschutzbestimmungen
-                  </a>{" "}
-                  zu.
+    return (
+        <div className="m-10">
+            {!success && !error && (
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl my-5">Potential Customer Questionnaire</h1>
+                    <PotentialCustomerForm
+                        questionnaire={true}
+                        formId={formId}
+                        onSubmit={onSubmit}
+                        inputCustomer={{
+                          preferredLocations: [],
+                          routingProfiles: []
+                        }}
+                    />
+                    <hr className="mt-4"/>
+                    <button
+                        form={formId}
+                        key="submit"
+                        type="submit"
+                        disabled={busy}
+                        className={
+                            busy
+                                ? "loading mt-5 btn btn-primary btn-sm w-72"
+                                : "mt-5 btn btn-primary btn-sm w-72"
+                        }
+                    >
+                        Submit Questionnaire
+                    </button>
+                    <button
+                        className="mt-5 btn btn-xs w-48"
+                        onClick={() => setShowFaq(!showFaq)}
+                    >
+                        Frequently Asked Questions
+                    </button>
+                    {showFaq && (
+                        <div className="border p-3">
+                            <h1 className="font-bold mb-3">Frequently Asked Questions</h1>
+                            <ol className="list-decimal flex flex-col gap-2">
+                                <li className="ml-5">
+                                    What happens when I click{" "}
+                                    <strong>Submit Questionnaire</strong>?
+                                    <ul className="list-disc ml-10">
+                                        <li className="mt-2">
+                                            Your AreaButler will start finding the perfect property for you at the ideal location.
+                                        </li>
+                                        <li>
+                                            Your mobility preferences, personal criteria, and key addresses will now be considered in{" "}
+                                            <strong>your personalized area analysis</strong>.
+                                        </li>
+                                        <li>
+                                            You will receive your personal area analysis exclusively from your real estate agent, either via email or in the property exposé.
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li className="ml-5">
+                                    Who sees my information?
+                                    <ul className="list-disc ml-10">
+                                        <li className="mt-2">
+                                            Only your real estate agent will see your responses.
+                                        </li>
+                                        <li>
+                                            AreaButler will utilize the data to prepare your personal area analysis.
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li className="ml-5">
+                                    More information can be found at{" "}
+                                    <a href="https://www.area-butler.de">
+                                        <strong>www.area-butler.de</strong>
+                                    </a>
+                                </li>
+                            </ol>
+                        </div>
+                    )}
                 </div>
-              </Checkbox>
-            </div>
-          </Form>
-        </Formik>
-        <button
-          form={formId}
-          key="submit"
-          type="submit"
-          disabled={busy}
-          className={
-            busy ? "busy btn btn-primary mt-5" : "btn btn-primary mt-5"
-          }
-        >
-          Registrieren
-        </button>
-      </div>
-    </DefaultLayout>
-  );
+            )}
+            {success && (
+                <div className="flex flex-col gap-3 m-10">
+                    <h1 className="text-2xl font-bold">Thank You!</h1>
+                    <p className="w-100">
+                        Along with your real estate agent, I will now prepare your{" "}
+                        <strong>personal area analysis</strong>.
+                    </p>
+                    <p>You will receive this exclusively in your exposé or via email.</p>
+                    <p>
+                        I hope you enjoyed this questionnaire. Suggestions for{" "}
+                        <strong>improvement</strong>?<br/>
+                        Please feel free to provide brief feedback. Best regards, your AreaButler.
+                    </p>
+                    <p>
+                        More information:{" "}<br/>
+                        <a href="https://www.area-butler.de">
+                            <strong>www.area-butler.de</strong>
+                        </a>
+                    </p>
+                </div>
+            )}
+            {error && (
+                <div className="m-10">
+                    <h1 className="text-2xl font-bold">Sorry!</h1>
+                    <p>
+                        Unfortunately, there was a problem with submitting the data.
+                        <br/>
+                        Please try again later.
+                    </p>
+                </div>
+            )}
+        </div>
+    );
 };
 
-export default Auth0ConsentPage;
+export default CustomerQuestionnairePage;

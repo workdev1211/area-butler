@@ -1,190 +1,107 @@
 import React from "react";
-import {kudibaCompany} from "../../../shared/constants/constants";
+import { kudibaCompany } from "../../../shared/constants/constants";
 import DefaultLayout from "../layout/defaultLayout";
 
 export const PrivacyPage = () => {
 
     return (
-        <DefaultLayout title="Datenschutz" withHorizontalPadding={true}>
-            <p>Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten
-                passiert, wenn Sie unsere Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie
-                persönlich identifiziert werden können. Ausführliche Informationen zum Thema Datenschutz entnehmen Sie
-                unserer unter diesem Text aufgeführten Datenschutzerklärung.</p>
-            <h2>Datenerfassung auf unserer Website</h2>
-            <h3>Wer ist verantwortlich für die Datenerfassung auf dieser Website?</h3>
-            <p>Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können
-                Sie dem Impressum dieser Website entnehmen.</p>
-            <h3>Wie erfassen wir Ihre Daten?</h3>
-            <p>Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um
-                Daten handeln, die Sie in ein Kontaktformular eingeben. Andere Daten werden automatisch beim Besuch der
-                Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser,
-                Betriebssystem oder Uhrzeit des Seitenaufrufs). Die Erfassung dieser Daten erfolgt automatisch, sobald
-                Sie unsere Website betreten.
-            </p>
-            <h3>Wofür nutzen wir Ihre Daten?</h3>
-            <p>Ihre Daten werden erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten.</p>
-            <h3>Welche Rechte haben Sie bezüglich Ihrer Daten?</h3>
-            <p>Sie haben jederzeit das Recht unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer
-                gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung,
-                Sperrung oder Löschung dieser Daten zu verlangen. Hierzu sowie zu weiteren Fragen zum Thema Datenschutz
-                können Sie sich jederzeit unter der im Impressum angegebenen Adresse an uns wenden. Des Weiteren steht
-                Ihnen ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu.</p>
-            <h2>Analyse-Tools und Tools von Drittanbietern</h2>
-            <p>Beim Besuch von Websiten kann Ihr Surf-Verhalten statistisch ausgewertet werden. Das geschieht vor allem
-                mit Cookies und mit sogenannten Analyseprogrammen. Die Analyse Ihres Surf-Verhaltens erfolgt in der
-                Regel anonym; das Surf-Verhalten kann nicht zu Ihnen zurückverfolgt werden. Sie können dieser Analyse
-                widersprechen oder sie durch die Nichtbenutzung bestimmter Tools verhindern. Detaillierte Informationen
-                dazu finden Sie in der folgenden Datenschutzerklärung.
-                Sie können dieser Analyse widersprechen. Über die Widerspruchsmöglichkeiten werden wir Sie in dieser
-                Datenschutzerklärung informieren.
-            </p>
-            <h2>2. Allgemeine Hinweise und Pflichtinformationen</h2>
-            <h3>Datenschutz</h3>
-            <p>Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre
-                personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie
-                dieser Datenschutzerklärung.
-                Wenn Sie diese Website benutzen, werden verschiedene personenbezogene Daten erhoben. Personenbezogene
-                Daten sind Daten, mit denen Sie persönlich identifiziert werden können. Die vorliegende
-                Datenschutzerklärung erläutert, welche Daten wir erheben und wofür wir sie nutzen. Sie erläutert auch,
-                wie und zu welchem Zweck das geschieht.
-                Wir weisen darauf hin, dass die Datenübertragung im Internet (z.B. bei der Kommunikation per E-Mail)
-                Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist
-                nicht möglich.</p>
-            <h3>Hinweise zur verantwortlichen Stelle</h3>
-            <p>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
-            <p className="pt-2" dangerouslySetInnerHTML={{__html: kudibaCompany.formattedAddress()}}></p>
+        <DefaultLayout title="Privacy Policy" withHorizontalPadding={true}>
+            <p>The following notes provide a simple overview of what happens to your personal data when you visit our website. Personal data is any data that can be used to identify you personally. For detailed information on the topic of data protection, please refer to our privacy policy provided below this text.</p>
+            <h2>Data Collection on Our Website</h2>
+            <h3>Who is responsible for data collection on this website?</h3>
+            <p>The data processing on this website is carried out by the website operator. You can find their contact details in the impressum of this website.</p>
+            <h3>How do we collect your data?</h3>
+            <p>Your data is collected partly by you providing it to us. This could be data, for example, that you enter into a contact form. Other data is collected automatically when you visit the website through our IT systems. This includes mainly technical data (e.g., internet browser, operating system, or time of page request). The collection of this data occurs automatically as soon as you enter our website.</p>
+            <h3>What do we use your data for?</h3>
+            <p>Your data is collected to ensure the error-free provision of the website.</p>
+            <h3>What rights do you have regarding your data?</h3>
+            <p>You have the right at any time to request information free of charge about the origin, recipient, and purpose of your stored personal data. You also have the right to request the correction, blocking, or deletion of this data. For this purpose, as well as for further questions on the subject of data protection, you can contact us at any time via the address provided in the impressum. Furthermore, you have the right to lodge a complaint with the competent supervisory authority.</p>
+            <h2>Analysis Tools and Third-Party Tools</h2>
+            <p>Your surfing behavior can be statistically evaluated when visiting websites. This mainly happens through cookies and so-called analysis programs. The analysis of your surfing behavior is usually done anonymously; it cannot be traced back to you. You can object to this analysis or prevent it by not using specific tools. Detailed information can be found in the following privacy policy. You can object to this analysis. We will inform you about the possibility of objection in this privacy policy.</p>
+            <h2>General Notes and Mandatory Information</h2>
+            <h3>Data Protection</h3>
+            <p>The operators of these pages take the protection of your personal data very seriously. We treat your personal data confidentially and in accordance with the legal data protection regulations as well as this privacy policy. When you use this website, various personal data is collected. Personal data is data that can be used to identify you personally. This privacy policy explains what data we collect and what we use it for. It also explains how and for what purpose this is done. We point out that data transmission over the Internet (e.g., when communicating via email) may have security vulnerabilities. A complete protection of data against access by third parties is not possible.</p>
+            <h3>Notes on the Responsible Party</h3>
+            <p>The responsible party for data processing on this website is:</p>
+            <p className="pt-2" dangerouslySetInnerHTML={{ __html: kudibaCompany.formattedAddress() }}></p>
             <p className="pb-2">{kudibaCompany.mail}</p>
-            <p>Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen
-                über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.B. Namen, E-Mail-Adressen o.
-                Ä.) entscheidet.</p>
-            <h3>Widerruf Ihrer Einwilligung zur Datenverarbeitung</h3>
-            <p>Viele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine
-                bereits erteilte Einwilligung jederzeit widerrufen. Dazu reicht eine formlose Mitteilung per E-Mail an
-                uns. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf
-                unberührt.</p>
-            <h3>Beschwerderecht bei der zuständigen Aufsichtsbehörde</h3>
-            <p>Im Falle datenschutzrechtlicher Verstöße steht dem Betroffenen ein Beschwerderecht bei der zuständigen
-                Aufsichtsbehörde zu. Zuständige Aufsichtsbehörde in datenschutzrechtlichen Fragen ist der
-                Landesdatenschutzbeauftragte des Bundeslandes, in dem unser Unternehmen seinen Sitz hat. Eine Liste der
-                Datenschutzbeauftragten sowie deren Kontaktdaten können folgendem Link entnommen werden:
-                <a className="pl-2 link-primary"
-                   href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html">https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>.
+            <p>The responsible party is the natural or legal person who alone or jointly with others decides on the purposes and means of processing personal data (e.g., names, email addresses, etc.).</p>
+            <h3>Revocation of Your Consent to Data Processing</h3>
+            <p>Many data processing operations are only possible with your explicit consent. You can revoke your previously given consent at any time. A simple informal notification by email to us is sufficient. The lawfulness of the data processing that took place until the revocation remains unaffected by the revocation.</p>
+            <h3>Right to Complain to the Competent Supervisory Authority</h3>
+            <p>In the event of data protection law violations, the affected person has the right to lodge a complaint with the competent supervisory authority. The competent supervisory authority in data protection matters is the state data protection officer of the federal state in which our company is based. A list of data protection officers and their contact information can be found at the following link: 
+                <a className="pl-2 link-primary" href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html">https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>.
             </p>
-            <h3>Recht auf Datenübertragbarkeit</h3>
-            <p>Sie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags
-                automatisiert verarbeiten, an sich oder an einen Dritten in einem gängigen, maschinenlesbaren Format
-                aushändigen zu lassen. Sofern Sie die direkte Übertragung der Daten an einen anderen Verantwortlichen
-                verlangen, erfolgt dies nur, soweit es technisch machbar ist.</p>
-            <h3>SSL- bzw. TLS-Verschlüsselung</h3>
-            <p>Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte, wie zum
-                Beispiel Bestellungen oder Anfragen, die Sie an uns als Seitenbetreiber senden, eine SSL-bzw.
-                TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des
-                Browsers von “http://” auf “https://” wechselt und an dem Schloss-Symbol in Ihrer Browserzeile.
-                Wenn die SSL- bzw. TLS-Verschlüsselung aktiviert ist, können die Daten, die Sie an uns übermitteln,
-                nicht von Dritten mitgelesen werden.</p>
-            <h3>Auskunft, Sperrung, Löschung</h3>
-            <p>Sie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das Recht auf unentgeltliche
-                Auskunft über Ihre gespeicherten personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der
-                Datenverarbeitung und ggf. ein Recht auf Berichtigung, Sperrung oder Löschung dieser Daten. Hierzu sowie
-                zu weiteren Fragen zum Thema personenbezogene Daten können Sie sich jederzeit unter der im Impressum
-                angegebenen Adresse an uns wenden.</p>
-            <h2>3. Datenerfassung auf unserer Website</h2>
-            <h3>Server-Log-Dateien</h3>
-            <p>Der Provider der Seiten erhebt und speichert automatisch Informationen in so genannten
-                Server-Log-Dateien, die Ihr Browser automatisch an uns übermittelt. Dies sind:
+            <h3>Right to Data Portability</h3>
+            <p>You have the right to receive data that we process based on your consent or in fulfillment of a contract in a structured, commonly used, and machine-readable format, and to transmit those data to another controller. If you request the direct transmission of the data to another responsible party, this will be done only as far as technically feasible.</p>
+            <h3>SSL or TLS Encryption</h3>
+            <p>This site uses SSL or TLS encryption for security reasons and to protect the transmission of confidential content, such as orders or inquiries that you send to us as the site operator. You can recognize an encrypted connection by the address line of the browser changing from "http://" to "https://" and by the lock symbol in your browser line. When the SSL or TLS encryption is activated, the data you transmit to us cannot be read by third parties.</p>
+            <h3>Information, Blocking, Deletion</h3>
+            <p>You have the right to receive information at any time free of charge about your stored personal data, its origin and recipient, and the purpose of the data processing and, if applicable, a right to correction, blocking or deletion of this data in accordance with applicable legal provisions. For this purpose, as well as for further questions regarding personal data, you can contact us at any time via the address provided in the impressum.</p>
+            <h2>Data Collection on Our Website</h2>
+            <h3>Server Log Files</h3>
+            <p>The provider of the website automatically collects and stores information in so-called server log files that your browser transmits to us. This includes:
                 <ul className="list-disc ml-5 py-1">
-                    <li>Browsertyp und Browserversion</li>
-                    <li>verwendetes Betriebssystem</li>
+                    <li>Browser type and version</li>
+                    <li>Operating system used</li>
                     <li>Referrer URL</li>
-                    <li>Hostname des zugreifenden Rechners</li>
-                    <li>Uhrzeit der Serveranfrage</li>
-                    <li>IP-Adresse</li>
+                    <li>Hostname of the accessing computer</li>
+                    <li>Time of server request</li>
+                    <li>IP address</li>
                 </ul>
-                Eine Zusammenführung dieser Daten mit anderen Datenquellen wird nicht vorgenommen.
-                Grundlage für die Datenverarbeitung ist Art. 6 Abs. 1 lit. f DSGVO, der die Verarbeitung von Daten zur
-                Erfüllung eines Vertrags oder vorvertraglicher Maßnahmen gestattet.
+                A merging of this data with other data sources is not performed. The legal basis for the data processing is Article 6 (1) (f) GDPR, which allows the processing of data to fulfill a contract or to take precontractual measures.
             </p>
             <h3>Mapbox, Inc.</h3>
-            <p>Für die Darstellung der Karten in der Umgebungsanalysen und dem Exposé wird ein Service von Mapbox, Inc.
-                verwendet. Hierfür werden folgende Informationen automatisch übermittelt:</p>
+            <p>A service from Mapbox, Inc. is used to display maps in environmental analyses and exposés. The following information is automatically transmitted for this purpose:</p>
             <ul className="list-disc ml-5 py-1">
-                <li>IP-Adresse</li>
-                <li>Browsertyp und Browserversion</li>
-                <li>verwendetes Betriebssystem</li>
-                <li>Datum und Uhrzeit der Serveranfrage</li>
-                <li>Anfrage-Inhalte bezüglich der angefragten Karten-Lokationen</li>
+                <li>IP address</li>
+                <li>Browser type and version</li>
+                <li>Operating system used</li>
+                <li>Date and time of the server request</li>
+                <li>Request content regarding the requested map locations</li>
             </ul>
-            <p>Die Übermittlung der Daten erfolgt unter Berücksichtigung der European Standard Contractual Clauses.
-                Weiter Informationen bezüglich der Datenverarbeitung durch Mapbox, Inc. sind der <a
-                    className="link-primary"
-                    href="https://www.mapbox.com/legal/privacy/">Datenschutzerklärung</a> zu entnehmen.</p>
-            Grundlage für die Datenverarbeitung ist Art. 6 Abs. 1 lit. f DSGVO, der die Verarbeitung von Daten zur
-            Erfüllung eines Vertrags oder vorvertraglicher Maßnahmen gestattet.
-            <h3>Google Places API / Webdienst</h3>
-            <p>Zum Zwecke der automatischen Adressvervollständigung nutzen wir den Web Service Google Places API von
-                Google. Die Nutzung des Dienstes bedingt die automatische Übermittlung folgender Informationen:</p>
+            <p>The transmission of the data is done in consideration of the European Standard Contractual Clauses. Further information regarding the data processing by Mapbox, Inc. can be found in the <a className="link-primary" href="https://www.mapbox.com/legal/privacy/">privacy policy</a>.</p>
+            <p>The legal basis for the data processing is Article 6 (1) (f) GDPR, which allows the processing of data to fulfill a contract or to take precontractual measures.</p>
+            <h3>Google Places API / Web Service</h3>
+            <p>For the purpose of automatic address completion, we use the web service Google Places API provided by Google. The use of the service requires the automatic transmission of the following information:</p>
             <ul className="list-disc ml-5 py-1">
-                <li>IP-Adresse</li>
-                <li>Browsertyp und Browserversion</li>
-                <li>Datum und Uhrzeit der Serveranfrage</li>
-                <li>Eingegeben Inhalte bezüglich der Adressvervollständigung</li>
+                <li>IP address</li>
+                <li>Browser type and version</li>
+                <li>Date and time of the server request</li>
+                <li>Entered content regarding address completion</li>
             </ul>
-            Die Nutzung ermöglicht die einfache Vervollständigung der Eingabefelder von Adressfeldern in unserer
-            Applikation und stellt somit eine Grundlage für die Datenverarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO dar.
-            Weitere Informationen können der <a className="link-primary" href="www.google.com/policies/privacy">Datenschutzerklärung
-            von Google</a> entnommen werden.
+            <p>This use allows for easy completion of input fields in address fields in our application and thus constitutes a basis for data processing in accordance with Article 6 (1) (f) GDPR. For more information, please refer to <a className="link-primary" href="www.google.com/policies/privacy">Google's privacy policy</a>.</p>
             <h3>Stripe</h3>
-            <p>Stripe ist ein Online-Bezahldienst und ermöglicht die automatisierte Abrechnung und Zahlung von unseren Services. Hierfür werden folgende Daten erfasst:</p>
+            <p>Stripe is an online payment service that allows for automated billing and payment for our services. The following data is collected for this purpose:</p>
             <ul className="list-disc ml-5 py-1">
-                <li>IP-Adresse</li>
-                <li>Browsertyp und Browserversion</li>
-                <li>Datum und Uhrzeit der Serveranfrage</li>
-                <li>Vor- und Nachname</li>
-                <li>Adresse</li>
-                <li>E-Mail Adresse</li>
-                <li>Telfonnummer</li>
-                <li>Kreditkartennummer</li>
+                <li>IP address</li>
+                <li>Browser type and version</li>
+                <li>Date and time of the server request</li>
+                <li>First name and last name</li>
+                <li>Address</li>
+                <li>Email address</li>
+                <li>Phone number</li>
+                <li>Credit card number</li>
             </ul>
-            Stripe nutzt diese Daten zur
-            <ul className="list-disc ml-5 py-1">
-                <li>Ermittlung der Kontodeckung</li>
-                <li>Ermittlung des Kreditrahmens</li>
-                <li>Automatischen Zahlungsabwicklung</li>
-            </ul>
-            Die Nutzung ermöglicht die automatische Abrechnung and Abwicklung von Zahlungen und stellt somit eine Grundlage für die Datenverarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO dar.
-            Weitere Informationen können der <a className="link-primary" href="https://stripe.com/en-de/privacy-center/legal">Datenschutzerklärung
-            von Stripe</a> entnommen werden.
-            <h3>Auth0</h3>
-            <p>
-                Für die Authentifizierung und Authorisierung werden die Services von auth0.com verwendet. Zu diesem Zweck
-                werden u.a. folgende Informationen übermittelt:
+            <p>Stripe uses this data for:
+                <ul className="list-disc ml-5 py-1">
+                    <li>Determining account coverage</li>
+                    <li>Determining credit limits</li>
+                    <li>Automated payment processing</li>
+                </ul>
             </p>
+            <p>This use allows for automatic billing and payment processing and thus provides a basis for data processing in accordance with Article 6 (1) (f) GDPR. Further information can be found in <a className="link-primary" href="https://stripe.com/en-de/privacy-center/legal">Stripe's privacy policy</a>.</p>
+            <h3>Auth0</h3>
+            <p>For authentication and authorization, the services of auth0.com are used. For this purpose, the following information is transmitted, among others:</p>
             <ul className="list-disc ml-5 py-1">
-                <li>E-Mail Addresse</li>
-                <li>Browsertyp und Browserversion</li>
-                <li>Login Datum</li>
-                <li>Vor- und Nachname</li>
+                <li>Email address</li>
+                <li>Browser type and version</li>
+                <li>Login date</li>
+                <li>First name and last name</li>
             </ul>
-            Die Nutzung erlaubt eine DSGVO konforme Realisierung der benötigten Authentifizierungs- und
-            Authorisierungsmechanismen. Details hierzu können der{" "}
-            <a className="link-primary" href="https://auth0.com/de/privacy">
-                Datenschutzerklärung von Auth0
-            </a>{" "}
-            entnommen werden.
-            <h2>4. Kontaktaufnahme</h2>
-            <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre personenbezogenen Daten nur, soweit an der
-                Verarbeitung ein berechtigtes Interesse besteht (Art. 6 Abs. 1 lit. f DSGVO), Sie in die
-                Datenverarbeitung eingewilligt haben (Art. 6 Abs. 1 lit. a DSGVO), die Verarbeitung für die Anbahnung,
-                Begründung, inhaltliche Ausgestaltung oder Änderung eines Rechtsverhältnisses zwischen Ihnen und uns
-                erforderlich ist (Art. 6 Abs. 1 lit. b DSGVO) oder eine sonstige Rechtsnorm die Verarbeitung gestattet.
-                Ihre personenbezogenen Daten verbleiben bei uns, bis Sie uns zur Löschung auffordern, Ihre Einwilligung
-                zur Speicherung widerrufen oder der Zweck für die Datenspeicherung entfällt (z.B. nach abgeschlossener
-                Bearbeitung Ihres Anliegens). Zwingende gesetzlicheBestimmungen – insbesondere steuer- und
-                handelsrechtliche Aufbewahrungsfristen – bleiben unberührt. Sie haben jederzeit das Recht, unentgeltlich
-                Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten.
-                Ihnen steht außerdem ein Recht auf Widerspruch, auf Datenübertragbarkeit und ein Beschwerderecht bei der
-                zuständigen Aufsichtsbehörde zu. Ferner können Sie die Berichtigung, Sperrung, Löschung und unter
-                bestimmten Umständen die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten verlangen.</p>
+            <p>This use allows GDPR-compliant implementation of the necessary authentication and authorization mechanisms. Details can be found in the <a className="link-primary" href="https://auth0.com/de/privacy">privacy policy of Auth0</a>.</p>
+            <h2>Contact</h2>
+            <p>If you contact us by email, we will process your personal data only to the extent that there is a legitimate interest in the processing (Article 6 (1) (f) GDPR), you have consented to the data processing (Article 6 (1) (a) GDPR), the processing is necessary for the initiation, establishment, content design or modification of a legal relationship between you and us (Article 6 (1) (b) GDPR), or another legal regulation permits the processing. Your personal data will remain with us until you request us to delete it, revoke your consent to storage, or the purpose for data storage ceases to apply (e.g., after your inquiry has been processed). Mandatory legal provisions – in particular tax and commercial retention periods – remain unaffected. You have the right at any time to request free information about the origin, recipient, and purpose of your stored personal data. You also have the right to object, to data portability and to file a complaint with the competent supervisory authority. Furthermore, you can request the correction, blocking, deletion, and under certain circumstances the restriction of the processing of your personal data.</p>
         </DefaultLayout>
     );
 };
